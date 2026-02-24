@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sidebar Redesign v2 — Two Variants</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #0a0c0f;
+    color: #e4e8ee;
+    min-height: 100vh;
+    padding: 40px;
+  }
+
+  h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 6px; }
+  .subtitle { color: #4b5563; font-size: 13px; margin-bottom: 40px; }
+
+  .grid { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; }
+
+  .card {
+    background: #111318;
+    border-radius: 14px;
+    border: 1px solid #1e2028;
+    overflow: hidden;
+    width: 420px;
+  }
+  .card-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid #1e2028;
+  }
+  .card-header h2 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .card-header p { font-size: 11.5px; color: #6b7280; line-height: 1.5; }
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-right: 5px;
+    margin-bottom: 6px;
+  }
+  .tag-blue { background: rgba(59,130,246,0.12); color: #60a5fa; }
+  .tag-green { background: rgba(34,197,94,0.12); color: #4ade80; }
+  .tag-amber { background: rgba(245,158,11,0.12); color: #fbbf24; }
+
+  /* ── Shared sidebar base ── */
+  .sb {
+    width: 220px;
+    min-height: 640px;
+    position: relative;
+    margin: 24px auto;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .sb .logo {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    padding: 22px 20px 18px;
+  }
+
+  .sb .footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .sb .footer .av {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .sb .footer .name { font-size: 12px; font-weight: 600; }
+  .sb .footer .role { font-size: 10px; opacity: 0.5; }
+  .sb .footer .logout {
+    margin-left: auto;
+    opacity: 0.3;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .sb .footer .logout:hover { opacity: 0.7; }
+
+  /* Icon base */
+  .ic { width: 18px; height: 18px; flex-shrink: 0; }
+
+  /* ═══════════════════════════════════════════
+     VARIANT 1 — "Entity-Centric"
+     Grouped by what you manage, not what you do
+     ═══════════════════════════════════════════ */
+  .v1 { background: #111318; border: 1px solid #1e2028; }
+  .v1 .logo { color: #e4e8ee; }
+
+  .v1 .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    color: #374151;
+    text-transform: uppercase;
+    padding: 18px 20px 6px;
+  }
+
+  .v1 .nav-area { padding: 0 8px; }
+
+  .v1 .item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .v1 .item:hover { background: rgba(197,224,238,0.05); color: #9ca3af; }
+  .v1 .item.active {
+    background: rgba(197,224,238,0.08);
+    color: #e4e8ee;
+  }
+  .v1 .item.active .ic { color: #8bb8d0; }
+  .v1 .item .ic { color: #4b5563; transition: color 0.15s; }
+  .v1 .item:hover .ic { color: #6b7280; }
+  .v1 .item .expand {
+    margin-left: auto;
+    width: 14px; height: 14px;
+    color: #374151;
+    transition: transform 0.2s;
+  }
+  .v1 .item .expand.open { transform: rotate(90deg); }
+
+  /* Active indicator bar */
+  .v1 .item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 16px;
+    border-radius: 0 2px 2px 0;
+    background: #8bb8d0;
+  }
+
+  .v1 .sub-area {
+    padding: 2px 0 2px 40px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+  }
+  .v1 .sub-area.open { max-height: 160px; }
+  .v1 .sub-item {
+    font-size: 12px;
+    font-weight: 500;
+    color: #4b5563;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .v1 .sub-item:hover { color: #9ca3af; background: rgba(197,224,238,0.04); }
+  .v1 .sub-item.active { color: #8bb8d0; }
+  .v1 .sub-item::before {
+    content: '';
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.4;
+    flex-shrink: 0;
+  }
+  .v1 .sub-item.active::before { opacity: 1; }
+
+  .v1 .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4b5563;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .v1 .search-bar:hover { background: rgba(197,224,238,0.05); color: #6b7280; }
+  .v1 .search-bar kbd {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #374151;
+  }
+
+  .v1 .footer { background: #0e1015; }
+  .v1 .footer .av { background: rgba(197,224,238,0.08); border: 1px solid rgba(197,224,238,0.1); color: #8bb8d0; }
+  .v1 .footer .name { color: #d1d5db; }
+
+  /* Badge */
+  .badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 600;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    padding: 0 5px;
+  }
+  .badge-red { background: rgba(239,68,68,0.12); color: #f87171; }
+  .badge-amber { background: rgba(245,158,11,0.12); color: #fbbf24; }
+
+  /* ═══════════════════════════════════════════
+     VARIANT 2 — "Activity-Focused"
+     Top pinned actions + contextual groups
+     ═══════════════════════════════════════════ */
+  .v2 { background: #0f1115; border: 1px solid #1a1d24; }
+  .v2 .logo { color: #e4e8ee; }
+
+  .v2 .quick-actions {
+    display: flex;
+    gap: 4px;
+    padding: 0 12px 14px;
+  }
+  .v2 .qa-btn {
+    flex: 1;
+    padding: 7px 0;
+    border-radius: 7px;
+    background: rgba(197,224,238,0.05);
+    border: 1px solid rgba(197,224,238,0.06);
+    text-align: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+  .v2 .qa-btn:hover { background: rgba(197,224,238,0.08); color: #9ca3af; border-color: rgba(197,224,238,0.1); }
+  .v2 .qa-btn .qa-ic { width: 16px; height: 16px; color: #4b5563; }
+  .v2 .qa-btn:hover .qa-ic { color: #6b7280; }
+
+  .v2 .divider {
+    height: 1px;
+    background: rgba(255,255,255,0.04);
+    margin: 0 16px 2px;
+  }
+
+  .v2 .group-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px 6px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .v2 .group-header span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #2d3338;
+    text-transform: uppercase;
+    flex: 1;
+  }
+  .v2 .group-header .count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: #2d3338;
+    background: rgba(255,255,255,0.03);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .v2 .nav-area { padding: 0 8px; }
+
+  .v2 .item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 12px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4f5a66;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .v2 .item:hover { background: rgba(197,224,238,0.04); color: #8899a6; }
+  .v2 .item.active {
+    background: rgba(139,184,208,0.08);
+    color: #d1dbe4;
+  }
+  .v2 .item .ic { color: #3a424d; transition: color 0.15s; }
+  .v2 .item:hover .ic { color: #566273; }
+  .v2 .item.active .ic { color: #8bb8d0; }
+
+  /* Inline sub-items for v2 — indented with left border */
+  .v2 .sub-group {
+    margin-left: 24px;
+    padding-left: 12px;
+    border-left: 1px solid rgba(197,224,238,0.06);
+    margin-bottom: 2px;
+  }
+  .v2 .sub-group .item {
+    font-size: 12px;
+    padding: 5px 10px;
+    color: #3d4652;
+  }
+  .v2 .sub-group .item:hover { color: #6b7a8a; }
+  .v2 .sub-group .item.active { color: #8bb8d0; background: rgba(139,184,208,0.06); }
+
+  .v2 .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 6px 8px;
+    padding: 7px 12px;
+    border-radius: 7px;
+    background: rgba(197,224,238,0.03);
+    border: 1px solid rgba(197,224,238,0.05);
+    font-size: 12px;
+    font-weight: 500;
+    color: #3a424d;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .v2 .search-bar:hover {
+    background: rgba(197,224,238,0.06);
+    border-color: rgba(197,224,238,0.08);
+    color: #6b7280;
+  }
+  .v2 .search-bar kbd {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #2a3038;
+  }
+
+  .v2 .footer { background: #0b0d10; }
+  .v2 .footer .av { background: rgba(139,184,208,0.08); border: 1px solid rgba(139,184,208,0.1); color: #8bb8d0; }
+  .v2 .footer .name { color: #c8cdd3; }
+
+  /* ── Rationale ── */
+  .rationale {
+    padding: 16px 20px;
+    border-top: 1px solid #1e2028;
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: #4b5563;
+  }
+  .rationale strong { color: #9ca3af; }
+  .rationale ul { margin: 6px 0 0 14px; }
+  .rationale li { margin-bottom: 3px; }
+
+  /* Toggle interaction */
+  .toggle-parent { cursor: pointer; }
+  .toggle-parent .expand { transition: transform 0.2s; }
+</style>
+</head>
+<body>
+
+<h1>Sidebar v2 — Direction C Refined</h1>
+<p class="subtitle">Two variants using actual Caelith icons. Entity-centric grouping, no emojis, SaaS best practices.</p>
+
+<div class="grid">
+
+<!-- ═══════════ VARIANT 1: Entity-Centric ═══════════ -->
+<div class="card">
+  <div class="card-header">
+    <h2>Variant 1 — Entity-Centric</h2>
+    <span class="tag tag-green">Recommended</span>
+    <span class="tag tag-blue">Clean</span>
+    <p>Group by what you manage. Funds own their related pages. Investors own theirs. Compliance is one unified section. Active indicator bar replaces highlight background.</p>
+  </div>
+
+  <div class="sb v1">
+    <div class="logo">Caelith</div>
+
+    <div class="nav-area">
+      <div class="item active">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+        Dashboard
+      </div>
+    </div>
+
+    <div class="section-label">Manage</div>
+    <div class="nav-area">
+      <div class="item toggle-parent" onclick="this.querySelector('.expand').classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/></svg>
+        Funds & Assets
+        <svg class="expand" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+      </div>
+      <div class="sub-area">
+        <div class="sub-item">Fund Overview</div>
+        <div class="sub-item">Holdings & NAV</div>
+        <div class="sub-item">Transfers</div>
+      </div>
+
+      <div class="item toggle-parent" onclick="this.querySelector('.expand').classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+        Investors
+        <svg class="expand" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+      </div>
+      <div class="sub-area">
+        <div class="sub-item">Directory</div>
+        <div class="sub-item">Onboarding</div>
+        <div class="sub-item">KYC Screening</div>
+      </div>
+    </div>
+
+    <div class="section-label">Compliance</div>
+    <div class="nav-area">
+      <div class="item toggle-parent" onclick="this.querySelector('.expand').classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+        Regulatory
+        <span class="badge badge-red">3</span>
+        <svg class="expand open" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+      </div>
+      <div class="sub-area open">
+        <div class="sub-item">Rules Engine</div>
+        <div class="sub-item active">Decisions</div>
+        <div class="sub-item">AIFMD II Readiness</div>
+      </div>
+
+      <div class="item toggle-parent" onclick="this.querySelector('.expand').classList.toggle('open'); this.nextElementSibling.classList.toggle('open');">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+        Reports
+        <svg class="expand" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+      </div>
+      <div class="sub-area">
+        <div class="sub-item">Annex IV (AIFMD)</div>
+        <div class="sub-item">Evidence Bundle</div>
+      </div>
+    </div>
+
+    <div class="section-label">Monitor</div>
+    <div class="nav-area">
+      <div class="item">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+        Calendar
+        <span class="badge badge-amber">2</span>
+      </div>
+      <div class="item">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Audit Log
+      </div>
+    </div>
+
+    <div style="position: absolute; bottom: 52px; left: 0; right: 0; padding: 0 8px;">
+      <div class="search-bar">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+        Search
+        <kbd>⌘K</kbd>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="av">JL</div>
+      <div>
+        <div class="name">Julian Laycock</div>
+        <div class="role">Administrator</div>
+      </div>
+      <div class="logout">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="rationale">
+    <strong>Key changes from current:</strong>
+    <ul>
+      <li><strong>3 sections → 4 lighter sections</strong>: Dashboard (pinned), Manage, Compliance, Monitor</li>
+      <li><strong>Entity grouping</strong>: "Funds & Assets" = Funds + Holdings + Transfers. "Investors" = Directory + Onboarding + Screening</li>
+      <li><strong>Active bar indicator</strong> (left edge) — more refined than full row highlight</li>
+      <li><strong>Badges surface urgency</strong> without requiring a click (3 pending decisions, 2 upcoming deadlines)</li>
+      <li><strong>Section renamed</strong>: "Oversight" → "Monitor" (shorter, more active verb)</li>
+      <li><strong>Auto-collapse</strong>: only active section stays open — sidebar never exceeds viewport</li>
+      <li>Sub-items use dot + indent — light, scannable, doesn't fight the parent items</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════ VARIANT 2: Activity-Focused ═══════════ -->
+<div class="card">
+  <div class="card-header">
+    <h2>Variant 2 — Activity-Focused</h2>
+    <span class="tag tag-blue">Efficient</span>
+    <span class="tag tag-amber">Bold</span>
+    <p>Quick-action strip at top for daily tasks. Fewer sections, flatter hierarchy. Sub-items use a left-border tree line instead of dots. Denser but cleaner.</p>
+  </div>
+
+  <div class="sb v2">
+    <div class="logo">Caelith</div>
+
+    <!-- Quick action strip -->
+    <div class="quick-actions">
+      <div class="qa-btn">
+        <svg class="qa-ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        Investor
+      </div>
+      <div class="qa-btn">
+        <svg class="qa-ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+        Transfer
+      </div>
+      <div class="qa-btn">
+        <svg class="qa-ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+        Report
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="nav-area" style="margin-top: 4px;">
+      <div class="item active">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+        Dashboard
+      </div>
+    </div>
+
+    <div class="group-header">
+      <span>Portfolio</span>
+      <span class="count">6</span>
+    </div>
+    <div class="nav-area">
+      <div class="item">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/></svg>
+        Funds
+      </div>
+      <div class="sub-group">
+        <div class="item">Holdings</div>
+        <div class="item">Transfers</div>
+      </div>
+      <div class="item">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+        Investors
+      </div>
+      <div class="sub-group">
+        <div class="item">Onboarding</div>
+        <div class="item">Screening</div>
+      </div>
+    </div>
+
+    <div class="group-header">
+      <span>Compliance</span>
+      <span class="count">5</span>
+    </div>
+    <div class="nav-area">
+      <div class="item">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+        Rules & Screening
+      </div>
+      <div class="item">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/></svg>
+        Decisions
+      </div>
+      <div class="item">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.745 3.745 0 011.043 3.296A3.745 3.745 0 0121 12z"/></svg>
+        AIFMD II Readiness
+      </div>
+      <div class="item">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+        Reports
+      </div>
+      <div class="sub-group">
+        <div class="item active">Annex IV</div>
+        <div class="item">Evidence Bundle</div>
+      </div>
+    </div>
+
+    <div class="divider" style="margin-top: 8px;"></div>
+    <div class="nav-area" style="margin-top: 4px;">
+      <div class="item">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+        Calendar
+      </div>
+      <div class="item">
+        <svg class="ic" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Audit Log
+      </div>
+    </div>
+
+    <div style="position: absolute; bottom: 52px; left: 0; right: 0; padding: 0 8px;">
+      <div class="search-bar">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+        Search…
+        <kbd>⌘K</kbd>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="av">JL</div>
+      <div>
+        <div class="name">Julian Laycock</div>
+        <div class="role">Administrator</div>
+      </div>
+      <div class="logout">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="rationale">
+    <strong>Key changes from current:</strong>
+    <ul>
+      <li><strong>Quick-action strip</strong> — the 3 most common daily actions (add investor, new transfer, generate report) always visible, zero navigation</li>
+      <li><strong>Tree-line sub-items</strong> — left border connects child pages to parent, visually clearer hierarchy than dots</li>
+      <li><strong>Sub-items always visible</strong> (no collapse) — flatter, faster, less clicking. Works because there are only 2-3 per group</li>
+      <li><strong>Item count badges</strong> on section headers — shows depth without expanding</li>
+      <li><strong>Calendar + Audit Log</strong> ungrouped at bottom — they're utility pages, not a "section"</li>
+      <li><strong>Search bar styled as input</strong> — looks clickable/inviting, not hidden as a text link</li>
+      <li>Portfolio + Compliance = only 2 real sections. Cleaner mental model.</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+
+<!-- Comparison -->
+<div style="margin: 40px auto 0; padding: 20px 22px; background: #111318; border-radius: 12px; border: 1px solid #1e2028; max-width: 900px;">
+  <h2 style="font-size: 15px; font-weight: 700; margin-bottom: 14px;">Side-by-side</h2>
+  <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+    <thead>
+      <tr style="border-bottom: 1px solid #1e2028;">
+        <th style="padding: 7px 10px; color: #4b5563; font-weight: 600; text-align: left;"></th>
+        <th style="padding: 7px 10px; color: #4ade80; font-weight: 600; text-align: left;">V1 — Entity-Centric</th>
+        <th style="padding: 7px 10px; color: #fbbf24; font-weight: 600; text-align: left;">V2 — Activity-Focused</th>
+        <th style="padding: 7px 10px; color: #6b7280; font-weight: 600; text-align: left;">Current</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid #1a1d22;">
+        <td style="padding: 7px 10px; color: #6b7280;">Top-level visible</td>
+        <td style="padding: 7px 10px;">5 + search</td>
+        <td style="padding: 7px 10px;">7 + 3 actions + search</td>
+        <td style="padding: 7px 10px; color: #4b5563;">9 + search</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1a1d22;">
+        <td style="padding: 7px 10px; color: #6b7280;">Sections</td>
+        <td style="padding: 7px 10px;">4 (Dash, Manage, Compliance, Monitor)</td>
+        <td style="padding: 7px 10px;">2 (Portfolio, Compliance)</td>
+        <td style="padding: 7px 10px; color: #4b5563;">3 (Manage, Compliance, Oversight)</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1a1d22;">
+        <td style="padding: 7px 10px; color: #6b7280;">Sub-item pattern</td>
+        <td style="padding: 7px 10px;">Expand/collapse + dots</td>
+        <td style="padding: 7px 10px;">Always visible + tree line</td>
+        <td style="padding: 7px 10px; color: #4b5563;">Expand/collapse + dots</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1a1d22;">
+        <td style="padding: 7px 10px; color: #6b7280;">Unique features</td>
+        <td style="padding: 7px 10px;">Active bar, urgency badges</td>
+        <td style="padding: 7px 10px;">Quick-action strip, section counts</td>
+        <td style="padding: 7px 10px; color: #4b5563;">—</td>
+      </tr>
+      <tr>
+        <td style="padding: 7px 10px; color: #6b7280;">Best for</td>
+        <td style="padding: 7px 10px;">Clean, professional, grows well</td>
+        <td style="padding: 7px 10px;">Action-oriented daily users</td>
+        <td style="padding: 7px 10px; color: #4b5563;">—</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 14px; font-size: 11.5px; color: #4b5563;">
+    <strong style="color: #9ca3af;">Recommendation:</strong> V1 for a compliance SaaS — it's clean, professional, and the entity grouping scales naturally as we add AML, SFDR, ELTIF modules. V2 is bolder but the quick-action strip could feel out of place for a compliance tool where speed < accuracy.
+  </p>
+</div>
+
+</body>
+</html>

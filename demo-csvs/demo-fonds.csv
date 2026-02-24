@@ -1,0 +1,4 @@
+name,legal_form,domicile,regulatory_framework,aifm_name,currency,target_size,asset_name,total_units,status
+"Süddeutscher Immobilien-Spezialfonds I",Spezial_AIF,DE,AIFMD,"Weber Kapitalverwaltung GmbH",EUR,150000000,"Süddeutscher Immobilien-Spezialfonds I — Anteilklasse A",100000,active
+"Norddeutsche Gewerbeimmobilien II",Spezial_AIF,DE,AIFMD,"Weber Kapitalverwaltung GmbH",EUR,80000000,"Norddeutsche Gewerbeimmobilien II — Anteilklasse A",50000,active
+"Europäischer Wohnimmobilien-Dachfonds",Spezial_AIF,DE,AIFMD,"Weber Kapitalverwaltung GmbH",EUR,200000000,"Europäischer Wohnimmobilien-Dachfonds — Anteilklasse A",200000,active

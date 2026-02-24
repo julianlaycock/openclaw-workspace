@@ -1,0 +1,16 @@
+name,jurisdiction,investor_type,kyc_status,kyc_expiry,tax_id,lei,email
+"Bayerisches Versorgungswerk der Ärzte",DE,institutional,verified,2027-03-15,DE814257630,5493001KJTIIGC8Y1R12,kapitalanlage@bvwa-bayern.de
+"Rheinische Pensionskasse VVaG",DE,institutional,verified,2027-06-30,DE291048573,549300XKFG7H2O9PNW23,investment@rheinpk.de
+"Hamburger Ärzteversorgung",DE,institutional,verified,2027-09-01,DE736182045,529900PLT8K4WZ5RO814,anlage@haev-hamburg.de
+"Versicherungskammer Bayern",DE,institutional,verified,2027-12-31,DE108394726,391200SBKJEF7PQ3RK45,immobilien@vkb.de
+"Stuttgarter Lebensversicherung a.G.",DE,institutional,verified,2026-08-15,DE645201839,529900MWTH3YR8KZP156,alternatives@stuttgarter.de
+"Stiftung Preußischer Kulturbesitz",DE,professional,verified,2027-01-31,DE502736184,549300GHTK9L2NWZ4Q67,finanzen@spk-berlin.de
+"Münchener Familienstiftung von Hohenberg",DE,professional,verified,2027-04-30,,549300BVRCX8NP6YHK78,office@hohenberg-stiftung.de
+"Zürcher Kantonalbank Anlagestiftung",CH,institutional,verified,2027-11-30,CHE-109.723.456,506700WCPF4M8GZRTL89,institutional@zkb-ast.ch
+"Österreichische Pensionskassen AG",AT,institutional,verified,2027-05-31,ATU63528174,529900QLNF7XD3KRM290,veranlagung@oepag.at
+"Luxemburger Infrastrukturfonds S.A.",LU,professional,verified,2027-08-31,LU28476153,222100NWTPK5JQ8HAB01,invest@lif-lux.lu
+"Norddeutsche Landesstiftung",DE,professional,expiring_soon,2026-04-10,DE371829456,549300VYMRP4XH2JLK12,stiftung@ndls-hannover.de
+"Schwarzwald Family Office GmbH",DE,semi_professional,expiring_soon,2026-03-25,,549300KZNWT9F6PQB234,invest@schwarzwald-fo.de
+"Dresdner Pensionsfonds e.V.",DE,institutional,pending,,DE483927156,549300HTPW8QN3RYJ345,pension@dresdner-pf.de
+"Basler Versicherungsgesellschaft",CH,institutional,verified,2027-10-15,CHE-105.834.291,506700RQWM4KX7YNTL56,kapitalanlagen@basler-ch.ch
+"Wiener Städtische Wechselseitige",AT,institutional,verified,2027-07-31,ATU51726384,529900FGHM8XC5PQR467,investment@wst-wien.at

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Color & Chart Audit</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1f1f; color: #e8e8e8; font-family: 'Inter', -apple-system, sans-serif; padding: 40px; line-height: 1.5; }
+  h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; color: #C5E0EE; }
+  h2 { font-size: 20px; font-weight: 700; margin: 48px 0 16px; color: #e8e8e8; border-bottom: 1px solid rgba(197,224,238,0.15); padding-bottom: 8px; }
+  h3 { font-size: 15px; font-weight: 700; margin: 24px 0 12px; color: #C5E0EE; }
+  .subtitle { color: rgba(197,224,238,0.6); font-size: 14px; margin-bottom: 32px; }
+  
+  .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 16px 0; }
+  .problem-card { background: #222828; border: 1px solid rgba(197,224,238,0.1); border-radius: 12px; padding: 20px; }
+  .problem-card h4 { font-size: 13px; font-weight: 700; color: #f87171; margin-bottom: 8px; }
+  .problem-card p { font-size: 12px; color: rgba(255,255,255,0.6); }
+  
+  .color-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .color-row:last-child { border-bottom: none; }
+  .swatch { width: 32px; height: 32px; border-radius: 6px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); }
+  .color-label { font-size: 12px; font-weight: 600; min-width: 160px; }
+  .color-hex { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.5); min-width: 80px; }
+  .color-usage { font-size: 11px; color: rgba(255,255,255,0.4); }
+  
+  /* Proposal section */
+  .palette-section { background: #222828; border: 1px solid rgba(197,224,238,0.15); border-radius: 16px; padding: 32px; margin: 24px 0; }
+  
+  .palette-strip { display: flex; gap: 3px; border-radius: 10px; overflow: hidden; height: 60px; margin: 16px 0; }
+  .palette-strip div { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .palette-strip .label { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; }
+  .palette-strip .hex { font-family: monospace; font-size: 9px; opacity: 0.7; }
+  
+  /* Side-by-side comparison */
+  .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+  .comparison > div { background: #1a1f1f; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px; }
+  .comparison h4 { font-size: 12px; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+  .comparison .before h4 { color: #f87171; }
+  .comparison .after h4 { color: #6ee7b7; }
+  
+  /* Chart mockups */
+  .chart-mock { background: #222828; border: 1px solid rgba(197,224,238,0.1); border-radius: 12px; padding: 20px; margin: 12px 0; }
+  .chart-mock-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .chart-mock-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
+  
+  .bar-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+  .bar-label { font-size: 11px; color: rgba(255,255,255,0.6); min-width: 110px; }
+  .bar-track { flex: 1; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .bar-value { font-family: monospace; font-size: 11px; font-weight: 700; min-width: 50px; text-align: right; }
+  
+  .dot-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
+  .dot-legend span { font-size: 11px; display: flex; align-items: center; gap: 4px; }
+  .dot-legend .dot { width: 8px; height: 8px; border-radius: 2px; }
+  
+  .treemap { display: flex; gap: 3px; border-radius: 10px; overflow: hidden; height: 120px; margin: 12px 0; }
+  .treemap > div { display: flex; flex-direction: column; justify-content: flex-end; padding: 8px; border-radius: 6px; }
+  .treemap .pct { font-family: monospace; font-size: 13px; font-weight: 800; color: white; }
+  .treemap .name { font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.85); }
+  
+  .seg-strip { display: flex; height: 10px; border-radius: 5px; overflow: hidden; margin: 8px 0; }
+  
+  table.audit-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 12px 0; }
+  table.audit-table th { text-align: left; padding: 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.4); border-bottom: 1px solid rgba(255,255,255,0.08); }
+  table.audit-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  
+  .tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin: 2px; }
+</style>
+</head>
+<body>
+
+<h1>Color & Chart Harmonization Audit</h1>
+<p class="subtitle">Every visualization in Caelith, current inconsistencies, and a unified palette proposal.</p>
+
+<!-- ============================================ -->
+<h2>1. Current Problems Found</h2>
+
+<div class="problem-grid">
+  <div class="problem-card">
+    <h4>🔴 Two completely different color systems</h4>
+    <p><strong>Fund detail</strong> (InvestorTypeDonut): Uses brand palette — <code>#C5E0EE</code>, <code>#E8A87C</code>, <code>#B8C9A3</code><br>
+    <strong>Dashboard</strong> (InvestorTypeBreakdownCard): Uses Tailwind defaults — <code>#3B82F6</code> blue, <code>#10B981</code> green, <code>#F59E0B</code> amber, <code>#EF4444</code> red<br>
+    Same data, completely different look.</p>
+  </div>
+  <div class="problem-card">
+    <h4>🔴 Jurisdiction colors conflict</h4>
+    <p><strong>Fund detail</strong> (JurisdictionExposureBar): DE = <code>#C5E0EE</code>, LU = <code>#E8A87C</code><br>
+    <strong>Dashboard</strong> (JurisdictionExposureCard): DE = <code>#3B82F6</code>, AT = <code>#10B981</code>, CH = <code>#F59E0B</code>, LU = <code>#8B5CF6</code><br>
+    Germany is two different colors depending on which page you're on.</p>
+  </div>
+  <div class="problem-card">
+    <h4>🟡 Three different "green" meanings</h4>
+    <p><code>#6ee7b7</code> (emerald-300) in dashboard score ring<br>
+    <code>#10B981</code> (emerald-500) in investor type breakdown<br>
+    <code>#16a34a</code> (green-600) in CSS --success variable<br>
+    <code>#bbf7d0</code> (green-200) in fund bands<br>
+    Same semantic "good/compliant" = 4 different greens.</p>
+  </div>
+  <div class="problem-card">
+    <h4>🟡 Semantic color overlap</h4>
+    <p><code>#E8A87C</code> means "warm accent" in brand palette but also "warning/medium severity" in charts. <code>#F59E0B</code> (amber) is used for semi_professional investors AND as a warning indicator. Colors should mean one thing.</p>
+  </div>
+  <div class="problem-card">
+    <h4>🟡 Chart component duplication</h4>
+    <p>Two investor type charts: <code>InvestorTypeDonut</code> (treemap) on fund detail + <code>InvestorTypeBreakdownCard</code> (bars) on dashboard. Two jurisdiction charts: <code>JurisdictionExposureBar</code> + <code>JurisdictionExposureCard</code>. Should be one component, one style.</p>
+  </div>
+  <div class="problem-card">
+    <h4>🟡 Hardcoded vs CSS variable mix</h4>
+    <p>Dashboard uses raw hex (<code>#fca5a5</code>, <code>#6ee7b7</code>). Charts use <code>var(--success)</code>, <code>var(--danger)</code>. Some use <code>WARM</code> const. No single source of truth.</p>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<h2>2. Proposed Unified Color Palette</h2>
+
+<div class="palette-section">
+  <h3 style="margin-top:0">Semantic Colors (status/severity)</h3>
+  <p style="font-size:12px; color:rgba(255,255,255,0.5); margin-bottom:16px;">One green, one amber, one red. Used everywhere for the same meaning.</p>
+  
+  <div class="palette-strip">
+    <div style="background:#6ee7b7; color:#1a1f1f"><span class="label">SUCCESS</span><span class="hex">#6ee7b7</span></div>
+    <div style="background:#E8A87C; color:#1a1f1f"><span class="label">WARNING</span><span class="hex">#E8A87C</span></div>
+    <div style="background:#f87171; color:#1a1f1f"><span class="label">DANGER</span><span class="hex">#f87171</span></div>
+  </div>
+  
+  <p style="font-size:11px; color:rgba(255,255,255,0.4); margin-top:8px;">
+    ✓ <code>#6ee7b7</code> = compliant, verified, approved, pass, low risk — THE green<br>
+    ✓ <code>#E8A87C</code> = warning, medium, expiring, caution — THE amber/warm<br>
+    ✓ <code>#f87171</code> = danger, critical, rejected, expired, high risk — THE red
+  </p>
+  
+  <h3>Data Categorical Colors (investor types, jurisdictions, etc.)</h3>
+  <p style="font-size:12px; color:rgba(255,255,255,0.5); margin-bottom:16px;">Derived from brand palette. Harmonious, distinguishable, not confused with semantic colors.</p>
+  
+  <div class="palette-strip">
+    <div style="background:#C5E0EE; color:#1a1f1f"><span class="label">CAT-1</span><span class="hex">#C5E0EE</span></div>
+    <div style="background:#A3C4D4; color:#1a1f1f"><span class="label">CAT-2</span><span class="hex">#A3C4D4</span></div>
+    <div style="background:#7BA8BD; color:#1a1f1f"><span class="label">CAT-3</span><span class="hex">#7BA8BD</span></div>
+    <div style="background:#5A8FA6; color:#fff"><span class="label">CAT-4</span><span class="hex">#5A8FA6</span></div>
+    <div style="background:#3D7A91; color:#fff"><span class="label">CAT-5</span><span class="hex">#3D7A91</span></div>
+    <div style="background:#2A6478; color:#fff"><span class="label">CAT-6</span><span class="hex">#2A6478</span></div>
+  </div>
+  
+  <p style="font-size:11px; color:rgba(255,255,255,0.4); margin-top:8px;">
+    All derived from brand accent <code>#C5E0EE</code> — monochromatic blue scale.<br>
+    No orange, no random Tailwind blue, no purple. One family of colors for all categorical data.
+  </p>
+
+  <h3>Mapping</h3>
+  <table class="audit-table">
+    <thead>
+      <tr><th>Data Type</th><th>Value</th><th>Color</th><th>Rationale</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Investor Type</td><td>Institutional</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#C5E0EE;vertical-align:middle;border-radius:3px"></span> #C5E0EE</td><td>Primary/largest segment</td></tr>
+      <tr><td>Investor Type</td><td>Professional</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#7BA8BD;vertical-align:middle;border-radius:3px"></span> #7BA8BD</td><td>Mid-tone distinction</td></tr>
+      <tr><td>Investor Type</td><td>Semi-professional</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#5A8FA6;vertical-align:middle;border-radius:3px"></span> #5A8FA6</td><td>Deeper tone</td></tr>
+      <tr><td>Investor Type</td><td>Retail</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#3D7A91;vertical-align:middle;border-radius:3px"></span> #3D7A91</td><td>Darkest = least common</td></tr>
+      <tr><td colspan="4" style="border-top:1px solid rgba(255,255,255,0.08)"></td></tr>
+      <tr><td>Jurisdiction</td><td>DE (Germany)</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#C5E0EE;vertical-align:middle;border-radius:3px"></span> #C5E0EE</td><td>Home market = brightest</td></tr>
+      <tr><td>Jurisdiction</td><td>AT (Austria)</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#A3C4D4;vertical-align:middle;border-radius:3px"></span> #A3C4D4</td><td>Neighbor</td></tr>
+      <tr><td>Jurisdiction</td><td>LU (Luxembourg)</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#7BA8BD;vertical-align:middle;border-radius:3px"></span> #7BA8BD</td><td>Fund domicile hub</td></tr>
+      <tr><td>Jurisdiction</td><td>CH (Switzerland)</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#5A8FA6;vertical-align:middle;border-radius:3px"></span> #5A8FA6</td><td>Third-country</td></tr>
+      <tr><td>Jurisdiction</td><td>Other</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#3D7A91;vertical-align:middle;border-radius:3px"></span> #3D7A91</td><td>Fallback</td></tr>
+      <tr><td colspan="4" style="border-top:1px solid rgba(255,255,255,0.08)"></td></tr>
+      <tr><td>KYC Status</td><td>Verified</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#6ee7b7;vertical-align:middle;border-radius:3px"></span> #6ee7b7</td><td>Semantic: success</td></tr>
+      <tr><td>KYC Status</td><td>Pending</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#C5E0EE;vertical-align:middle;border-radius:3px"></span> #C5E0EE</td><td>Neutral/in-progress</td></tr>
+      <tr><td>KYC Status</td><td>Expiring &lt;90d</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#E8A87C;vertical-align:middle;border-radius:3px"></span> #E8A87C</td><td>Semantic: warning</td></tr>
+      <tr><td>KYC Status</td><td>Expired</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#f87171;vertical-align:middle;border-radius:3px"></span> #f87171</td><td>Semantic: danger</td></tr>
+      <tr><td colspan="4" style="border-top:1px solid rgba(255,255,255,0.08)"></td></tr>
+      <tr><td>Severity</td><td>Critical</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#f87171;vertical-align:middle;border-radius:3px"></span> #f87171</td><td>Danger</td></tr>
+      <tr><td>Severity</td><td>High</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#E8A87C;vertical-align:middle;border-radius:3px"></span> #E8A87C</td><td>Warning</td></tr>
+      <tr><td>Severity</td><td>Medium</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#C5E0EE;vertical-align:middle;border-radius:3px"></span> #C5E0EE</td><td>Informational</td></tr>
+      <tr><td>Severity</td><td>Low / None</td><td><span class="swatch" style="width:16px;height:16px;display:inline-block;background:#6ee7b7;vertical-align:middle;border-radius:3px"></span> #6ee7b7</td><td>Success</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================ -->
+<h2>3. Proposed Chart Renderings</h2>
+
+<div class="comparison">
+  <!-- Investor Type — BEFORE -->
+  <div class="before">
+    <h4>❌ Before — Investor Type (Dashboard)</h4>
+    <div class="chart-mock">
+      <div class="chart-mock-title">Investor Type Breakdown</div>
+      <div class="chart-mock-sub">Current: random Tailwind colors</div>
+      <div class="bar-row">
+        <span class="bar-label">Institutional</span>
+        <div class="bar-track"><div class="bar-fill" style="width:58%; background:#3B82F6"></div></div>
+        <span class="bar-value" style="color:#3B82F6">7</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Professional</span>
+        <div class="bar-track"><div class="bar-fill" style="width:25%; background:#10B981"></div></div>
+        <span class="bar-value" style="color:#10B981">3</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Semi-professional</span>
+        <div class="bar-track"><div class="bar-fill" style="width:8%; background:#F59E0B"></div></div>
+        <span class="bar-value" style="color:#F59E0B">1</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Retail</span>
+        <div class="bar-track"><div class="bar-fill" style="width:8%; background:#EF4444"></div></div>
+        <span class="bar-value" style="color:#EF4444">1</span>
+      </div>
+      <div class="dot-legend">
+        <span><span class="dot" style="background:#3B82F6"></span> Blue = institutional??</span>
+        <span><span class="dot" style="background:#EF4444"></span> Red = retail?? (looks like danger)</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Investor Type — AFTER -->
+  <div class="after">
+    <h4>✅ After — Investor Type (Unified)</h4>
+    <div class="chart-mock">
+      <div class="chart-mock-title">Investor Type Breakdown</div>
+      <div class="chart-mock-sub">Proposed: brand-derived monochromatic</div>
+      <div class="bar-row">
+        <span class="bar-label">Institutional</span>
+        <div class="bar-track"><div class="bar-fill" style="width:58%; background:#C5E0EE"></div></div>
+        <span class="bar-value" style="color:#C5E0EE">7</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Professional</span>
+        <div class="bar-track"><div class="bar-fill" style="width:25%; background:#7BA8BD"></div></div>
+        <span class="bar-value" style="color:#7BA8BD">3</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Semi-professional</span>
+        <div class="bar-track"><div class="bar-fill" style="width:8%; background:#5A8FA6"></div></div>
+        <span class="bar-value" style="color:#5A8FA6">1</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Retail</span>
+        <div class="bar-track"><div class="bar-fill" style="width:8%; background:#3D7A91"></div></div>
+        <span class="bar-value" style="color:#3D7A91">1</span>
+      </div>
+      <div class="dot-legend">
+        <span><span class="dot" style="background:#C5E0EE"></span> No color = status confusion</span>
+        <span>All categorical, all brand-harmonious</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="comparison">
+  <!-- Jurisdiction — BEFORE -->
+  <div class="before">
+    <h4>❌ Before — Jurisdiction (Dashboard)</h4>
+    <div class="chart-mock">
+      <div class="chart-mock-title">Jurisdiction Exposure</div>
+      <div class="chart-mock-sub">Current: random colors per page</div>
+      <div class="bar-row">
+        <span class="bar-label">DE</span>
+        <div class="bar-track"><div class="bar-fill" style="width:65%; background:#3B82F6"></div></div>
+        <span class="bar-value" style="color:#3B82F6">65%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">LU</span>
+        <div class="bar-track"><div class="bar-fill" style="width:20%; background:#8B5CF6"></div></div>
+        <span class="bar-value" style="color:#8B5CF6">20%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">AT</span>
+        <div class="bar-track"><div class="bar-fill" style="width:10%; background:#10B981"></div></div>
+        <span class="bar-value" style="color:#10B981">10%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">CH</span>
+        <div class="bar-track"><div class="bar-fill" style="width:5%; background:#F59E0B"></div></div>
+        <span class="bar-value" style="color:#F59E0B">5%</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Jurisdiction — AFTER -->
+  <div class="after">
+    <h4>✅ After — Jurisdiction (Unified)</h4>
+    <div class="chart-mock">
+      <div class="chart-mock-title">Jurisdiction Exposure</div>
+      <div class="chart-mock-sub">Proposed: consistent across all pages</div>
+      <div class="bar-row">
+        <span class="bar-label">DE</span>
+        <div class="bar-track"><div class="bar-fill" style="width:65%; background:#C5E0EE"></div></div>
+        <span class="bar-value" style="color:#C5E0EE">65%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">LU</span>
+        <div class="bar-track"><div class="bar-fill" style="width:20%; background:#7BA8BD"></div></div>
+        <span class="bar-value" style="color:#7BA8BD">20%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">AT</span>
+        <div class="bar-track"><div class="bar-fill" style="width:10%; background:#A3C4D4"></div></div>
+        <span class="bar-value" style="color:#A3C4D4">10%</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">CH</span>
+        <div class="bar-track"><div class="bar-fill" style="width:5%; background:#5A8FA6"></div></div>
+        <span class="bar-value" style="color:#5A8FA6">5%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="comparison">
+  <!-- KYC — BEFORE -->
+  <div class="before">
+    <h4>❌ Before — KYC (Fund Detail)</h4>
+    <div class="chart-mock">
+      <div class="chart-mock-title">KYC Expiry Horizon</div>
+      <div class="chart-mock-sub">Uses var(--success), WARM const, var(--warning), var(--danger) — mixed sources</div>
+      <div style="text-align:center; padding:16px 0">
+        <span style="font-family:monospace; font-size:42px; font-weight:900; color:#6ee7b7">8</span>
+        <span style="font-family:monospace; font-size:20px; color:rgba(255,255,255,0.4)"> / 12</span>
+      </div>
+      <div class="seg-strip">
+        <div style="flex:8; background:#16a34a"></div>
+        <div style="flex:1; background:#E8A87C"></div>
+        <div style="flex:2; background:#c07a4a"></div>
+        <div style="flex:1; background:#dc2626"></div>
+      </div>
+      <p style="font-size:10px; color:rgba(255,255,255,0.4); margin-top:8px">Light mode uses different --success (#16a34a) vs dark (#6ee7b7). Pending uses --warning which is different from WARM.</p>
+    </div>
+  </div>
+  
+  <!-- KYC — AFTER -->
+  <div class="after">
+    <h4>✅ After — KYC (Unified)</h4>
+    <div class="chart-mock">
+      <div class="chart-mock-title">KYC Expiry Horizon</div>
+      <div class="chart-mock-sub">Consistent semantic colors, pending = neutral accent</div>
+      <div style="text-align:center; padding:16px 0">
+        <span style="font-family:monospace; font-size:42px; font-weight:900; color:#6ee7b7">8</span>
+        <span style="font-family:monospace; font-size:20px; color:rgba(255,255,255,0.4)"> / 12</span>
+      </div>
+      <div class="seg-strip">
+        <div style="flex:8; background:#6ee7b7"></div>
+        <div style="flex:1; background:#E8A87C"></div>
+        <div style="flex:2; background:#C5E0EE"></div>
+        <div style="flex:1; background:#f87171"></div>
+      </div>
+      <div class="dot-legend" style="margin-top:12px">
+        <span><span class="dot" style="background:#6ee7b7"></span> Verified</span>
+        <span><span class="dot" style="background:#E8A87C"></span> Expiring</span>
+        <span><span class="dot" style="background:#C5E0EE"></span> Pending</span>
+        <span><span class="dot" style="background:#f87171"></span> Expired</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Treemap comparison -->
+<div class="comparison">
+  <div class="before">
+    <h4>❌ Before — Treemap (Fund Detail)</h4>
+    <div class="chart-mock">
+      <div class="chart-mock-title">Investor Type Allocation</div>
+      <div class="chart-mock-sub">Uses TYPE_GRADIENTS with mixed warm/cool</div>
+      <div class="treemap">
+        <div style="flex:7; background:linear-gradient(135deg, #3a6b7a, rgba(197,224,238,0.25))"><span class="pct">58%</span><span class="name">Institutional</span></div>
+        <div style="flex:3; background:linear-gradient(135deg, #8a5f3a, rgba(232,168,124,0.25))"><span class="pct">25%</span><span class="name">Professional</span></div>
+        <div style="flex:2; background:linear-gradient(135deg, #5a7a4a, rgba(184,201,163,0.25))"><span class="pct">17%</span><span class="name">Semi-pro</span></div>
+      </div>
+      <p style="font-size:10px; color:rgba(255,255,255,0.4)">Orange gradient for "professional" looks like a warning. Green gradient (#5a7a4a) looks like success.</p>
+    </div>
+  </div>
+  <div class="after">
+    <h4>✅ After — Treemap (Unified)</h4>
+    <div class="chart-mock">
+      <div class="chart-mock-title">Investor Type Allocation</div>
+      <div class="chart-mock-sub">Brand-derived monochromatic gradients</div>
+      <div class="treemap">
+        <div style="flex:7; background:linear-gradient(135deg, #5A8FA6, rgba(197,224,238,0.3))"><span class="pct">58%</span><span class="name">Institutional</span></div>
+        <div style="flex:3; background:linear-gradient(135deg, #3D7A91, rgba(123,168,189,0.3))"><span class="pct">25%</span><span class="name">Professional</span></div>
+        <div style="flex:2; background:linear-gradient(135deg, #2A6478, rgba(90,143,166,0.3))"><span class="pct">17%</span><span class="name">Semi-pro</span></div>
+      </div>
+      <p style="font-size:10px; color:rgba(255,255,255,0.4)">All blue family. No semantic color confusion. Lightest = largest segment.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<h2>4. Full Inventory of Affected Components</h2>
+
+<table class="audit-table">
+  <thead>
+    <tr><th>Component</th><th>Used On</th><th>Current Colors</th><th>Action</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>InvestorTypeDonut</code></td>
+      <td>Fund detail (/funds/[id])</td>
+      <td>TYPE_COLORS: #C5E0EE, #E8A87C, #B8C9A3, #D4A5C7...</td>
+      <td><span class="tag" style="background:rgba(232,168,124,0.2); color:#E8A87C">Replace palette</span></td>
+    </tr>
+    <tr>
+      <td><code>InvestorTypeBreakdownCard</code></td>
+      <td>Dashboard (Status tab)</td>
+      <td>#3B82F6, #10B981, #F59E0B, #EF4444</td>
+      <td><span class="tag" style="background:rgba(248,113,113,0.2); color:#f87171">Replace palette</span></td>
+    </tr>
+    <tr>
+      <td><code>JurisdictionExposureBar</code></td>
+      <td>Fund detail (/funds/[id])</td>
+      <td>DE=#C5E0EE, LU=#E8A87C, other=rgba</td>
+      <td><span class="tag" style="background:rgba(232,168,124,0.2); color:#E8A87C">Unify mapping</span></td>
+    </tr>
+    <tr>
+      <td><code>JurisdictionExposureCard</code></td>
+      <td>Dashboard (Status tab)</td>
+      <td>DE=#3B82F6, AT=#10B981, CH=#F59E0B, LU=#8B5CF6</td>
+      <td><span class="tag" style="background:rgba(248,113,113,0.2); color:#f87171">Replace palette</span></td>
+    </tr>
+    <tr>
+      <td><code>KycExpiryHorizon</code></td>
+      <td>Fund detail (/funds/[id])</td>
+      <td>var(--success), WARM, var(--warning), var(--danger)</td>
+      <td><span class="tag" style="background:rgba(197,224,238,0.2); color:#C5E0EE">Align pending color</span></td>
+    </tr>
+    <tr>
+      <td><code>KycPipelineCard</code></td>
+      <td>Dashboard (Status tab)</td>
+      <td>var(--danger), WARM, var(--warning), var(--success)</td>
+      <td><span class="tag" style="background:rgba(197,224,238,0.2); color:#C5E0EE">Align pending color</span></td>
+    </tr>
+    <tr>
+      <td><code>ViolationAnalysisBar</code></td>
+      <td>Fund detail (if violations)</td>
+      <td>var(--danger), WARM, var(--success)</td>
+      <td><span class="tag" style="background:rgba(110,231,183,0.2); color:#6ee7b7">OK — already semantic</span></td>
+    </tr>
+    <tr>
+      <td><code>ActiveViolationsCard</code></td>
+      <td>Dashboard (Status tab)</td>
+      <td>var(--danger), WARM, var(--warning)</td>
+      <td><span class="tag" style="background:rgba(110,231,183,0.2); color:#6ee7b7">OK — already semantic</span></td>
+    </tr>
+    <tr>
+      <td><code>ConcentrationRiskGrid</code></td>
+      <td>Dashboard (Risk tab)</td>
+      <td>var(--danger), WARM, var(--success)</td>
+      <td><span class="tag" style="background:rgba(110,231,183,0.2); color:#6ee7b7">OK — already semantic</span></td>
+    </tr>
+    <tr>
+      <td><code>AuditReadinessCard</code></td>
+      <td>Dashboard (Status tab)</td>
+      <td>var(--success), WARM, var(--danger)</td>
+      <td><span class="tag" style="background:rgba(110,231,183,0.2); color:#6ee7b7">OK — already semantic</span></td>
+    </tr>
+    <tr>
+      <td><code>LeverageUtilizationCard</code></td>
+      <td>Dashboard (Risk tab)</td>
+      <td>ACCENT, WARM</td>
+      <td><span class="tag" style="background:rgba(110,231,183,0.2); color:#6ee7b7">OK</span></td>
+    </tr>
+    <tr>
+      <td><code>ComplianceScoreRing</code></td>
+      <td>Dashboard header</td>
+      <td>#6ee7b7, #E8A87C, #f87171</td>
+      <td><span class="tag" style="background:rgba(110,231,183,0.2); color:#6ee7b7">OK — already matches proposal</span></td>
+    </tr>
+    <tr>
+      <td><code>FundBand</code></td>
+      <td>Dashboard</td>
+      <td>#fca5a5/#f87171, #f0c9a6/#E8A87C, #bbf7d0/#6ee7b7</td>
+      <td><span class="tag" style="background:rgba(110,231,183,0.2); color:#6ee7b7">OK — semantic gradients</span></td>
+    </tr>
+    <tr>
+      <td><code>RegulatoryCalendarCard</code></td>
+      <td>Dashboard (Calendar tab)</td>
+      <td>var(--danger), WARM, var(--success)</td>
+      <td><span class="tag" style="background:rgba(110,231,183,0.2); color:#6ee7b7">OK</span></td>
+    </tr>
+    <tr>
+      <td><code>NewsFeedCard</code></td>
+      <td>Dashboard (News tab)</td>
+      <td>ACCENT, WARM</td>
+      <td><span class="tag" style="background:rgba(110,231,183,0.2); color:#6ee7b7">OK</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ============================================ -->
+<h2>5. Summary of Changes Needed</h2>
+
+<div class="palette-section">
+  <p style="font-size:13px; color:rgba(255,255,255,0.8); line-height:1.8;">
+    <strong style="color:#f87171">4 components need color replacement</strong> (InvestorTypeDonut, InvestorTypeBreakdownCard, JurisdictionExposureBar, JurisdictionExposureCard)<br>
+    <strong style="color:#E8A87C">2 components need alignment</strong> (KycExpiryHorizon, KycPipelineCard — pending color)<br>
+    <strong style="color:#6ee7b7">8 components are already fine</strong> — using semantic colors correctly<br><br>
+    
+    Additionally: <strong>consolidate duplicates</strong> — merge InvestorTypeDonut + InvestorTypeBreakdownCard into one component that works on both fund detail and dashboard. Same for the two jurisdiction components. One component, one color set, used everywhere.
+  </p>
+</div>
+
+</body>
+</html>

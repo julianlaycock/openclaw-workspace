@@ -1,0 +1,101 @@
+Rank,Company,BaFin_ID,City,License_Type,Tier,Website
+1,Aachener Grundvermögen Kapitalverwaltungsgesellschaft mbH,105557,Köln,Externe KVG,Immobilien-KVG,aachener-grundvermoegen.de
+2,aik Immobilien-Investmentgesellschaft mbH,115968,Düsseldorf,Externe KVG,Immobilien-KVG,aik-invest.de
+3,Art-Invest Real Estate Funds GmbH,124893,Köln,Externe KVG,Immobilien-KVG,art-invest.de
+4,Catella Real Estate AG,120545,München,Externe KVG,Immobilien-KVG,catella-realestate.de
+5,CONREN Land Immobilien Kapitalverwaltungsgesellschaft mbH,150768,Frankfurt,Externe KVG,Immobilien-KVG,
+6,DEUTSCHE IMMOBILIEN KVG GmbH,159193,Berlin,Externe KVG,Immobilien-KVG,
+7,Five Quarters Real Estate AG,156310,Hamburg,Externe KVG,Immobilien-KVG,fivequarters.de
+8,KanAm Grund Institutional KVG mbH,119026,Frankfurt,Externe KVG,Immobilien-KVG,kanam-grund.de
+9,KanAm Grund KVG mbH,118307,Frankfurt,Externe KVG,Immobilien-KVG,kanam-grund.de
+10,Quantum Immobilien KVG mbH,119704,Hamburg,Externe KVG,Immobilien-KVG,quantum.ag
+11,Real I.S. AG Gesellschaft für Immobilien Assetmanagement,135162,München,Externe KVG,Immobilien-KVG,realis.ag
+12,Real I.S. Investment GmbH,122744,München,Externe KVG,Immobilien-KVG,realis.ag
+13,WIDe Wertimmobilien Deutschland Fondsmanagement GmbH,138762,Ebermannstadt,Externe KVG,Immobilien-KVG,
+14,WohnSelect Kapitalverwaltungsgesellschaft mbH,119152,Hamburg,Externe KVG,Immobilien-KVG,
+15,JAMESTOWN US-Immobilien GmbH,134641,Köln,Externe KVG,Immobilien-KVG,jamestown.de
+16,PROJECT Investment AG,134563,Bamberg,Externe KVG,Immobilien-KVG,project-investment.de
+17,ZBI Fondsmanagement GmbH,138182,Erlangen,Externe KVG,Immobilien-KVG,zbi-kvg.de
+18,GNIW Gesellschaft für Nachhaltige Immobilienwirtschaft F1 GmbH & Co. KG,158918,Berlin,Registrierte AIF-KVG,Immobilien (Reg.),
+19,HPG Immobilien Invest GmbH,137162,Hamburg,Registrierte AIF-KVG,Immobilien (Reg.),
+20,PAMERA Real Estate Invest GmbH,146125,München,Registrierte AIF-KVG,Immobilien (Reg.),pamera.de
+21,ParkProperty Capital GmbH,156757,Hamburg,Registrierte AIF-KVG,Immobilien (Reg.),
+22,PSD Berlin Immobilien KVG GmbH,161195,Berlin,Registrierte AIF-KVG,Immobilien (Reg.),
+23,Cara RE Opportunities GmbH,162559,Frankfurt am Main,Registrierte AIF-KVG,Immobilien (Reg.),
+24,RealEstate FamilyFund KVG mbH,164345,Frankfurt am Main,Registrierte AIF-KVG,Immobilien (Reg.),
+25,MOMENI Capital Management GmbH,164788,Hamburg,Registrierte AIF-KVG,Immobilien (Reg.),momeni.de
+26,Mons-Tabor Immobilien GmbH & Co. KG,149054,Montabaur,Registrierte AIF-KVG,Immobilien (Reg.),
+27,SWP Seniorenwohnbauprojekte GmbH,134924,Hilden,Registrierte AIF-KVG,Immobilien (Reg.),
+28,Sachwerte-Wohnbau I KVG GmbH & Co. KG,135822,Krumbach,Registrierte AIF-KVG,Immobilien (Reg.),
+29,Wohnpark Elbaue GmbH & Co. Immobilienfonds KG,142262,Darmstadt,Registrierte AIF-KVG,Immobilien (Reg.),
+30,Wiening & Schnierle Immobilien II GmbH,141625,Emsdetten,Registrierte AIF-KVG,Immobilien (Reg.),
+31,MEDZENTRUM Kapitalverwaltungsgesellschaft mbH,161087,Gießen,Registrierte AIF-KVG,Immobilien (Reg.),
+32,Heimberg Holding GmbH,160814,München,Registrierte AIF-KVG,Immobilien (Reg.),
+33,Sky View GmbH,155391,Frankfurt,Registrierte AIF-KVG,Immobilien (Reg.),
+34,Pina Capital Management GmbH,164569,,Registrierte AIF-KVG,Immobilien (Reg.),pina.earth
+35,AEW Invest GmbH,134863,Düsseldorf,Externe KVG,Spezial-AIF / Alternatives,aew.com
+36,AFINUM Management GmbH,138166,München,Externe KVG,Spezial-AIF / Alternatives,afinum.de
+37,AIF Kapitalverwaltungs-AG,138463,Stuttgart,Externe KVG,Spezial-AIF / Alternatives,
+38,ALPHA ORDINATUM GmbH,147887,Mannheim,Externe KVG,Spezial-AIF / Alternatives,
+39,AM alpha Kapitalverwaltungsgesellschaft mbH,140182,München,Externe KVG,Spezial-AIF / Alternatives,am-alpha.de
+40,Aquila Capital Investmentgesellschaft mbH,133561,Hamburg,Externe KVG,Spezial-AIF / Alternatives,aquila-capital.de
+41,ATLARES Capital Management GmbH,161888,Frankfurt am Main,Externe KVG,Spezial-AIF / Alternatives,
+42,Auricher Werte GmbH,140682,Aurich,Externe KVG,Spezial-AIF / Alternatives,
+43,BANTLEON Invest KVG mbH,117842,Hannover,Externe KVG,Spezial-AIF / Alternatives,bantleon.com
+44,Böker & Paul Asset Management GmbH,164036,Montabaur,Externe KVG,Spezial-AIF / Alternatives,
+45,CAM Alternatives GmbH,130680,Köln,Externe KVG,Spezial-AIF / Alternatives,
+46,capiton AG,137902,Berlin,Externe KVG,Spezial-AIF / Alternatives,capiton.de
+47,CE INVEST Kapitalverwaltungsgesellschaft mbH,164201,Büsingen,Externe KVG,Spezial-AIF / Alternatives,
+48,CEE Kapitalverwaltungsgesellschaft mbH,155272,Hamburg,Externe KVG,Spezial-AIF / Alternatives,
+49,Circle Eleven Invest GmbH,164468,Hamburg,Externe KVG,Spezial-AIF / Alternatives,
+50,CREDION Kapitalverwaltungsgesellschaft mbH,149281,Hamburg,Externe KVG,Spezial-AIF / Alternatives,credion.de
+51,derigo GmbH & Co. KG,135943,München,Externe KVG,Spezial-AIF / Alternatives,derigo.de
+52,Deutsche Investment Kapitalverwaltung AG,124264,Hamburg,Externe KVG,Spezial-AIF / Alternatives,deutsche-investment.de
+53,DeWert Deutsche Wertinvestment GmbH,134523,Bergisch Gladbach,Externe KVG,Spezial-AIF / Alternatives,
+54,DF Deutsche Finance Investment GmbH,137143,München,Externe KVG,Spezial-AIF / Alternatives,deutsche-finance.de
+55,DPE Investment Gesellschaft mbH,156097,München,Externe KVG,Spezial-AIF / Alternatives,dpe.de
+56,Dr. Peters Asset Finance GmbH & Co. KG KVG,134824,Dortmund,Externe KVG,Spezial-AIF / Alternatives,drpeters.de
+57,Elvaston Capital Management GmbH,148109,Berlin,Externe KVG,Spezial-AIF / Alternatives,elvaston.de
+58,EURAMCO Invest GmbH,136902,Aschheim,Externe KVG,Spezial-AIF / Alternatives,euramco.de
+59,First Private Investment Management KAG mbH,105546,Frankfurt am Main,Externe KVG,Spezial-AIF / Alternatives,first-private.de
+60,FOM Invest GmbH,158635,Heidelberg,Externe KVG,Spezial-AIF / Alternatives,fom-invest.de
+61,GENUI GmbH,160967,Hamburg,Externe KVG,Spezial-AIF / Alternatives,genui.de
+62,Hamburg Asset Management HAM KVG mbH,134783,Hamburg,Externe KVG,Spezial-AIF / Alternatives,
+63,HANNOVER LEASING Investment GmbH,133741,Pullach i. Isartal,Externe KVG,Spezial-AIF / Alternatives,hannover-leasing.de
+64,Hauck & Aufhäuser Innovative Capital KVG mbH,159060,Frankfurt,Externe KVG,Spezial-AIF / Alternatives,
+65,HEP Kapitalverwaltung AG,135783,Güglingen,Externe KVG,Spezial-AIF / Alternatives,hep.global
+66,HKA Hanseatische Kapitalverwaltung GmbH,134444,Hamburg,Externe KVG,Spezial-AIF / Alternatives,
+67,HT Kapitalverwaltungsgesellschaft mbH,135102,Hamburg,Externe KVG,Spezial-AIF / Alternatives,
+68,HTB Hanseatische Fondshaus GmbH,133922,Bremen,Externe KVG,Spezial-AIF / Alternatives,htb-fondshaus.de
+69,ILG Kapitalverwaltungsgesellschaft mbH,137004,München,Externe KVG,Spezial-AIF / Alternatives,
+70,INP Invest GmbH,134962,Hamburg,Externe KVG,Spezial-AIF / Alternatives,inp-invest.de
+71,Institutional Investment-Partners GmbH,124100,Frankfurt am Main,Externe KVG,Spezial-AIF / Alternatives,
+72,Kontora Kapitalverwaltungs GmbH,143284,Hamburg,Externe KVG,Spezial-AIF / Alternatives,kontora.com
+73,Lennertz & Co. Capital GmbH,161812,Hamburg,Externe KVG,Spezial-AIF / Alternatives,lennertz.com
+74,LHI Kapitalverwaltungsgesellschaft mbH,136242,Pullach i. Isartal,Externe KVG,Spezial-AIF / Alternatives,lhi.de
+75,Manova Partners KVG mbH,134521,München,Externe KVG,Spezial-AIF / Alternatives,
+76,MIG Capital AG,134522,München,Externe KVG,Spezial-AIF / Alternatives,mig.ag
+77,mondial kapitalverwaltungsgesellschaft mbH,125593,München,Externe KVG,Spezial-AIF / Alternatives,
+78,Munich Private Equity Funds AG,139305,Oberhaching,Externe KVG,Spezial-AIF / Alternatives,
+79,NordVest GmbH,162443,Hannover,Externe KVG,Spezial-AIF / Alternatives,
+80,Paribus Kapitalverwaltungsgesellschaft mbH,137391,Hamburg,Externe KVG,Spezial-AIF / Alternatives,paribus.de
+81,Praeclarus Invest GmbH,154749,München,Externe KVG,Spezial-AIF / Alternatives,
+82,Quadoro Investment GmbH,137348,Offenbach am Main,Externe KVG,Spezial-AIF / Alternatives,quadoro.com
+83,Quantum Institutional Service KVG mbH,123761,Hamburg,Externe KVG,Spezial-AIF / Alternatives,quantum.ag
+84,Rantum Capital Management GmbH,134825,Frankfurt,Externe KVG,Spezial-AIF / Alternatives,
+85,Real Blue Kapitalverwaltungs-GmbH,158475,Stuttgart,Externe KVG,Spezial-AIF / Alternatives,realblue-am.de
+86,SATURIA GmbH Kapitalverwaltungsgesellschaft,141970,Aschheim,Externe KVG,Spezial-AIF / Alternatives,
+87,Scholz und Partner GmbH,147228,Salzkotten,Externe KVG,Spezial-AIF / Alternatives,
+88,ServiceInvest Kapitalverwaltungsgesellschaft mbH,134361,München,Externe KVG,Spezial-AIF / Alternatives,
+89,Terra Kapitalverwaltung AG,138382,Köln,Externe KVG,Spezial-AIF / Alternatives,
+90,VALUES. Institutional Invest GmbH,154009,Hamburg,Externe KVG,Spezial-AIF / Alternatives,values-invest.de
+91,Yttrium GmbH,145007,München,Externe KVG,Spezial-AIF / Alternatives,
+92,ALTE LEIPZIGER Trust Investment-Gesellschaft mbH,105531,Oberursel,Externe KVG,Other Small KVG,
+93,BEB Kapitalverwaltungsgesellschaft mbH,156773,Berlin,Registrierte AIF-KVG,Other Small KVG,
+94,FIDELIA Kapitalverwaltungsgesellschaft mbH,146931,Hamburg,Registrierte AIF-KVG,Other Small KVG,
+95,CAV Kapitalverwaltungs GmbH,148752,Regenstauf,Registrierte AIF-KVG,Other Small KVG,
+96,IMB Kapitalverwaltungsgesellschaft mbH,159988,Berlin,Registrierte AIF-KVG,Other Small KVG,
+97,Developas Kapitalverwaltungsgesellschaft mbH,161535,Stuttgart,Registrierte AIF-KVG,Other Small KVG,
+98,DSKV Deutsche Service Kapitalverwaltungs-GmbH,164672,München,Registrierte AIF-KVG,Other Small KVG,
+99,Deutsche Forst Invest GmbH,156298,Aachen,Registrierte AIF-KVG,Other Small KVG,
+100,Zwischen Finanz GmbH,159757,Berlin,Registrierte AIF-KVG,Other Small KVG,

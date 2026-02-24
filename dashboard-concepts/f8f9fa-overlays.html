@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — #F8F9FA on Overlay Surfaces Only</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #2D3333;
+    --bg2: rgba(197,224,238,0.03);
+    --bg-hover: rgba(197,224,238,0.04);
+    --light: #F8F9FA;
+    --ink: #F8F9FA;
+    --ink-dark: #2D3333;
+    --ink2: rgba(255,255,255,0.65);
+    --ink3: rgba(197,224,238,0.45);
+    --ink-muted: rgba(197,224,238,0.25);
+    --ink-d2: rgba(45,51,51,0.65);
+    --ink-d3: rgba(45,51,51,0.45);
+    --ink-d-muted: rgba(45,51,51,0.3);
+    --border: rgba(197,224,238,0.1);
+    --border-s: rgba(197,224,238,0.06);
+    --border-strong: rgba(197,224,238,0.2);
+    --border-l: rgba(197,224,238,0.2);
+    --accent: #C5E0EE;
+    --warm: #E8A87C;
+    --success: #6ee7b7;
+    --success-bg: rgba(110,231,183,0.1);
+    --warning: #E8A87C;
+    --warning-bg: rgba(232,168,124,0.1);
+    --danger: #f87171;
+    --danger-bg: rgba(248,113,113,0.1);
+    --l-success: #16a34a;
+    --l-warning: #c07a4a;
+    --l-danger: #dc2626;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Sora',system-ui,sans-serif; background:#1a1f1f; color:var(--ink); -webkit-font-smoothing:antialiased; padding:32px; }
+  .mono { font-family:'JetBrains Mono',monospace; }
+
+  h1.title { font-size:22px; font-weight:800; color:var(--accent); margin-bottom:6px; letter-spacing:-0.5px; }
+  p.subtitle { font-size:12px; color:var(--ink2); margin-bottom:48px; max-width:600px; line-height:1.6; }
+  h2.section { font-size:16px; font-weight:700; color:var(--ink); margin:56px 0 6px; }
+  p.section-desc { font-size:11px; color:var(--ink3); margin-bottom:20px; }
+
+  /* Simulated app background */
+  .app-bg {
+    background: var(--bg);
+    border-radius: 14px;
+    border: 1px solid var(--border-strong);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+
+  /* Dark UI elements (unchanged — this is what stays the same) */
+  .dark-header { padding:16px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .dark-title { font-size:15px; font-weight:700; color:var(--ink); }
+  .dark-desc { font-size:11px; color:var(--ink3); margin-top:2px; }
+  .dark-content { padding:20px 24px; }
+  .dark-table { width:100%; border-collapse:collapse; }
+  .dark-table th { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink3); padding:8px 12px; border-bottom:1px solid var(--border); text-align:left; }
+  .dark-table td { font-size:12px; padding:9px 12px; color:var(--ink2); border-bottom:1px solid var(--border-s); }
+  .dark-btn { padding:6px 14px; border-radius:8px; font-size:11px; font-weight:600; cursor:pointer; border:1px solid var(--border); background:rgba(197,224,238,0.06); color:var(--accent); }
+  .dark-btn-primary { background:var(--accent); color:var(--ink-dark); border:none; }
+  .badge-dark { display:inline-block; border-radius:4px; padding:2px 8px; font-size:10px; font-weight:600; }
+  .badge-dark-green { background:var(--success-bg); color:var(--success); }
+  .badge-dark-red { background:var(--danger-bg); color:var(--danger); }
+  .badge-dark-gray { background:var(--bg-hover); color:var(--ink2); border:1px solid var(--border); }
+
+  /* ============================================ */
+  /* OVERLAY SURFACES — #F8F9FA                   */
+  /* ============================================ */
+
+  /* Backdrop */
+  .overlay-backdrop {
+    position:absolute; inset:0; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px); z-index:1;
+  }
+
+  /* MODAL */
+  .modal {
+    position:absolute; z-index:2;
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    background: var(--light);
+    border-radius: 14px;
+    border: 1px solid rgba(197,224,238,0.2);
+    box-shadow: 0 25px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05);
+    width: 420px;
+    overflow: hidden;
+  }
+  .modal-header {
+    padding: 18px 22px 14px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(197,224,238,0.15);
+  }
+  .modal-title { font-size:15px; font-weight:700; color:var(--ink-dark); }
+  .modal-close { width:28px; height:28px; border-radius:8px; border:none; background:rgba(45,51,51,0.06); color:var(--ink-d3); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; }
+  .modal-body { padding:18px 22px; }
+  .modal-footer { padding:14px 22px; border-top:1px solid rgba(197,224,238,0.12); display:flex; justify-content:flex-end; gap:8px; }
+
+  /* Light form elements */
+  .l-label { font-size:11px; font-weight:600; color:var(--ink-d2); margin-bottom:4px; display:block; }
+  .l-input { width:100%; padding:8px 12px; border-radius:8px; border:1px solid rgba(197,224,238,0.25); font-size:12px; color:var(--ink-dark); background:white; outline:none; margin-bottom:14px; font-family:'Sora',sans-serif; }
+  .l-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(197,224,238,0.15); }
+  .l-input::placeholder { color:var(--ink-d-muted); }
+  .l-select { width:100%; padding:8px 12px; border-radius:8px; border:1px solid rgba(197,224,238,0.25); font-size:12px; color:var(--ink-dark); background:white; outline:none; margin-bottom:14px; font-family:'Sora',sans-serif; }
+  .l-btn { padding:8px 18px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; border:none; }
+  .l-btn-primary { background:var(--ink-dark); color:var(--light); }
+  .l-btn-outline { background:transparent; color:var(--ink-d2); border:1px solid rgba(197,224,238,0.25); }
+  .l-btn-danger { background:rgba(220,38,38,0.08); color:var(--l-danger); border:1px solid rgba(220,38,38,0.15); }
+  .l-hint { font-size:10px; color:var(--ink-d3); margin-top:-10px; margin-bottom:14px; }
+  .l-divider { height:1px; background:rgba(197,224,238,0.12); margin:6px 0 14px; }
+  .l-badge { display:inline-block; border-radius:4px; padding:2px 8px; font-size:10px; font-weight:600; }
+  .l-badge-green { background:rgba(22,163,74,0.08); color:var(--l-success); }
+  .l-badge-red { background:rgba(220,38,38,0.08); color:var(--l-danger); }
+  .l-badge-warm { background:rgba(192,122,74,0.08); color:var(--l-warning); }
+  .l-badge-gray { background:rgba(45,51,51,0.06); color:var(--ink-d3); }
+
+  /* COPILOT PANEL */
+  .copilot {
+    position:absolute; z-index:2; right:0; top:0; bottom:0;
+    width:440px;
+    background: var(--light);
+    border-left: 1px solid rgba(197,224,238,0.2);
+    box-shadow: -20px 0 50px rgba(0,0,0,0.2);
+    display:flex; flex-direction:column;
+  }
+  .copilot-header {
+    padding:14px 18px; border-bottom:1px solid rgba(197,224,238,0.15);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .copilot-title { font-size:13px; font-weight:700; color:var(--ink-dark); display:flex; align-items:center; gap:8px; }
+  .copilot-icon { width:28px; height:28px; border-radius:8px; background:rgba(197,224,238,0.15); display:flex; align-items:center; justify-content:center; font-size:14px; }
+  .copilot-body { flex:1; overflow-y:auto; padding:18px; display:flex; flex-direction:column; }
+  .copilot-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; text-align:center; }
+  .copilot-empty-icon { width:44px; height:44px; border-radius:50%; background:rgba(197,224,238,0.12); display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:12px; }
+  .copilot-prompt { width:100%; text-align:left; padding:8px 12px; border-radius:8px; border:1px solid rgba(197,224,238,0.2); background:white; font-size:11px; color:var(--ink-d2); cursor:pointer; margin-bottom:6px; font-family:'Sora',sans-serif; transition:all 0.15s; }
+  .copilot-prompt:hover { border-color:var(--accent); background:rgba(197,224,238,0.04); }
+  .copilot-disclaimer { background:rgba(192,122,74,0.06); border:1px solid rgba(192,122,74,0.12); border-radius:8px; padding:10px 12px; margin-bottom:16px; }
+  .copilot-disclaimer p { font-size:10px; color:var(--l-warning); line-height:1.5; }
+  .copilot-footer { padding:12px 18px; border-top:1px solid rgba(197,224,238,0.15); }
+  .copilot-input-wrap { display:flex; gap:8px; align-items:center; }
+  .copilot-input { flex:1; padding:10px 14px; border-radius:10px; border:1px solid rgba(197,224,238,0.25); font-size:12px; color:var(--ink-dark); background:white; outline:none; resize:none; font-family:'Sora',sans-serif; }
+  .copilot-input::placeholder { color:var(--ink-d-muted); }
+  .copilot-send { width:36px; height:36px; border-radius:10px; background:var(--ink-dark); border:none; color:white; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; }
+
+  /* Chat messages inside copilot */
+  .msg { max-width:85%; border-radius:10px; padding:10px 14px; font-size:12px; line-height:1.6; margin-bottom:10px; }
+  .msg-user { background:var(--ink-dark); color:white; align-self:flex-end; border-bottom-right-radius:4px; }
+  .msg-ai { background:rgba(197,224,238,0.08); color:var(--ink-dark); align-self:flex-start; border-bottom-left-radius:4px; border:1px solid rgba(197,224,238,0.12); }
+  .msg-intent { display:inline-block; background:rgba(197,224,238,0.12); color:var(--accent); border-radius:4px; padding:1px 6px; font-size:9px; font-weight:600; margin-bottom:6px; letter-spacing:0.02em; }
+  /* Use ink-dark colors for intents on light bg */
+  .msg-ai .msg-intent { color:rgba(45,51,51,0.5); background:rgba(45,51,51,0.06); }
+
+  /* CONFIRMATION DIALOG (small modal) */
+  .confirm-dialog {
+    position:absolute; z-index:2;
+    top:50%; left:50%; transform:translate(-50%,-50%);
+    background:var(--light);
+    border-radius:14px;
+    border:1px solid rgba(197,224,238,0.2);
+    box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+    width:360px;
+    padding:24px;
+    text-align:center;
+  }
+  .confirm-icon { width:44px; height:44px; border-radius:50%; margin:0 auto 14px; display:flex; align-items:center; justify-content:center; font-size:20px; }
+  .confirm-title { font-size:14px; font-weight:700; color:var(--ink-dark); margin-bottom:6px; }
+  .confirm-desc { font-size:12px; color:var(--ink-d2); margin-bottom:18px; line-height:1.5; }
+  .confirm-actions { display:flex; gap:8px; justify-content:center; }
+
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .row-inline { display:flex; gap:10px; }
+</style>
+</head>
+<body>
+
+<h1 class="title">#F8F9FA — Overlay Surfaces Only</h1>
+<p class="subtitle">The dark UI stays exactly as-is. <code style="background:rgba(197,224,238,0.08);padding:2px 6px;border-radius:4px;font-size:11px;">#F8F9FA</code> is reserved exclusively for floating layers: modals, the copilot panel, confirmation dialogs, and dropdown menus. These surfaces "lift off" the dark base, creating natural depth without clashing.</p>
+
+
+<!-- ============================================ -->
+<!-- 1. ADD INVESTOR MODAL -->
+<!-- ============================================ -->
+<h2 class="section">1. Add Investor Modal</h2>
+<p class="section-desc">Triggered by "+ Add Investor" on the Investors page. Light surface with light-mode form controls.</p>
+
+<div class="app-bg" style="height:580px;">
+  <!-- Dark background content (blurred) -->
+  <div class="dark-header" style="filter:blur(1px);opacity:0.5;">
+    <div><div class="dark-title">Investors</div><div class="dark-desc">12 investors across all funds</div></div>
+    <button class="dark-btn-primary dark-btn">+ Add Investor</button>
+  </div>
+  <div class="dark-content" style="filter:blur(1px);opacity:0.3;">
+    <div class="dark-table" style="opacity:0.5;">
+      <div style="height:200px;"></div>
+    </div>
+  </div>
+
+  <!-- Backdrop -->
+  <div class="overlay-backdrop"></div>
+
+  <!-- Modal -->
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Investor</div>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="grid-2">
+        <div>
+          <label class="l-label">Full Name</label>
+          <input class="l-input" placeholder="e.g. Bayerische Versorgungskammer" />
+        </div>
+        <div>
+          <label class="l-label">Legal Entity Name</label>
+          <input class="l-input" placeholder="Optional" />
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <label class="l-label">Investor Type</label>
+          <select class="l-select">
+            <option>Institutional</option>
+            <option>Professional</option>
+            <option>Semi-Professional</option>
+            <option>Well-Informed</option>
+            <option>Retail</option>
+          </select>
+        </div>
+        <div>
+          <label class="l-label">Jurisdiction</label>
+          <select class="l-select">
+            <option>DE — Germany</option>
+            <option>LU — Luxembourg</option>
+            <option>AT — Austria</option>
+            <option>CH — Switzerland</option>
+          </select>
+        </div>
+      </div>
+      <label class="l-label">Email</label>
+      <input class="l-input" placeholder="investor@example.com" />
+      <label class="l-label">KYC Status</label>
+      <select class="l-select">
+        <option>Pending</option>
+        <option>Verified</option>
+        <option>Expired</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="l-btn l-btn-outline">Cancel</button>
+      <button class="l-btn l-btn-primary">Create Investor</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- 2. COPILOT PANEL -->
+<!-- ============================================ -->
+<h2 class="section">2. Compliance Copilot</h2>
+<p class="section-desc">Slides in from the right. Light surface panel with dark-text chat, light-mode prompts, and warm disclaimer.</p>
+
+<div class="app-bg" style="height:600px;">
+  <!-- Dark background -->
+  <div class="dark-header" style="opacity:0.4;">
+    <div><div class="dark-title">Dashboard</div><div class="dark-desc">Compliance overview</div></div>
+  </div>
+  <div class="dark-content" style="opacity:0.25;">
+    <div style="height:400px;"></div>
+  </div>
+
+  <div class="overlay-backdrop"></div>
+
+  <!-- Copilot panel -->
+  <div class="copilot">
+    <div class="copilot-header">
+      <div class="copilot-title">
+        <div class="copilot-icon">✦</div>
+        Compliance Copilot
+      </div>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="copilot-body">
+      <div class="copilot-empty">
+        <div class="copilot-empty-icon">✦</div>
+        <div style="font-size:13px;font-weight:600;color:var(--ink-dark);margin-bottom:4px;">Compliance Copilot</div>
+        <div style="font-size:11px;color:var(--ink-d3);margin-bottom:14px;">Ask about regulations, decisions, or draft rules in natural language.</div>
+        <div class="copilot-disclaimer">
+          <p>⚠ AI-generated informational assistance only. Does not constitute legal or compliance advice. Verify independently.</p>
+        </div>
+        <div style="width:100%;">
+          <button class="copilot-prompt">Summarize my portfolio compliance status</button>
+          <button class="copilot-prompt">What risk flags need immediate attention?</button>
+          <button class="copilot-prompt">What are the SIF investor requirements?</button>
+          <button class="copilot-prompt">What if minimum investment changed to €200K?</button>
+        </div>
+      </div>
+    </div>
+    <div class="copilot-footer">
+      <div class="copilot-input-wrap">
+        <input class="copilot-input" placeholder="Ask about compliance..." />
+        <button class="copilot-send">→</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- 3. COPILOT WITH CONVERSATION -->
+<!-- ============================================ -->
+<h2 class="section">3. Copilot — Active Conversation</h2>
+<p class="section-desc">User messages in dark (#2D3333), AI responses on light accent tint. Citations and actions use light-mode colors.</p>
+
+<div class="app-bg" style="height:600px;">
+  <div class="dark-header" style="opacity:0.4;">
+    <div><div class="dark-title">Investors</div></div>
+  </div>
+  <div class="dark-content" style="opacity:0.25;"><div style="height:400px;"></div></div>
+  <div class="overlay-backdrop"></div>
+
+  <div class="copilot">
+    <div class="copilot-header">
+      <div class="copilot-title">
+        <div class="copilot-icon">✦</div>
+        Compliance Copilot
+      </div>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="copilot-body" style="justify-content:flex-end;">
+      <div class="msg msg-user">What are the requirements for semi-professional investors in a KAGB Spezial-AIF?</div>
+      <div class="msg msg-ai">
+        <div class="msg-intent">regulatory_explanation</div>
+        <div>Under <strong>§ 293 KAGB</strong>, semi-professional investors in a Spezial-AIF must meet the following requirements:</div>
+        <ul style="margin:8px 0 8px 16px;font-size:11px;line-height:1.7;color:var(--ink-d2);">
+          <li><strong>Minimum investment</strong> of €200,000 (or equivalent)</li>
+          <li>Written declaration of <strong>risk awareness</strong></li>
+          <li><strong>KYC/AML verification</strong> completed and valid</li>
+          <li>Cannot exceed <strong>concentration limits</strong> per fund structure</li>
+        </ul>
+        <div style="margin-top:8px;padding:8px 10px;background:rgba(197,224,238,0.08);border-radius:6px;border:1px solid rgba(197,224,238,0.12);">
+          <div style="font-size:9px;font-weight:600;color:var(--ink-d3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Citations</div>
+          <div style="font-size:10px;color:var(--ink-d2);">KAGB § 293 · BaFin FAQ Spezial-AIF · AIFMD II Art. 23</div>
+        </div>
+      </div>
+      <div class="msg msg-user">Which of my current investors would fail this check?</div>
+      <div class="msg msg-ai">
+        <div class="msg-intent">data_query</div>
+        <div>Based on current data, <strong>2 investors</strong> would not meet semi-professional requirements:</div>
+        <div style="margin:8px 0;padding:8px;background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.1);border-radius:6px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-size:11px;font-weight:600;color:var(--ink-dark);">Weber Vermögensverwaltung</span>
+            <span class="l-badge l-badge-red">KYC Pending</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:11px;font-weight:600;color:var(--ink-dark);">Schneider Family Office</span>
+            <span class="l-badge l-badge-red">KYC Expired</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <button style="padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(45,51,51,0.06);color:var(--ink-d2);border:1px solid rgba(197,224,238,0.15);cursor:pointer;">→ View Investors</button>
+          <button style="padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;background:rgba(45,51,51,0.06);color:var(--ink-d2);border:1px solid rgba(197,224,238,0.15);cursor:pointer;">→ Run Eligibility Check</button>
+        </div>
+      </div>
+    </div>
+    <div class="copilot-footer">
+      <div class="copilot-input-wrap">
+        <input class="copilot-input" placeholder="Ask a follow-up..." />
+        <button class="copilot-send">→</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- 4. CREATE FUND MODAL -->
+<!-- ============================================ -->
+<h2 class="section">4. Create Fund Modal</h2>
+<p class="section-desc">Same light modal surface — consistent across all creation/edit dialogs.</p>
+
+<div class="app-bg" style="height:540px;">
+  <div class="dark-header" style="filter:blur(1px);opacity:0.5;">
+    <div><div class="dark-title">Fund Structures</div></div>
+  </div>
+  <div class="dark-content" style="filter:blur(1px);opacity:0.3;"><div style="height:300px;"></div></div>
+  <div class="overlay-backdrop"></div>
+
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Create Fund Structure</div>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="l-label">Fund Name</label>
+      <input class="l-input" placeholder="e.g. Immobilien Spezial-AIF" />
+      <div class="grid-2">
+        <div>
+          <label class="l-label">Legal Form</label>
+          <select class="l-select">
+            <option>InvKG (Investment-KG)</option>
+            <option>GmbH & Co. KG</option>
+            <option>SICAV</option>
+            <option>S.C.A.</option>
+          </select>
+        </div>
+        <div>
+          <label class="l-label">Domicile</label>
+          <select class="l-select">
+            <option>DE — Germany</option>
+            <option>LU — Luxembourg</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <label class="l-label">Regulatory Framework</label>
+          <select class="l-select">
+            <option>KAGB</option>
+            <option>AIFMD</option>
+            <option>UCITS</option>
+          </select>
+        </div>
+        <div>
+          <label class="l-label">SFDR Classification</label>
+          <select class="l-select">
+            <option>Article 8</option>
+            <option>Article 9</option>
+            <option>Article 6</option>
+          </select>
+        </div>
+      </div>
+      <label class="l-label">Inception Date</label>
+      <input class="l-input" type="date" />
+    </div>
+    <div class="modal-footer">
+      <button class="l-btn l-btn-outline">Cancel</button>
+      <button class="l-btn l-btn-primary">Create Fund</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- 5. DELETE CONFIRMATION -->
+<!-- ============================================ -->
+<h2 class="section">5. Confirmation Dialog</h2>
+<p class="section-desc">Destructive action confirmation — light surface gives it gravitas and makes the red warning unmissable.</p>
+
+<div class="app-bg" style="height:380px;">
+  <div class="dark-header" style="filter:blur(1px);opacity:0.5;">
+    <div><div class="dark-title">Investors</div></div>
+  </div>
+  <div class="dark-content" style="filter:blur(1px);opacity:0.3;"><div style="height:200px;"></div></div>
+  <div class="overlay-backdrop"></div>
+
+  <div class="confirm-dialog">
+    <div class="confirm-icon" style="background:rgba(220,38,38,0.08);">⚠</div>
+    <div class="confirm-title">Remove Investor</div>
+    <div class="confirm-desc">Are you sure you want to remove <strong>Schneider Family Office</strong>? This will revoke all holdings and cannot be undone. A decision record will be created.</div>
+    <div class="confirm-actions">
+      <button class="l-btn l-btn-outline">Cancel</button>
+      <button class="l-btn l-btn-danger">Remove Investor</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================ -->
+<!-- 6. RULE BUILDER / NL INPUT -->
+<!-- ============================================ -->
+<h2 class="section">6. Natural Language Rule Builder</h2>
+<p class="section-desc">The NL rule creation dialog — light surface makes the generated rule preview readable and trustworthy.</p>
+
+<div class="app-bg" style="height:480px;">
+  <div class="dark-header" style="filter:blur(1px);opacity:0.5;">
+    <div><div class="dark-title">Rules</div></div>
+  </div>
+  <div class="dark-content" style="filter:blur(1px);opacity:0.3;"><div style="height:200px;"></div></div>
+  <div class="overlay-backdrop"></div>
+
+  <div class="modal" style="width:500px;">
+    <div class="modal-header">
+      <div class="modal-title">Create Rule from Natural Language</div>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="l-label">Describe the rule in plain language</label>
+      <div style="position:relative;margin-bottom:14px;">
+        <input class="l-input" style="margin-bottom:0;padding-right:60px;" value="Block all transfers to retail investors" />
+        <button style="position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;background:var(--ink-dark);color:white;border:none;cursor:pointer;">Generate</button>
+      </div>
+
+      <div style="background:rgba(45,51,51,0.03);border:1px solid rgba(197,224,238,0.15);border-radius:10px;padding:14px;margin-bottom:14px;">
+        <div style="font-size:10px;font-weight:600;color:var(--ink-d3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Generated Rule Preview</div>
+        <div style="font-size:12px;font-weight:600;color:var(--ink-dark);margin-bottom:6px;">Retail Investor Block</div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-d2);">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--l-danger);flex-shrink:0;"></span>
+            <span>IF <span class="mono" style="background:rgba(45,51,51,0.06);padding:1px 4px;border-radius:3px;">to.investor_type</span> = <strong>retail</strong></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-d2);">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--l-danger);flex-shrink:0;"></span>
+            <span>THEN <strong style="color:var(--l-danger);">BLOCK</strong> transfer</span>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:10px;color:var(--ink-d3);">Regulatory basis: KAGB § 293 — Retail investors not permitted in Spezial-AIF</div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <label class="l-label">Apply to Fund</label>
+          <select class="l-select" style="margin-bottom:0;">
+            <option>All Funds</option>
+            <option>Immobilien Spezial-AIF</option>
+          </select>
+        </div>
+        <div>
+          <label class="l-label">Priority</label>
+          <select class="l-select" style="margin-bottom:0;">
+            <option>High (blocking)</option>
+            <option>Medium (warning)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="l-btn l-btn-outline">Cancel</button>
+      <button class="l-btn l-btn-primary">Save Rule</button>
+    </div>
+  </div>
+</div>
+
+
+<div style="text-align:center;padding:40px 0;color:var(--ink-muted);font-size:11px;line-height:1.6;">
+  <strong style="color:var(--accent);">#F8F9FA = floating layer only.</strong><br>
+  Dark UI stays untouched. Light surfaces for modals, copilot, dialogs, dropdowns.<br>
+  Natural depth. No clash.
+</div>
+
+</body>
+</html>

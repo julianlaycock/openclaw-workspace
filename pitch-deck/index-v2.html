@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Pre-Seed Pitch Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Sora:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--dark:#2D3333;--accent:#C5E0EE;--light:#F8F9FA;--warm:#E8A87C;--white:#FFFFFF;
+--text-dark:#2D2D2D;--text-light:rgba(255,255,255,0.85);--text-muted:rgba(45,45,45,0.55);
+--grad:linear-gradient(135deg,#C5E0EE,#E8A87C);
+}
+html{scroll-behavior:auto;overflow:hidden}
+body{font-family:'Sora',sans-serif;margin:0;overflow:hidden;-webkit-font-smoothing:antialiased;background:var(--dark)}
+h1,h2,h3{font-family:'Sora',sans-serif;letter-spacing:-0.02em}
+
+/* ─── PROGRESS BAR ─── */
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--grad);z-index:200;transition:width .4s ease;width:0}
+
+/* ─── SLIDES ─── */
+.deck{position:relative;width:100vw;height:100vh}
+.slide{position:absolute;top:0;left:0;width:100vw;height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 120px;opacity:0;pointer-events:none;transition:opacity .5s cubic-bezier(.4,0,.2,1),transform .5s cubic-bezier(.4,0,.2,1);transform:scale(0.97) translateY(12px)}
+.slide.active{opacity:1;pointer-events:auto;transform:scale(1) translateY(0)}
+.slide.prev{transform:scale(0.97) translateY(-12px)}
+.slide.dark{background:var(--dark);color:var(--text-light)}
+.slide.light{background:var(--light);color:var(--text-dark)}
+
+/* Grid overlay on dark slides */
+.slide.dark::before{content:'';position:absolute;inset:0;background-image:
+  linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
+background-size:60px 60px;pointer-events:none;z-index:0}
+.slide.dark>*:not(.brand-mark){position:relative;z-index:1}
+
+/* Brand watermark */
+.brand-mark{position:absolute;top:32px;right:48px;font-family:'Sora',sans-serif;font-weight:600;font-size:14px;opacity:0.15;letter-spacing:-0.01em;z-index:10}
+.slide.dark .brand-mark{color:#fff}
+.slide.light .brand-mark{color:var(--dark)}
+
+/* Slide number */
+.slide-num{display:none}
+.slide.dark .slide-num{color:#fff}
+.slide.light .slide-num{color:var(--dark)}
+
+/* Navigation */
+.nav-dots{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:100}
+.nav-dots .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);cursor:pointer;transition:all .3s;border:none;padding:0}
+.nav-dots .dot.active{background:var(--accent);width:24px;border-radius:4px}
+.slide-counter{position:fixed;bottom:32px;right:48px;font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(255,255,255,0.3);z-index:100}
+
+/* Hint overlay */
+.hint{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.25);z-index:200;transition:opacity 1s;letter-spacing:.05em;white-space:nowrap}
+.hint.hidden{opacity:0;pointer-events:none}
+
+/* PDF download button */
+.pdf-btn{position:fixed;bottom:28px;left:48px;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.25);z-index:100;text-decoration:none;border:1px solid rgba(255,255,255,0.1);padding:6px 14px;border-radius:4px;transition:all .3s;letter-spacing:.03em;cursor:pointer;background:none}
+.pdf-btn:hover{color:var(--accent);border-color:var(--accent)}
+
+/* ─── COMMON ─── */
+.slide-headline{font-size:clamp(28px,3vw,48px);font-weight:800;margin-bottom:48px;line-height:1.15;max-width:850px}
+.slide-headline .hl{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.slide-headline .warm{color:var(--warm)}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.slide.dark .section-label{color:rgba(255,255,255,0.3)}
+.slide.light .section-label{color:var(--text-muted)}
+.section-label::before{content:'';width:16px;height:1px;background:var(--accent)}
+
+/* ─── SLIDE 1: COVER ─── */
+.cover-title{font-size:clamp(72px,9vw,140px);font-weight:800;letter-spacing:-0.04em;margin-bottom:16px;line-height:0.95;background:linear-gradient(135deg,#fff 60%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cover-sub{font-family:'Instrument Sans',sans-serif;font-size:clamp(18px,2vw,28px);font-weight:400;color:rgba(255,255,255,0.5);margin-bottom:48px;max-width:640px;line-height:1.5}
+.cover-meta{font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(255,255,255,0.3);letter-spacing:0.05em;display:flex;gap:24px;flex-wrap:wrap}
+.cover-url{position:absolute;bottom:48px;left:120px;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.2)}
+.cover-url a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.cover-hook{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--warm);margin-bottom:24px;letter-spacing:.05em}
+
+/* ─── SLIDE 2: DEADLINE ─── */
+.deadline-num{font-size:clamp(100px,14vw,200px);font-weight:800;line-height:0.9;margin-bottom:8px;font-variant-numeric:tabular-nums;background:linear-gradient(135deg,var(--warm),#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.deadline-label{font-family:'JetBrains Mono',monospace;font-size:clamp(14px,1.5vw,20px);font-weight:400;color:rgba(255,255,255,0.4);margin-bottom:48px;letter-spacing:1px}
+.deadline-body{font-size:clamp(16px,1.2vw,20px);line-height:1.7;max-width:700px;color:rgba(255,255,255,0.55)}
+.deadline-fine{color:var(--warm);font-weight:700;margin-top:16px;display:block;font-size:clamp(18px,1.5vw,24px)}
+.deadline-source{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.12);margin-top:32px}
+
+/* ─── SLIDE 3: PAIN ─── */
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:48px;margin-bottom:40px}
+.pain-card{padding-left:20px;border-left:2px solid var(--accent)}
+.pain-card .pain-num{font-family:'JetBrains Mono',monospace;font-size:clamp(28px,3vw,44px);font-weight:500;color:var(--dark);margin-bottom:8px;line-height:1}
+.pain-card .pain-desc{font-size:14px;color:var(--text-muted);line-height:1.5}
+.pain-bottom{font-size:14px;color:var(--text-muted);line-height:1.7;max-width:760px;font-style:italic;opacity:0.7}
+
+/* ─── SLIDE 4: SOLUTION ─── */
+.ba-grid{display:grid;grid-template-columns:1fr 40px 1fr;gap:32px;align-items:start}
+.ba-col h3{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:2px;margin-bottom:24px}
+.ba-col.before h3{color:rgba(255,255,255,0.3)}
+.ba-col.after h3{color:var(--accent)}
+.ba-item{font-size:15px;color:rgba(255,255,255,0.5);line-height:1.7;margin-bottom:12px;padding-left:16px;position:relative}
+.ba-item::before{content:'';position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%}
+.ba-col.before .ba-item::before{background:rgba(255,95,86,0.5)}
+.ba-col.after .ba-item::before{background:#6ee7b7}
+.ba-col.after .ba-item{color:rgba(255,255,255,0.8)}
+.ba-col.after .ba-item strong{color:var(--accent)}
+.ba-arrow{font-size:40px;color:rgba(255,255,255,0.08);align-self:center;text-align:center;padding-top:32px}
+.ba-bottom{margin-top:32px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--warm)}
+.ba-bottom a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+
+/* ─── SLIDE 5: PRODUCT GRID ─── */
+.product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.product-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:24px 20px}
+.product-card .pc-icon{font-size:24px;margin-bottom:12px}
+.product-card .pc-name{font-size:15px;font-weight:700;color:rgba(255,255,255,0.9);margin-bottom:6px}
+.product-card .pc-detail{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.35);line-height:1.5}
+.product-card .pc-stat{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--warm);margin-top:10px;font-weight:500}
+
+/* ─── SLIDE 6: HOW IT WORKS ─── */
+.steps-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.step-card{position:relative}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:48px;font-weight:500;color:rgba(45,51,51,0.06);line-height:1;margin-bottom:8px}
+.step-name{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--dark)}
+.step-desc{font-size:13px;color:var(--text-muted);line-height:1.6}
+.step-connector{display:none}
+
+/* ─── SLIDE 7: TRACTION ─── */
+.traction-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-bottom:40px}
+.traction-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:24px;text-align:center}
+.traction-card .tc-num{font-family:'JetBrains Mono',monospace;font-size:clamp(28px,3vw,40px);font-weight:700;margin-bottom:4px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.traction-card .tc-label{font-size:12px;color:rgba(255,255,255,0.4);line-height:1.4}
+.traction-bottom{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.traction-bottom .tb-item{font-size:14px;color:rgba(255,255,255,0.5);line-height:1.6;padding-left:16px;border-left:2px solid rgba(255,255,255,0.06)}
+.traction-bottom .tb-item strong{color:var(--accent);font-weight:600;display:block;margin-bottom:4px}
+
+/* ─── SLIDE 8: MARKET ─── */
+.market-content{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.tam-visual{display:flex;flex-direction:column;gap:12px}
+.tam-bar{height:48px;border-radius:6px;display:flex;align-items:center;padding:0 20px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500}
+.tam-bar.tam{background:rgba(45,51,51,0.06);color:var(--dark);width:100%}
+.tam-bar.sam{background:rgba(197,224,238,0.35);color:var(--dark);width:72%}
+.tam-bar.som{background:var(--dark);color:var(--white);width:40%}
+.market-right{display:flex;flex-direction:column;gap:20px}
+.market-stat{font-size:15px;color:var(--text-muted);line-height:1.5}
+.market-stat strong{color:var(--dark);font-weight:700;font-size:24px;display:block;margin-bottom:2px}
+.market-source{font-size:11px;color:rgba(45,51,51,0.2);margin-top:12px;font-family:'JetBrains Mono',monospace}
+
+/* ─── SLIDE 9: WHY NOW / PLATFORM ─── */
+.timeline{display:flex;gap:0;margin-top:32px;position:relative}
+.timeline::before{content:'';position:absolute;top:24px;left:0;right:0;height:2px;background:rgba(255,255,255,0.06)}
+.tl-item{flex:1;position:relative;padding-top:52px}
+.tl-dot{position:absolute;top:17px;left:0;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.15)}
+.tl-item.now .tl-dot{background:var(--warm);border-color:var(--warm);box-shadow:0 0 24px rgba(232,168,124,0.4)}
+.tl-year{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;color:var(--accent);margin-bottom:6px}
+.tl-item.now .tl-year{color:var(--warm);font-weight:700}
+.tl-desc{font-size:13px;color:rgba(255,255,255,0.35);line-height:1.5;max-width:180px}
+.tl-item.now .tl-desc{color:rgba(255,255,255,0.7)}
+
+/* ─── SLIDE 10: GTM ─── */
+.gtm-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px}
+.gtm-phase{margin-bottom:24px}
+.gtm-phase h3{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px}
+.slide.dark .gtm-phase h3{color:var(--accent)}
+.slide.light .gtm-phase h3{color:var(--text-muted)}
+.gtm-item{font-size:14px;color:rgba(255,255,255,0.55);line-height:1.7;margin-bottom:8px;padding-left:16px;position:relative}
+.gtm-item::before{content:'→';position:absolute;left:0;color:var(--accent)}
+.gtm-item strong{color:rgba(255,255,255,0.85)}
+.gtm-channels h3{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--warm);margin-bottom:16px}
+.gtm-channel{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.gtm-icon{font-size:20px;flex-shrink:0;line-height:1.4}
+.gtm-text{font-size:14px;color:rgba(255,255,255,0.55);line-height:1.5}
+.gtm-text strong{color:rgba(255,255,255,0.8)}
+
+/* ─── SLIDE 11: COMPETITION ─── */
+.matrix{position:relative;width:580px;height:400px;margin:0 auto}
+.matrix-grid{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;border:1px solid rgba(45,51,51,0.08);border-radius:8px;overflow:hidden}
+.matrix-q{padding:28px;display:flex;flex-direction:column;justify-content:center}
+.matrix-q.q1{background:rgba(45,51,51,0.03);border-bottom:1px solid rgba(45,51,51,0.06);border-right:1px solid rgba(45,51,51,0.06)}
+.matrix-q.q2{background:rgba(45,51,51,0.03);border-bottom:1px solid rgba(45,51,51,0.06)}
+.matrix-q.q3{border-right:1px solid rgba(45,51,51,0.06)}
+.matrix-q.q4{background:var(--dark);color:#fff}
+.matrix-q .mq-name{font-size:14px;font-weight:600;margin-bottom:6px}
+.matrix-q .mq-detail{font-size:12px;color:var(--text-muted);line-height:1.5}
+.matrix-q.q4 .mq-name{color:var(--warm);font-size:17px}
+.matrix-q.q4 .mq-detail{color:rgba(255,255,255,0.5)}
+.matrix-labels{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(45,51,51,0.3);position:absolute}
+.comp-note{text-align:center;font-size:14px;color:var(--text-muted);margin-top:40px;max-width:640px;margin-left:auto;margin-right:auto}
+
+/* ─── SLIDE 12: BUSINESS MODEL ─── */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:40px}
+.tier{border:1px solid rgba(45,51,51,0.08);border-radius:12px;padding:32px;background:var(--white)}
+.tier.featured{border-color:var(--dark);background:var(--dark);color:#fff}
+.tier-name{font-size:11px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:12px}
+.tier.featured .tier-name{color:rgba(255,255,255,0.4)}
+.tier-price{font-size:32px;font-weight:800;margin-bottom:4px}
+.tier-detail{font-size:13px;color:var(--text-muted);line-height:1.5}
+.tier.featured .tier-detail{color:rgba(255,255,255,0.5)}
+.tier-acv{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--warm);margin-top:12px}
+.unit-econ{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.ue-item{font-size:13px;color:var(--text-muted);line-height:1.6}
+.ue-item strong{color:var(--dark);font-weight:700;display:block;font-size:15px;margin-bottom:4px}
+
+/* ─── SLIDE 13: TEAM ─── */
+.team-content{max-width:720px}
+.team-name{font-size:32px;font-weight:800;margin-bottom:4px}
+.team-role{font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(255,255,255,0.3);margin-bottom:32px}
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+.team-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:20px}
+.team-card .tc-label{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.25);margin-bottom:8px}
+.team-card .tc-text{font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6}
+.team-signal{background:rgba(232,168,124,0.08);border:1px solid rgba(232,168,124,0.15);border-radius:8px;padding:16px 20px;margin-bottom:20px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--warm)}
+.team-seeking{padding:16px 20px;background:rgba(197,224,238,0.06);border:1px solid rgba(197,224,238,0.12);border-radius:8px;font-size:14px;color:var(--accent);display:flex;align-items:center;gap:12px}
+.team-frame{font-size:13px;color:rgba(255,255,255,0.3);margin-top:16px;line-height:1.6;font-style:italic}
+
+/* ─── SLIDE 14: THE ASK ─── */
+.ask-amount{font-size:clamp(48px,6vw,72px);font-weight:800;margin-bottom:8px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ask-purpose{font-size:18px;color:rgba(255,255,255,0.4);margin-bottom:40px}
+.funds-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:40px;max-width:620px}
+.fund-row{display:flex;align-items:center;gap:16px}
+.fund-bar-wrap{flex:1;height:28px;background:rgba(255,255,255,0.04);border-radius:4px;overflow:hidden}
+.fund-bar{height:100%;background:var(--accent);border-radius:4px;display:flex;align-items:center;padding:0 12px}
+.fund-bar span{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dark);white-space:nowrap;font-weight:500}
+.fund-label{font-size:12px;color:rgba(255,255,255,0.4);width:260px;flex-shrink:0}
+.milestones{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:32px}
+.ms-item .ms-month{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--warm);margin-bottom:4px}
+.ms-item .ms-desc{font-size:13px;color:rgba(255,255,255,0.4);line-height:1.5}
+.ask-contact{font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(255,255,255,0.2)}
+.ask-contact a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+
+/* ─── PRESENTER NOTES ─── */
+.notes{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.85);color:rgba(255,255,255,0.7);font-size:13px;padding:16px 48px;font-family:'Sora',sans-serif;line-height:1.6;display:none;z-index:50;backdrop-filter:blur(12px)}
+body.show-notes .notes{display:block}
+
+/* ─── COUNTER ANIMATION ─── */
+.count-up{font-variant-numeric:tabular-nums}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  .slide{padding:40px 32px}
+  .pain-grid,.steps-flow,.tiers,.milestones,.traction-grid,.appendix-grid,.product-grid{grid-template-columns:1fr 1fr}
+  .timeline{flex-wrap:wrap;gap:16px}
+  .market-content,.ba-grid,.gtm-grid,.team-grid,.traction-bottom{grid-template-columns:1fr}
+  .matrix{width:100%;height:auto}
+  .unit-econ{grid-template-columns:1fr}
+  .cover-url{left:32px}
+  .ba-arrow{display:none}
+  .ba-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .slide{padding:32px 24px}
+  .pain-grid,.steps-flow,.tiers,.milestones,.traction-grid,.appendix-grid,.product-grid{grid-template-columns:1fr}
+}
+
+/* ─── PRINT ─── */
+@media print{
+  html,body{overflow:visible;height:auto}
+  .slide{position:relative;opacity:1!important;pointer-events:auto;transform:none!important;page-break-after:always;height:100vh}
+  .slide.dark::before{display:none}
+  .nav-dots,.slide-counter,.hint,.pdf-btn,.progress-bar,.notes{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="deck">
+
+<!-- SLIDE 1: COVER -->
+<section class="slide dark active" data-slide="0">
+  <div class="cover-hook">AIFMD II enforcement in <span id="coverDays">52</span> days</div>
+  <div class="cover-title">Caelith</div>
+  <div class="cover-sub">The regulatory compliance platform for EU fund managers. AIFMD II today. AML, ELTIF, SFDR next.</div>
+  <div class="cover-meta">
+    <span>Pre-Seed · February 2026</span>
+    <span>·</span>
+    <span>Julian Laycock, Founder & CEO</span>
+  </div>
+  <div class="cover-url">Live product → <a href="https://www.caelith.tech" target="_blank">www.caelith.tech</a> · <a href="mailto:julian.laycock@caelith.tech">julian.laycock@caelith.tech</a></div>
+  <div class="notes">Open with urgency: AIFMD II is the biggest regulatory overhaul in a decade, and 3,500+ fund managers must comply by April 16. Caelith is built, live, and ready. This is a time-sensitive market.</div>
+</section>
+
+<!-- SLIDE 2: THE DEADLINE + WHY NOW -->
+<section class="slide dark" data-slide="1">
+  <div class="brand-mark">Caelith</div>
+  <div class="slide-num">02 / 14</div>
+  <div class="deadline-num"><span class="count-up" data-target="" id="daysLeft">52</span></div>
+  <div class="deadline-label">days until AIFMD II enforcement</div>
+  <div class="deadline-body">
+    On April 16, 2026, every EU alternative investment fund manager must comply with AIFMD II — the most significant regulatory overhaul in a decade. 3,500+ fund managers. €6.8 trillion in assets. One deadline.
+    <span class="deadline-fine">Non-compliance means fines, sanctions, and license revocation.</span>
+  </div>
+  <div class="timeline" style="margin-top:40px">
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2024</div><div class="tl-desc">AIFMD II published</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2025</div><div class="tl-desc">Transposition begins</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">Q1 2026</div><div class="tl-desc">Caelith launches</div></div>
+    <div class="tl-item now"><div class="tl-dot"></div><div class="tl-year">Apr 16</div><div class="tl-desc">Enforcement begins</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2027+</div><div class="tl-desc">Laggards scramble</div></div>
+  </div>
+  <div class="deadline-source">Directive (EU) 2024/927 · Every day closer to April 16 increases urgency — and willingness to pay.</div>
+  <div class="notes">The AIFMD II directive was published in 2024. Every EU member state must transpose it by April 16, 2026. Regulatory deadlines create urgency that no marketing budget can replicate.</div>
+</section>
+
+<!-- SLIDE 3: THE PROBLEM -->
+<section class="slide light" data-slide="2">
+  <div class="brand-mark">Caelith</div>
+  <div class="slide-num">03 / 14</div>
+  <div class="section-label">The problem</div>
+  <div class="slide-headline">There is no software built for <span class="warm">AIF compliance</span>.</div>
+  <div style="font-size:17px;color:var(--text-muted);line-height:1.8;max-width:780px;margin-bottom:40px">3,500+ EU alternative investment fund managers must classify investors, validate thresholds, generate regulatory reports, and prove every decision to regulators — across AIFMD II, KAGB, ELTIF 2.0, and more. Today, they do all of this with <strong style="color:var(--dark)">spreadsheets, email chains, and Big 4 consultants</strong>. There is no purpose-built software. Every compliance decision is trapped in PDFs and tribal knowledge — invisible to auditors, impossible to scale.</div>
+  <div class="pain-grid">
+    <div class="pain-card">
+      <div class="pain-num">€150–200K<span style="font-size:16px;color:rgba(45,51,51,0.3)">/yr</span></div>
+      <div class="pain-desc">Spent on consultants who manually do what software should automate</div>
+    </div>
+    <div class="pain-card">
+      <div class="pain-num">2–4 weeks</div>
+      <div class="pain-desc">Per audit cycle — spreadsheets, back-and-forth emails, human error at every step</div>
+    </div>
+    <div class="pain-card">
+      <div class="pain-num">Zero proof</div>
+      <div class="pain-desc">No verifiable record of when or how decisions were made. Regulators want receipts — firms have none.</div>
+    </div>
+  </div>
+  <div class="notes">The core problem statement: this market has NO software. Generic RegTech exists for banks and insurers, but nothing purpose-built for alternative investment funds.</div>
+</section>
+
+<!-- SLIDE 4: THE SOLUTION (Before/After) -->
+<section class="slide dark" data-slide="3">
+  <div class="brand-mark">Caelith</div>
+  <div class="slide-num">04 / 14</div>
+  <div class="section-label">The solution</div>
+  <div class="slide-headline" style="color:var(--text-light)">Caelith is the first compliance engine<br><span class="hl">built for EU fund managers.</span></div>
+  <div style="font-size:16px;color:rgba(255,255,255,0.5);max-width:740px;margin-bottom:36px;margin-top:-28px;line-height:1.7">One platform that automates investor classification, regulatory validation, and audit reporting across 5 jurisdictions and 5 fund structures — with a cryptographic proof chain that makes every decision verifiable, tamper-proof, and regulator-ready. In minutes, not months.</div>
+  <div class="ba-grid">
+    <div class="ba-col before">
+      <h3>Without Caelith</h3>
+      <div class="ba-item">Manual investor classification across regulations</div>
+      <div class="ba-item">Compliance evidence in emails & screenshots</div>
+      <div class="ba-item">2–4 week audit cycles, error-prone</div>
+      <div class="ba-item">€150–200K/year for Big 4 consultants</div>
+      <div class="ba-item">No proof of when or how decisions were made</div>
+    </div>
+    <div class="ba-arrow">→</div>
+    <div class="ba-col after">
+      <h3>With Caelith</h3>
+      <div class="ba-item"><strong>13 codified legal rules</strong> evaluate every investor in <strong>real time</strong></div>
+      <div class="ba-item"><strong>Compliance Copilot</strong> — AI on your live fund data, not generic chatbot</div>
+      <div class="ba-item"><strong>AIFMD II Readiness Assessment</strong> — 24-question gap analysis across 6 categories</div>
+      <div class="ba-item"><strong>Delegation monitoring</strong> — letterbox risk scoring + third-country flags</div>
+      <div class="ba-item"><strong>LMT tracking</strong> — redemption gates, swing pricing per Art. 16</div>
+      <div class="ba-item"><strong>Hash-chained audit trail</strong> — cryptographic proof of every decision</div>
+      <div class="ba-item">Starting at <strong>€990/month</strong> — 93% cheaper than consultants</div>
+    </div>
+  </div>
+  <div class="ba-bottom">Live product → <a href="https://www.caelith.tech" target="_blank">www.caelith.tech</a></div>
+  <div class="notes">Emphasize the breadth: Copilot, Readiness Assessment, Delegation Monitoring, LMTs — this isn't a single-feature tool. The hash chain is a technical moat.</div>
+</section>
+
+<!-- SLIDE 5: PRODUCT — What Caelith Does (NEW) -->
+<section class="slide dark" data-slide="4">
+  <div class="brand-mark">Caelith</div>
+  <div class="slide-num">05 / 14</div>
+  <div class="section-label">Product</div>
+  <div class="slide-headline" style="color:var(--text-light)">Eight capabilities. <span class="hl">One platform.</span></div>
+  <div class="product-grid">
+    <div class="product-card">
+      <div class="pc-icon">⚙️</div>
+      <div class="pc-name">Rule Engine</div>
+      <div class="pc-detail">Real-time evaluation against codified legal requirements. Deterministic, auditable.</div>
+      <div class="pc-stat">13 rules · 5 structures</div>
+    </div>
+    <div class="product-card">
+      <div class="pc-icon">📋</div>
+      <div class="pc-name">Readiness Assessment</div>
+      <div class="pc-detail">24-question gap analysis across delegation, liquidity, reporting, disclosure, loan origination, governance.</div>
+      <div class="pc-stat">24 questions · 6 categories</div>
+    </div>
+    <div class="product-card">
+      <div class="pc-icon">🤖</div>
+      <div class="pc-name">Compliance Copilot</div>
+      <div class="pc-detail">AI assistant that queries your live fund data — LMTs, delegations, investor profiles. Context-aware.</div>
+      <div class="pc-stat">Your data, not generic AI</div>
+    </div>
+    <div class="product-card">
+      <div class="pc-icon">🔗</div>
+      <div class="pc-name">Delegation Monitoring</div>
+      <div class="pc-detail">Track outsourcing arrangements. Letterbox risk scoring (low/medium/high). Third-country flags per AIFMD II.</div>
+      <div class="pc-stat">Letterbox risk · flags</div>
+    </div>
+    <div class="product-card">
+      <div class="pc-icon">💧</div>
+      <div class="pc-name">LMT Tracking</div>
+      <div class="pc-detail">Redemption gates, notice periods, swing pricing, anti-dilution levies per Art. 16 AIFMD II.</div>
+      <div class="pc-stat">Art. 16 compliance</div>
+    </div>
+    <div class="product-card">
+      <div class="pc-icon">🛡️</div>
+      <div class="pc-name">Investor Screening</div>
+      <div class="pc-detail">Automated sanctions/PEP screening with confidence scores. Dismiss/confirm workflow. Immutable audit trail.</div>
+      <div class="pc-stat">Sanctions · PEP · audit</div>
+    </div>
+    <div class="product-card">
+      <div class="pc-icon">📊</div>
+      <div class="pc-name">Annex IV Reporting</div>
+      <div class="pc-detail">ESMA-compliant XML generation for Annex IV filings. From data to submission-ready in seconds.</div>
+      <div class="pc-stat">30 seconds · ESMA XML</div>
+    </div>
+    <div class="product-card">
+      <div class="pc-icon">📦</div>
+      <div class="pc-name">Evidence Bundle</div>
+      <div class="pc-detail">Audit-ready PDF packaging: rules applied, findings, data sources, timestamps. One click.</div>
+      <div class="pc-stat">Audit-ready PDF</div>
+    </div>
+  </div>
+  <div class="notes">This is the product depth slide. Each capability is production-ready. The key message: this is not a prototype — it's a full compliance platform built in 3 months by one person. Imagine what a funded team does.</div>
+</section>
+
+<!-- SLIDE 6: HOW IT WORKS -->
+<section class="slide light" data-slide="5">
+  <div class="brand-mark">Caelith</div>
+  <div class="slide-num">06 / 14</div>
+  <div class="section-label">How it works</div>
+  <div class="slide-headline">Four steps to <span class="hl">audit-ready</span>.</div>
+  <div class="steps-flow">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <div class="step-name">Map</div>
+      <div class="step-desc">Upload your fund structure. Caelith auto-detects applicable frameworks across 5 EU jurisdictions and 5 fund structures (SIF, RAIF, Spezial-AIF, QIAIF, ELTIF 2.0).</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <div class="step-name">Evaluate</div>
+      <div class="step-desc">Every investor classified and validated against 13 codified legal requirements. Real-time. Deterministic. Ask the Compliance Copilot anything.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <div class="step-name">Prove</div>
+      <div class="step-desc">Each decision is hash-chained to the previous. Tamper-proof by design. Evidence Bundle packages everything for regulators.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">04</div>
+      <div class="step-name">Report</div>
+      <div class="step-desc">Annex IV in 30 seconds. AIFMD II disclosures, cross-border filings. One click. PDF, XML, or XBRL export.</div>
+    </div>
+  </div>
+  <div class="notes">Walk through each step briefly. The key point: this entire flow takes minutes, not weeks. The Copilot in step 2 is context-aware — it queries your actual fund data.</div>
+</section>
+
+<!-- SLIDE 7: TRACTION / WHAT'S BUILT -->
+<section class="slide dark" data-slide="6">
+  <div class="brand-mark">Caelith</div>
+  <div class="slide-num">07 / 14</div>
+  <div class="section-label">Traction</div>
+  <div class="slide-headline" style="color:var(--text-light)">Built in 3 months. <span class="hl">Solo.</span></div>
+  <div class="traction-grid">
+    <div class="traction-card"><div class="tc-num count-up" data-target="13">0</div><div class="tc-label">Codified legal<br>requirements</div></div>
+    <div class="traction-card"><div class="tc-num count-up" data-target="5">0</div><div class="tc-label">Fund structures<br>supported</div></div>
+    <div class="traction-card"><div class="tc-num count-up" data-target="5">0</div><div class="tc-label">EU<br>jurisdictions</div></div>
+    <div class="traction-card"><div class="tc-num count-up" data-target="10">0</div><div class="tc-label">German KVGs<br>in outreach pipeline</div></div>
+  </div>
+  <div class="traction-bottom">
+    <div class="tb-item"><strong>Live product at caelith.tech</strong>Full-stack platform with 5 demo funds, 25 investors, €812M AUM, 46 holdings. Rule engine, Copilot, readiness assessment, delegation monitoring, LMTs, investor screening, Annex IV, evidence bundles — all live.</div>
+    <div class="tb-item"><strong>Early market signals</strong>10 German KVGs contacted. 1 warm signal from institutional investor: "Interesting case — next round." Applied to HTGF. Selected for Lanzadera incubator meeting.</div>
+    <div class="tb-item"><strong>24-question readiness assessment</strong>AIFMD II gap analysis across 6 categories. Plus delegation monitoring, LMT tracking, investor screening with sanctions/PEP. 51+ automated tests passing.</div>
+    <div class="tb-item"><strong>Platform roadmap</strong>AIFMD II is the entry point. AML/AMLR (mandatory July 2027) is the growth engine. ELTIF 2.0 suitability and SFDR overhaul expand the TAM through 2029.</div>
+  </div>
+  <div class="notes">"Built in 3 months, solo" is the headline. Pre-revenue but NOT pre-product. Live URL, real demo data, 10 KVGs contacted in week 1 with a warm signal. HTGF application and Lanzadera meeting show momentum.</div>
+</section>
+
+<!-- SLIDE 8: MARKET -->
+<section class="slide light" data-slide="7">
+  <div class="brand-mark">Caelith</div>
+  <div class="slide-num">08 / 14</div>
+  <div class="section-label">Market opportunity</div>
+  <div class="slide-headline">A €2.3B market with a <span class="warm">hard deadline</span>.</div>
+  <div class="market-content">
+    <div class="tam-visual">
+      <div class="tam-bar tam">TAM · €2.3B — EU RegTech for asset management</div>
+      <div class="tam-bar sam">SAM · €680M — AIF compliance & reporting</div>
+      <div class="tam-bar som">SOM · €45M — German AIFMs (Year 1 target)</div>
+    </div>
+    <div class="market-right">
+      <div class="market-stat"><strong>3,500+</strong>Licensed AIFMs in the EU</div>
+      <div class="market-stat"><strong>890+</strong>In Germany alone — Caelith's launch market</div>
+      <div class="market-stat"><strong>€6.8T</strong>Assets under management by EU AIFs</div>
+      <div class="market-source">Sources: ESMA AIFMD Statistical Report 2024 · Deloitte RegTech Market Sizing · BaFin Registry</div>
+    </div>
+  </div>
+  <div class="notes">The TAM/SAM/SOM sizing is conservative. Our SOM of €45M assumes capturing ~5% of German AIFMs in Year 1 at our Professional tier. The hard deadline makes this market unusually predictable.</div>
+</section>
+
+<!-- SLIDE 9: PLATFORM VISION -->
+<section class="slide dark" data-slide="8">
+  <div class="brand-mark">Caelith</div>
+  <div class="slide-num">09 / 14</div>
+  <div class="section-label">Platform vision</div>
+  <div class="slide-headline" style="color:var(--text-light)">One platform. <span class="hl">Four regulatory waves.</span></div>
+  <div style="font-size:16px;color:rgba(255,255,255,0.5);max-width:740px;margin-bottom:36px;line-height:1.7">AIFMD II is the wedge. Every regulation we add deepens the moat and expands the market — with the same customers, the same platform, and compounding switching costs.</div>
+  <div class="timeline" style="margin-top:16px">
+    <div class="tl-item now"><div class="tl-dot"></div><div class="tl-year">2026</div><div class="tl-desc"><strong style="color:var(--warm)">AIFMD II</strong><br>Investor eligibility, audit trail, Annex IV reporting. Live today.</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2027</div><div class="tl-desc"><strong style="color:var(--accent)">AMLR</strong><br>EU Anti-Money Laundering Regulation. Mandatory for all fund managers. €8.1B AML market.</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2027–28</div><div class="tl-desc"><strong style="color:var(--accent)">ELTIF 2.0</strong><br>Retail suitability assessments for long-term investment funds. New distribution channel.</div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2028–29</div><div class="tl-desc"><strong style="color:var(--accent)">SFDR Overhaul</strong><br>Sustainability disclosure regulation rewrite. ESG compliance automation.</div></div>
+  </div>
+  <div style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px">
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:20px;text-align:center">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px">€2.3B</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.4)">TAM today<br>(AIF compliance)</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:20px;text-align:center">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px">+€8.1B</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.4)">AML market<br>(2027 expansion)</div>
+    </div>
+    <div style="background:rgba(232,168,124,0.08);border:1px solid rgba(232,168,124,0.15);border-radius:8px;padding:20px;text-align:center">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:var(--warm);margin-bottom:4px">4 waves</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.4)">Regulatory tailwind<br>through 2029</div>
+    </div>
+  </div>
+  <div class="notes">This is the "why this is a platform, not a feature" slide. AIFMD II gets us in the door. AMLR (July 2027) is mandatory for every fund manager — same customer base, massive TAM expansion.</div>
+</section>
+
+<!-- SLIDE 10: GTM STRATEGY -->
+<section class="slide dark" data-slide="9">
+  <div class="brand-mark">Caelith</div>
+  <div class="slide-num">10 / 14</div>
+  <div class="section-label">Go-to-market</div>
+  <div class="slide-headline" style="color:var(--text-light)">Germany first. Then <span class="hl">all of Europe</span>.</div>
+  <div class="gtm-grid">
+    <div>
+      <div class="gtm-phase">
+        <h3>Phase 1 — Germany (Month 1–6)</h3>
+        <div class="gtm-item"><strong>890+ AIFMs</strong> registered with BaFin — largest single market</div>
+        <div class="gtm-item"><strong>KAGB Spezial-AIF</strong> rules already built — immediate product-market fit</div>
+        <div class="gtm-item"><strong>Outreach started:</strong> 10 Immobilien-KVGs contacted, pilot conversations active</div>
+        <div class="gtm-item">Convert pilots to paying customers with proven ROI data</div>
+      </div>
+      <div class="gtm-phase">
+        <h3>Phase 2 — DACH + Lux (Month 6–12)</h3>
+        <div class="gtm-item">Expand to <strong>Austria, Switzerland, Luxembourg</strong> — shared regulatory DNA</div>
+        <div class="gtm-item">Luxembourg alone: <strong>550+ AIFMs</strong>, global hub for fund domiciliation</div>
+      </div>
+      <div class="gtm-phase">
+        <h3>Phase 3 — EU-wide (Month 12–18)</h3>
+        <div class="gtm-item">France, Netherlands, Ireland — next-largest AIF markets</div>
+        <div class="gtm-item">Cross-border reporting becomes the killer feature</div>
+      </div>
+    </div>
+    <div class="gtm-channels">
+      <h3>Channel strategy</h3>
+      <div class="gtm-channel"><span class="gtm-icon">🏛️</span><div class="gtm-text"><strong>BaFin compliance events</strong> — Direct access to compliance officers at industry conferences and regulatory workshops</div></div>
+      <div class="gtm-channel"><span class="gtm-icon">🤝</span><div class="gtm-text"><strong>AIFM associations</strong> — BAI (Bundesverband Alternative Investments), ALFI Luxembourg — co-marketing and member offers</div></div>
+      <div class="gtm-channel"><span class="gtm-icon">📊</span><div class="gtm-text"><strong>Big 4 referral partnerships</strong> — Consultants who can't scale → refer clients to Caelith for automation. We complement, not compete.</div></div>
+      <div class="gtm-channel"><span class="gtm-icon">🎯</span><div class="gtm-text"><strong>Direct outbound</strong> — Targeted LinkedIn + email campaigns to compliance heads at mid-size German AIFMs (10–50 funds)</div></div>
+    </div>
+  </div>
+  <div class="notes">Germany-first is strategic: largest single AIFM market, KAGB rules are already built, and Julian's network is strongest here.</div>
+</section>
+
+<!-- SLIDE 11: COMPETITION -->
+<section class="slide light" data-slide="10">
+  <div class="brand-mark">Caelith</div>
+  <div class="slide-num">11 / 14</div>
+  <div class="section-label">Competitive landscape</div>
+  <div class="slide-headline">Purpose-built. Not <span class="warm">bolted on</span>.</div>
+  <div class="matrix">
+    <div class="matrix-labels" style="top:-20px;left:50%;transform:translateX(-50%)">Automated / SaaS ↑</div>
+    <div class="matrix-labels" style="bottom:-28px;left:0">← Generic</div>
+    <div class="matrix-labels" style="bottom:-28px;right:0">AIF-Specific →</div>
+    <div class="matrix-grid">
+      <div class="matrix-q q1"><div class="mq-name">Suade, Regnology, Apiax</div><div class="mq-detail">Automated but generic. Bank & insurance focus. Not AIF-aware.</div></div>
+      <div class="matrix-q q4"><div class="mq-name">Caelith ●</div><div class="mq-detail">Only player: AIF-specific + fully automated + cryptographic audit proof. Built by a compliance expert.</div></div>
+      <div class="matrix-q q3"><div class="mq-name">Big 4 Consulting</div><div class="mq-detail">Deloitte, PwC, KPMG. €150–200K/yr. Manual, slow, unscalable.</div></div>
+      <div class="matrix-q" style="padding:28px"><div class="mq-name">Boutique compliance firms</div><div class="mq-detail">AIF-aware but manual. One consultant per client. Can't scale.</div></div>
+    </div>
+  </div>
+  <div class="comp-note">No existing solution combines AIF specialization + full automation + real-time evaluation + cryptographic proof. Caelith owns this quadrant — and expands it with AML/AMLR in 2027.</div>
+  <div class="notes">The moat is threefold: (1) domain-specific rules, (2) the cryptographic audit trail, and (3) regulatory complexity as a barrier.</div>
+</section>
+
+<!-- SLIDE 12: BUSINESS MODEL -->
+<section class="slide light" data-slide="11">
+  <div class="brand-mark">Caelith</div>
+  <div class="slide-num">12 / 14</div>
+  <div class="section-label">Business model</div>
+  <div class="slide-headline">SaaS with <span class="hl">built-in expansion</span>.</div>
+  <div class="tiers">
+    <div class="tier">
+      <div class="tier-name">Essentials</div>
+      <div class="tier-price">€990<span style="font-size:16px;font-weight:400;color:var(--text-muted)">/mo</span></div>
+      <div class="tier-detail">3 funds, 200 investors. Core rules engine + audit trail.</div>
+      <div class="tier-acv">ACV: €11,880</div>
+    </div>
+    <div class="tier featured">
+      <div class="tier-name">Professional</div>
+      <div class="tier-price">€1,990<span style="font-size:16px;font-weight:400;color:rgba(255,255,255,0.4)">/mo</span></div>
+      <div class="tier-detail">15 funds, unlimited investors. Full platform + Annex IV reporting.</div>
+      <div class="tier-acv">ACV: €23,880 — target tier</div>
+    </div>
+    <div class="tier">
+      <div class="tier-name">Enterprise</div>
+      <div class="tier-price">From €3,500<span style="font-size:16px;font-weight:400;color:var(--text-muted)">/mo</span></div>
+      <div class="tier-detail">Unlimited funds. On-premise option. API, SSO, dedicated support.</div>
+      <div class="tier-acv">ACV: €42,000+</div>
+    </div>
+  </div>
+  <div class="unit-econ">
+    <div class="ue-item"><strong>93% cheaper</strong>€11,880/yr vs €150–200K manual. ROI in the first month.</div>
+    <div class="ue-item"><strong>Land & expand</strong>Start with 3 funds → full AUM as trust builds. Natural upsell.</div>
+    <div class="ue-item"><strong>130%+ net retention</strong>Regulatory scope only increases. Customers don't churn from compliance tools — they add modules.</div>
+  </div>
+  <div class="notes">Pricing is positioned in the €12K-24K ACV range — below competitors like FundApps and Kneip (€25K-80K) but above the "toy" threshold.</div>
+</section>
+
+<!-- SLIDE 13: TEAM -->
+<section class="slide dark" data-slide="12">
+  <div class="brand-mark">Caelith</div>
+  <div class="slide-num">13 / 14</div>
+  <div class="section-label">Team</div>
+  <div class="slide-headline" style="color:var(--text-light)">Domain expert. Builder. <span class="hl">Operator.</span></div>
+  <div class="team-content">
+    <div class="team-name">Julian Laycock</div>
+    <div class="team-role">Founder & CEO</div>
+    <div class="team-signal">&#9889; Built the entire product in 3 months, solo — 13 rules, 5 fund structures, 5 jurisdictions, full-stack, live deployment</div>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="tc-label">Enterprise compliance</div>
+        <div class="tc-text">5 years at Capgemini & init AG (Berlin). Led digital transformation and compliance advisory for financial institutions.</div>
+      </div>
+      <div class="team-card">
+        <div class="tc-label">Regulatory research</div>
+        <div class="tc-text">2 years as Research Associate at HWR Berlin (University of Applied Sciences). Deep academic grounding in EU regulatory frameworks.</div>
+      </div>
+      <div class="team-card">
+        <div class="tc-label">Education</div>
+        <div class="tc-text">B. of Laws · B.Sc. Economics · MBA. Rare cross-section of legal, financial, and business expertise.</div>
+      </div>
+      <div class="team-card">
+        <div class="tc-label">Builder</div>
+        <div class="tc-text">Full-stack engineer. Built Caelith end-to-end: architecture, rules engine, frontend, API, deployment, testing — solo in 3 months.</div>
+      </div>
+    </div>
+    <div class="team-seeking"><span>🎯</span> First hire: Technical co-founder / CTO — to scale engineering and infrastructure. Target: Month 1–3 post-funding.</div>
+    <div class="team-frame">Most compliance tools are built by engineers who learn regulation. Caelith was built by a compliance expert who codes. That's not a nice-to-have — in regulated markets, it's the moat.</div>
+  </div>
+  <div class="notes">Address the solo founder question head-on: the product IS the proof. Built in 3 months. A CTO hire is the #1 priority post-funding. Julian's unique combination of legal + economics + MBA + coding is the moat.</div>
+</section>
+
+<!-- SLIDE 14: THE ASK -->
+<section class="slide dark" data-slide="13">
+  <div class="brand-mark">Caelith</div>
+  <div class="slide-num">14 / 14</div>
+  <div class="section-label">The ask</div>
+  <div class="ask-amount">€400K</div>
+  <div class="ask-purpose">Pre-seed to pilot, validate, and reach first revenue.</div>
+  <div class="funds-grid">
+    <div class="fund-row"><span class="fund-label">CTO / Technical co-founder</span><div class="fund-bar-wrap"><div class="fund-bar" style="width:35%"><span>€140K · 35%</span></div></div></div>
+    <div class="fund-row"><span class="fund-label">Founder salary (18 months)</span><div class="fund-bar-wrap"><div class="fund-bar" style="width:25%"><span>€100K · 25%</span></div></div></div>
+    <div class="fund-row"><span class="fund-label">Pilot program (3–5 AIFMs)</span><div class="fund-bar-wrap"><div class="fund-bar" style="width:15%"><span>€60K · 15%</span></div></div></div>
+    <div class="fund-row"><span class="fund-label">SOC 2 Type II + ISO 27001</span><div class="fund-bar-wrap"><div class="fund-bar" style="width:12.5%"><span>€50K · 12.5%</span></div></div></div>
+    <div class="fund-row"><span class="fund-label">Infrastructure, legal & buffer</span><div class="fund-bar-wrap"><div class="fund-bar" style="width:12.5%"><span>€50K · 12.5%</span></div></div></div>
+  </div>
+  <div class="milestones">
+    <div class="ms-item"><div class="ms-month">Month 3</div><div class="ms-desc">3 pilots live<br>CTO hired</div></div>
+    <div class="ms-item"><div class="ms-month">Month 6</div><div class="ms-desc">First paying customers<br>~€60K ARR</div></div>
+    <div class="ms-item"><div class="ms-month">Month 12</div><div class="ms-desc">15+ customers<br>€200K+ ARR · SOC 2</div></div>
+    <div class="ms-item"><div class="ms-month">Month 18</div><div class="ms-desc">30+ customers<br>€400K+ ARR · Series A ready</div></div>
+  </div>
+  <div class="ask-contact"><a href="mailto:julian.laycock@caelith.tech">julian.laycock@caelith.tech</a> · <a href="https://www.caelith.tech" target="_blank">www.caelith.tech</a></div>
+  <div class="notes">€400K is capital-efficient: 18 months runway, a CTO hire, and SOC 2/ISO certification. The milestones are achievable — the product already works.</div>
+</section>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav-dots" id="dots"></div>
+<div class="slide-counter" id="counter">1 / 14</div>
+<div class="hint" id="hint">press F for fullscreen · ← → or swipe to navigate · N for presenter notes · 14 slides</div>
+<button class="pdf-btn" onclick="window.print()" title="Print to PDF">↓ PDF</button>
+
+<script>
+// Countdown
+const deadline = new Date('2026-04-16T00:00:00+02:00');
+function getDays(){ return Math.max(0, Math.ceil((deadline - new Date()) / 864e5)); }
+document.getElementById('daysLeft').textContent = getDays();
+document.getElementById('coverDays').textContent = getDays();
+
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+const counter = document.getElementById('counter');
+const dotsWrap = document.getElementById('dots');
+const progressBar = document.getElementById('progressBar');
+const hint = document.getElementById('hint');
+let current = 0;
+
+// Create dots
+slides.forEach((_,i) => {
+  const d = document.createElement('button');
+  d.className = 'dot' + (i===0?' active':'');
+  d.addEventListener('click', () => goTo(i));
+  dotsWrap.appendChild(d);
+});
+
+// Hide hint after 4s
+setTimeout(() => hint.classList.add('hidden'), 4000);
+
+// Count-up animation
+function animateCounters(slide) {
+  slide.querySelectorAll('.count-up[data-target]').forEach(el => {
+    const target = parseInt(el.dataset.target);
+    if(!target) return;
+    const duration = 1200;
+    const start = performance.now();
+    function tick(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * ease);
+      if(p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+function goTo(n) {
+  if(n<0||n>=total) return;
+  slides[current].classList.remove('active');
+  slides.forEach(s=>s.classList.remove('prev'));
+  if(n < current) slides[current].classList.add('prev');
+  current = n;
+  slides[current].classList.add('active');
+  progressBar.style.width = ((current / (total - 1)) * 100) + '%';
+  dotsWrap.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===current));
+  counter.textContent = `${current+1} / ${total}`;
+  const isDark = slides[current].classList.contains('dark');
+  dotsWrap.querySelectorAll('.dot').forEach(d => {
+    if(!d.classList.contains('active')) d.style.background = isDark?'rgba(255,255,255,0.15)':'rgba(45,51,51,0.15)';
+    else d.style.background = '#C5E0EE';
+  });
+  counter.style.color = isDark ? 'rgba(255,255,255,0.3)' : 'rgba(45,51,51,0.4)';
+  animateCounters(slides[current]);
+}
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter') { e.preventDefault(); goTo(current+1); }
+  else if(e.key==='ArrowLeft'||e.key==='Backspace') { e.preventDefault(); goTo(current-1); }
+  else if(e.key==='f'||e.key==='F') {
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  }
+  else if(e.key==='n'||e.key==='N') {
+    document.body.classList.toggle('show-notes');
+  }
+  else if(e.key==='Home') { e.preventDefault(); goTo(0); }
+  else if(e.key==='End') { e.preventDefault(); goTo(total-1); }
+});
+
+// Touch / swipe
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50){d<0?goTo(current+1):goTo(current-1)}});
+
+// Mouse wheel
+let wheelTimeout;
+document.addEventListener('wheel', e => {
+  if(wheelTimeout) return;
+  wheelTimeout = setTimeout(()=>wheelTimeout=null, 600);
+  if(e.deltaY > 0) goTo(current+1);
+  else if(e.deltaY < 0) goTo(current-1);
+}, {passive:true});
+
+goTo(0);
+</script>
+</body>
+</html>

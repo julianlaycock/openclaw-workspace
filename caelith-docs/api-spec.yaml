@@ -1,0 +1,2264 @@
+openapi: 3.0.3
+info:
+  title: Caelith Compliance Platform API
+  description: >
+    AIFMD II compliance engine for EU alternative investment fund managers.
+    All endpoints except /api/auth/* and /api/public/* require JWT authentication
+    via Bearer token or access_token cookie.
+  version: 0.1.0
+  contact:
+    name: Caelith Dev Team
+
+servers:
+  - url: http://localhost:3001
+    description: Local development
+  - url: https://caelith-production.up.railway.app
+    description: Production (Railway)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: access_token
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+
+    Investor:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        jurisdiction: { type: string }
+        accredited: { type: boolean }
+        investor_type: { type: string, enum: [institutional, professional, semi_professional, well_informed, retail] }
+        kyc_status: { type: string, enum: [pending, verified, expired, rejected] }
+        kyc_expiry: { type: string, format: date, nullable: true }
+        tax_id: { type: string, nullable: true }
+        lei: { type: string, nullable: true }
+        email: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
+
+    Asset:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        asset_type: { type: string }
+        total_units: { type: number }
+        fund_structure_id: { type: string, format: uuid, nullable: true }
+        unit_price: { type: number, nullable: true }
+
+    FundStructure:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        legal_form: { type: string }
+        domicile: { type: string }
+        regulatory_framework: { type: string }
+        status: { type: string }
+        currency: { type: string }
+
+    Holding:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        investor_id: { type: string, format: uuid }
+        asset_id: { type: string, format: uuid }
+        units: { type: number }
+        acquired_at: { type: string, format: date }
+
+    Transfer:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        asset_id: { type: string, format: uuid }
+        from_investor_id: { type: string, format: uuid }
+        to_investor_id: { type: string, format: uuid }
+        units: { type: number }
+        status: { type: string }
+        executed_at: { type: string, format: date }
+
+    DecisionRecord:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        decision_type: { type: string }
+        result: { type: string, enum: [approved, rejected, pending] }
+        asset_id: { type: string, format: uuid, nullable: true }
+        subject_id: { type: string, format: uuid }
+        integrity_hash: { type: string, nullable: true }
+        decided_at: { type: string, format: date-time }
+
+  parameters:
+    fundId:
+      name: fundId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+security:
+  - bearerAuth: []
+  - cookieAuth: []
+
+tags:
+  - name: Auth
+    description: Authentication & user management
+  - name: Investors
+    description: Investor CRUD, DSGVO export/erasure
+  - name: Assets
+    description: Asset management
+  - name: Holdings
+    description: Investor holdings & cap table
+  - name: Transfers
+    description: Transfer simulation, execution, approval
+  - name: Fund Structures
+    description: Fund structure management
+  - name: Rules
+    description: Compliance rule sets
+  - name: Composite Rules
+    description: Complex multi-condition rules
+  - name: Decision Records
+    description: Compliance decision audit trail with integrity chain
+  - name: Eligibility
+    description: Investor eligibility checks & criteria
+  - name: Onboarding
+    description: Investor onboarding workflow
+  - name: Reports
+    description: Compliance reports, Annex IV, audit packages, evidence bundles
+  - name: Dashboard
+    description: Dashboard overview data
+  - name: Events
+    description: System event log
+  - name: Webhooks
+    description: Webhook management
+  - name: Templates
+    description: Regulatory rule templates
+  - name: Import
+    description: Bulk JSON/CSV import
+  - name: Regulatory
+    description: RAG-based regulatory document queries
+  - name: Copilot
+    description: AI compliance copilot
+  - name: Calendar
+    description: Compliance calendar & alerts
+  - name: Screening
+    description: Investor sanctions screening
+  - name: Readiness
+    description: AIFMD II readiness assessment
+  - name: LMT
+    description: Liquidity Management Tools
+  - name: Delegations
+    description: Fund delegation management
+  - name: Senior Persons
+    description: Senior management persons (AIFMD II Art. 8)
+  - name: Fee Disclosures
+    description: Fund fee disclosures
+  - name: Compliance Trend
+    description: 30-day compliance score trend
+  - name: Audit Trail
+    description: Mutation audit log
+  - name: Tenants
+    description: Tenant management
+  - name: Integrity
+    description: Hash chain integrity verification
+  - name: News
+    description: Regulatory news feed
+  - name: NL Rules
+    description: Natural language rule compiler
+  - name: Rule Packs
+    description: Pre-configured regulatory rule packs
+  - name: Scenarios
+    description: What-if scenario analysis
+  - name: Investor Documents
+    description: KYC document upload & management
+  - name: Regulatory Identifiers
+    description: Per-fund regulatory IDs (LEI, ISIN, WKN)
+  - name: LMT Notifications
+    description: LMT activation notifications
+
+paths:
+  # ── Auth ──────────────────────────────────────────────
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register new user
+      security: []
+      description: >
+        Registration mode controlled by REGISTRATION_MODE env (open/invite/disabled).
+        Role always defaults to 'viewer'.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, name]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8 }
+                name: { type: string }
+                inviteCode: { type: string, description: Required when REGISTRATION_MODE=invite }
+      responses:
+        '201':
+          description: User created, JWT + refresh token returned (also set as cookies)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+                  refreshToken: { type: string }
+                  user: { type: object }
+        '403': { description: Registration disabled or invalid invite code }
+        '400': { description: Validation error }
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: JWT + refresh token (also set as httpOnly cookies)
+        '401': { description: Invalid credentials }
+
+  /api/auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken: { type: string, description: Or sent via refresh_token cookie }
+      responses:
+        '200': { description: New token pair }
+        '401': { description: Invalid/expired refresh token }
+
+  /api/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout (revokes refresh tokens)
+      responses:
+        '200': { description: Logged out }
+
+  /api/auth/forgot-password:
+    post:
+      tags: [Auth]
+      summary: Request password reset
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string }
+      responses:
+        '200': { description: Always returns success to prevent email enumeration }
+
+  /api/auth/reset-password:
+    post:
+      tags: [Auth]
+      summary: Reset password with token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties:
+                token: { type: string }
+                password: { type: string }
+      responses:
+        '200': { description: Password reset }
+        '400': { description: Invalid/expired token }
+
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current user
+      responses:
+        '200':
+          description: Current user info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: { type: object }
+
+  # ── Investors ─────────────────────────────────────────
+  /api/investors:
+    get:
+      tags: [Investors]
+      summary: List all investors
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Investor' }
+    post:
+      tags: [Investors]
+      summary: Create investor
+      description: "Auth: admin, compliance_officer"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, jurisdiction, accredited]
+              properties:
+                name: { type: string }
+                jurisdiction: { type: string }
+                accredited: { type: boolean }
+                investor_type: { type: string, enum: [institutional, professional, semi_professional, well_informed, retail] }
+                kyc_status: { type: string, enum: [pending, verified, expired, rejected] }
+                kyc_expiry: { type: string, format: date }
+                tax_id: { type: string }
+                lei: { type: string }
+                email: { type: string }
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Investor' }
+
+  /api/investors/{id}:
+    get:
+      tags: [Investors]
+      summary: Get investor by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Investor' }
+        '404': { description: Not found }
+    patch:
+      tags: [Investors]
+      summary: Update investor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                jurisdiction: { type: string }
+                accredited: { type: boolean }
+                investor_type: { type: string }
+                kyc_status: { type: string }
+                kyc_expiry: { type: string }
+                tax_id: { type: string }
+                lei: { type: string }
+                email: { type: string }
+      responses:
+        '200': { description: Updated investor }
+    delete:
+      tags: [Investors]
+      summary: DSGVO Art. 17 erasure (soft-delete + PII anonymization)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Investor anonymized }
+
+  /api/investors/{id}/export:
+    get:
+      tags: [Investors]
+      summary: "DSGVO Art. 15/20: Full data export"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: format
+          in: query
+          schema: { type: string, enum: [json, csv], default: json }
+      responses:
+        '200': { description: Complete investor data package }
+
+  # ── Assets ────────────────────────────────────────────
+  /api/assets:
+    get:
+      tags: [Assets]
+      summary: List all assets
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Asset' }
+    post:
+      tags: [Assets]
+      summary: Create asset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, asset_type, total_units]
+              properties:
+                name: { type: string }
+                asset_type: { type: string }
+                total_units: { type: number }
+                fund_structure_id: { type: string, format: uuid }
+                unit_price: { type: number }
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Asset' }
+
+  /api/assets/{id}:
+    get:
+      tags: [Assets]
+      summary: Get asset by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Asset' }
+    patch:
+      tags: [Assets]
+      summary: Update asset
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Updated asset }
+    delete:
+      tags: [Assets]
+      summary: Delete asset
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204': { description: Deleted }
+
+  /api/assets/{id}/utilization:
+    get:
+      tags: [Assets]
+      summary: Get asset utilization stats
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Asset utilization data }
+
+  # ── Holdings ──────────────────────────────────────────
+  /api/holdings:
+    get:
+      tags: [Holdings]
+      summary: Get holdings by assetId or investorId
+      parameters:
+        - name: assetId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: investorId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Array of holdings }
+        '400': { description: Must provide assetId or investorId }
+    post:
+      tags: [Holdings]
+      summary: Allocate holding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [investor_id, asset_id, units, acquired_at]
+              properties:
+                investor_id: { type: string, format: uuid }
+                asset_id: { type: string, format: uuid }
+                units: { type: number, minimum: 0, exclusiveMinimum: true }
+                acquired_at: { type: string, format: date }
+      responses:
+        '201': { description: Holding created }
+
+  /api/holdings/cap-table/{assetId}:
+    get:
+      tags: [Holdings]
+      summary: Get cap table for asset
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Cap table data }
+
+  /api/holdings/cap-table/{assetId}/pdf:
+    get:
+      tags: [Holdings]
+      summary: Download cap table as PDF
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: PDF file
+          content:
+            application/pdf: {}
+
+  # ── Transfers ─────────────────────────────────────────
+  /api/transfers:
+    get:
+      tags: [Transfers]
+      summary: List transfers (optionally by assetId)
+      parameters:
+        - name: assetId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Array of transfers }
+    post:
+      tags: [Transfers]
+      summary: Execute transfer
+      description: "Auth: admin, compliance_officer. Returns 202 if pending approval."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [asset_id, from_investor_id, to_investor_id, units, execution_date]
+              properties:
+                asset_id: { type: string, format: uuid }
+                from_investor_id: { type: string, format: uuid }
+                to_investor_id: { type: string, format: uuid }
+                units: { type: number, minimum: 0, exclusiveMinimum: true }
+                execution_date: { type: string, format: date }
+      responses:
+        '201': { description: Transfer executed }
+        '202': { description: Transfer pending approval }
+
+  /api/transfers/simulate:
+    post:
+      tags: [Transfers]
+      summary: Simulate transfer (dry run)
+      description: "Auth: admin, compliance_officer"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [asset_id, from_investor_id, to_investor_id, units, execution_date]
+              properties:
+                asset_id: { type: string, format: uuid }
+                from_investor_id: { type: string, format: uuid }
+                to_investor_id: { type: string, format: uuid }
+                units: { type: number }
+                execution_date: { type: string, format: date }
+      responses:
+        '200': { description: Simulation result }
+
+  /api/transfers/pending:
+    get:
+      tags: [Transfers]
+      summary: List pending transfers
+      description: "Auth: admin, compliance_officer"
+      responses:
+        '200': { description: Array of pending transfers }
+
+  /api/transfers/{id}/approve:
+    post:
+      tags: [Transfers]
+      summary: Approve pending transfer
+      description: "Auth: admin, compliance_officer"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Transfer approved }
+
+  /api/transfers/{id}/reject:
+    post:
+      tags: [Transfers]
+      summary: Reject pending transfer
+      description: "Auth: admin, compliance_officer"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string }
+      responses:
+        '200': { description: Transfer rejected }
+
+  /api/transfers/history:
+    get:
+      tags: [Transfers]
+      summary: Get transfer history
+      parameters:
+        - name: assetId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Transfer history }
+
+  /api/transfers/history/{assetId}:
+    get:
+      tags: [Transfers]
+      summary: Get transfer history for asset
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Transfer history }
+
+  # ── Fund Structures ───────────────────────────────────
+  /api/fund-structures:
+    get:
+      tags: [Fund Structures]
+      summary: List all fund structures
+      responses:
+        '200': { description: Array of fund structures }
+    post:
+      tags: [Fund Structures]
+      summary: Create fund structure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, legal_form, domicile, regulatory_framework]
+              properties:
+                name: { type: string }
+                legal_form: { type: string }
+                domicile: { type: string }
+                regulatory_framework: { type: string }
+                aifm_name: { type: string }
+                aifm_lei: { type: string }
+                inception_date: { type: string, format: date }
+                target_size: { type: number }
+                currency: { type: string }
+                sfdr_classification: { type: string }
+                status: { type: string }
+                lmt_types: { type: array, items: { type: string } }
+      responses:
+        '201': { description: Fund created (may include AIFMD II warnings) }
+
+  /api/fund-structures/{id}:
+    get:
+      tags: [Fund Structures]
+      summary: Get fund structure by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Fund structure }
+    patch:
+      tags: [Fund Structures]
+      summary: Update fund structure
+      description: >
+        Activation blocked if AIFMD II requirements not met
+        (2 EU-resident senior persons, 2 LMTs for open-ended funds).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Updated }
+        '422': { description: Business logic error (AIFMD II requirements) }
+    delete:
+      tags: [Fund Structures]
+      summary: Delete fund structure
+      description: Blocked if linked assets exist.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Deleted }
+        '422': { description: Has linked assets }
+
+  # ── Rules ─────────────────────────────────────────────
+  /api/rules:
+    post:
+      tags: [Rules]
+      summary: Create or update rule set for an asset
+      description: "Auth: admin, compliance_officer"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [asset_id, qualification_required, lockup_days, jurisdiction_whitelist]
+              properties:
+                asset_id: { type: string, format: uuid }
+                qualification_required: { type: boolean }
+                lockup_days: { type: integer }
+                jurisdiction_whitelist: { type: array, items: { type: string } }
+                transfer_whitelist: { type: array, items: { type: string }, nullable: true }
+                investor_type_whitelist: { type: array, items: { type: string } }
+                minimum_investment: { type: number }
+                maximum_investors: { type: integer }
+                concentration_limit_pct: { type: number }
+                kyc_required: { type: boolean }
+      responses:
+        '201': { description: Rule set created/updated }
+
+  /api/rules/{assetId}:
+    get:
+      tags: [Rules]
+      summary: Get rule set for asset
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Rule set }
+
+  /api/rules/{assetId}/versions:
+    get:
+      tags: [Rules]
+      summary: Get rule version history
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Array of rule versions }
+
+  # ── Composite Rules ───────────────────────────────────
+  /api/composite-rules:
+    get:
+      tags: [Composite Rules]
+      summary: List composite rules for an asset
+      parameters:
+        - name: assetId
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Array of composite rules }
+    post:
+      tags: [Composite Rules]
+      summary: Create composite rule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [asset_id, name, operator, conditions]
+              properties:
+                asset_id: { type: string, format: uuid }
+                name: { type: string }
+                description: { type: string }
+                operator: { type: string, enum: [AND, OR, NOT] }
+                conditions: { type: array, items: { type: object } }
+                enabled: { type: boolean }
+      responses:
+        '201': { description: Created }
+
+  /api/composite-rules/{id}:
+    patch:
+      tags: [Composite Rules]
+      summary: Update composite rule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Updated }
+    delete:
+      tags: [Composite Rules]
+      summary: Delete composite rule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Deleted }
+
+  # ── Decision Records ──────────────────────────────────
+  /api/decisions:
+    get:
+      tags: [Decision Records]
+      summary: List decision records
+      description: "Auth: admin"
+      parameters:
+        - name: decision_type
+          in: query
+          schema: { type: string }
+        - name: result
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 50, maximum: 200 }
+        - name: offset
+          in: query
+          schema: { type: integer, default: 0 }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  decisions: { type: array, items: { $ref: '#/components/schemas/DecisionRecord' } }
+                  total: { type: integer }
+                  limit: { type: integer }
+                  offset: { type: integer }
+
+  /api/decisions/verify-chain:
+    get:
+      tags: [Decision Records]
+      summary: Verify integrity hash chain
+      responses:
+        '200': { description: Chain verification result }
+
+  /api/decisions/seal-all:
+    post:
+      tags: [Decision Records]
+      summary: Seal all unsealed decision records
+      description: "Auth: admin only"
+      responses:
+        '200': { description: Count of sealed records }
+
+  /api/decisions/asset/{assetId}:
+    get:
+      tags: [Decision Records]
+      summary: Get decisions for asset
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Array of decisions }
+
+  /api/decisions/investor/{investorId}:
+    get:
+      tags: [Decision Records]
+      summary: Get decisions for investor
+      parameters:
+        - name: investorId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Array of decisions }
+
+  /api/decisions/{id}:
+    get:
+      tags: [Decision Records]
+      summary: Get decision by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Decision record }
+
+  /api/decisions/{id}/explain:
+    get:
+      tags: [Decision Records]
+      summary: Get human-readable decision explanation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Decision explanation }
+
+  /api/decisions/{id}/evidence.pdf:
+    get:
+      tags: [Decision Records]
+      summary: Download decision evidence bundle as PDF
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          content:
+            application/pdf: {}
+
+  # ── Eligibility ───────────────────────────────────────
+  /api/eligibility/criteria:
+    post:
+      tags: [Eligibility]
+      summary: Create eligibility criteria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fund_structure_id, investor_type, jurisdiction]
+              properties:
+                fund_structure_id: { type: string, format: uuid }
+                investor_type: { type: string }
+                jurisdiction: { type: string }
+                minimum_investment: { type: number }
+                suitability_required: { type: boolean }
+                source_reference: { type: string }
+                effective_date: { type: string, format: date }
+                maximum_allocation_pct: { type: number }
+                documentation_required: { type: array, items: { type: string } }
+      responses:
+        '201': { description: Created }
+
+  /api/eligibility/check:
+    post:
+      tags: [Eligibility]
+      summary: Check investor eligibility for a fund
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [investor_id, fund_structure_id]
+              properties:
+                investor_id: { type: string, format: uuid }
+                fund_structure_id: { type: string, format: uuid }
+                investment_amount: { type: number }
+      responses:
+        '200': { description: Eligibility check result }
+
+  /api/eligibility/criteria/{id}/supersede:
+    put:
+      tags: [Eligibility]
+      summary: Supersede eligibility criteria (version it)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: New criteria version }
+
+  # ── Onboarding ────────────────────────────────────────
+  /api/onboarding:
+    get:
+      tags: [Onboarding]
+      summary: List onboarding records
+      parameters:
+        - name: asset_id
+          in: query
+          schema: { type: string, format: uuid }
+        - name: investor_id
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Array of onboarding records }
+    post:
+      tags: [Onboarding]
+      summary: Apply investor to fund
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [investor_id, asset_id, requested_units]
+              properties:
+                investor_id: { type: string, format: uuid }
+                asset_id: { type: string, format: uuid }
+                requested_units: { type: number }
+                owner_tag: { type: string }
+                handoff_notes: { type: string }
+      responses:
+        '201': { description: Onboarding record created }
+
+  /api/onboarding/{id}:
+    get:
+      tags: [Onboarding]
+      summary: Get onboarding record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Onboarding record }
+
+  /api/onboarding/{id}/check-eligibility:
+    post:
+      tags: [Onboarding]
+      summary: Run eligibility check on onboarding
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Eligibility result + decision record }
+
+  /api/onboarding/{id}/review:
+    post:
+      tags: [Onboarding]
+      summary: Approve or reject onboarding
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision]
+              properties:
+                decision: { type: string, enum: [approved, rejected] }
+                rejection_reasons: { type: array, items: { type: string } }
+      responses:
+        '200': { description: Review result }
+
+  /api/onboarding/{id}/allocate:
+    post:
+      tags: [Onboarding]
+      summary: Allocate units after approval
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Units allocated }
+
+  /api/onboarding/{id}/handoff:
+    patch:
+      tags: [Onboarding]
+      summary: Update handoff details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                owner_tag: { type: string }
+                handoff_notes: { type: string }
+      responses:
+        '200': { description: Updated }
+
+  # ── Reports ───────────────────────────────────────────
+  /api/reports/compliance/{fundStructureId}:
+    get:
+      tags: [Reports]
+      summary: Generate compliance report (JSON)
+      description: "Auth: admin"
+      parameters:
+        - name: fundStructureId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Compliance report data }
+
+  /api/reports/compliance/{fundStructureId}/pdf:
+    get:
+      tags: [Reports]
+      summary: Download compliance report as PDF
+      parameters:
+        - name: fundStructureId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          content:
+            application/pdf: {}
+
+  /api/reports/annex-iv/{fundStructureId}:
+    get:
+      tags: [Reports]
+      summary: Generate AIFMD Annex IV report (JSON)
+      parameters:
+        - name: fundStructureId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: start
+          in: query
+          schema: { type: string, format: date }
+        - name: end
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        '200': { description: Annex IV report }
+
+  /api/reports/annex-iv/{fundStructureId}/xml:
+    get:
+      tags: [Reports]
+      summary: Download Annex IV as ESMA XML
+      parameters:
+        - name: fundStructureId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: start
+          in: query
+          schema: { type: string, format: date }
+        - name: end
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          content:
+            application/xml: {}
+
+  /api/reports/annex-iv/aifm/{aifmLei}:
+    get:
+      tags: [Reports]
+      summary: AIFM-level aggregate Annex IV report
+      parameters:
+        - name: aifmLei
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Aggregate report for all funds under AIFM }
+
+  /api/reports/annex-iv/aifm/{aifmLei}/xml:
+    get:
+      tags: [Reports]
+      summary: AIFM-level aggregate Annex IV XML
+      parameters:
+        - name: aifmLei
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          content:
+            application/xml: {}
+
+  /api/reports/evidence-bundle/{fundStructureId}:
+    get:
+      tags: [Reports]
+      summary: Generate evidence bundle (JSON)
+      parameters:
+        - name: fundStructureId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: start
+          in: query
+          schema: { type: string, format: date }
+        - name: end
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        '200': { description: Evidence bundle data }
+
+  /api/reports/evidence-bundle/{fundStructureId}/download:
+    get:
+      tags: [Reports]
+      summary: Download evidence bundle as JSON file
+      parameters:
+        - name: fundStructureId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          content:
+            application/json: {}
+
+  /api/reports/audit-package/{fundId}:
+    get:
+      tags: [Reports]
+      summary: Generate audit package (JSON)
+      parameters:
+        - name: fundId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Audit package data }
+
+  /api/reports/audit-package/{fundId}/pdf:
+    get:
+      tags: [Reports]
+      summary: Download audit package as PDF
+      parameters:
+        - name: fundId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          content:
+            application/pdf: {}
+
+  # ── Dashboard ─────────────────────────────────────────
+  /api/dashboard:
+    get:
+      tags: [Dashboard]
+      summary: Dashboard overview
+      responses:
+        '200': { description: Dashboard stats (funds, investors, events, risk flags, decisions) }
+
+  /api/dashboard/overview:
+    get:
+      tags: [Dashboard]
+      summary: Dashboard overview (alias)
+      responses:
+        '200': { description: Same as /api/dashboard }
+
+  # ── Events ────────────────────────────────────────────
+  /api/events:
+    get:
+      tags: [Events]
+      summary: Query events
+      description: "Auth: admin"
+      parameters:
+        - name: entityType
+          in: query
+          schema: { type: string }
+        - name: entityId
+          in: query
+          schema: { type: string }
+        - name: eventType
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 100, maximum: 1000 }
+      responses:
+        '200': { description: Array of events }
+
+  # ── Webhooks ──────────────────────────────────────────
+  /api/webhooks:
+    get:
+      tags: [Webhooks]
+      summary: List webhooks
+      description: "Auth: admin"
+      responses:
+        '200': { description: Array of webhooks }
+    post:
+      tags: [Webhooks]
+      summary: Create webhook
+      description: "Auth: admin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              properties:
+                url: { type: string, format: uri }
+                event_types: { type: array, items: { type: string }, default: ['*'] }
+      responses:
+        '201': { description: Webhook created }
+
+  /api/webhooks/{id}:
+    patch:
+      tags: [Webhooks]
+      summary: Update webhook
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Updated }
+    delete:
+      tags: [Webhooks]
+      summary: Delete webhook
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Deleted }
+
+  /api/webhooks/{id}/deliveries:
+    get:
+      tags: [Webhooks]
+      summary: Get webhook delivery log
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20, maximum: 100 }
+      responses:
+        '200': { description: Array of deliveries }
+
+  # ── Templates ─────────────────────────────────────────
+  /api/templates:
+    get:
+      tags: [Templates]
+      summary: List regulatory rule templates
+      responses:
+        '200': { description: Template summaries }
+
+  /api/templates/{id}:
+    get:
+      tags: [Templates]
+      summary: Get template by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Full template with rules }
+
+  # ── Import ────────────────────────────────────────────
+  /api/import/bulk:
+    post:
+      tags: [Import]
+      summary: Bulk JSON import
+      description: "Auth: admin. Max 5000 entities."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fundStructures: { type: array, items: { type: object } }
+                investors: { type: array, items: { type: object } }
+                holdings: { type: array, items: { type: object } }
+                eligibilityCriteria: { type: array, items: { type: object } }
+      responses:
+        '201': { description: Import result }
+
+  /api/import/parse-csv:
+    post:
+      tags: [Import]
+      summary: Parse CSV and preview columns + auto-mapping
+      description: "Auth: admin"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, entityType]
+              properties:
+                file: { type: string, format: binary }
+                entityType: { type: string, enum: [investors, fund_structures, holdings, eligibility_criteria] }
+      responses:
+        '200': { description: Column preview + suggested mapping }
+
+  /api/import/csv:
+    post:
+      tags: [Import]
+      summary: Import from CSV with column mapping
+      description: "Auth: admin. Max 5000 rows."
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, entityType, columnMapping]
+              properties:
+                file: { type: string, format: binary }
+                entityType: { type: string, enum: [investors, fund_structures, holdings, eligibility_criteria] }
+                columnMapping: { type: string, description: JSON mapping object }
+                mode: { type: string, enum: [strict, best_effort], default: strict }
+      responses:
+        '201': { description: Import result }
+
+  /api/import/templates/{entityType}:
+    get:
+      tags: [Import]
+      summary: Download CSV template
+      parameters:
+        - name: entityType
+          in: path
+          required: true
+          schema: { type: string, enum: [investors, fund_structures, holdings, eligibility_criteria] }
+      responses:
+        '200':
+          content:
+            text/csv: {}
+
+  # ── Regulatory ────────────────────────────────────────
+  /api/regulatory/ingest:
+    post:
+      tags: [Regulatory]
+      summary: Ingest regulatory document for RAG
+      description: "Auth: admin only. Accepts PDF/TXT/MD/HTML (max 25MB)."
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+                documentTitle: { type: string }
+                jurisdiction: { type: string }
+                framework: { type: string }
+                metadata: { type: string, description: JSON metadata }
+      responses:
+        '201': { description: Document ingested with chunk count }
+
+  /api/regulatory/query:
+    post:
+      tags: [Regulatory]
+      summary: Query regulatory knowledge base
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question]
+              properties:
+                question: { type: string }
+                filters:
+                  type: object
+                  properties:
+                    jurisdiction: { type: string }
+                    framework: { type: string }
+                    documentTitle: { type: string }
+                topK: { type: integer }
+      responses:
+        '200': { description: Matching regulatory passages }
+
+  /api/regulatory/suggest-rules:
+    post:
+      tags: [Regulatory]
+      summary: AI-suggest compliance rules for a fund
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fundStructureId]
+              properties:
+                fundStructureId: { type: string, format: uuid }
+      responses:
+        '200': { description: Rule suggestions }
+
+  # ── Copilot ───────────────────────────────────────────
+  /api/copilot/chat:
+    post:
+      tags: [Copilot]
+      summary: Chat with compliance copilot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message: { type: string }
+                context:
+                  type: object
+                  properties:
+                    currentPage: { type: string }
+                    selectedEntityId: { type: string }
+                    selectedEntityType: { type: string }
+      responses:
+        '200': { description: Copilot response }
+
+  /api/copilot/feedback:
+    post:
+      tags: [Copilot]
+      summary: Submit feedback on copilot response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messageId, rating]
+              properties:
+                messageId: { type: string, format: uuid }
+                rating: { type: string, enum: [up, down] }
+      responses:
+        '200': { description: Feedback recorded }
+
+  # ── Calendar ──────────────────────────────────────────
+  /api/calendar:
+    get:
+      tags: [Calendar]
+      summary: Get compliance calendar events
+      parameters:
+        - name: from
+          in: query
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          schema: { type: string, format: date }
+        - name: category
+          in: query
+          schema: { type: string }
+        - name: severity
+          in: query
+          schema: { type: string }
+      responses:
+        '200': { description: Calendar events }
+
+  /api/calendar/alerts:
+    get:
+      tags: [Calendar]
+      summary: Upcoming alerts & overdue items
+      parameters:
+        - name: days
+          in: query
+          schema: { type: integer, default: 30, maximum: 365 }
+      responses:
+        '200': { description: Alerts with summary counts }
+
+  # ── Screening ─────────────────────────────────────────
+  /api/screening/{investorId}:
+    post:
+      tags: [Screening]
+      summary: Screen single investor against sanctions lists
+      parameters:
+        - name: investorId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Screening result }
+
+  /api/screening/bulk/run:
+    post:
+      tags: [Screening]
+      summary: Bulk screen all investors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fundStructureId: { type: string, format: uuid }
+      responses:
+        '200': { description: Bulk screening result }
+
+  # ── Readiness ─────────────────────────────────────────
+  /api/readiness:
+    get:
+      tags: [Readiness]
+      summary: Full AIFMD II readiness assessment
+      responses:
+        '200': { description: Questions, answers, and score }
+
+  /api/readiness/score:
+    get:
+      tags: [Readiness]
+      summary: Score only (for dashboard card)
+      responses:
+        '200': { description: Readiness score }
+
+  /api/readiness/{questionKey}:
+    put:
+      tags: [Readiness]
+      summary: Save/update one readiness answer
+      parameters:
+        - name: questionKey
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [yes, no, partial, na] }
+                notes: { type: string }
+      responses:
+        '200': { description: Updated assessment }
+
+  /api/readiness/history:
+    get:
+      tags: [Readiness]
+      summary: Past assessment snapshots
+      responses:
+        '200': { description: Snapshot history }
+
+  /api/readiness/export:
+    get:
+      tags: [Readiness]
+      summary: Export readiness assessment as PDF
+      parameters:
+        - name: lang
+          in: query
+          schema: { type: string, enum: [en, de], default: en }
+      responses:
+        '200':
+          content:
+            application/pdf: {}
+
+  # ── LMT ───────────────────────────────────────────────
+  /api/funds/{fundId}/lmts:
+    get:
+      tags: [LMT]
+      summary: List LMTs for fund
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+      responses:
+        '200': { description: Array of LMTs }
+    post:
+      tags: [LMT]
+      summary: Create LMT
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lmt_type]
+              properties:
+                lmt_type: { type: string }
+                activation_threshold: { type: string }
+                activation_policy: { type: string }
+                status: { type: string }
+                notes: { type: string }
+      responses:
+        '201': { description: LMT created }
+
+  /api/funds/{fundId}/lmts/{id}:
+    put:
+      tags: [LMT]
+      summary: Update LMT
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Updated }
+    delete:
+      tags: [LMT]
+      summary: Delete LMT
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Deleted }
+
+  /api/funds/{fundId}/lmts/{id}/activate:
+    post:
+      tags: [LMT]
+      summary: Activate LMT
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Activated }
+
+  /api/funds/{fundId}/lmts/{id}/deactivate:
+    post:
+      tags: [LMT]
+      summary: Deactivate LMT
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Deactivated }
+
+  # ── LMT Notifications ────────────────────────────────
+  /api/lmts/{lmtId}/notifications:
+    get:
+      tags: [LMT Notifications]
+      summary: List notifications for LMT
+      parameters:
+        - name: lmtId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Array of notifications }
+    post:
+      tags: [LMT Notifications]
+      summary: Create LMT notification
+      parameters:
+        - name: lmtId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [notification_type, notification_method]
+              properties:
+                notification_type: { type: string }
+                notification_date: { type: string, format: date }
+                notification_method: { type: string }
+                recipient_description: { type: string }
+                notes: { type: string }
+      responses:
+        '201': { description: Notification created }
+
+  # ── Delegations ───────────────────────────────────────
+  /api/funds/{fundId}/delegations:
+    get:
+      tags: [Delegations]
+      summary: List delegations for fund
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+      responses:
+        '200': { description: Array of delegations }
+    post:
+      tags: [Delegations]
+      summary: Create delegation
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [delegate_name, function_delegated, jurisdiction]
+              properties:
+                delegate_name: { type: string }
+                delegate_lei: { type: string }
+                function_delegated: { type: string }
+                jurisdiction: { type: string }
+                start_date: { type: string, format: date }
+                oversight_frequency: { type: string }
+                status: { type: string }
+                letterbox_risk: { type: boolean }
+                notes: { type: string }
+      responses:
+        '201': { description: Delegation created }
+
+  /api/funds/{fundId}/delegations/{id}:
+    put:
+      tags: [Delegations]
+      summary: Update delegation
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Updated }
+    delete:
+      tags: [Delegations]
+      summary: Delete delegation
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Deleted }
+
+  # ── Senior Persons ────────────────────────────────────
+  /api/funds/{fundId}/senior-persons:
+    get:
+      tags: [Senior Persons]
+      summary: List senior persons for fund
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+      responses:
+        '200': { description: Array of senior persons }
+    post:
+      tags: [Senior Persons]
+      summary: Create senior person
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [full_name, role, jurisdiction]
+              properties:
+                full_name: { type: string }
+                role: { type: string }
+                jurisdiction: { type: string }
+                eu_resident: { type: boolean }
+                start_date: { type: string, format: date }
+                notes: { type: string }
+      responses:
+        '201': { description: Created }
+
+  /api/funds/{fundId}/senior-persons/{id}:
+    patch:
+      tags: [Senior Persons]
+      summary: Update senior person
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Updated }
+    delete:
+      tags: [Senior Persons]
+      summary: Delete senior person
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Deleted }
+
+  # ── Fee Disclosures ───────────────────────────────────
+  /api/funds/{fundId}/fees:
+    get:
+      tags: [Fee Disclosures]
+      summary: List fee disclosures for fund
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+      responses:
+        '200': { description: Array of fees }
+    post:
+      tags: [Fee Disclosures]
+      summary: Create fee disclosure
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fee_type, fee_label]
+              properties:
+                fee_type: { type: string }
+                fee_label: { type: string }
+                fee_recipient: { type: string }
+                fee_rate_bps: { type: number }
+                fee_fixed_amount_cents: { type: integer }
+                fee_currency: { type: string }
+                frequency: { type: string }
+                disclosed_in_prospectus: { type: boolean }
+                notes: { type: string }
+      responses:
+        '201': { description: Created }
+
+  /api/funds/{fundId}/fees/{id}:
+    patch:
+      tags: [Fee Disclosures]
+      summary: Update fee disclosure
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Updated }
+    delete:
+      tags: [Fee Disclosures]
+      summary: Delete fee disclosure
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Deleted }
+
+  # ── Compliance Trend ──────────────────────────────────
+  /api/compliance/trend:
+    get:
+      tags: [Compliance Trend]
+      summary: 30-day compliance score trend
+      responses:
+        '200':
+          description: Score snapshots + trend direction
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  snapshots: { type: array }
+                  trend: { type: object }
+                  synthetic: { type: boolean, description: True if data is generated }
+
+  /api/compliance/snapshot:
+    post:
+      tags: [Compliance Trend]
+      summary: Record today's compliance snapshot
+      responses:
+        '200': { description: Snapshot recorded }
+
+  # ── Audit Trail ───────────────────────────────────────
+  /api/audit-trail:
+    get:
+      tags: [Audit Trail]
+      summary: Query audit log
+      description: "Auth: admin"
+      parameters:
+        - name: entity_type
+          in: query
+          schema: { type: string }
+        - name: entity_id
+          in: query
+          schema: { type: string }
+        - name: user_id
+          in: query
+          schema: { type: string }
+        - name: start_date
+          in: query
+          schema: { type: string, format: date }
+        - name: end_date
+          in: query
+          schema: { type: string, format: date }
+        - name: limit
+          in: query
+          schema: { type: integer }
+        - name: offset
+          in: query
+          schema: { type: integer }
+      responses:
+        '200': { description: Audit trail entries }
+
+  # ── Tenants ───────────────────────────────────────────
+  /api/tenants/current:
+    get:
+      tags: [Tenants]
+      summary: Get current tenant info
+      responses:
+        '200': { description: Tenant details }
+
+  /api/tenants:
+    get:
+      tags: [Tenants]
+      summary: List all tenants
+      description: "Auth: admin"
+      responses:
+        '200': { description: Array of tenants }
+
+  # ── Integrity ─────────────────────────────────────────
+  /api/public/integrity/verify:
+    get:
+      tags: [Integrity]
+      summary: Public integrity chain verification
+      security: []
+      description: Rate limited to 10 req/min per IP.
+      responses:
+        '200':
+          description: Chain verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid: { type: boolean }
+                  total_decisions_verified: { type: integer }
+                  verification_algorithm: { type: string }
+
+  /api/integrity/verify:
+    get:
+      tags: [Integrity]
+      summary: Authenticated integrity verification (detailed)
+      responses:
+        '200':
+          description: Chain verification with hash details
+
+  # ── News ──────────────────────────────────────────────
+  /api/news:
+    get:
+      tags: [News]
+      summary: Regulatory news feed
+      description: Aggregates RSS from BaFin, ESMA, ECB, EBA. Cached 30min.
+      responses:
+        '200':
+          description: Filtered regulatory news articles
+
+  # ── NL Rules ──────────────────────────────────────────
+  /api/nl-rules/from-natural-language:
+    post:
+      tags: [NL Rules]
+      summary: Compile natural language to compliance rule
+      description: Requires ANTHROPIC_API_KEY env.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [description, asset_id]
+              properties:
+                description: { type: string }
+                asset_id: { type: string, format: uuid }
+                context: { type: object }
+      responses:
+        '200': { description: Compiled rule }
+        '503': { description: AI service not configured }
+
+  # ── Rule Packs ────────────────────────────────────────
+  /api/rule-packs:
+    get:
+      tags: [Rule Packs]
+      summary: List available rule packs
+      responses:
+        '200': { description: Available AIFMD II rule packs }
+
+  /api/rule-packs/apply:
+    post:
+      tags: [Rule Packs]
+      summary: Apply rule pack to fund
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fund_structure_id]
+              properties:
+                fund_structure_id: { type: string, format: uuid }
+                legal_form: { type: string }
+      responses:
+        '201': { description: Rules applied }
+
+  # ── Scenarios ─────────────────────────────────────────
+  /api/scenarios/impact:
+    post:
+      tags: [Scenarios]
+      summary: Analyze what-if scenario impact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fund_structure_id, proposed_changes]
+              properties:
+                fund_structure_id: { type: string, format: uuid }
+                proposed_changes: { type: object }
+      responses:
+        '200': { description: Impact analysis }
+
+  # ── Investor Documents ────────────────────────────────
+  /api/investor-documents/{investorId}:
+    get:
+      tags: [Investor Documents]
+      summary: List documents for investor
+      parameters:
+        - name: investorId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Array of documents }
+
+  /api/investor-documents/{investorId}/upload:
+    post:
+      tags: [Investor Documents]
+      summary: Upload KYC document
+      description: Max 5MB. Accepts PDF, JPEG, PNG, TIFF, DOC, DOCX.
+      parameters:
+        - name: investorId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, document_type]
+              properties:
+                file: { type: string, format: binary }
+                document_type: { type: string }
+                expiry_date: { type: string, format: date }
+                notes: { type: string }
+      responses:
+        '201': { description: Document uploaded }
+
+  /api/investor-documents/file/{documentId}:
+    get:
+      tags: [Investor Documents]
+      summary: Download document file
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Document file }
+    delete:
+      tags: [Investor Documents]
+      summary: Delete document
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204': { description: Deleted }
+
+  /api/investor-documents/file/{documentId}/verify:
+    patch:
+      tags: [Investor Documents]
+      summary: Verify document
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Document verified }
+
+  /api/investor-documents/file/{documentId}/reject:
+    patch:
+      tags: [Investor Documents]
+      summary: Reject document
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Document rejected }
+
+  # ── Regulatory Identifiers ───────────────────────────
+  /api/funds/{fundId}/regulatory-identifiers:
+    get:
+      tags: [Regulatory Identifiers]
+      summary: Get regulatory IDs for fund
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+      responses:
+        '200': { description: Regulatory identifiers (LEI, ISIN, WKN, etc.) }
+    put:
+      tags: [Regulatory Identifiers]
+      summary: Set/update regulatory IDs
+      parameters:
+        - $ref: '#/components/parameters/fundId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lei_code: { type: string }
+                isin: { type: string }
+                wkn: { type: string }
+                bafin_id: { type: string }
+                giin: { type: string }
+                national_code: { type: string }
+                mic: { type: string }
+      responses:
+        '200': { description: Updated identifiers }

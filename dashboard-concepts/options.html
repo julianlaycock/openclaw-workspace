@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Dashboard — 4 Layout Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #121616;
+    --bg-secondary: #1a1f1f;
+    --bg-tertiary: #222828;
+    --edge: #2a3030;
+    --ink: #e8ecec;
+    --ink-secondary: #8a9a9a;
+    --ink-tertiary: #5a6a6a;
+    --accent: #C5E0EE;
+    --accent-dim: rgba(197,224,238,0.12);
+    --danger: #ef4444;
+    --danger-bg: rgba(239,68,68,0.1);
+    --warning: #f59e0b;
+    --warning-bg: rgba(245,158,11,0.1);
+    --success: #22c55e;
+    --success-bg: rgba(34,197,94,0.1);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#0a0d0d; color:var(--ink); padding:32px; }
+  h1.page-title { font-family:'Sora',sans-serif; font-size:28px; font-weight:800; margin-bottom:48px; text-align:center; color:var(--accent); letter-spacing:-0.5px; }
+  
+  .option { margin-bottom:80px; background:var(--bg); border-radius:16px; border:1px solid var(--edge); overflow:hidden; }
+  .option-header { padding:20px 28px; border-bottom:1px solid var(--edge); display:flex; justify-content:space-between; align-items:center; }
+  .option-header h2 { font-family:'Sora',sans-serif; font-size:16px; font-weight:700; color:var(--ink); }
+  .option-header .tag { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; background:var(--accent-dim); color:var(--accent); padding:4px 10px; border-radius:6px; border:1px solid rgba(197,224,238,0.2); }
+  .option-body { padding:28px; }
+  .option-rationale { padding:16px 28px; background:var(--bg-tertiary); border-top:1px solid var(--edge); font-size:12px; color:var(--ink-secondary); line-height:1.7; }
+  .option-rationale strong { color:var(--ink); }
+  
+  /* Dashboard simulation */
+  .dash { display:flex; flex-direction:column; gap:20px; }
+  .row { display:flex; gap:16px; }
+  .col-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .col-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+  .col-4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:16px; }
+  .col-2-1 { display:grid; grid-template-columns:2fr 1fr; gap:16px; }
+  .col-1-2 { display:grid; grid-template-columns:1fr 2fr; gap:16px; }
+  .col-3-1 { display:grid; grid-template-columns:3fr 1fr; gap:16px; }
+  .col-1-3 { display:grid; grid-template-columns:1fr 3fr; gap:16px; }
+  
+  .card { background:var(--bg-secondary); border:1px solid var(--edge); border-radius:12px; padding:16px; }
+  .card-sm { padding:12px 14px; }
+  .card-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-tertiary); margin-bottom:6px; }
+  .card-value { font-family:'Sora',sans-serif; font-size:22px; font-weight:700; color:var(--ink); }
+  .card-value-sm { font-size:16px; }
+  .card-sub { font-size:11px; color:var(--ink-secondary); margin-top:2px; }
+  .card-title { font-family:'Sora',sans-serif; font-size:13px; font-weight:600; color:var(--ink); margin-bottom:8px; }
+  .card-title-lg { font-size:14px; margin-bottom:12px; }
+  
+  .section-title { font-family:'Sora',sans-serif; font-size:13px; font-weight:700; color:var(--ink); letter-spacing:0.02em; }
+  .section-desc { font-size:11px; color:var(--ink-secondary); margin-top:2px; }
+  
+  .badge { display:inline-block; font-size:10px; font-weight:600; padding:2px 8px; border-radius:4px; text-transform:uppercase; letter-spacing:0.06em; }
+  .badge-green { background:var(--success-bg); color:var(--success); }
+  .badge-red { background:var(--danger-bg); color:var(--danger); }
+  .badge-yellow { background:var(--warning-bg); color:var(--warning); }
+  .badge-gray { background:var(--bg-tertiary); color:var(--ink-secondary); }
+  
+  .tab-bar { display:flex; gap:4px; padding:4px; background:var(--bg-tertiary); border-radius:8px; width:fit-content; margin-bottom:12px; }
+  .tab { padding:6px 14px; border-radius:6px; font-size:11px; font-weight:600; color:var(--ink-tertiary); cursor:pointer; border:1px solid transparent; }
+  .tab.active { background:var(--accent-dim); color:var(--ink); border-color:var(--accent); }
+  
+  .dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; }
+  .dot-green { background:var(--success); }
+  .dot-red { background:var(--danger); }
+  .dot-yellow { background:var(--warning); }
+  
+  .bar { height:6px; border-radius:3px; background:var(--bg-tertiary); overflow:hidden; margin-top:8px; }
+  .bar-fill { height:100%; border-radius:3px; }
+  .bar-green { background:var(--success); }
+  .bar-yellow { background:var(--warning); }
+  .bar-accent { background:var(--accent); }
+  
+  .table { width:100%; text-align:left; border-collapse:collapse; }
+  .table th { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-tertiary); padding:8px 12px; border-bottom:1px solid var(--edge); }
+  .table td { font-size:12px; padding:8px 12px; border-bottom:1px solid rgba(42,48,48,0.5); color:var(--ink-secondary); }
+  
+  .flag { display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:8px; font-size:12px; }
+  .flag-high { background:var(--danger-bg); color:var(--danger); border:1px solid rgba(239,68,68,0.15); }
+  .flag-medium { background:var(--warning-bg); color:var(--warning); border:1px solid rgba(245,158,11,0.15); }
+  
+  .action-item { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid rgba(42,48,48,0.5); }
+  .action-item:last-child { border-bottom:none; }
+  
+  .placeholder { height:140px; border-radius:8px; background:var(--bg-tertiary); display:flex; align-items:center; justify-content:center; color:var(--ink-tertiary); font-size:11px; border:1px dashed var(--edge); }
+  .placeholder-sm { height:80px; }
+  .placeholder-lg { height:200px; }
+  
+  .fund-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .fund-name { font-family:'Sora',sans-serif; font-size:13px; font-weight:600; color:var(--ink); }
+  .fund-meta { display:flex; gap:6px; margin-top:4px; }
+  
+  .header-row { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:4px; }
+  .header-title { font-family:'Sora',sans-serif; font-size:18px; font-weight:700; color:var(--ink); letter-spacing:-0.3px; }
+  .header-subtitle { font-size:12px; color:var(--ink-secondary); margin-top:2px; }
+  .date-chip { font-size:11px; color:var(--ink-secondary); background:var(--bg-tertiary); border:1px solid var(--edge); padding:4px 12px; border-radius:8px; }
+  
+  .compact-metric { display:flex; align-items:baseline; gap:6px; }
+  .sidebar-card { background:var(--bg-secondary); border:1px solid var(--edge); border-radius:12px; padding:14px; }
+  
+  .trend-up { color:var(--success); font-size:10px; }
+  .trend-down { color:var(--danger); font-size:10px; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Caelith Dashboard — 4 Layout Options</h1>
+
+<!-- ============================================================ -->
+<!-- OPTION A: Command Center -->
+<!-- ============================================================ -->
+<div class="option">
+  <div class="option-header">
+    <h2>Option A — Command Center</h2>
+    <span class="tag">Action-First</span>
+  </div>
+  <div class="option-body">
+    <div class="dash">
+      <!-- Header -->
+      <div class="header-row">
+        <div>
+          <div class="header-title">Compliance Overview</div>
+          <div class="header-subtitle">Regulatory status across all fund structures</div>
+        </div>
+        <span class="date-chip">20 Feb 2026</span>
+      </div>
+
+      <!-- Row 1: Action Queue (prominent) + KPI strip -->
+      <div class="col-2-1">
+        <!-- Left: Action Queue — the first thing you see -->
+        <div class="card">
+          <div class="card-title-lg" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>⚡ Action Queue</span>
+            <span class="badge badge-red">3 urgent</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="action-item" style="border-radius:8px;background:var(--danger-bg);border:1px solid rgba(239,68,68,0.12);">
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--danger);">KYC Renewals Overdue</div>
+                <div style="font-size:11px;color:var(--ink-secondary);">2 investors · expires within 30 days</div>
+              </div>
+              <span style="font-size:11px;color:var(--danger);cursor:pointer;">→ Review</span>
+            </div>
+            <div class="action-item" style="border-radius:8px;background:var(--danger-bg);border:1px solid rgba(239,68,68,0.12);">
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--danger);">High Risk Flags</div>
+                <div style="font-size:11px;color:var(--ink-secondary);">3 flags across 2 funds</div>
+              </div>
+              <span style="font-size:11px;color:var(--danger);cursor:pointer;">→ Investigate</span>
+            </div>
+            <div class="action-item" style="border-radius:8px;background:var(--warning-bg);border:1px solid rgba(245,158,11,0.12);">
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--warning);">Rejected Decisions</div>
+                <div style="font-size:11px;color:var(--ink-secondary);">5 decisions need attention</div>
+              </div>
+              <span style="font-size:11px;color:var(--warning);cursor:pointer;">→ Open</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right: KPI stack (vertical) -->
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="card card-sm">
+            <div class="card-label">Active Funds</div>
+            <div class="compact-metric"><span class="card-value card-value-sm">3</span><span class="trend-up">+1 this month</span></div>
+          </div>
+          <div class="card card-sm">
+            <div class="card-label">Verified Investors</div>
+            <div class="compact-metric"><span class="card-value card-value-sm">12</span><span class="trend-up">+3 this month</span></div>
+          </div>
+          <div class="card card-sm">
+            <div class="card-label">Units Allocated</div>
+            <div class="compact-metric"><span class="card-value card-value-sm">24.5K</span><span class="trend-up">+2.1K</span></div>
+          </div>
+          <div class="card card-sm" style="border-color:rgba(239,68,68,0.2);">
+            <div class="card-label" style="color:var(--danger);">Action Required</div>
+            <div class="compact-metric"><span class="card-value card-value-sm" style="color:var(--danger);">6</span><span class="trend-down">↑ from 3</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Fund cards (full width, 3 col) -->
+      <div>
+        <div class="section-title" style="margin-bottom:12px;">Fund Structures</div>
+        <div class="col-3">
+          <div class="card">
+            <div class="fund-header">
+              <div class="fund-name">Immobilien Spezial-AIF</div>
+              <div><span class="dot dot-red"></span><span style="font-size:11px;color:var(--danger);">2 issues</span></div>
+            </div>
+            <div class="fund-meta"><span class="badge badge-gray">InvKG</span><span class="badge badge-gray">DE</span></div>
+            <div class="bar"><div class="bar-fill bar-yellow" style="width:72%"></div></div>
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-top:4px;">72% capacity · 8 investors</div>
+          </div>
+          <div class="card">
+            <div class="fund-header">
+              <div class="fund-name">Wertpapier Dachfonds</div>
+              <div><span class="dot dot-green"></span><span style="font-size:11px;color:var(--success);">Compliant</span></div>
+            </div>
+            <div class="fund-meta"><span class="badge badge-gray">SICAV</span><span class="badge badge-gray">LU</span></div>
+            <div class="bar"><div class="bar-fill bar-green" style="width:45%"></div></div>
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-top:4px;">45% capacity · 3 investors</div>
+          </div>
+          <div class="card">
+            <div class="fund-header">
+              <div class="fund-name">Multi-Asset Opportunity</div>
+              <div><span class="dot dot-yellow"></span><span style="font-size:11px;color:var(--warning);">Review</span></div>
+            </div>
+            <div class="fund-meta"><span class="badge badge-gray">GmbH & Co. KG</span><span class="badge badge-gray">DE</span></div>
+            <div class="bar"><div class="bar-fill bar-accent" style="width:30%"></div></div>
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-top:4px;">30% capacity · 1 investor</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Analytics tabs + Recent Decisions side by side -->
+      <div class="col-2">
+        <div class="card">
+          <div class="tab-bar">
+            <div class="tab active">Status</div>
+            <div class="tab">Risk</div>
+            <div class="tab">Calendar</div>
+            <div class="tab">News</div>
+          </div>
+          <div class="col-2" style="gap:10px;">
+            <div class="placeholder placeholder-sm" style="font-size:10px;">Violations Chart</div>
+            <div class="placeholder placeholder-sm" style="font-size:10px;">KYC Pipeline</div>
+            <div class="placeholder placeholder-sm" style="font-size:10px;">Investor Types</div>
+            <div class="placeholder placeholder-sm" style="font-size:10px;">Jurisdictions</div>
+          </div>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div style="padding:14px 16px;border-bottom:1px solid var(--edge);">
+            <div class="card-title" style="margin:0;">Recent Decisions</div>
+          </div>
+          <table class="table">
+            <thead><tr><th>Time</th><th>Result</th><th>Asset</th></tr></thead>
+            <tbody>
+              <tr><td>14:23</td><td><span class="badge badge-green">pass</span></td><td>Share Class A</td></tr>
+              <tr><td>14:20</td><td><span class="badge badge-red">fail</span></td><td>Share Class B</td></tr>
+              <tr><td>13:45</td><td><span class="badge badge-green">pass</span></td><td>Share Class C</td></tr>
+              <tr><td>12:10</td><td><span class="badge badge-red">fail</span></td><td>Share Class A</td></tr>
+              <tr><td>11:30</td><td><span class="badge badge-green">pass</span></td><td>Share Class D</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="option-rationale">
+    <strong>Philosophy:</strong> Compliance officers open the dashboard to act, not to admire charts. Action Queue is the hero — it's the largest element, immediately visible. KPIs are stacked vertically on the right as reference context, not the focal point. Fund cards get their own row at 3-col for at-a-glance fund health. Analytics and decisions share equal weight at the bottom since they're investigative, not urgent. <strong>Best for:</strong> daily operations, "what do I need to fix right now?" workflow.
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- OPTION B: Executive Overview -->
+<!-- ============================================================ -->
+<div class="option">
+  <div class="option-header">
+    <h2>Option B — Executive Overview</h2>
+    <span class="tag">Status-First</span>
+  </div>
+  <div class="option-body">
+    <div class="dash">
+      <!-- Header -->
+      <div class="header-row">
+        <div>
+          <div class="header-title">Compliance Overview</div>
+          <div class="header-subtitle">Regulatory status across all fund structures</div>
+        </div>
+        <span class="date-chip">20 Feb 2026</span>
+      </div>
+
+      <!-- Row 1: Big compliance score + KPI strip -->
+      <div class="col-1-3">
+        <!-- Left: Overall health score -->
+        <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;">
+          <div style="width:80px;height:80px;border-radius:50%;border:3px solid var(--warning);display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
+            <span style="font-family:'Sora',sans-serif;font-size:28px;font-weight:800;color:var(--warning);">78</span>
+          </div>
+          <div style="font-size:12px;font-weight:600;color:var(--ink);">Compliance Score</div>
+          <div style="font-size:10px;color:var(--ink-secondary);margin-top:2px;">Review needed</div>
+        </div>
+        
+        <!-- Right: KPIs horizontal -->
+        <div class="col-4">
+          <div class="card card-sm">
+            <div class="card-label">Active Funds</div>
+            <div class="card-value card-value-sm">3</div>
+            <div class="card-sub">+1 this month</div>
+          </div>
+          <div class="card card-sm">
+            <div class="card-label">Verified Investors</div>
+            <div class="card-value card-value-sm">12</div>
+            <div class="card-sub">across all funds</div>
+          </div>
+          <div class="card card-sm">
+            <div class="card-label">Units Allocated</div>
+            <div class="card-value card-value-sm">24.5K</div>
+            <div class="card-sub">total allocated</div>
+          </div>
+          <div class="card card-sm" style="border-color:rgba(239,68,68,0.2);">
+            <div class="card-label" style="color:var(--danger);">Action Required</div>
+            <div class="card-value card-value-sm" style="color:var(--danger);">6</div>
+            <div class="card-sub">high + medium</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Fund cards (2 col) + Action queue (stacked right) -->
+      <div class="col-2-1">
+        <div>
+          <div class="section-title" style="margin-bottom:10px;">Fund Structures</div>
+          <div class="col-2">
+            <div class="card">
+              <div class="fund-header">
+                <div class="fund-name">Immobilien Spezial-AIF</div>
+                <div><span class="dot dot-red"></span><span style="font-size:11px;color:var(--danger);">Critical</span></div>
+              </div>
+              <div class="fund-meta"><span class="badge badge-gray">InvKG</span><span class="badge badge-gray">DE</span></div>
+              <div class="bar"><div class="bar-fill bar-yellow" style="width:72%"></div></div>
+              <div style="font-size:10px;color:var(--ink-tertiary);margin-top:4px;">72% capacity · 8 investors</div>
+            </div>
+            <div class="card">
+              <div class="fund-header">
+                <div class="fund-name">Wertpapier Dachfonds</div>
+                <div><span class="dot dot-green"></span><span style="font-size:11px;color:var(--success);">Compliant</span></div>
+              </div>
+              <div class="fund-meta"><span class="badge badge-gray">SICAV</span><span class="badge badge-gray">LU</span></div>
+              <div class="bar"><div class="bar-fill bar-green" style="width:45%"></div></div>
+              <div style="font-size:10px;color:var(--ink-tertiary);margin-top:4px;">45% capacity · 3 investors</div>
+            </div>
+            <div class="card" style="grid-column:span 2;">
+              <div class="fund-header">
+                <div class="fund-name">Multi-Asset Opportunity</div>
+                <div><span class="dot dot-yellow"></span><span style="font-size:11px;color:var(--warning);">Review</span></div>
+              </div>
+              <div class="fund-meta"><span class="badge badge-gray">GmbH & Co. KG</span><span class="badge badge-gray">DE</span></div>
+              <div class="bar"><div class="bar-fill bar-accent" style="width:30%"></div></div>
+              <div style="font-size:10px;color:var(--ink-tertiary);margin-top:4px;">30% capacity · 1 investor</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right: Action queue + Risk flags stacked -->
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="card" style="padding:0;overflow:hidden;">
+            <div style="padding:12px 14px;border-bottom:1px solid var(--edge);display:flex;justify-content:space-between;align-items:center;">
+              <div class="card-title" style="margin:0;font-size:12px;">Action Queue</div>
+              <span class="badge badge-red">3</span>
+            </div>
+            <div class="action-item"><div><span style="font-size:11px;font-weight:600;color:var(--danger);">KYC Renewals</span></div><span style="font-size:10px;color:var(--ink-tertiary);">2 inv.</span></div>
+            <div class="action-item"><div><span style="font-size:11px;font-weight:600;color:var(--danger);">High Risk</span></div><span style="font-size:10px;color:var(--ink-tertiary);">3 flags</span></div>
+            <div class="action-item"><div><span style="font-size:11px;font-weight:600;color:var(--warning);">Rejected</span></div><span style="font-size:10px;color:var(--ink-tertiary);">5 dec.</span></div>
+          </div>
+          <div class="card" style="padding:0;overflow:hidden;">
+            <div style="padding:12px 14px;border-bottom:1px solid var(--edge);">
+              <div class="card-title" style="margin:0;font-size:12px;">Risk Flags</div>
+            </div>
+            <div style="padding:8px;display:flex;flex-direction:column;gap:4px;">
+              <div class="flag flag-high" style="font-size:11px;">Concentration limit breach — Immobilien</div>
+              <div class="flag flag-high" style="font-size:11px;">KYC expired — 2 investors</div>
+              <div class="flag flag-medium" style="font-size:11px;">Leverage approaching 80%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Analytics full width -->
+      <div class="card">
+        <div class="tab-bar">
+          <div class="tab active">Status</div>
+          <div class="tab">Risk</div>
+          <div class="tab">Calendar</div>
+          <div class="tab">News</div>
+        </div>
+        <div class="col-3">
+          <div class="placeholder" style="font-size:10px;">Active Violations</div>
+          <div class="placeholder" style="font-size:10px;">KYC Pipeline</div>
+          <div class="placeholder" style="font-size:10px;">Audit Readiness</div>
+        </div>
+      </div>
+
+      <!-- Row 4: Recent decisions -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--edge);">
+          <div class="card-title" style="margin:0;">Recent Decisions</div>
+        </div>
+        <table class="table">
+          <thead><tr><th>Time</th><th>Type</th><th>Result</th><th>Asset</th><th>Checks</th></tr></thead>
+          <tbody>
+            <tr><td>14:23</td><td>eligibility</td><td><span class="badge badge-green">pass</span></td><td>Share Class A</td><td>All passed</td></tr>
+            <tr><td>14:20</td><td>transfer</td><td><span class="badge badge-red">fail</span></td><td>Share Class B</td><td>2 violations</td></tr>
+            <tr><td>13:45</td><td>eligibility</td><td><span class="badge badge-green">pass</span></td><td>Share Class C</td><td>All passed</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="option-rationale">
+    <strong>Philosophy:</strong> Leads with a composite compliance score — one number that tells you if things are fine or not. This is what a CEO/board member sees first. Funds + actions coexist in row 2 so the "what" (funds) and "so what" (actions) are always in peripheral vision together. Compact action queue on the right doesn't dominate but stays visible. <strong>Best for:</strong> executive reporting, board screenshots, "are we compliant?" at a glance.
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- OPTION C: Fund-Centric -->
+<!-- ============================================================ -->
+<div class="option">
+  <div class="option-header">
+    <h2>Option C — Fund-Centric</h2>
+    <span class="tag">Portfolio View</span>
+  </div>
+  <div class="option-body">
+    <div class="dash">
+      <!-- Header -->
+      <div class="header-row">
+        <div>
+          <div class="header-title">Compliance Overview</div>
+          <div class="header-subtitle">Regulatory status across all fund structures</div>
+        </div>
+        <span class="date-chip">20 Feb 2026</span>
+      </div>
+
+      <!-- Row 1: Compact KPI row -->
+      <div class="col-4">
+        <div class="card card-sm">
+          <div class="card-label">Active Funds</div>
+          <div class="compact-metric"><span class="card-value card-value-sm">3</span><span class="trend-up">+1</span></div>
+        </div>
+        <div class="card card-sm">
+          <div class="card-label">Verified Investors</div>
+          <div class="compact-metric"><span class="card-value card-value-sm">12</span><span class="trend-up">+3</span></div>
+        </div>
+        <div class="card card-sm">
+          <div class="card-label">Units Allocated</div>
+          <div class="compact-metric"><span class="card-value card-value-sm">24.5K</span></div>
+        </div>
+        <div class="card card-sm" style="border-color:rgba(239,68,68,0.2);">
+          <div class="card-label" style="color:var(--danger);">Action Required</div>
+          <div class="compact-metric"><span class="card-value card-value-sm" style="color:var(--danger);">6</span></div>
+        </div>
+      </div>
+
+      <!-- Row 2: EXPANDED Fund cards — each fund is a "mini dashboard" -->
+      <div class="section-title">Fund Structures</div>
+      
+      <!-- Fund 1 — expanded card -->
+      <div class="card" style="padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+          <div>
+            <div class="fund-name" style="font-size:15px;">Immobilien Spezial-AIF</div>
+            <div class="fund-meta" style="margin-top:6px;"><span class="badge badge-gray">InvKG</span><span class="badge badge-gray">DE</span><span class="badge badge-red">2 issues</span></div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:var(--ink);">8</div>
+            <div style="font-size:10px;color:var(--ink-secondary);">investors</div>
+          </div>
+        </div>
+        <div class="col-4" style="gap:10px;">
+          <div style="background:var(--bg-tertiary);border-radius:8px;padding:10px;">
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-bottom:4px;">Capacity</div>
+            <div class="bar" style="margin-top:0;"><div class="bar-fill bar-yellow" style="width:72%"></div></div>
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-top:4px;">72%</div>
+          </div>
+          <div style="background:var(--bg-tertiary);border-radius:8px;padding:10px;">
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-bottom:4px;">KYC Status</div>
+            <div style="font-size:12px;color:var(--danger);font-weight:600;">1 expired</div>
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-top:2px;">1 expiring</div>
+          </div>
+          <div style="background:var(--bg-tertiary);border-radius:8px;padding:10px;">
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-bottom:4px;">Risk Flags</div>
+            <div style="font-size:12px;color:var(--danger);font-weight:600;">2 high</div>
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-top:2px;">1 medium</div>
+          </div>
+          <div style="background:var(--bg-tertiary);border-radius:8px;padding:10px;">
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-bottom:4px;">Last Decision</div>
+            <div style="font-size:12px;font-weight:600;"><span class="badge badge-red">fail</span></div>
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-top:2px;">14:20 today</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fund 2 -->
+      <div class="card" style="padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+          <div>
+            <div class="fund-name" style="font-size:15px;">Wertpapier Dachfonds</div>
+            <div class="fund-meta" style="margin-top:6px;"><span class="badge badge-gray">SICAV</span><span class="badge badge-gray">LU</span><span class="badge badge-green">Compliant</span></div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:var(--ink);">3</div>
+            <div style="font-size:10px;color:var(--ink-secondary);">investors</div>
+          </div>
+        </div>
+        <div class="col-4" style="gap:10px;">
+          <div style="background:var(--bg-tertiary);border-radius:8px;padding:10px;">
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-bottom:4px;">Capacity</div>
+            <div class="bar" style="margin-top:0;"><div class="bar-fill bar-green" style="width:45%"></div></div>
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-top:4px;">45%</div>
+          </div>
+          <div style="background:var(--bg-tertiary);border-radius:8px;padding:10px;">
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-bottom:4px;">KYC Status</div>
+            <div style="font-size:12px;color:var(--success);font-weight:600;">All valid</div>
+          </div>
+          <div style="background:var(--bg-tertiary);border-radius:8px;padding:10px;">
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-bottom:4px;">Risk Flags</div>
+            <div style="font-size:12px;color:var(--success);font-weight:600;">None</div>
+          </div>
+          <div style="background:var(--bg-tertiary);border-radius:8px;padding:10px;">
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-bottom:4px;">Last Decision</div>
+            <div style="font-size:12px;font-weight:600;"><span class="badge badge-green">pass</span></div>
+            <div style="font-size:10px;color:var(--ink-tertiary);margin-top:2px;">13:45 today</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fund 3 (collapsed) -->
+      <div class="card" style="padding:14px 20px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="dot dot-yellow"></span>
+          <div>
+            <div class="fund-name">Multi-Asset Opportunity</div>
+            <div class="fund-meta" style="margin-top:3px;"><span class="badge badge-gray">GmbH & Co. KG</span><span class="badge badge-gray">DE</span></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:20px;">
+          <div style="text-align:center;"><div style="font-size:14px;font-weight:600;">1</div><div style="font-size:9px;color:var(--ink-tertiary);">investor</div></div>
+          <div style="text-align:center;"><div style="font-size:14px;font-weight:600;">30%</div><div style="font-size:9px;color:var(--ink-tertiary);">capacity</div></div>
+          <span class="badge badge-yellow">Review</span>
+          <span style="font-size:11px;color:var(--ink-tertiary);cursor:pointer;">Expand ↓</span>
+        </div>
+      </div>
+
+      <!-- Row 3: Analytics + Decisions split -->
+      <div class="col-2">
+        <div class="card">
+          <div class="tab-bar">
+            <div class="tab active">Status</div>
+            <div class="tab">Risk</div>
+            <div class="tab">Calendar</div>
+            <div class="tab">News</div>
+          </div>
+          <div class="col-2" style="gap:10px;">
+            <div class="placeholder placeholder-sm" style="font-size:10px;">Violations</div>
+            <div class="placeholder placeholder-sm" style="font-size:10px;">KYC Pipeline</div>
+          </div>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div style="padding:12px 16px;border-bottom:1px solid var(--edge);">
+            <div class="card-title" style="margin:0;">Recent Decisions</div>
+          </div>
+          <table class="table">
+            <thead><tr><th>Time</th><th>Result</th><th>Fund</th></tr></thead>
+            <tbody>
+              <tr><td>14:23</td><td><span class="badge badge-green">pass</span></td><td>Immobilien</td></tr>
+              <tr><td>14:20</td><td><span class="badge badge-red">fail</span></td><td>Immobilien</td></tr>
+              <tr><td>13:45</td><td><span class="badge badge-green">pass</span></td><td>Wertpapier</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="option-rationale">
+    <strong>Philosophy:</strong> Funds ARE the dashboard. Each fund is an expanded mini-dashboard showing capacity, KYC health, risk flags, and last decision inline. No need to click through to a fund detail page for the 80% case. Funds with issues auto-expand; clean funds can collapse to a single row. This maps to how a compliance officer actually thinks: "How is Fund X doing? Fund Y?" — not "Show me a chart." <strong>Best for:</strong> KVGs with 3-15 funds where per-fund context is critical. Scales poorly above ~20 funds.
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- OPTION D: Split-Panel Workflow -->
+<!-- ============================================================ -->
+<div class="option">
+  <div class="option-header">
+    <h2>Option D — Split-Panel Workflow</h2>
+    <span class="tag">Two-Column</span>
+  </div>
+  <div class="option-body">
+    <div class="dash">
+      <!-- Header -->
+      <div class="header-row">
+        <div>
+          <div class="header-title">Compliance Overview</div>
+          <div class="header-subtitle">Regulatory status across all fund structures</div>
+        </div>
+        <span class="date-chip">20 Feb 2026</span>
+      </div>
+
+      <!-- Full-width KPI row -->
+      <div class="col-4">
+        <div class="card card-sm">
+          <div class="card-label">Active Funds</div>
+          <div class="compact-metric"><span class="card-value card-value-sm">3</span><span class="trend-up">+1</span></div>
+        </div>
+        <div class="card card-sm">
+          <div class="card-label">Verified Investors</div>
+          <div class="compact-metric"><span class="card-value card-value-sm">12</span><span class="trend-up">+3</span></div>
+        </div>
+        <div class="card card-sm">
+          <div class="card-label">Units Allocated</div>
+          <div class="compact-metric"><span class="card-value card-value-sm">24.5K</span></div>
+        </div>
+        <div class="card card-sm" style="border-color:rgba(239,68,68,0.2);">
+          <div class="card-label" style="color:var(--danger);">Action Required</div>
+          <div class="compact-metric"><span class="card-value card-value-sm" style="color:var(--danger);">6</span></div>
+        </div>
+      </div>
+
+      <!-- Main 2-column layout: LEFT = primary content, RIGHT = persistent sidebar -->
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start;">
+        <!-- LEFT COLUMN -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <!-- Fund cards -->
+          <div>
+            <div class="section-title" style="margin-bottom:10px;">Fund Structures</div>
+            <div class="col-2">
+              <div class="card">
+                <div class="fund-header">
+                  <div class="fund-name">Immobilien Spezial-AIF</div>
+                  <div><span class="dot dot-red"></span><span style="font-size:11px;color:var(--danger);">Critical</span></div>
+                </div>
+                <div class="fund-meta"><span class="badge badge-gray">InvKG</span><span class="badge badge-gray">DE</span></div>
+                <div class="bar"><div class="bar-fill bar-yellow" style="width:72%"></div></div>
+                <div style="font-size:10px;color:var(--ink-tertiary);margin-top:4px;">72% · 8 investors</div>
+              </div>
+              <div class="card">
+                <div class="fund-header">
+                  <div class="fund-name">Wertpapier Dachfonds</div>
+                  <div><span class="dot dot-green"></span><span style="font-size:11px;color:var(--success);">OK</span></div>
+                </div>
+                <div class="fund-meta"><span class="badge badge-gray">SICAV</span><span class="badge badge-gray">LU</span></div>
+                <div class="bar"><div class="bar-fill bar-green" style="width:45%"></div></div>
+                <div style="font-size:10px;color:var(--ink-tertiary);margin-top:4px;">45% · 3 investors</div>
+              </div>
+              <div class="card" style="grid-column:span 2;">
+                <div class="fund-header">
+                  <div class="fund-name">Multi-Asset Opportunity</div>
+                  <div><span class="dot dot-yellow"></span><span style="font-size:11px;color:var(--warning);">Review</span></div>
+                </div>
+                <div class="fund-meta"><span class="badge badge-gray">GmbH & Co. KG</span><span class="badge badge-gray">DE</span></div>
+                <div class="bar"><div class="bar-fill bar-accent" style="width:30%"></div></div>
+                <div style="font-size:10px;color:var(--ink-tertiary);margin-top:4px;">30% · 1 investor</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analytics -->
+          <div class="card">
+            <div class="tab-bar">
+              <div class="tab active">Status</div>
+              <div class="tab">Risk</div>
+              <div class="tab">Calendar</div>
+              <div class="tab">News</div>
+            </div>
+            <div class="col-3" style="gap:10px;">
+              <div class="placeholder" style="font-size:10px;">Violations</div>
+              <div class="placeholder" style="font-size:10px;">KYC Pipeline</div>
+              <div class="placeholder" style="font-size:10px;">Audit Readiness</div>
+            </div>
+          </div>
+
+          <!-- Decisions table -->
+          <div class="card" style="padding:0;overflow:hidden;">
+            <div style="padding:14px 16px;border-bottom:1px solid var(--edge);">
+              <div class="card-title" style="margin:0;">Recent Decisions</div>
+            </div>
+            <table class="table">
+              <thead><tr><th>Time</th><th>Type</th><th>Result</th><th>Asset</th><th>Checks</th></tr></thead>
+              <tbody>
+                <tr><td>14:23</td><td>eligibility</td><td><span class="badge badge-green">pass</span></td><td>Share Class A</td><td>All passed</td></tr>
+                <tr><td>14:20</td><td>transfer</td><td><span class="badge badge-red">fail</span></td><td>Share Class B</td><td>2 violations</td></tr>
+                <tr><td>13:45</td><td>eligibility</td><td><span class="badge badge-green">pass</span></td><td>Share Class C</td><td>All passed</td></tr>
+                <tr><td>12:10</td><td>transfer</td><td><span class="badge badge-red">fail</span></td><td>Share Class A</td><td>1 violation</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN — persistent sidebar -->
+        <div style="display:flex;flex-direction:column;gap:12px;position:sticky;top:20px;">
+          <!-- Action Queue -->
+          <div class="sidebar-card" style="padding:0;overflow:hidden;">
+            <div style="padding:12px 14px;border-bottom:1px solid var(--edge);display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-family:'Sora',sans-serif;font-size:12px;font-weight:700;color:var(--ink);">⚡ Action Queue</div>
+              <span class="badge badge-red">3</span>
+            </div>
+            <div class="action-item"><div><span style="font-size:11px;font-weight:600;color:var(--danger);">KYC Renewals Overdue</span><br><span style="font-size:10px;color:var(--ink-tertiary);">2 investors</span></div></div>
+            <div class="action-item"><div><span style="font-size:11px;font-weight:600;color:var(--danger);">High Risk Flags</span><br><span style="font-size:10px;color:var(--ink-tertiary);">3 across 2 funds</span></div></div>
+            <div class="action-item"><div><span style="font-size:11px;font-weight:600;color:var(--warning);">Rejected Decisions</span><br><span style="font-size:10px;color:var(--ink-tertiary);">5 need review</span></div></div>
+            <div class="action-item"><div><span style="font-size:11px;font-weight:600;color:var(--warning);">Onboarding Queue</span><br><span style="font-size:10px;color:var(--ink-tertiary);">4 pending</span></div></div>
+          </div>
+
+          <!-- Risk Flags -->
+          <div class="sidebar-card" style="padding:0;overflow:hidden;">
+            <div style="padding:12px 14px;border-bottom:1px solid var(--edge);">
+              <div style="font-family:'Sora',sans-serif;font-size:12px;font-weight:700;color:var(--ink);">Risk Flags</div>
+            </div>
+            <div style="padding:8px;display:flex;flex-direction:column;gap:4px;">
+              <div class="flag flag-high" style="font-size:10px;">Concentration breach — Immobilien</div>
+              <div class="flag flag-high" style="font-size:10px;">KYC expired — 2 investors</div>
+              <div class="flag flag-high" style="font-size:10px;">Leverage limit — Immobilien</div>
+              <div class="flag flag-medium" style="font-size:10px;">Leverage approaching 80%</div>
+              <div class="flag flag-medium" style="font-size:10px;">Missing documentation</div>
+            </div>
+          </div>
+
+          <!-- Regulatory Calendar mini -->
+          <div class="sidebar-card">
+            <div style="font-family:'Sora',sans-serif;font-size:12px;font-weight:700;color:var(--ink);margin-bottom:10px;">Upcoming Deadlines</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;">
+                <span style="color:var(--ink-secondary);">AIFMD II Annex IV</span>
+                <span style="color:var(--warning);font-weight:600;">Mar 15</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;">
+                <span style="color:var(--ink-secondary);">BaFin Annual Report</span>
+                <span style="color:var(--ink-tertiary);">Apr 30</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;">
+                <span style="color:var(--ink-secondary);">AMLR Implementation</span>
+                <span style="color:var(--ink-tertiary);">Jul 2027</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="option-rationale">
+    <strong>Philosophy:</strong> Persistent right sidebar keeps action items, risk flags, and deadlines always visible while you scroll the main content. This is the "email client" pattern — content left, alerts right. The sidebar is sticky so it follows you down the page. Eliminates the current problem where you scroll past the action queue and lose sight of urgent items while looking at charts. <strong>Best for:</strong> compliance officers who work in the dashboard all day and need persistent awareness of outstanding items.
+  </div>
+</div>
+
+<div style="text-align:center;padding:40px;color:var(--ink-tertiary);font-size:12px;">
+  — End of 4 options —
+</div>
+
+</body>
+</html>

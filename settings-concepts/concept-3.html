@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Settings — Concept 3: Single Scrollable Page</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #0e0e10; color: #C5E0EE; min-height: 100vh; }
+
+  .container { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* Page header */
+  .page-header { margin-bottom: 40px; }
+  .page-header h1 { font-size: 26px; font-weight: 800; color: #e8eff4; letter-spacing: -0.04em; margin-bottom: 6px; }
+  .page-header p { font-size: 14px; color: rgba(197,224,238,0.4); }
+
+  /* Jump nav */
+  .jump-nav {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 36px; padding-bottom: 20px;
+    border-bottom: 1px solid rgba(197,224,238,0.06);
+  }
+  .jump-link {
+    padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
+    color: rgba(197,224,238,0.45); text-decoration: none; transition: all 0.15s;
+    border: 1px solid rgba(197,224,238,0.06); background: rgba(197,224,238,0.02);
+  }
+  .jump-link:hover { color: rgba(197,224,238,0.7); background: rgba(197,224,238,0.06); border-color: rgba(197,224,238,0.1); }
+
+  /* Section */
+  .settings-section { margin-bottom: 48px; scroll-margin-top: 24px; }
+  .section-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+    color: rgba(197,224,238,0.35); margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: rgba(197,224,238,0.06); }
+
+  /* Card */
+  .card {
+    background: rgba(197,224,238,0.03); border: 1px solid rgba(197,224,238,0.07);
+    border-radius: 14px; padding: 24px; margin-bottom: 16px;
+    backdrop-filter: blur(12px);
+  }
+  .card h3 { font-size: 14px; font-weight: 600; color: #dceef7; margin-bottom: 3px; }
+  .card .desc { font-size: 12px; color: rgba(197,224,238,0.4); margin-bottom: 16px; }
+
+  /* Form */
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { display: block; font-size: 12px; font-weight: 500; color: rgba(197,224,238,0.55); margin-bottom: 5px; }
+  .field input, .field select {
+    width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid rgba(197,224,238,0.1);
+    background: rgba(197,224,238,0.04); color: #e8eff4; font-size: 13px; font-family: inherit; outline: none;
+  }
+  .field input:focus, .field select:focus { border-color: rgba(197,224,238,0.25); }
+  .field input::placeholder { color: rgba(197,224,238,0.25); }
+  .read-only { background: rgba(197,224,238,0.02) !important; color: rgba(197,224,238,0.45) !important; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  /* Toggle */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(197,224,238,0.04); }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-label { font-size: 13px; color: rgba(197,224,238,0.7); }
+  .toggle-sublabel { font-size: 11px; color: rgba(197,224,238,0.3); margin-top: 1px; }
+  .toggle {
+    width: 38px; height: 21px; border-radius: 11px; background: rgba(197,224,238,0.12);
+    position: relative; cursor: pointer; transition: background 0.2s; border: none; flex-shrink: 0;
+  }
+  .toggle::after {
+    content: ''; position: absolute; top: 3px; left: 3px; width: 15px; height: 15px;
+    border-radius: 50%; background: rgba(197,224,238,0.5); transition: all 0.2s;
+  }
+  .toggle.on { background: rgba(197,224,238,0.3); }
+  .toggle.on::after { left: 20px; background: #C5E0EE; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px;
+    font-size: 13px; font-weight: 500; border: none; cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .btn-primary { background: rgba(197,224,238,0.12); color: #C5E0EE; border: 1px solid rgba(197,224,238,0.15); }
+  .btn-primary:hover { background: rgba(197,224,238,0.18); }
+  .btn-ghost { background: none; color: rgba(197,224,238,0.5); border: 1px solid rgba(197,224,238,0.08); }
+  .btn-ghost:hover { background: rgba(197,224,238,0.04); }
+  .btn-danger { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+  .btn-danger:hover { background: rgba(239,68,68,0.18); }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background: rgba(197,224,238,0.08); color: rgba(197,224,238,0.6); }
+  .badge-pro { background: rgba(52,211,153,0.1); color: #34d399; }
+
+  /* Segmented */
+  .segmented { display: inline-flex; background: rgba(197,224,238,0.04); border-radius: 9px; padding: 3px; border: 1px solid rgba(197,224,238,0.06); }
+  .seg-btn { padding: 6px 18px; border-radius: 7px; border: none; font-size: 12px; font-weight: 500; color: rgba(197,224,238,0.5); background: none; cursor: pointer; font-family: inherit; }
+  .seg-btn.active { background: rgba(197,224,238,0.1); color: #e8eff4; }
+
+  /* Table */
+  .mini-table { width: 100%; font-size: 12px; border-collapse: collapse; }
+  .mini-table th { text-align: left; color: rgba(197,224,238,0.4); font-weight: 500; padding: 8px 0; border-bottom: 1px solid rgba(197,224,238,0.06); }
+  .mini-table td { padding: 9px 0; border-bottom: 1px solid rgba(197,224,238,0.04); color: rgba(197,224,238,0.65); }
+
+  /* Danger */
+  .danger-zone { border: 1px solid rgba(239,68,68,0.15); background: rgba(239,68,68,0.03); border-radius: 14px; padding: 24px; }
+  .danger-zone h3 { color: #f87171; }
+
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: #1a1a1c; border: 1px solid rgba(197,224,238,0.1); border-radius: 14px; padding: 28px; width: 420px; max-width: 90vw; }
+  .modal h3 { font-size: 16px; font-weight: 700; color: #f87171; margin-bottom: 8px; }
+  .modal p { font-size: 13px; color: rgba(197,224,238,0.6); margin-bottom: 16px; line-height: 1.5; }
+  .modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+  /* Back to top */
+  .back-top { position: fixed; bottom: 24px; right: 24px; width: 36px; height: 36px; border-radius: 10px; background: rgba(197,224,238,0.06); border: 1px solid rgba(197,224,238,0.1); color: rgba(197,224,238,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .back-top:hover { background: rgba(197,224,238,0.1); color: rgba(197,224,238,0.7); }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="page-header">
+    <h1>Settings</h1>
+    <p>Everything in one place — scroll through or jump to a section</p>
+  </div>
+
+  <div class="jump-nav">
+    <a href="#account" class="jump-link">Account</a>
+    <a href="#appearance" class="jump-link">Appearance</a>
+    <a href="#data" class="jump-link">Data</a>
+    <a href="#notifications" class="jump-link">Notifications</a>
+    <a href="#security" class="jump-link">Security</a>
+    <a href="#org" class="jump-link">Organization</a>
+    <a href="#regulatory" class="jump-link">Regulatory</a>
+  </div>
+
+  <!-- ACCOUNT -->
+  <div class="settings-section" id="account">
+    <div class="section-label">Account & Profile</div>
+    <div class="card">
+      <h3>Profile Information</h3>
+      <p class="desc">Your personal details</p>
+      <div class="field-row">
+        <div class="field"><label>Full Name</label><input type="text" value="Julian Laycock"></div>
+        <div class="field"><label>Email</label><input type="email" value="julian@caelith.eu"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Role</label><input type="text" value="Administrator" class="read-only" readonly></div>
+        <div class="field"><label>Member Since</label><input type="text" value="January 2025" class="read-only" readonly></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-primary">Save Changes</button></div>
+    </div>
+    <div class="card">
+      <h3>Change Password</h3>
+      <p class="desc">Must be at least 12 characters</p>
+      <div class="field"><label>Current Password</label><input type="password" placeholder="Enter current password"></div>
+      <div class="field-row">
+        <div class="field"><label>New Password</label><input type="password" placeholder="New password"></div>
+        <div class="field"><label>Confirm</label><input type="password" placeholder="Confirm"></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-primary">Update Password</button></div>
+    </div>
+  </div>
+
+  <!-- APPEARANCE -->
+  <div class="settings-section" id="appearance">
+    <div class="section-label">Appearance</div>
+    <div class="card">
+      <h3>Theme</h3>
+      <p class="desc">Choose your preferred color scheme</p>
+      <div class="segmented">
+        <button class="seg-btn active">🌙 Dark</button>
+        <button class="seg-btn">☀️ Light</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Language</h3>
+      <p class="desc">Interface language</p>
+      <div class="segmented">
+        <button class="seg-btn active">🇬🇧 English</button>
+        <button class="seg-btn">🇩🇪 Deutsch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA -->
+  <div class="settings-section" id="data">
+    <div class="section-label">Data Management</div>
+    <div class="card">
+      <h3>Export</h3>
+      <p class="desc">Download all your platform data</p>
+      <div style="display:flex;gap:10px"><button class="btn btn-primary">📦 Export CSV</button><button class="btn btn-ghost">📄 Export JSON</button></div>
+    </div>
+    <div class="card">
+      <h3>Import History</h3>
+      <p class="desc">Recent CSV imports</p>
+      <table class="mini-table">
+        <thead><tr><th>Date</th><th>File</th><th>Records</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>2026-02-20</td><td>investors_q1.csv</td><td>142</td><td><span class="badge">✓ Done</span></td></tr>
+          <tr><td>2026-02-18</td><td>funds_update.csv</td><td>23</td><td><span class="badge">✓ Done</span></td></tr>
+          <tr><td>2026-02-15</td><td>holdings_feb.csv</td><td>1,204</td><td><span class="badge">✓ Done</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="danger-zone">
+      <h3>⚠ Danger Zone</h3>
+      <p class="desc">Permanently delete all funds, investors, holdings, and compliance data. Your account and settings are preserved.</p>
+      <button class="btn btn-danger" onclick="document.getElementById('reset-modal').classList.add('show')">🗑 Reset All Account Data</button>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="settings-section" id="notifications">
+    <div class="section-label">Notifications & Alerts</div>
+    <div class="card">
+      <div class="toggle-row"><div><div class="toggle-label">Compliance deadline reminders</div><div class="toggle-sublabel">7, 3, and 1 day before deadlines</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="toggle-row"><div><div class="toggle-label">Rule breach alerts</div><div class="toggle-sublabel">Immediate email on compliance breach</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="toggle-row"><div><div class="toggle-label">Weekly compliance digest</div><div class="toggle-sublabel">Monday morning summary</div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+      <div class="toggle-row"><div><div class="toggle-label">KYC document submissions</div><div class="toggle-sublabel">New onboarding alerts</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="toggle-row"><div><div class="toggle-label">Annex IV reporting reminders</div><div class="toggle-sublabel">Quarterly deadline notifications</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+  </div>
+
+  <!-- SECURITY -->
+  <div class="settings-section" id="security">
+    <div class="section-label">Security</div>
+    <div class="card">
+      <h3>Two-Factor Authentication</h3>
+      <div class="toggle-row"><div><div class="toggle-label">Enable 2FA</div><div class="toggle-sublabel">Authenticator app on login</div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+    <div class="card">
+      <h3>Active Sessions</h3>
+      <table class="mini-table">
+        <thead><tr><th>Device</th><th>Location</th><th>Last Active</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>Chrome · Windows</td><td>Frankfurt</td><td>Now</td><td></td></tr>
+          <tr><td>Safari · macOS</td><td>Munich</td><td>2h ago</td><td><button class="btn btn-ghost" style="padding:3px 8px;font-size:11px">Revoke</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3>API Keys</h3>
+      <table class="mini-table">
+        <thead><tr><th>Name</th><th>Created</th><th>Last Used</th><th></th></tr></thead>
+        <tbody><tr><td>CI/CD Pipeline</td><td>Jan 15</td><td>Today</td><td><button class="btn btn-ghost" style="padding:3px 8px;font-size:11px">Revoke</button></td></tr></tbody>
+      </table>
+      <div style="margin-top:12px"><button class="btn btn-primary">+ Generate Key</button></div>
+    </div>
+  </div>
+
+  <!-- ORGANIZATION -->
+  <div class="settings-section" id="org">
+    <div class="section-label">Organization</div>
+    <div class="card">
+      <div class="field-row">
+        <div class="field"><label>Company Name</label><input type="text" value="Caelith GmbH"></div>
+        <div class="field"><label>BaFin Reg. No.</label><input type="text" value="KVG-2024-0042" class="read-only" readonly></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Tenant ID</label><input type="text" value="tenant_caelith_prod_01" class="read-only" readonly></div>
+        <div class="field"><label>Subscription</label><div style="margin-top:6px"><span class="badge badge-pro">Professional</span></div></div>
+      </div>
+      <div style="margin-top:14px"><button class="btn btn-primary">Save Changes</button></div>
+    </div>
+  </div>
+
+  <!-- REGULATORY -->
+  <div class="settings-section" id="regulatory">
+    <div class="section-label">Regulatory Preferences</div>
+    <div class="card">
+      <h3>Default Jurisdiction</h3>
+      <div class="field"><label>Primary Jurisdiction</label><select><option selected>Germany (BaFin)</option><option>Luxembourg (CSSF)</option><option>Ireland (CBI)</option></select></div>
+    </div>
+    <div class="card">
+      <h3>Regulatory Frameworks</h3>
+      <div class="toggle-row"><div><div class="toggle-label">AIFMD II</div><div class="toggle-sublabel">Alternative Investment Fund Managers Directive</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="toggle-row"><div><div class="toggle-label">KAGB</div><div class="toggle-sublabel">Kapitalanlagegesetzbuch</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+      <div class="toggle-row"><div><div class="toggle-label">AML / KYC</div><div class="toggle-sublabel">Anti-Money Laundering</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+    </div>
+    <div class="card">
+      <h3>Reporting Defaults</h3>
+      <div class="field-row">
+        <div class="field"><label>Report Format</label><select><option selected>PDF</option><option>XBRL</option><option>CSV</option></select></div>
+        <div class="field"><label>Annex IV Period</label><select><option selected>Quarterly</option><option>Semi-Annual</option><option>Annual</option></select></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- Reset Modal -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal">
+    <h3>⚠ Reset All Account Data</h3>
+    <p>This will permanently delete <strong>all funds, investors, holdings, transfers, compliance decisions, and reports</strong>. Your user profile and settings will be preserved.<br><br><strong>This cannot be undone.</strong></p>
+    <div class="field">
+      <label>Type <strong style="color:#f87171">RESET MY DATA</strong> to confirm</label>
+      <input type="text" placeholder="RESET MY DATA" id="confirm-input" oninput="document.getElementById('confirm-btn').disabled = this.value !== 'RESET MY DATA'">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="document.getElementById('reset-modal').classList.remove('show');document.getElementById('confirm-input').value=''">Cancel</button>
+      <button class="btn btn-danger" id="confirm-btn" disabled>Reset All Data</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

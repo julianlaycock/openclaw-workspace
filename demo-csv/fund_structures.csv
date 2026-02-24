@@ -1,0 +1,6 @@
+name,legal_form,domicile,regulatory_framework,aifm_name,target_size,currency,status
+Meridian SIF Alpha,SIF,LU,AIFMD,Meridian Capital Management,50000000,EUR,active
+Evergreen RAIF Beta,RAIF,LU,AIFMD,Evergreen Fund Services,100000000,EUR,active
+Rhine Spezial-AIF Gamma,Spezial_AIF,DE,AIFMD,Caelith Asset Management GmbH,75000000,EUR,active
+Atlantic QIAIF Delta,QIAIF,IE,AIFMD,Atlantic Fund Management,120000000,EUR,active
+Horizon ELTIF 2.0 Epsilon,ELTIF,LU,ELTIF,Horizon Alternatives,200000000,EUR,active

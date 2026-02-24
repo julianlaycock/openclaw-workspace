@@ -1,0 +1,7 @@
+node_modules/
+*.pdf
+cookies.txt
+login.json
+.env
+*.key
+*.pem

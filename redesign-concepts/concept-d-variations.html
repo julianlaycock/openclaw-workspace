@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Concept D Variations</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Serif:ital@0;1&family=Playfair+Display:wght@400;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+/* ========== FIXED NAV ========== */
+.concept-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: rgba(10,10,10,0.92); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; gap: 0; height: 56px;
+  padding: 0 24px; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+}
+.concept-nav .nav-logo {
+  color: #D8BA8E; font-weight: 700; font-size: 14px; letter-spacing: 2px;
+  margin-right: 32px; text-decoration: none; font-family: 'Space Grotesk', sans-serif;
+}
+.concept-nav a {
+  color: rgba(255,255,255,0.5); text-decoration: none; padding: 8px 14px;
+  transition: all 0.3s; letter-spacing: 1px; text-transform: uppercase;
+  border-radius: 4px; white-space: nowrap;
+}
+.concept-nav a:hover, .concept-nav a.active { color: #fff; background: rgba(255,255,255,0.06); }
+.concept-nav .nav-links { display: flex; gap: 2px; overflow-x: auto; }
+@media(max-width:768px) { .concept-nav { padding: 0 12px; } .concept-nav a { padding: 6px 8px; font-size: 9px; } }
+
+/* ========== SHARED UTILITIES ========== */
+.section-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px;
+  font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14px;
+  border: none; cursor: pointer; transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+  text-decoration: none; border-radius: 2px;
+}
+.btn:hover { transform: translateY(-2px); }
+
+/* Scroll reveal */
+.reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+   D1: THE MONOLITH
+   ============================================================ */
+#d1 { background: #0a0a0a; }
+.d1-hero {
+  min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+  padding: 120px 64px 80px; position: relative; overflow: hidden;
+}
+.d1-hero::before {
+  content: ''; position: absolute; top: -200px; right: -200px;
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,69,0,0.08) 0%, transparent 70%);
+}
+.d1-hero .section-label { color: #FF4500; margin-bottom: 32px; }
+.d1-hero h1 {
+  font-family: 'Space Grotesk', sans-serif; font-size: clamp(48px,8vw,110px);
+  font-weight: 700; color: #fff; line-height: 1.0; max-width: 900px; margin-bottom: 24px;
+}
+.d1-hero h1 span { color: #FF4500; }
+.d1-hero p { color: rgba(255,255,255,0.5); font-size: 18px; max-width: 520px; line-height: 1.7; margin-bottom: 40px; }
+.d1-btn-primary { background: #FF4500; color: #fff; }
+.d1-btn-primary:hover { background: #ff5a1f; box-shadow: 0 8px 40px rgba(255,69,0,0.3); }
+.d1-btn-secondary { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+.d1-btn-secondary:hover { border-color: #FF4500; color: #FF4500; }
+.d1-hero .btn-row { display: flex; gap: 16px; flex-wrap: wrap; }
+
+/* D1 Stats */
+.d1-stats {
+  background: #111; padding: 100px 64px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 48px;
+}
+.d1-stat-item { text-align: center; }
+.d1-stat-num {
+  font-family: 'Space Grotesk', sans-serif; font-size: 64px; font-weight: 700;
+  color: #fff; line-height: 1;
+}
+.d1-stat-num .counter-suffix { color: #FF4500; }
+.d1-stat-label { color: rgba(255,255,255,0.4); font-size: 13px; margin-top: 12px; letter-spacing: 1px; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
+
+/* D1 Comparison */
+.d1-compare { background: #f5f5f5; padding: 100px 64px; }
+.d1-compare .section-label { color: #FF4500; margin-bottom: 16px; }
+.d1-compare h2 { font-family: 'Space Grotesk', sans-serif; font-size: 48px; font-weight: 700; color: #0a0a0a; margin-bottom: 60px; }
+.d1-table { width: 100%; max-width: 800px; border-collapse: collapse; }
+.d1-table th { text-align: left; padding: 16px 24px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #999; border-bottom: 2px solid #0a0a0a; }
+.d1-table td { padding: 18px 24px; border-bottom: 1px solid #e0e0e0; font-size: 15px; color: #333; }
+.d1-table td:last-child { color: #FF4500; font-weight: 600; }
+.d1-table tr:hover td { background: rgba(255,69,0,0.04); }
+
+/* D1 Pricing */
+.d1-pricing { background: #0a0a0a; padding: 100px 64px; }
+.d1-pricing .section-label { color: #FF4500; margin-bottom: 16px; }
+.d1-pricing h2 { font-family: 'Space Grotesk', sans-serif; font-size: 48px; color: #fff; margin-bottom: 60px; }
+.d1-pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 960px; }
+.d1-price-card {
+  background: #151515; border: 1px solid #222; border-radius: 4px; padding: 40px 32px;
+  transition: all 0.4s; position: relative;
+}
+.d1-price-card:hover { border-color: #FF4500; transform: translateY(-4px); }
+.d1-price-card.popular { border-color: #FF4500; }
+.d1-price-card.popular::before {
+  content: 'MOST POPULAR'; position: absolute; top: -1px; left: 32px;
+  background: #FF4500; color: #fff; font-size: 10px; font-weight: 700;
+  padding: 4px 12px; letter-spacing: 2px; font-family: 'JetBrains Mono', monospace;
+}
+.d1-price-card h3 { font-family: 'JetBrains Mono', monospace; color: rgba(255,255,255,0.5); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+.d1-price-card .price { font-family: 'Space Grotesk', sans-serif; font-size: 48px; color: #fff; font-weight: 700; }
+.d1-price-card .price span { font-size: 16px; color: rgba(255,255,255,0.3); }
+.d1-price-card .scarcity { color: #FF4500; font-size: 12px; font-family: 'JetBrains Mono', monospace; margin-top: 16px; }
+
+/* ============================================================
+   D2: THE OBSERVATORY
+   ============================================================ */
+#d2 { background: #0C1222; position: relative; }
+.d2-stars {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(0,212,255,0.4), transparent),
+    radial-gradient(1px 1px at 30% 60%, rgba(0,212,255,0.3), transparent),
+    radial-gradient(1px 1px at 50% 10%, rgba(0,212,255,0.5), transparent),
+    radial-gradient(1px 1px at 70% 80%, rgba(0,212,255,0.2), transparent),
+    radial-gradient(1px 1px at 90% 40%, rgba(0,212,255,0.4), transparent),
+    radial-gradient(1px 1px at 20% 90%, rgba(0,212,255,0.3), transparent),
+    radial-gradient(1px 1px at 60% 30%, rgba(0,212,255,0.2), transparent),
+    radial-gradient(1px 1px at 80% 70%, rgba(0,212,255,0.5), transparent),
+    radial-gradient(1px 1px at 40% 50%, rgba(0,212,255,0.3), transparent),
+    radial-gradient(1.5px 1.5px at 15% 45%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1.5px 1.5px at 85% 15%, rgba(255,255,255,0.2), transparent);
+  pointer-events: none;
+}
+.d2-hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  padding: 120px 32px 80px; position: relative; z-index: 1;
+}
+.d2-countdown-wrapper { position: relative; margin-bottom: 48px; }
+.d2-orbit {
+  width: 320px; height: 320px; border: 1px solid rgba(0,212,255,0.15);
+  border-radius: 50%; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%); animation: d2-spin 20s linear infinite;
+}
+.d2-orbit::after {
+  content: ''; width: 8px; height: 8px; background: #00D4FF;
+  border-radius: 50%; position: absolute; top: -4px; left: 50%;
+  box-shadow: 0 0 20px #00D4FF;
+}
+.d2-orbit-2 { width: 400px; height: 400px; animation-duration: 35s; animation-direction: reverse; border-color: rgba(0,212,255,0.08); }
+@keyframes d2-spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+.d2-countdown {
+  display: flex; gap: 24px; position: relative; z-index: 1;
+}
+.d2-cd-item { text-align: center; }
+.d2-cd-num {
+  font-family: 'Space Grotesk', sans-serif; font-size: 72px; font-weight: 700;
+  color: #fff; line-height: 1; min-width: 100px; display: block;
+}
+.d2-cd-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #00D4FF; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px; }
+.d2-cd-sep { font-size: 60px; color: rgba(0,212,255,0.3); font-weight: 300; line-height: 1; }
+.d2-hero .section-label { color: #00D4FF; margin-bottom: 16px; }
+.d2-hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(36px,5vw,64px); color: #fff; max-width: 700px; margin-bottom: 20px; }
+.d2-hero p { color: rgba(255,255,255,0.4); max-width: 500px; line-height: 1.7; margin-bottom: 40px; }
+.d2-btn { background: #00D4FF; color: #0C1222; font-weight: 700; border-radius: 4px; }
+.d2-btn:hover { box-shadow: 0 0 40px rgba(0,212,255,0.4); }
+
+/* D2 Features */
+.d2-features { padding: 100px 64px; position: relative; z-index: 1; }
+.d2-features .section-label { color: #00D4FF; margin-bottom: 40px; text-align: center; }
+.d2-feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; max-width: 960px; margin: 0 auto; }
+.d2-feat-card {
+  background: rgba(0,212,255,0.03); border: 1px solid rgba(0,212,255,0.1);
+  border-radius: 12px; padding: 40px 32px;
+  backdrop-filter: blur(10px); transition: all 0.4s;
+}
+.d2-feat-card:hover { border-color: rgba(0,212,255,0.4); transform: translateY(-4px); box-shadow: 0 0 40px rgba(0,212,255,0.08); }
+.d2-feat-card h3 { color: #fff; font-family: 'Space Grotesk', sans-serif; font-size: 20px; margin-bottom: 12px; }
+.d2-feat-card p { color: rgba(255,255,255,0.4); font-size: 14px; line-height: 1.6; }
+.d2-feat-icon { font-size: 32px; margin-bottom: 20px; display: block; }
+
+/* D2 Pricing */
+.d2-pricing { padding: 100px 64px; position: relative; z-index: 1; }
+.d2-pricing h2 { font-family: 'Space Grotesk', sans-serif; font-size: 42px; color: #fff; text-align: center; margin-bottom: 60px; }
+.d2-price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 24px; max-width: 900px; margin: 0 auto; }
+.d2-price-card {
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(0,212,255,0.1);
+  border-radius: 16px; padding: 40px 32px; text-align: center;
+  backdrop-filter: blur(12px); transition: all 0.4s;
+}
+.d2-price-card:hover { border-color: #00D4FF; }
+.d2-price-card.popular { border-color: #00D4FF; background: rgba(0,212,255,0.05); }
+.d2-price-card h3 { color: rgba(255,255,255,0.5); font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 2px; margin-bottom: 16px; }
+.d2-price-card .price { font-family: 'Space Grotesk', sans-serif; font-size: 42px; color: #fff; font-weight: 700; }
+.d2-price-card .price span { font-size: 14px; color: rgba(255,255,255,0.3); }
+
+/* D2 Footer */
+.d2-footer { padding: 40px 64px; border-top: 1px solid rgba(0,212,255,0.1); position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; }
+.d2-status { display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.4); }
+.d2-pulse { width: 8px; height: 8px; background: #00FF88; border-radius: 50%; animation: d2-pulse 2s ease-in-out infinite; }
+@keyframes d2-pulse { 0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,255,136,0.4); } 50% { opacity: 0.7; box-shadow: 0 0 0 8px rgba(0,255,136,0); } }
+
+/* ============================================================
+   D3: THE ARCHITECT
+   ============================================================ */
+#d3 { background: #F8F6F1; position: relative; }
+#d3::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+}
+.d3-hero {
+  min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+  padding: 120px 64px 80px; position: relative; z-index: 1;
+}
+.d3-hero .section-label { color: #E8734A; margin-bottom: 32px; }
+.d3-hero h1 {
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(40px,6vw,80px);
+  font-weight: 800; color: #2D2D2D; line-height: 1.05; max-width: 800px; margin-bottom: 24px;
+}
+.d3-hero p { color: #888; font-size: 17px; max-width: 500px; line-height: 1.7; margin-bottom: 40px; }
+.d3-btn { background: #2D2D2D; color: #fff; }
+.d3-btn:hover { background: #E8734A; }
+
+/* D3 Process */
+.d3-process { padding: 100px 64px; position: relative; z-index: 1; }
+.d3-process .section-label { color: #E8734A; margin-bottom: 40px; }
+.d3-process h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 42px; color: #2D2D2D; margin-bottom: 64px; }
+.d3-steps { display: flex; gap: 0; max-width: 900px; position: relative; }
+.d3-steps::before { content: ''; position: absolute; top: 24px; left: 24px; right: 24px; height: 2px; background: #E8734A; }
+.d3-step { flex: 1; text-align: center; position: relative; }
+.d3-step-num {
+  width: 48px; height: 48px; border: 2px solid #E8734A; background: #F8F6F1;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700;
+  color: #E8734A; margin: 0 auto 16px; position: relative; z-index: 1;
+}
+.d3-step h4 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: #2D2D2D; margin-bottom: 8px; }
+.d3-step p { color: #999; font-size: 13px; }
+
+/* D3 Code Block */
+.d3-code { padding: 80px 64px; position: relative; z-index: 1; }
+.d3-code pre {
+  background: #2D2D2D; color: #E8E8E8; padding: 40px; border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.8;
+  overflow-x: auto; max-width: 700px; border-left: 4px solid #E8734A;
+}
+.d3-code .kw { color: #E8734A; }
+.d3-code .str { color: #98C379; }
+.d3-code .cmt { color: #666; }
+
+/* ============================================================
+   D4: THE SIGNAL
+   ============================================================ */
+#d4 { background: #000; }
+.d4-hero {
+  min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
+  padding-top: 56px;
+}
+@media(max-width:768px) { .d4-hero { grid-template-columns: 1fr; } }
+.d4-hero-left { background: #fff; display: flex; flex-direction: column; justify-content: center; padding: 80px 64px; }
+.d4-hero-left .section-label { color: #000; margin-bottom: 24px; }
+.d4-hero-left h1 {
+  font-family: 'Instrument Serif', serif; font-size: clamp(48px,8vw,120px);
+  color: #000; line-height: 0.95; margin-bottom: 32px;
+}
+.d4-hero-left h1 em { font-style: italic; color: #CCFF00; }
+.d4-hero-left p { color: #666; font-size: 16px; line-height: 1.7; max-width: 440px; margin-bottom: 40px; }
+.d4-btn-green { background: #CCFF00; color: #000; font-weight: 700; }
+.d4-btn-green:hover { background: #b8e600; }
+.d4-hero-right {
+  background: #000; display: flex; align-items: center; justify-content: center;
+  padding: 64px; position: relative; overflow: hidden;
+}
+.d4-mockup {
+  width: 300px; height: 200px; background: #111; border-radius: 8px;
+  border: 1px solid #333; display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #CCFF00;
+  position: relative;
+}
+.d4-mockup::before { content: ''; position: absolute; top: 8px; left: 12px; width: 6px; height: 6px; background: #CCFF00; border-radius: 50%; }
+
+/* D4 Marquee */
+.d4-marquee {
+  background: #CCFF00; padding: 16px 0; overflow: hidden; white-space: nowrap;
+}
+.d4-marquee-inner {
+  display: inline-block; animation: d4-scroll 15s linear infinite;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+  color: #000; letter-spacing: 3px;
+}
+@keyframes d4-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* D4 Process */
+.d4-process { background: #fff; padding: 100px 64px; }
+.d4-process .section-label { color: #000; margin-bottom: 16px; }
+.d4-process h2 { font-family: 'Instrument Serif', serif; font-size: 64px; color: #000; margin-bottom: 64px; }
+.d4-proc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 40px; max-width: 900px; }
+.d4-proc-item .num { font-family: 'Instrument Serif', serif; font-size: 80px; color: #CCFF00; line-height: 1; }
+.d4-proc-item h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; margin: 8px 0; }
+.d4-proc-item p { color: #888; font-size: 14px; line-height: 1.6; }
+
+/* D4 Features */
+.d4-features { background: #000; padding: 100px 64px; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; }
+@media(max-width:768px) { .d4-features { grid-template-columns: 1fr; } }
+.d4-feat-left h2 { font-family: 'Instrument Serif', serif; font-size: 56px; color: #fff; margin-bottom: 24px; }
+.d4-feat-left p { color: rgba(255,255,255,0.4); line-height: 1.7; }
+.d4-feat-right { display: flex; flex-direction: column; gap: 24px; }
+.d4-feat-item { border-bottom: 1px solid #333; padding-bottom: 24px; }
+.d4-feat-item h4 { color: #CCFF00; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 2px; margin-bottom: 8px; }
+.d4-feat-item p { color: rgba(255,255,255,0.5); font-size: 14px; }
+
+/* ============================================================
+   D5: THE LEDGER
+   ============================================================ */
+#d5 { background: #FAFAFA; display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; position: relative; }
+@media(max-width:768px) { #d5 { grid-template-columns: 1fr; } .d5-sidebar { display: none; } }
+.d5-sidebar {
+  position: sticky; top: 56px; height: calc(100vh - 56px); padding: 48px 24px;
+  border-right: 1px solid #E5E5E5; background: #FAFAFA; z-index: 10;
+  overflow-y: auto;
+}
+.d5-sidebar h3 { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: #999; margin-bottom: 24px; text-transform: uppercase; }
+.d5-sidebar a {
+  display: block; padding: 8px 12px; font-size: 13px; color: #666;
+  text-decoration: none; border-left: 2px solid transparent;
+  transition: all 0.3s; margin-bottom: 4px;
+}
+.d5-sidebar a:hover, .d5-sidebar a.active { color: #0D7C5F; border-color: #0D7C5F; background: rgba(13,124,95,0.04); }
+.d5-main { padding: 120px 64px 80px; max-width: 900px; }
+.d5-main .section-label { color: #0D7C5F; margin-bottom: 24px; }
+.d5-main h1 { font-family: 'Playfair Display', serif; font-size: clamp(36px,5vw,64px); color: #1a1a1a; margin-bottom: 24px; line-height: 1.1; }
+.d5-main > p { color: #888; font-size: 17px; line-height: 1.7; max-width: 540px; margin-bottom: 48px; border-left: 3px solid #D8BA8E; padding-left: 20px; }
+.d5-btn { background: #0D7C5F; color: #fff; }
+.d5-btn:hover { background: #0a6b51; }
+
+/* D5 Stats Bars */
+.d5-stats { margin: 64px 0; }
+.d5-stat-row { display: flex; align-items: center; gap: 24px; margin-bottom: 24px; }
+.d5-stat-row .label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #999; width: 160px; letter-spacing: 1px; text-transform: uppercase; }
+.d5-bar { flex: 1; height: 32px; background: #eee; border-radius: 2px; overflow: hidden; }
+.d5-bar-fill { height: 100%; background: linear-gradient(90deg, #0D7C5F, #D8BA8E); border-radius: 2px; transition: width 1.5s ease; }
+.d5-stat-row .value { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; color: #1a1a1a; width: 80px; text-align: right; }
+
+/* D5 Hash Chain */
+.d5-chain { margin: 64px 0; padding: 40px; background: #fff; border: 1px solid #e5e5e5; border-radius: 4px; }
+.d5-chain h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 20px; color: #1a1a1a; margin-bottom: 32px; }
+.d5-blocks { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.d5-block {
+  background: #FAFAFA; border: 1px solid #e0e0e0; border-radius: 4px; padding: 16px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; min-width: 140px;
+  transition: all 0.3s;
+}
+.d5-block:hover { border-color: #0D7C5F; transform: translateY(-2px); }
+.d5-block .hash { color: #0D7C5F; word-break: break-all; }
+.d5-block .block-label { color: #999; margin-bottom: 4px; font-size: 9px; letter-spacing: 1px; }
+.d5-chain-arrow { color: #D8BA8E; font-size: 20px; }
+
+/* D5 Annotation */
+.d5-annotation {
+  position: relative; margin: 48px 0; padding-left: 60px;
+}
+.d5-annotation::before {
+  content: '§'; position: absolute; left: 0; top: 0;
+  font-family: 'Playfair Display', serif; font-size: 36px; color: #D8BA8E;
+}
+.d5-annotation p { font-size: 15px; color: #555; line-height: 1.8; border-top: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5; padding: 20px 0; }
+.d5-annotation .margin-note { position: absolute; right: -180px; top: 20px; width: 160px; font-size: 11px; color: #999; font-style: italic; }
+@media(max-width:1100px) { .d5-annotation .margin-note { display: none; } }
+
+/* ============================================================
+   D6: THE CONTRAST
+   ============================================================ */
+#d6 { cursor: none; }
+.d6-cursor {
+  width: 16px; height: 16px; background: #D8BA8E; border-radius: 50%;
+  position: fixed; pointer-events: none; z-index: 99999;
+  transition: transform 0.15s ease; mix-blend-mode: difference;
+}
+
+.d6-hero {
+  min-height: 100vh; background: #000; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; text-align: center;
+  padding: 120px 32px 80px; position: relative;
+}
+.d6-hero .section-label { color: #D8BA8E; margin-bottom: 32px; }
+.d6-hero h1 {
+  font-family: 'Space Grotesk', sans-serif; font-size: clamp(60px,12vw,160px);
+  font-weight: 700; color: #fff; line-height: 0.95; margin-bottom: 32px;
+}
+.d6-hero p { color: rgba(255,255,255,0.5); font-size: 18px; max-width: 480px; margin-bottom: 48px; line-height: 1.7; }
+.d6-btn { background: #D8BA8E; color: #000; font-weight: 700; }
+.d6-btn:hover { transform: scale(1.05) translateY(-2px); }
+.d6-gold-line { width: 60px; height: 2px; background: #D8BA8E; margin: 0 auto 32px; }
+
+/* D6 White section */
+.d6-white {
+  background: #fff; padding: 120px 64px; position: relative;
+}
+.d6-white::before { content: ''; position: absolute; top: 0; left: 64px; right: 64px; height: 1px; background: #D8BA8E; }
+.d6-white .section-label { color: #000; margin-bottom: 16px; }
+.d6-white h2 { font-family: 'Space Grotesk', sans-serif; font-size: 56px; font-weight: 700; color: #000; margin-bottom: 48px; }
+.d6-feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 48px; max-width: 900px; }
+.d6-feat-item h4 { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; color: #000; margin-bottom: 12px; text-transform: uppercase; }
+.d6-feat-item p { color: #000; font-size: 15px; line-height: 1.7; }
+.d6-feat-item { border-left: 2px solid #D8BA8E; padding-left: 24px; }
+
+/* D6 Black section - countdown */
+.d6-black { background: #000; padding: 120px 64px; text-align: center; }
+.d6-black h2 { font-family: 'Space Grotesk', sans-serif; font-size: 48px; color: #fff; margin-bottom: 48px; }
+.d6-cd { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+.d6-cd-item .num { font-family: 'Space Grotesk', sans-serif; font-size: 80px; font-weight: 700; color: #D8BA8E; line-height: 1; }
+.d6-cd-item .lbl { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #fff; letter-spacing: 3px; margin-top: 8px; text-transform: uppercase; }
+
+/* D6 Pricing white */
+.d6-pricing-section { background: #fff; padding: 120px 64px; }
+.d6-pricing-section::before { content: ''; display: block; width: 60px; height: 2px; background: #D8BA8E; margin-bottom: 32px; }
+.d6-pricing-section h2 { font-family: 'Space Grotesk', sans-serif; font-size: 48px; color: #000; margin-bottom: 64px; }
+.d6-price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 2px; max-width: 900px; }
+.d6-price-card {
+  background: #000; color: #fff; padding: 48px 32px; transition: all 0.4s;
+}
+.d6-price-card:hover { background: #D8BA8E; color: #000; }
+.d6-price-card h3 { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; margin-bottom: 16px; opacity: 0.5; }
+.d6-price-card .price { font-family: 'Space Grotesk', sans-serif; font-size: 48px; font-weight: 700; }
+.d6-price-card .price span { font-size: 14px; opacity: 0.4; }
+
+/* ========== Responsive ========== */
+@media(max-width:768px) {
+  .d1-hero, .d1-stats, .d1-compare, .d1-pricing,
+  .d2-features, .d2-pricing,
+  .d3-hero, .d3-process, .d3-code,
+  .d4-process, .d4-features,
+  .d5-main,
+  .d6-hero, .d6-white, .d6-black, .d6-pricing-section {
+    padding-left: 24px; padding-right: 24px;
+  }
+  .d3-steps { flex-direction: column; gap: 32px; }
+  .d3-steps::before { display: none; }
+  .d2-cd-num { font-size: 48px; }
+  .d6-cd-item .num { font-size: 48px; }
+}
+</style>
+</head>
+<body>
+
+<!-- FIXED NAV -->
+<nav class="concept-nav">
+  <a href="#" class="nav-logo">CAELITH</a>
+  <div class="nav-links">
+    <a href="#d1">D1 Monolith</a>
+    <a href="#d2">D2 Observatory</a>
+    <a href="#d3">D3 Architect</a>
+    <a href="#d4">D4 Signal</a>
+    <a href="#d5">D5 Ledger</a>
+    <a href="#d6">D6 Contrast</a>
+  </div>
+</nav>
+
+<!-- ============================================================
+     D1: THE MONOLITH
+     ============================================================ -->
+<section id="d1">
+  <div class="d1-hero">
+    <div class="section-label">// Concept D1 — The Monolith</div>
+    <h1>Compliance decisions, <span>documented.</span></h1>
+    <p>The AIFMD II compliance engine that logs every decision, chains every hash, and keeps you audit-ready — before the deadline.</p>
+    <div class="btn-row">
+      <a href="#" class="btn d1-btn-primary">Book a Demo</a>
+      <a href="#" class="btn d1-btn-secondary">See How It Works →</a>
+    </div>
+  </div>
+
+  <div class="d1-stats">
+    <div class="d1-stat-item reveal">
+      <div class="d1-stat-num"><span class="counter" data-target="247">0</span><span class="counter-suffix"></span></div>
+      <div class="d1-stat-label">Active Rules</div>
+    </div>
+    <div class="d1-stat-item reveal">
+      <div class="d1-stat-num"><span class="counter" data-target="6">0</span><span class="counter-suffix"></span></div>
+      <div class="d1-stat-label">Regulatory Frameworks</div>
+    </div>
+    <div class="d1-stat-item reveal">
+      <div class="d1-stat-num">&lt;<span class="counter" data-target="23">0</span><span class="counter-suffix">ms</span></div>
+      <div class="d1-stat-label">Latency</div>
+    </div>
+    <div class="d1-stat-item reveal">
+      <div class="d1-stat-num"><span class="counter" data-target="100">0</span><span class="counter-suffix">%</span></div>
+      <div class="d1-stat-label">Decisions Logged</div>
+    </div>
+  </div>
+
+  <div class="d1-compare">
+    <div class="section-label">// 02 Why Caelith</div>
+    <h2>Manual vs. Caelith</h2>
+    <table class="d1-table">
+      <thead><tr><th>Capability</th><th>Manual Process</th><th>Caelith</th></tr></thead>
+      <tbody>
+        <tr><td>Rule evaluation</td><td>Hours per review</td><td>&lt;23ms per decision</td></tr>
+        <tr><td>Audit trail</td><td>Spreadsheets & PDFs</td><td>SHA-256 hash chains</td></tr>
+        <tr><td>Regulatory reporting</td><td>Weeks of prep</td><td>One-click export</td></tr>
+        <tr><td>Framework coverage</td><td>1-2, fragmented</td><td>6 frameworks, unified</td></tr>
+        <tr><td>Decision logging</td><td>Selective, inconsistent</td><td>100%, deterministic</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="d1-pricing">
+    <div class="section-label">// 03 Pricing</div>
+    <h2>Choose your plan</h2>
+    <div class="d1-pricing-grid">
+      <div class="d1-price-card">
+        <h3>Starter</h3>
+        <div class="price">€299<span>/mo</span></div>
+        <div class="scarcity">For emerging managers</div>
+      </div>
+      <div class="d1-price-card popular">
+        <h3>Professional</h3>
+        <div class="price">€799<span>/mo</span></div>
+        <div class="scarcity">Only 3 spots left this quarter</div>
+      </div>
+      <div class="d1-price-card">
+        <h3>Enterprise</h3>
+        <div class="price">Custom</div>
+        <div class="scarcity">Dedicated infrastructure</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     D2: THE OBSERVATORY
+     ============================================================ -->
+<section id="d2">
+  <div class="d2-stars"></div>
+
+  <div class="d2-hero">
+    <div class="d2-countdown-wrapper">
+      <div class="d2-orbit"></div>
+      <div class="d2-orbit d2-orbit-2"></div>
+      <div class="d2-countdown">
+        <div class="d2-cd-item"><span class="d2-cd-num" id="d2-days">56</span><span class="d2-cd-label">Days</span></div>
+        <div class="d2-cd-sep">:</div>
+        <div class="d2-cd-item"><span class="d2-cd-num" id="d2-hours">00</span><span class="d2-cd-label">Hours</span></div>
+        <div class="d2-cd-sep">:</div>
+        <div class="d2-cd-item"><span class="d2-cd-num" id="d2-mins">00</span><span class="d2-cd-label">Minutes</span></div>
+        <div class="d2-cd-sep">:</div>
+        <div class="d2-cd-item"><span class="d2-cd-num" id="d2-secs">00</span><span class="d2-cd-label">Seconds</span></div>
+      </div>
+    </div>
+    <div class="section-label">// Concept D2 — The Observatory</div>
+    <h1>AIFMD II deadline is approaching.</h1>
+    <p>Every second counts. Caelith ensures you're audit-ready before April 15, 2026.</p>
+    <a href="#" class="btn d2-btn">Book a Demo</a>
+  </div>
+
+  <div class="d2-features">
+    <div class="section-label" style="text-align:center;">// System Capabilities</div>
+    <div class="d2-feat-grid">
+      <div class="d2-feat-card reveal">
+        <span class="d2-feat-icon">⚡</span>
+        <h3>Rules Engine</h3>
+        <p>247 active rules across 6 frameworks. Deterministic evaluation in under 23ms.</p>
+      </div>
+      <div class="d2-feat-card reveal">
+        <span class="d2-feat-icon">🔗</span>
+        <h3>Hash-Chained Audit Trail</h3>
+        <p>SHA-256 hash chains. Every decision immutably logged and cryptographically verifiable.</p>
+      </div>
+      <div class="d2-feat-card reveal">
+        <span class="d2-feat-icon">📊</span>
+        <h3>Regulatory Reporting</h3>
+        <p>Annex IV, AIFMD II, KAGB — one-click exports for every framework.</p>
+      </div>
+      <div class="d2-feat-card reveal">
+        <span class="d2-feat-icon">🔬</span>
+        <h3>Scenario Modeling</h3>
+        <p>Test rule changes before they go live. Simulate regulatory scenarios safely.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="d2-pricing">
+    <h2>Transparent Pricing</h2>
+    <div class="d2-price-grid">
+      <div class="d2-price-card">
+        <h3>Starter</h3>
+        <div class="price">€299<span>/mo</span></div>
+      </div>
+      <div class="d2-price-card popular">
+        <h3>Professional</h3>
+        <div class="price">€799<span>/mo</span></div>
+      </div>
+      <div class="d2-price-card">
+        <h3>Enterprise</h3>
+        <div class="price">Custom</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d2-footer">
+    <div class="d2-status"><span class="d2-pulse"></span> System Online — All Services Operational</div>
+    <div style="color:rgba(255,255,255,0.2); font-size:12px; font-family:'JetBrains Mono',monospace;">v2.4.1 · EU-West-1</div>
+  </div>
+</section>
+
+<!-- ============================================================
+     D3: THE ARCHITECT
+     ============================================================ -->
+<section id="d3">
+  <div class="d3-hero">
+    <div class="section-label">// Concept D3 — The Architect</div>
+    <h1>The compliance engine for AIFMD II</h1>
+    <p>Precision-engineered regulatory infrastructure. Every rule mapped. Every decision documented. Every audit trail hash-chained.</p>
+    <a href="#" class="btn d3-btn">Book a Demo</a>
+  </div>
+
+  <div class="d3-process">
+    <div class="section-label">// Implementation Process</div>
+    <h2>Four steps to audit-ready</h2>
+    <div class="d3-steps">
+      <div class="d3-step reveal">
+        <div class="d3-step-num">01</div>
+        <h4>Configure</h4>
+        <p>Define your regulatory scope and rule parameters</p>
+      </div>
+      <div class="d3-step reveal">
+        <div class="d3-step-num">02</div>
+        <h4>Onboard</h4>
+        <p>Import fund structures and investor data</p>
+      </div>
+      <div class="d3-step reveal">
+        <div class="d3-step-num">03</div>
+        <h4>Document</h4>
+        <p>Every decision hash-chained automatically</p>
+      </div>
+      <div class="d3-step reveal">
+        <div class="d3-step-num">04</div>
+        <h4>Report</h4>
+        <p>One-click regulatory exports across frameworks</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="d3-code">
+    <pre><code><span class="cmt">// Caelith Rule Evaluation</span>
+<span class="kw">const</span> result = <span class="kw">await</span> caelith.evaluate({
+  framework: <span class="str">"AIFMD_II"</span>,
+  fund: <span class="str">"LU-SICAV-2024-001"</span>,
+  investor: investor.profile,
+  rules: <span class="str">"all"</span>
+});
+
+<span class="cmt">// Result: 247 rules evaluated in 18ms</span>
+<span class="cmt">// Hash: sha256:a1b2c3d4e5f6...</span>
+<span class="cmt">// Status: COMPLIANT</span>
+console.log(result.auditHash); <span class="cmt">// Immutable</span></code></pre>
+  </div>
+</section>
+
+<!-- ============================================================
+     D4: THE SIGNAL
+     ============================================================ -->
+<section id="d4">
+  <div class="d4-hero">
+    <div class="d4-hero-left">
+      <div class="section-label">// Concept D4 — The Signal</div>
+      <h1>Audit-ready. <em>Before</em> the deadline.</h1>
+      <p>The AIFMD II compliance engine that turns regulatory complexity into documented, verifiable decisions.</p>
+      <a href="#" class="btn d4-btn-green">Book a Demo</a>
+    </div>
+    <div class="d4-hero-right">
+      <div class="d4-mockup">
+        <div>caelith.evaluate()<br>→ 247 rules<br>→ 18ms<br>→ COMPLIANT ✓</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d4-marquee">
+    <div class="d4-marquee-inner">
+      AIFMD II &nbsp;•&nbsp; KAGB &nbsp;•&nbsp; ELTIF 2.0 &nbsp;•&nbsp; ANNEX IV &nbsp;•&nbsp; SIF LAW &nbsp;•&nbsp; RAIF LAW &nbsp;•&nbsp; AIFMD II &nbsp;•&nbsp; KAGB &nbsp;•&nbsp; ELTIF 2.0 &nbsp;•&nbsp; ANNEX IV &nbsp;•&nbsp; SIF LAW &nbsp;•&nbsp; RAIF LAW &nbsp;•&nbsp; AIFMD II &nbsp;•&nbsp; KAGB &nbsp;•&nbsp; ELTIF 2.0 &nbsp;•&nbsp; ANNEX IV &nbsp;•&nbsp; SIF LAW &nbsp;•&nbsp; RAIF LAW &nbsp;•&nbsp; AIFMD II &nbsp;•&nbsp; KAGB &nbsp;•&nbsp; ELTIF 2.0 &nbsp;•&nbsp; ANNEX IV &nbsp;•&nbsp; SIF LAW &nbsp;•&nbsp; RAIF LAW &nbsp;•&nbsp;
+    </div>
+  </div>
+
+  <div class="d4-process">
+    <div class="section-label">// Process</div>
+    <h2>How it works</h2>
+    <div class="d4-proc-grid">
+      <div class="d4-proc-item reveal">
+        <div class="num">01</div>
+        <h4>Configure</h4>
+        <p>Set your regulatory scope across 6 frameworks</p>
+      </div>
+      <div class="d4-proc-item reveal">
+        <div class="num">02</div>
+        <h4>Onboard</h4>
+        <p>Import fund structures and investor profiles</p>
+      </div>
+      <div class="d4-proc-item reveal">
+        <div class="num">03</div>
+        <h4>Document</h4>
+        <p>Automatic SHA-256 hash-chained audit trails</p>
+      </div>
+      <div class="d4-proc-item reveal">
+        <div class="num">04</div>
+        <h4>Report</h4>
+        <p>One-click regulatory exports, always audit-ready</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="d4-features">
+    <div class="d4-feat-left">
+      <h2>Built for the regulation that matters most.</h2>
+      <p>"Automation of documentation and audit trails is no longer optional."<br><br>— PwC Global Fund Distribution Report, 2024</p>
+    </div>
+    <div class="d4-feat-right">
+      <div class="d4-feat-item"><h4>// RULES ENGINE</h4><p>247 active rules, deterministic evaluation, &lt;23ms latency</p></div>
+      <div class="d4-feat-item"><h4>// AUDIT TRAIL</h4><p>SHA-256 hash chains, 100% decisions logged, cryptographically verifiable</p></div>
+      <div class="d4-feat-item"><h4>// REPORTING</h4><p>AIFMD II, KAGB, ELTIF 2.0, Annex IV — unified exports</p></div>
+      <div class="d4-feat-item"><h4>// SCENARIO MODELING</h4><p>Test regulatory changes before deployment. EU-hosted, GDPR-compliant.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     D5: THE LEDGER
+     ============================================================ -->
+<section id="d5">
+  <nav class="d5-sidebar">
+    <h3>Contents</h3>
+    <a href="#d5-overview" class="active">I. Overview</a>
+    <a href="#d5-stats">II. Key Metrics</a>
+    <a href="#d5-chain">III. Hash Chain</a>
+    <a href="#d5-quote">IV. Industry Context</a>
+  </nav>
+  <div class="d5-main">
+    <div class="section-label" id="d5-overview">// Concept D5 — The Ledger</div>
+    <h1>Caelith Compliance Engine — Prospectus</h1>
+    <p>An institutional-grade regulatory infrastructure for EU fund managers navigating AIFMD II, KAGB, ELTIF 2.0, and beyond.</p>
+    <a href="#" class="btn d5-btn">Book a Demo</a>
+
+    <div class="d5-stats" id="d5-stats">
+      <div class="d5-stat-row reveal">
+        <div class="label">Active Rules</div>
+        <div class="d5-bar"><div class="d5-bar-fill" style="width:82%"></div></div>
+        <div class="value">247</div>
+      </div>
+      <div class="d5-stat-row reveal">
+        <div class="label">Frameworks</div>
+        <div class="d5-bar"><div class="d5-bar-fill" style="width:100%"></div></div>
+        <div class="value">6</div>
+      </div>
+      <div class="d5-stat-row reveal">
+        <div class="label">Avg. Latency</div>
+        <div class="d5-bar"><div class="d5-bar-fill" style="width:12%"></div></div>
+        <div class="value">&lt;23ms</div>
+      </div>
+      <div class="d5-stat-row reveal">
+        <div class="label">Decisions Logged</div>
+        <div class="d5-bar"><div class="d5-bar-fill" style="width:100%"></div></div>
+        <div class="value">100%</div>
+      </div>
+    </div>
+
+    <div class="d5-chain" id="d5-chain">
+      <h3>Hash-Chained Audit Trail</h3>
+      <div class="d5-blocks">
+        <div class="d5-block">
+          <div class="block-label">BLOCK #1</div>
+          <div class="hash">sha256:a1b2c3...</div>
+          <div style="margin-top:4px;color:#666;">Rule eval: AIFMD II §4.2</div>
+        </div>
+        <span class="d5-chain-arrow">→</span>
+        <div class="d5-block">
+          <div class="block-label">BLOCK #2</div>
+          <div class="hash">sha256:d4e5f6...</div>
+          <div style="margin-top:4px;color:#666;">Investor classification</div>
+        </div>
+        <span class="d5-chain-arrow">→</span>
+        <div class="d5-block">
+          <div class="block-label">BLOCK #3</div>
+          <div class="hash">sha256:g7h8i9...</div>
+          <div style="margin-top:4px;color:#666;">Distribution check</div>
+        </div>
+        <span class="d5-chain-arrow">→</span>
+        <div class="d5-block">
+          <div class="block-label">BLOCK #4</div>
+          <div class="hash">sha256:j0k1l2...</div>
+          <div style="margin-top:4px;color:#666;">Annex IV report gen</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d5-annotation" id="d5-quote">
+      <p>"Automation of documentation and audit trails is no longer optional."<br>— PwC Global Fund Distribution Report, 2024</p>
+      <span class="margin-note">See also: ESMA Guidelines on AIFMD II Implementation, 2025</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     D6: THE CONTRAST
+     ============================================================ -->
+<section id="d6">
+  <div class="d6-cursor" id="d6Cursor"></div>
+
+  <div class="d6-hero">
+    <div class="d6-gold-line"></div>
+    <div class="section-label">// Concept D6 — The Contrast</div>
+    <h1>Caelith.</h1>
+    <p>The compliance engine for AIFMD II. Every decision documented. Every hash chained. Every audit passed.</p>
+    <a href="#" class="btn d6-btn">Book a Demo</a>
+  </div>
+
+  <div class="d6-white">
+    <div class="section-label">// Capabilities</div>
+    <h2>Four pillars.</h2>
+    <div class="d6-feat-grid">
+      <div class="d6-feat-item reveal">
+        <h4>Rules Engine</h4>
+        <p>247 active rules across 6 regulatory frameworks. Deterministic evaluation. Under 23ms.</p>
+      </div>
+      <div class="d6-feat-item reveal">
+        <h4>Audit Trail</h4>
+        <p>SHA-256 hash-chained decision log. 100% of decisions captured. Cryptographically verifiable.</p>
+      </div>
+      <div class="d6-feat-item reveal">
+        <h4>Reporting</h4>
+        <p>AIFMD II, KAGB, ELTIF 2.0, Annex IV, SIF Law, RAIF Law. One-click exports.</p>
+      </div>
+      <div class="d6-feat-item reveal">
+        <h4>Scenario Modeling</h4>
+        <p>Simulate regulatory changes before deployment. EU-hosted. GDPR-compliant.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="d6-black">
+    <div style="width:60px;height:2px;background:#D8BA8E;margin:0 auto 48px;"></div>
+    <h2>AIFMD II Deadline</h2>
+    <div class="d6-cd">
+      <div class="d6-cd-item"><div class="num" id="d6-days">56</div><div class="lbl">Days</div></div>
+      <div class="d6-cd-item"><div class="num" id="d6-hours">00</div><div class="lbl">Hours</div></div>
+      <div class="d6-cd-item"><div class="num" id="d6-mins">00</div><div class="lbl">Minutes</div></div>
+      <div class="d6-cd-item"><div class="num" id="d6-secs">00</div><div class="lbl">Seconds</div></div>
+    </div>
+  </div>
+
+  <div class="d6-pricing-section">
+    <h2>Pricing</h2>
+    <div class="d6-price-grid">
+      <div class="d6-price-card">
+        <h3>STARTER</h3>
+        <div class="price">€299<span>/mo</span></div>
+      </div>
+      <div class="d6-price-card">
+        <h3>PROFESSIONAL</h3>
+        <div class="price">€799<span>/mo</span></div>
+      </div>
+      <div class="d6-price-card">
+        <h3>ENTERPRISE</h3>
+        <div class="price">Custom</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ========== Scroll Reveal ==========
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ========== Counter Animation ==========
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !e.target.dataset.counted) {
+      e.target.dataset.counted = 'true';
+      const target = +e.target.dataset.target;
+      const duration = 2000;
+      const start = performance.now();
+      const step = (now) => {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        e.target.textContent = Math.floor(eased * target);
+        if (p < 1) requestAnimationFrame(step);
+        else e.target.textContent = target;
+      };
+      requestAnimationFrame(step);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+
+// ========== Countdown Timer ==========
+function updateCountdown() {
+  const deadline = new Date('2026-04-15T00:00:00+02:00');
+  const now = new Date();
+  const diff = deadline - now;
+  if (diff <= 0) return;
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  const pad = n => String(n).padStart(2, '0');
+
+  // D2
+  const d2d = document.getElementById('d2-days');
+  if (d2d) { d2d.textContent = d; document.getElementById('d2-hours').textContent = pad(h); document.getElementById('d2-mins').textContent = pad(m); document.getElementById('d2-secs').textContent = pad(s); }
+  // D6
+  const d6d = document.getElementById('d6-days');
+  if (d6d) { d6d.textContent = d; document.getElementById('d6-hours').textContent = pad(h); document.getElementById('d6-mins').textContent = pad(m); document.getElementById('d6-secs').textContent = pad(s); }
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ========== D6 Custom Cursor ==========
+const cursor = document.getElementById('d6Cursor');
+const d6 = document.getElementById('d6');
+d6.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX - 8 + 'px';
+  cursor.style.top = e.clientY - 8 + 'px';
+});
+d6.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+d6.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+
+// ========== Active Nav ==========
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.concept-nav .nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

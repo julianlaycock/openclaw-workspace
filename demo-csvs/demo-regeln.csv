@@ -1,0 +1,10 @@
+jurisdiction,investor_type,minimum_investment,effective_date,maximum_allocation_pct,suitability_required,source_reference
+DE,institutional,100000,2024-01-01,,false,"§ 1 Abs. 19 Nr. 32 KAGB"
+DE,professional,100000,2024-01-01,,false,"§ 1 Abs. 19 Nr. 33 KAGB"
+DE,semi_professional,200000,2024-01-01,25,true,"§ 1 Abs. 19 Nr. 33a KAGB"
+DE,semi_professional,10000000,2024-01-01,,false,"§ 262 Abs. 1 KAGB"
+LU,professional,125000,2024-01-01,,false,"CSSF SIF Law Art. 2"
+LU,institutional,125000,2024-01-01,,false,"CSSF SIF Law Art. 2"
+AT,institutional,100000,2024-01-01,,false,"§ 3 Abs. 4 AIFMG"
+CH,institutional,100000,2024-01-01,,false,"Art. 10 Abs. 3 KAG"
+DE,institutional,0,2024-01-01,30,false,"§ 282 Abs. 2 KAGB — Konzentrationsgrenze"

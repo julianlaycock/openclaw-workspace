@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Dashboard — Light + Dark</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; font-family: 'Sora', sans-serif; }
+.page-header {
+  max-width: 1400px; margin: 0 auto; padding: 40px 24px 20px;
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.page-header h1 { color: #fff; font-size: 24px; font-weight: 800; }
+.page-header .tag { color: #666; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+.section-label {
+  max-width: 1400px; margin: 0 auto; padding: 32px 24px 16px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: #555; letter-spacing: 2px;
+}
+.frame {
+  max-width: 1400px; margin: 0 auto; padding: 0 24px 60px;
+}
+.render {
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+}
+
+/* ═══════════════════════════════════════════════
+   SHARED LAYOUT
+   ═══════════════════════════════════════════════ */
+.dashboard { display: grid; grid-template-columns: 220px 1fr; min-height: 700px; }
+
+/* ─── Sidebar (shared structure) ─── */
+.sidebar { padding: 28px 16px; display: flex; flex-direction: column; }
+.sidebar .logo { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 18px; margin-bottom: 36px; letter-spacing: -0.04em; padding: 0 10px; }
+.sidebar .slabel { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1.5px; margin: 24px 0 8px; padding: 0 10px; }
+.sidebar .slabel:first-of-type { margin-top: 0; }
+.sidebar a { display: flex; align-items: center; gap: 10px; font-size: 13px; padding: 9px 10px; border-radius: 8px; text-decoration: none; transition: all 0.15s; font-family: 'Sora', sans-serif; font-weight: 500; }
+.sidebar .count { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+.sidebar .spacer { flex: 1; }
+.sidebar .sidebar-footer { padding: 16px 10px 0; margin-top: 16px; }
+.sidebar .user-pill { display: flex; align-items: center; gap: 10px; font-size: 12px; font-family: 'Sora', sans-serif; }
+.sidebar .user-avatar { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+
+/* ─── Main (shared structure) ─── */
+.main { padding: 32px 40px; }
+.top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
+.main h2 { font-family: 'Sora', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.02em; }
+.top-right { display: flex; align-items: center; gap: 16px; }
+.status-pill { font-size: 11px; display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; }
+.status-pill .pulse { width: 6px; height: 6px; background: #6ee7b7; border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+.deadline-pill { font-size: 11px; padding: 5px 12px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.stat { border-radius: 12px; padding: 22px; transition: border-color 0.2s, box-shadow 0.2s; }
+.stat .label { font-size: 11px; letter-spacing: 0.5px; margin-bottom: 10px; font-weight: 500; font-family: 'Sora', sans-serif; }
+.stat .value { font-size: 30px; font-weight: 800; font-family: 'Sora', sans-serif; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.stat .change { font-size: 11px; margin-top: 6px; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.card { border-radius: 12px; padding: 22px; transition: border-color 0.2s; }
+.card h3 { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.card .card-sub { font-size: 11px; margin-bottom: 16px; }
+.queue-item { display: flex; align-items: center; gap: 10px; padding: 11px 0; font-size: 12px; }
+.queue-item .title { flex: 1; font-family: 'Sora', sans-serif; font-weight: 500; font-size: 13px; }
+.queue-item .detail { font-size: 11px; }
+.queue-item .btn-open { font-size: 11px; padding: 4px 10px; border-radius: 6px; background: transparent; cursor: pointer; font-family: 'Sora', sans-serif; font-weight: 500; transition: all 0.15s; }
+.dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.dot.red { background: #ef4444; }
+.dot.amber { background: #E8A87C; }
+.dot.green { background: #6ee7b7; }
+.log-line { font-size: 11px; line-height: 2.3; font-family: 'JetBrains Mono', monospace; }
+.log-line .hash { font-size: 10px; margin-left: 4px; }
+.compliance-bar { margin-top: 16px; border-radius: 12px; padding: 16px 22px; display: flex; align-items: center; gap: 24px; }
+.compliance-bar .bar-label { font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.bar-track { flex: 1; height: 6px; border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #C5E0EE, #E8A87C); }
+.bar-value { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; }
+
+/* ═══════════════════════════════════════════════
+   LIGHT THEME
+   ═══════════════════════════════════════════════ */
+.light { background: #F8F9FA; color: #2D2D2D; }
+.light .sidebar { background: #fff; border-right: 1px solid rgba(45,45,45,0.06); }
+.light .sidebar .logo { color: #2D3333; }
+.light .sidebar .slabel { color: rgba(45,45,45,0.3); }
+.light .sidebar a { color: rgba(45,45,45,0.45); }
+.light .sidebar a.active { background: rgba(45,51,51,0.06); color: #2D3333; }
+.light .sidebar a:hover:not(.active) { color: rgba(45,45,45,0.7); background: rgba(45,45,45,0.02); }
+.light .sidebar .count { color: rgba(45,45,45,0.2); }
+.light .sidebar .sidebar-footer { border-top: 1px solid rgba(45,45,45,0.06); }
+.light .sidebar .user-pill { color: rgba(45,45,45,0.5); }
+.light .sidebar .user-avatar { background: rgba(197,224,238,0.2); color: #2D3333; }
+.light .sidebar .user-name { color: #2D3333; }
+.light .sidebar .user-role { color: rgba(45,45,45,0.35); }
+
+.light .main h2 { color: #2D3333; }
+.light .main .sub { color: rgba(45,45,45,0.35); }
+.light .status-pill { color: rgba(45,45,45,0.35); }
+.light .deadline-pill { background: rgba(232,168,124,0.1); color: #c07a4a; }
+.light .stat { background: #fff; border: 1px solid rgba(45,45,45,0.06); box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+.light .stat:hover { border-color: rgba(197,224,238,0.4); box-shadow: 0 4px 16px rgba(45,45,45,0.06); }
+.light .stat .label { color: rgba(45,45,45,0.4); }
+.light .stat .value { color: #2D3333; }
+.light .stat .change { color: rgba(45,45,45,0.25); }
+.light .stat.alert { border-left: 3px solid #E8A87C; }
+.light .stat.alert .value { color: #c07a4a; }
+.light .card { background: #fff; border: 1px solid rgba(45,45,45,0.06); box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+.light .card:hover { border-color: rgba(197,224,238,0.3); }
+.light .card h3 { color: #2D3333; }
+.light .card .card-sub { color: rgba(45,45,45,0.3); }
+.light .queue-item { border-bottom: 1px solid rgba(45,45,45,0.05); }
+.light .queue-item:last-child { border-bottom: none; }
+.light .queue-item .title { color: rgba(45,45,45,0.75); }
+.light .queue-item .detail { color: rgba(45,45,45,0.3); }
+.light .queue-item .btn-open { border: 1px solid rgba(45,45,45,0.1); color: rgba(45,45,45,0.4); }
+.light .queue-item .btn-open:hover { border-color: rgba(45,45,45,0.25); color: #2D3333; }
+.light .log-line { color: rgba(45,45,45,0.5); }
+.light .log-line .time { color: rgba(45,45,45,0.25); }
+.light .log-line .ok { color: #16a34a; }
+.light .log-line .warn { color: #c07a4a; }
+.light .log-line .err { color: #dc2626; }
+.light .log-line .hash { color: rgba(45,45,45,0.15); }
+.light .compliance-bar { background: #fff; border: 1px solid rgba(45,45,45,0.06); }
+.light .compliance-bar .bar-label { color: rgba(45,45,45,0.5); }
+.light .bar-track { background: rgba(45,45,45,0.06); }
+.light .bar-value { color: #2D3333; }
+
+/* ═══════════════════════════════════════════════
+   DARK THEME
+   ═══════════════════════════════════════════════ */
+.dark { background: #2D3333; color: #c9d1d9; }
+.dark .sidebar { background: rgba(0,0,0,0.2); border-right: 1px solid rgba(197,224,238,0.06); }
+.dark .sidebar .logo { color: #F8F9FA; }
+.dark .sidebar .slabel { color: rgba(197,224,238,0.25); }
+.dark .sidebar a { color: rgba(255,255,255,0.35); }
+.dark .sidebar a.active { background: rgba(197,224,238,0.08); color: #C5E0EE; }
+.dark .sidebar a:hover:not(.active) { color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.03); }
+.dark .sidebar .count { color: rgba(197,224,238,0.2); }
+.dark .sidebar .sidebar-footer { border-top: 1px solid rgba(197,224,238,0.06); }
+.dark .sidebar .user-pill { color: rgba(255,255,255,0.4); }
+.dark .sidebar .user-avatar { background: rgba(197,224,238,0.1); color: #C5E0EE; }
+.dark .sidebar .user-name { color: rgba(255,255,255,0.6); }
+.dark .sidebar .user-role { color: rgba(197,224,238,0.25); }
+
+.dark .main h2 { color: #F8F9FA; }
+.dark .main .sub { color: rgba(197,224,238,0.35); }
+.dark .status-pill { color: rgba(197,224,238,0.4); }
+.dark .deadline-pill { background: rgba(232,168,124,0.1); color: #E8A87C; }
+.dark .stat { background: rgba(255,255,255,0.03); border: 1px solid rgba(197,224,238,0.08); }
+.dark .stat:hover { border-color: rgba(197,224,238,0.15); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+.dark .stat .label { color: rgba(197,224,238,0.35); }
+.dark .stat .value { color: #F8F9FA; }
+.dark .stat .change { color: rgba(197,224,238,0.2); }
+.dark .stat.alert { border-left: 3px solid #E8A87C; }
+.dark .stat.alert .value { color: #E8A87C; }
+.dark .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(197,224,238,0.08); }
+.dark .card:hover { border-color: rgba(197,224,238,0.12); }
+.dark .card h3 { color: #F8F9FA; }
+.dark .card .card-sub { color: rgba(197,224,238,0.25); }
+.dark .queue-item { border-bottom: 1px solid rgba(197,224,238,0.05); }
+.dark .queue-item:last-child { border-bottom: none; }
+.dark .queue-item .title { color: rgba(255,255,255,0.7); }
+.dark .queue-item .detail { color: rgba(197,224,238,0.25); }
+.dark .queue-item .btn-open { border: 1px solid rgba(197,224,238,0.1); color: rgba(197,224,238,0.4); }
+.dark .queue-item .btn-open:hover { border-color: rgba(197,224,238,0.3); color: #C5E0EE; }
+.dark .log-line { color: rgba(255,255,255,0.45); }
+.dark .log-line .time { color: rgba(197,224,238,0.2); }
+.dark .log-line .ok { color: #6ee7b7; }
+.dark .log-line .warn { color: #E8A87C; }
+.dark .log-line .err { color: #f87171; }
+.dark .log-line .hash { color: rgba(197,224,238,0.12); }
+.dark .compliance-bar { background: rgba(255,255,255,0.03); border: 1px solid rgba(197,224,238,0.08); }
+.dark .compliance-bar .bar-label { color: rgba(255,255,255,0.5); }
+.dark .bar-track { background: rgba(197,224,238,0.08); }
+.dark .bar-value { color: #C5E0EE; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Caelith Dashboard — Light + Dark</h1>
+  <div class="tag">E2 REFINED · LANDING PAGE HARMONY</div>
+</div>
+
+<!-- ═══ LIGHT VERSION ═══ -->
+<div class="section-label">☀ LIGHT / DAY MODE</div>
+<div class="frame">
+<div class="render">
+<div class="dashboard light">
+  <div class="sidebar">
+    <div class="logo">Caelith</div>
+    <div class="slabel">ÜBERSICHT</div>
+    <a class="active">◻ Dashboard</a>
+    <a>◻ Fonds <span class="count">3</span></a>
+    <a>◻ Investoren <span class="count">12</span></a>
+    <div class="slabel">COMPLIANCE</div>
+    <a>◻ Regelwerk <span class="count">5</span></a>
+    <a>◻ Entscheidungen <span class="count">15</span></a>
+    <a>◻ Audit Trail</a>
+    <a>◻ Copilot</a>
+    <div class="slabel">BERICHTE</div>
+    <a>◻ Annex IV</a>
+    <a>◻ Export</a>
+    <div class="spacer"></div>
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="user-avatar">LM</div>
+        <div>
+          <div class="user-name" style="font-size:12px;font-weight:500;">Lisa Müller</div>
+          <div class="user-role" style="font-size:10px;">Compliance Officer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="top-bar">
+      <div>
+        <h2>Dashboard</h2>
+        <div class="sub">Compliance-Übersicht · 19. Februar 2026</div>
+      </div>
+      <div class="top-right">
+        <div class="status-pill"><span class="pulse"></span> Vor 3 Min. geprüft</div>
+        <div class="deadline-pill">AIFMD II → 56 Tage</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="label">Aktive Fonds</div><div class="value">3</div><div class="change">+0 letzte 7 Tage</div></div>
+      <div class="stat"><div class="label">Verifizierte Investoren</div><div class="value">9</div><div class="change">alle Fonds</div></div>
+      <div class="stat"><div class="label">Allokierte Anteile</div><div class="value">1,97M</div><div class="change">Gesamtportfolio</div></div>
+      <div class="stat alert"><div class="label">Handlungsbedarf</div><div class="value">5</div><div class="change">hoch + mittel</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <h3>Handlungsbedarf</h3>
+        <div class="card-sub">Priorisierte Maßnahmen aus dem Portfolio-Status</div>
+        <div class="queue-item"><div class="dot red"></div><div class="title">KYC-Erneuerung fällig</div><div class="detail">1 Investor · 30d</div><button class="btn-open">Öffnen</button></div>
+        <div class="queue-item"><div class="dot amber"></div><div class="title">Abgelehnte Entscheidungen</div><div class="detail">5 Ablehnungen</div><button class="btn-open">Öffnen</button></div>
+        <div class="queue-item"><div class="dot amber"></div><div class="title">Onboarding-Prüfung</div><div class="detail">5 Anträge</div><button class="btn-open">Öffnen</button></div>
+        <div class="queue-item"><div class="dot green"></div><div class="title">Risikoflaggen Triage</div><div class="detail">5 Flaggen</div><button class="btn-open">Öffnen</button></div>
+      </div>
+      <div class="card">
+        <h3>Audit Log</h3>
+        <div class="card-sub">Echtzeit · hash-verkettet</div>
+        <div class="log-line"><span class="time">18:04:12</span> <span class="ok">✓</span> Eignungsprüfung — Bayer. Versorgungskammer <span class="hash">af3c…d901</span></div>
+        <div class="log-line"><span class="time">18:04:11</span> <span class="ok">✓</span> Eignungsprüfung — Sparkasse KölnBonn <span class="hash">b2e1…7f4a</span></div>
+        <div class="log-line"><span class="time">18:04:10</span> <span class="err">✗</span> KYC abgelaufen — Becker Vermögen <span class="hash">c891…2d5e</span></div>
+        <div class="log-line"><span class="time">18:04:09</span> <span class="warn">⚠</span> KYC läuft ab 30d — Müller Family Office <span class="hash">d4f2…8a3b</span></div>
+        <div class="log-line"><span class="time">18:04:08</span> <span class="ok">✓</span> Konzentrationsprüfung — Süddeutsche WP <span class="hash">e7a3…1c9f</span></div>
+        <div class="log-line"><span class="time">18:04:07</span> <span class="warn">⚠</span> Dominanter Investor — BVK 43.8% <span class="hash">f1b4…5e2d</span></div>
+      </div>
+    </div>
+    <div class="compliance-bar">
+      <div class="bar-label">Gesamt-Compliance</div>
+      <div class="bar-track"><div class="bar-fill" style="width:87%"></div></div>
+      <div class="bar-value">87%</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ═══ DARK VERSION ═══ -->
+<div class="section-label">🌙 DARK / NIGHT MODE</div>
+<div class="frame">
+<div class="render">
+<div class="dashboard dark">
+  <div class="sidebar">
+    <div class="logo">Caelith</div>
+    <div class="slabel">ÜBERSICHT</div>
+    <a class="active">◻ Dashboard</a>
+    <a>◻ Fonds <span class="count">3</span></a>
+    <a>◻ Investoren <span class="count">12</span></a>
+    <div class="slabel">COMPLIANCE</div>
+    <a>◻ Regelwerk <span class="count">5</span></a>
+    <a>◻ Entscheidungen <span class="count">15</span></a>
+    <a>◻ Audit Trail</a>
+    <a>◻ Copilot</a>
+    <div class="slabel">BERICHTE</div>
+    <a>◻ Annex IV</a>
+    <a>◻ Export</a>
+    <div class="spacer"></div>
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="user-avatar">LM</div>
+        <div>
+          <div class="user-name" style="font-size:12px;font-weight:500;">Lisa Müller</div>
+          <div class="user-role" style="font-size:10px;">Compliance Officer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="top-bar">
+      <div>
+        <h2>Dashboard</h2>
+        <div class="sub">Compliance-Übersicht · 19. Februar 2026</div>
+      </div>
+      <div class="top-right">
+        <div class="status-pill"><span class="pulse"></span> Vor 3 Min. geprüft</div>
+        <div class="deadline-pill">AIFMD II → 56 Tage</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="label">Aktive Fonds</div><div class="value">3</div><div class="change">+0 letzte 7 Tage</div></div>
+      <div class="stat"><div class="label">Verifizierte Investoren</div><div class="value">9</div><div class="change">alle Fonds</div></div>
+      <div class="stat"><div class="label">Allokierte Anteile</div><div class="value">1,97M</div><div class="change">Gesamtportfolio</div></div>
+      <div class="stat alert"><div class="label">Handlungsbedarf</div><div class="value">5</div><div class="change">hoch + mittel</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <h3>Handlungsbedarf</h3>
+        <div class="card-sub">Priorisierte Maßnahmen aus dem Portfolio-Status</div>
+        <div class="queue-item"><div class="dot red"></div><div class="title">KYC-Erneuerung fällig</div><div class="detail">1 Investor · 30d</div><button class="btn-open">Öffnen</button></div>
+        <div class="queue-item"><div class="dot amber"></div><div class="title">Abgelehnte Entscheidungen</div><div class="detail">5 Ablehnungen</div><button class="btn-open">Öffnen</button></div>
+        <div class="queue-item"><div class="dot amber"></div><div class="title">Onboarding-Prüfung</div><div class="detail">5 Anträge</div><button class="btn-open">Öffnen</button></div>
+        <div class="queue-item"><div class="dot green"></div><div class="title">Risikoflaggen Triage</div><div class="detail">5 Flaggen</div><button class="btn-open">Öffnen</button></div>
+      </div>
+      <div class="card">
+        <h3>Audit Log</h3>
+        <div class="card-sub">Echtzeit · hash-verkettet</div>
+        <div class="log-line"><span class="time">18:04:12</span> <span class="ok">✓</span> Eignungsprüfung — Bayer. Versorgungskammer <span class="hash">af3c…d901</span></div>
+        <div class="log-line"><span class="time">18:04:11</span> <span class="ok">✓</span> Eignungsprüfung — Sparkasse KölnBonn <span class="hash">b2e1…7f4a</span></div>
+        <div class="log-line"><span class="time">18:04:10</span> <span class="err">✗</span> KYC abgelaufen — Becker Vermögen <span class="hash">c891…2d5e</span></div>
+        <div class="log-line"><span class="time">18:04:09</span> <span class="warn">⚠</span> KYC läuft ab 30d — Müller Family Office <span class="hash">d4f2…8a3b</span></div>
+        <div class="log-line"><span class="time">18:04:08</span> <span class="ok">✓</span> Konzentrationsprüfung — Süddeutsche WP <span class="hash">e7a3…1c9f</span></div>
+        <div class="log-line"><span class="time">18:04:07</span> <span class="warn">⚠</span> Dominanter Investor — BVK 43.8% <span class="hash">f1b4…5e2d</span></div>
+      </div>
+    </div>
+    <div class="compliance-bar">
+      <div class="bar-label">Gesamt-Compliance</div>
+      <div class="bar-track"><div class="bar-fill" style="width:87%"></div></div>
+      <div class="bar-value">87%</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+</body>
+</html>

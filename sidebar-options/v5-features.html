@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Sidebar v5 — Collapsible + Scroll-to-Top</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #f8f9fa; display: flex; min-height: 100vh; }
+
+  .container { display: flex; gap: 64px; padding: 32px; width: 100%; justify-content: center; align-items: flex-start; }
+  .proposal { display: flex; flex-direction: column; align-items: center; }
+  .proposal-label { font-size: 13px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px; padding: 4px 14px; border-radius: 6px; }
+  .proposal-label.a { background: rgba(37,99,235,0.15); color: #60a5fa; }
+  .proposal-label.b { background: rgba(16,185,129,0.15); color: #34d399; }
+  .proposal-desc { font-size: 11px; color: rgba(197,224,238,0.4); margin-bottom: 16px; text-align: center; max-width: 280px; line-height: 1.5; }
+
+  /* ── App frame ── */
+  .app-frame { display: flex; border: 1px solid rgba(197,224,238,0.06); border-radius: 12px; overflow: hidden; height: 680px; background: #0a0a0a; position: relative; }
+
+  /* ── Sidebar base ── */
+  .sidebar { width: 220px; min-width: 220px; background: #111111; border-right: 1px solid rgba(197,224,238,0.06); display: flex; flex-direction: column; height: 100%; transition: width 0.25s cubic-bezier(0.4,0,0.2,1), min-width 0.25s cubic-bezier(0.4,0,0.2,1), transform 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.2s; position: relative; z-index: 10; }
+
+  /* Collapse to icon rail */
+  .sidebar.rail { width: 56px; min-width: 56px; }
+  .sidebar.rail .logo-text { display: none; }
+  .sidebar.rail .logo-icon { display: flex; }
+  .sidebar.rail .search { padding: 7px; justify-content: center; }
+  .sidebar.rail .search-text, .sidebar.rail .search kbd { display: none; }
+  .sidebar.rail .section-header span { display: none; }
+  .sidebar.rail .section-header .chev { display: none; }
+  .sidebar.rail .section-header { padding: 10px 0 2px; justify-content: center; }
+  .sidebar.rail .section-header::after { content: ''; display: block; width: 16px; height: 1px; background: rgba(197,224,238,0.08); }
+  .sidebar.rail .nav-link { padding: 8px; justify-content: center; gap: 0; }
+  .sidebar.rail .nav-link .label, .sidebar.rail .nav-link .badge { display: none; }
+  .sidebar.rail .item-chev { display: none; }
+  .sidebar.rail .tree-children { display: none; }
+  .sidebar.rail .nav-item { margin: 1px 4px; }
+  .sidebar.rail .user-name, .sidebar.rail .user-role { display: none; }
+  .sidebar.rail .footer { justify-content: center; padding: 10px 8px; }
+  .sidebar.rail .active-bar { left: 0; }
+
+  /* Collapse fully hidden */
+  .sidebar.hidden { width: 0; min-width: 0; overflow: hidden; opacity: 0; border-right: none; }
+
+  .logo { padding: 20px 20px 14px; display: flex; align-items: center; gap: 8px; }
+  .sidebar.rail .logo { padding: 16px 8px 14px; justify-content: center; }
+  .logo-text { font-size: 17px; font-weight: 800; color: #e8eff4; letter-spacing: -0.04em; }
+  .logo-icon { display: none; width: 28px; height: 28px; background: rgba(197,224,238,0.08); border: 1px solid rgba(197,224,238,0.1); border-radius: 8px; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #C5E0EE; }
+
+  /* Collapse toggle button */
+  .collapse-btn { position: absolute; top: 20px; right: -12px; width: 24px; height: 24px; border-radius: 50%; background: #1a1a1a; border: 1px solid rgba(197,224,238,0.1); color: rgba(197,224,238,0.4); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; transition: all 0.15s; opacity: 0; }
+  .sidebar:hover .collapse-btn, .sidebar.rail .collapse-btn, .sidebar.hidden + .main-content .expand-btn { opacity: 1; }
+  .collapse-btn:hover { background: #222; color: rgba(197,224,238,0.7); border-color: rgba(197,224,238,0.2); }
+  .collapse-btn svg { width: 14px; height: 14px; transition: transform 0.25s; }
+  .sidebar.rail .collapse-btn { opacity: 1; right: -12px; }
+  .sidebar.rail .collapse-btn svg { transform: rotate(180deg); }
+
+  /* Expand button for fully hidden */
+  .expand-btn { position: absolute; top: 20px; left: 12px; width: 32px; height: 32px; border-radius: 8px; background: #1a1a1a; border: 1px solid rgba(197,224,238,0.1); color: rgba(197,224,238,0.4); display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 20; transition: all 0.15s; }
+  .expand-btn:hover { background: #222; color: rgba(197,224,238,0.7); }
+  .expand-btn svg { width: 16px; height: 16px; }
+
+  .search { margin: 0 10px 10px; padding: 7px 11px; border-radius: 7px; background: rgba(197,224,238,0.05); border: 1px solid rgba(197,224,238,0.09); color: rgba(197,224,238,0.4); font-size: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.15s; }
+  .search:hover { background: rgba(197,224,238,0.07); border-color: rgba(197,224,238,0.12); color: rgba(197,224,238,0.5); }
+  .search kbd { margin-left: auto; font-family: monospace; font-size: 9px; color: rgba(197,224,238,0.2); }
+  .nav { flex: 1; overflow-y: auto; }
+  .section-header { display: flex; align-items: center; padding: 14px 16px 5px; cursor: pointer; }
+  .section-header span { font-family: monospace; font-size: 10px; font-weight: 600; letter-spacing: 1px; color: rgba(197,224,238,0.32); text-transform: uppercase; flex: 1; }
+  .section-header .chev { width: 12px; height: 12px; color: rgba(197,224,238,0.18); }
+  .nav-item { display: flex; align-items: center; margin: 1px 8px; border-radius: 8px; position: relative; }
+  .nav-link { display: flex; align-items: center; gap: 10px; padding: 7px 12px; flex: 1; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 500; transition: all 0.15s; color: rgba(197,224,238,0.6); }
+  .nav-link:hover { background: rgba(197,224,238,0.06); color: rgba(197,224,238,0.8); }
+  .icon { width: 18px; height: 18px; flex-shrink: 0; color: rgba(197,224,238,0.35); }
+  .nav-link:hover .icon { color: rgba(197,224,238,0.5); }
+  .nav-item.active .nav-link { color: #f0f6fa; }
+  .nav-item.active .icon { color: #C5E0EE; }
+  .nav-item.active::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 3px; height: 18px; border-radius: 0 2px 2px 0; background: #C5E0EE; }
+  .label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .badge { font-size: 11px; font-weight: 600; color: #E8A87C; min-width: 14px; text-align: right; font-variant-numeric: tabular-nums; }
+  .item-chev { flex-shrink: 0; padding: 4px; margin-right: 4px; border: none; background: none; color: rgba(197,224,238,0.2); cursor: pointer; display: flex; }
+  .item-chev svg { width: 12px; height: 12px; }
+  .tree-children { margin-left: 30px; padding-left: 11px; border-left: 1px solid rgba(197,224,238,0.06); margin-bottom: 2px; }
+  .sub-item { display: block; padding: 4px 10px; border-radius: 5px; font-size: 12px; font-weight: 500; color: rgba(197,224,238,0.4); text-decoration: none; transition: all 0.15s; }
+  .sub-item:hover { color: rgba(197,224,238,0.65); background: rgba(197,224,238,0.04); }
+  .sub-item.active { color: #C5E0EE; }
+  .footer { border-top: 1px solid rgba(197,224,238,0.06); padding: 10px 14px; display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 26px; height: 26px; border-radius: 7px; background: rgba(197,224,238,0.06); border: 1px solid rgba(197,224,238,0.08); font-family: monospace; font-size: 9px; font-weight: 700; color: #C5E0EE; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .user-name { font-size: 11px; font-weight: 600; color: rgba(248,249,250,0.8); white-space: nowrap; }
+  .user-role { font-size: 9px; color: rgba(197,224,238,0.35); }
+
+  /* ── Main content area ── */
+  .main-content { flex: 1; width: 340px; position: relative; overflow-y: auto; padding: 24px; background: #0a0a0a; }
+  .main-content h2 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .main-content p { color: rgba(197,224,238,0.4); font-size: 12px; line-height: 1.6; margin-bottom: 12px; }
+
+  /* Fake content for scroll */
+  .fake-card { background: rgba(197,224,238,0.03); border: 1px solid rgba(197,224,238,0.06); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .fake-card .title { font-size: 13px; font-weight: 600; color: rgba(197,224,238,0.6); margin-bottom: 6px; }
+  .fake-card .bar { height: 8px; border-radius: 4px; background: rgba(197,224,238,0.06); margin-bottom: 6px; }
+  .fake-card .bar.short { width: 60%; }
+  .fake-card .bar.med { width: 80%; }
+
+  /* ── Scroll-to-top button ── */
+  .scroll-top { position: absolute; bottom: 20px; right: 20px; width: 36px; height: 36px; border-radius: 10px; background: rgba(197,224,238,0.06); border: 1px solid rgba(197,224,238,0.1); color: rgba(197,224,238,0.4); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; opacity: 0; pointer-events: none; backdrop-filter: blur(8px); z-index: 5; }
+  .scroll-top.visible { opacity: 1; pointer-events: auto; }
+  .scroll-top:hover { background: rgba(197,224,238,0.1); color: rgba(197,224,238,0.7); border-color: rgba(197,224,238,0.18); transform: translateY(-2px); }
+  .scroll-top:active { transform: translateY(0); }
+  .scroll-top svg { width: 16px; height: 16px; }
+
+  /* ── Tooltip for rail mode ── */
+  .sidebar.rail .nav-item { position: relative; }
+  .sidebar.rail .nav-item:hover::after { content: attr(data-tooltip); position: absolute; left: 100%; top: 50%; transform: translateY(-50%); margin-left: 8px; padding: 4px 10px; border-radius: 6px; background: #1a1a1a; border: 1px solid rgba(197,224,238,0.1); color: rgba(197,224,238,0.7); font-size: 12px; font-weight: 500; white-space: nowrap; z-index: 50; pointer-events: none; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ═══ OPTION 1: Icon Rail ═══ -->
+<div class="proposal">
+  <div class="proposal-label a">1 — Icon Rail</div>
+  <div class="proposal-desc">Sidebar collapses to a 56px icon rail. Hover shows tooltips. Toggle via pill button on sidebar edge. Scroll-to-top fades in on scroll.</div>
+  <div class="app-frame" id="frame1">
+    <aside class="sidebar" id="sidebar1">
+      <button class="collapse-btn" onclick="toggleRail()" title="Collapse sidebar">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+      </button>
+      <div class="logo"><span class="logo-text">Caelith</span><span class="logo-icon">C</span></div>
+      <div class="search">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+        <span class="search-text">Search…</span> <kbd>⌘K</kbd>
+      </div>
+      <nav class="nav">
+        <div class="nav-item active" data-tooltip="Dashboard"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg><span class="label">Dashboard</span></a></div>
+        <div class="section-header"><span>Portfolio</span><svg class="chev" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></div>
+        <div class="nav-item" data-tooltip="Funds"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/></svg><span class="label">Funds</span><span class="badge">3</span></a><button class="item-chev"><svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></button></div>
+        <div class="tree-children"><a class="sub-item" href="#">Holdings</a><a class="sub-item" href="#">Transfers</a></div>
+        <div class="nav-item" data-tooltip="Investors"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg><span class="label">Investors</span><span class="badge">1</span></a><button class="item-chev"><svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></button></div>
+        <div class="tree-children"><a class="sub-item" href="#">Onboarding</a><a class="sub-item active" href="#">Screening</a></div>
+        <div class="section-header"><span>Compliance</span><svg class="chev" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></div>
+        <div class="nav-item" data-tooltip="Rules & Screening"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="label">Rules & Screening</span></a></div>
+        <div class="nav-item" data-tooltip="Decisions"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/></svg><span class="label">Decisions</span></a></div>
+        <div class="nav-item" data-tooltip="AIFMD II Check"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.745 3.745 0 011.043 3.296A3.745 3.745 0 0121 12z"/></svg><span class="label">AIFMD II Check</span></a></div>
+        <div class="nav-item" data-tooltip="Reports"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="label">Reports</span></a><button class="item-chev"><svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></button></div>
+        <div class="tree-children"><a class="sub-item" href="#">Annex IV</a><a class="sub-item" href="#">Evidence Bundle</a></div>
+        <div class="section-header"><span>Monitoring</span><svg class="chev" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></div>
+        <div class="nav-item" data-tooltip="Calendar"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg><span class="label">Calendar</span><span class="badge">2</span></a></div>
+        <div class="nav-item" data-tooltip="Audit Log"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="label">Audit Log</span></a></div>
+      </nav>
+      <div class="footer"><div class="avatar">JL</div><div><div class="user-name">Julian Laycock</div><div class="user-role">Administrator</div></div></div>
+    </aside>
+    <div class="main-content" id="main1" onscroll="handleScroll(this, 'stt1')">
+      <h2>Fund Overview</h2>
+      <p>3 active funds across 2 strategies</p>
+      <div class="fake-card"><div class="title">Immobilien Spezial-AIF I</div><div class="bar med"></div><div class="bar short"></div></div>
+      <div class="fake-card"><div class="title">Immobilien Spezial-AIF II</div><div class="bar"></div><div class="bar med"></div></div>
+      <div class="fake-card"><div class="title">Infrastructure Fund</div><div class="bar short"></div><div class="bar"></div></div>
+      <div class="fake-card"><div class="title">Compliance Status</div><div class="bar med"></div><div class="bar short"></div></div>
+      <div class="fake-card"><div class="title">Recent Activity</div><div class="bar"></div><div class="bar med"></div></div>
+      <div class="fake-card"><div class="title">Investor Pipeline</div><div class="bar short"></div><div class="bar"></div></div>
+      <div class="fake-card"><div class="title">Regulatory Calendar</div><div class="bar med"></div><div class="bar short"></div></div>
+      <div class="fake-card"><div class="title">Audit Summary</div><div class="bar"></div><div class="bar med"></div></div>
+      <button class="scroll-top" id="stt1" onclick="this.parentElement.scrollTo({top:0,behavior:'smooth'})">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ OPTION 2: Full Slide ═══ -->
+<div class="proposal">
+  <div class="proposal-label b">2 — Full Slide</div>
+  <div class="proposal-desc">Sidebar fully slides off-screen to the left. Hamburger button appears to bring it back. Maximum content space.</div>
+  <div class="app-frame" id="frame2">
+    <aside class="sidebar" id="sidebar2">
+      <button class="collapse-btn" onclick="toggleHidden()" title="Hide sidebar" style="opacity:1">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+      </button>
+      <div class="logo"><span class="logo-text">Caelith</span></div>
+      <div class="search">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+        <span class="search-text">Search…</span> <kbd>⌘K</kbd>
+      </div>
+      <nav class="nav">
+        <div class="nav-item active" data-tooltip="Dashboard"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg><span class="label">Dashboard</span></a></div>
+        <div class="section-header"><span>Portfolio</span><svg class="chev" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></div>
+        <div class="nav-item" data-tooltip="Funds"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/></svg><span class="label">Funds</span><span class="badge">3</span></a><button class="item-chev"><svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></button></div>
+        <div class="tree-children"><a class="sub-item" href="#">Holdings</a><a class="sub-item" href="#">Transfers</a></div>
+        <div class="nav-item" data-tooltip="Investors"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg><span class="label">Investors</span><span class="badge">1</span></a><button class="item-chev"><svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></button></div>
+        <div class="tree-children"><a class="sub-item" href="#">Onboarding</a><a class="sub-item active" href="#">Screening</a></div>
+        <div class="section-header"><span>Compliance</span><svg class="chev" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></div>
+        <div class="nav-item" data-tooltip="Rules & Screening"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="label">Rules & Screening</span></a></div>
+        <div class="nav-item" data-tooltip="Decisions"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/></svg><span class="label">Decisions</span></a></div>
+        <div class="nav-item" data-tooltip="AIFMD II Check"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.745 3.745 0 011.043 3.296A3.745 3.745 0 0121 12z"/></svg><span class="label">AIFMD II Check</span></a></div>
+        <div class="nav-item" data-tooltip="Reports"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="label">Reports</span></a><button class="item-chev"><svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></button></div>
+        <div class="tree-children"><a class="sub-item" href="#">Annex IV</a><a class="sub-item" href="#">Evidence Bundle</a></div>
+        <div class="section-header"><span>Monitoring</span><svg class="chev" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg></div>
+        <div class="nav-item" data-tooltip="Calendar"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg><span class="label">Calendar</span><span class="badge">2</span></a></div>
+        <div class="nav-item" data-tooltip="Audit Log"><a class="nav-link" href="#"><svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="label">Audit Log</span></a></div>
+      </nav>
+      <div class="footer"><div class="avatar">JL</div><div><div class="user-name">Julian Laycock</div><div class="user-role">Administrator</div></div></div>
+    </aside>
+    <div class="main-content" id="main2" onscroll="handleScroll(this, 'stt2')">
+      <button class="expand-btn" id="expandBtn" onclick="toggleHidden()">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+      </button>
+      <h2>Fund Overview</h2>
+      <p>3 active funds across 2 strategies</p>
+      <div class="fake-card"><div class="title">Immobilien Spezial-AIF I</div><div class="bar med"></div><div class="bar short"></div></div>
+      <div class="fake-card"><div class="title">Immobilien Spezial-AIF II</div><div class="bar"></div><div class="bar med"></div></div>
+      <div class="fake-card"><div class="title">Infrastructure Fund</div><div class="bar short"></div><div class="bar"></div></div>
+      <div class="fake-card"><div class="title">Compliance Status</div><div class="bar med"></div><div class="bar short"></div></div>
+      <div class="fake-card"><div class="title">Recent Activity</div><div class="bar"></div><div class="bar med"></div></div>
+      <div class="fake-card"><div class="title">Investor Pipeline</div><div class="bar short"></div><div class="bar"></div></div>
+      <div class="fake-card"><div class="title">Regulatory Calendar</div><div class="bar med"></div><div class="bar short"></div></div>
+      <div class="fake-card"><div class="title">Audit Summary</div><div class="bar"></div><div class="bar med"></div></div>
+      <button class="scroll-top" id="stt2" onclick="this.parentElement.scrollTo({top:0,behavior:'smooth'})">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// Icon rail toggle
+function toggleRail() {
+  document.getElementById('sidebar1').classList.toggle('rail');
+}
+
+// Full hide toggle
+function toggleHidden() {
+  const sb = document.getElementById('sidebar2');
+  const btn = document.getElementById('expandBtn');
+  sb.classList.toggle('hidden');
+  btn.style.display = sb.classList.contains('hidden') ? 'flex' : 'none';
+}
+
+// Scroll-to-top visibility
+function handleScroll(el, btnId) {
+  const btn = document.getElementById(btnId);
+  if (el.scrollTop > 150) {
+    btn.classList.add('visible');
+  } else {
+    btn.classList.remove('visible');
+  }
+}
+</script>
+</body>
+</html>

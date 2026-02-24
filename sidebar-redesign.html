@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Sidebar Redesign</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-main: #1a2124;
+    --bg-sidebar: #151b1e;
+    --bg-content: #1e2629;
+    --bg-hover: rgba(197,224,238,0.06);
+    --bg-active: rgba(197,224,238,0.10);
+    --accent: #C5E0EE;
+    --accent-dim: rgba(197,224,238,0.5);
+    --accent-glow: rgba(197,224,238,0.15);
+    --ink: #e8eef2;
+    --ink-secondary: #b0bec5;
+    --ink-muted: #6b7f8a;
+    --ink-faint: #4a5a63;
+    --edge: rgba(197,224,238,0.08);
+    --red: #ff6b6b;
+    --green: #66bb6a;
+    --orange: #ffa726;
+    --brand-gradient: linear-gradient(135deg, rgba(197,224,238,0.12) 0%, rgba(197,224,238,0.04) 100%);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg-main);
+    color: var(--ink);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 232px;
+    height: 100vh;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--edge);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .sidebar-logo {
+    padding: 24px 24px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sidebar-logo h1 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+  }
+
+  .sidebar-logo .version {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-muted);
+    background: var(--edge);
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Nav sections */
+  .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ink-faint) transparent;
+  }
+
+  .nav-section {
+    margin-bottom: 4px;
+  }
+
+  .nav-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    margin-top: 16px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.15s;
+    user-select: none;
+  }
+
+  .nav-section-header:hover {
+    background: var(--bg-hover);
+  }
+
+  .nav-section-header span {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  .nav-section-header svg {
+    width: 10px;
+    height: 10px;
+    color: var(--ink-faint);
+    transition: transform 0.2s ease;
+  }
+
+  .nav-section-header.collapsed svg {
+    transform: rotate(-90deg);
+  }
+
+  .nav-section-items {
+    overflow: hidden;
+    transition: max-height 0.25s ease, opacity 0.2s ease;
+    max-height: 500px;
+    opacity: 1;
+  }
+
+  .nav-section-items.hidden {
+    max-height: 0;
+    opacity: 0;
+  }
+
+  /* Dashboard (standalone, no section header) */
+  .nav-item-dashboard {
+    margin-bottom: 8px;
+  }
+
+  /* Nav items */
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-secondary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+    border: 1px solid transparent;
+  }
+
+  .nav-item:hover {
+    background: var(--bg-hover);
+    color: var(--ink);
+  }
+
+  .nav-item.active {
+    background: var(--bg-active);
+    color: var(--accent);
+    border-color: var(--edge);
+  }
+
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: var(--accent);
+    border-radius: 0 2px 2px 0;
+  }
+
+  .nav-item .icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+  }
+
+  .nav-item:hover .icon,
+  .nav-item.active .icon {
+    opacity: 1;
+  }
+
+  .nav-item .badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: rgba(255,107,107,0.15);
+    color: var(--red);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .nav-item .badge.green {
+    background: rgba(102,187,106,0.15);
+    color: var(--green);
+  }
+
+  .nav-item .badge.orange {
+    background: rgba(255,167,38,0.15);
+    color: var(--orange);
+  }
+
+  /* Sub-items (expandable) */
+  .nav-sub-items {
+    padding-left: 28px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.2s ease, opacity 0.15s ease;
+  }
+
+  .nav-sub-items.expanded {
+    max-height: 200px;
+    opacity: 1;
+  }
+
+  .nav-sub-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+
+  .nav-sub-item:hover {
+    color: var(--ink-secondary);
+    background: var(--bg-hover);
+  }
+
+  .nav-sub-item.active {
+    color: var(--accent);
+  }
+
+  .nav-sub-item .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--ink-faint);
+    flex-shrink: 0;
+  }
+
+  .nav-sub-item.active .dot {
+    background: var(--accent);
+  }
+
+  .nav-item .expand-arrow {
+    margin-left: auto;
+    width: 12px;
+    height: 12px;
+    color: var(--ink-faint);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .nav-item.has-sub.open .expand-arrow {
+    transform: rotate(90deg);
+  }
+
+  /* Sidebar divider */
+  .sidebar-divider {
+    height: 1px;
+    background: var(--edge);
+    margin: 8px 14px;
+  }
+
+  /* Footer */
+  .sidebar-footer {
+    border-top: 1px solid var(--edge);
+    padding: 12px 10px;
+  }
+
+  .search-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--edge);
+    background: transparent;
+    color: var(--ink-muted);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 10px;
+  }
+
+  .search-btn:hover {
+    background: var(--bg-hover);
+    color: var(--ink-secondary);
+    border-color: rgba(197,224,238,0.15);
+  }
+
+  .search-btn .icon {
+    width: 15px;
+    height: 15px;
+    opacity: 0.5;
+  }
+
+  .search-btn kbd {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    background: var(--edge);
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+
+  .user-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background 0.15s;
+  }
+
+  .user-card:hover {
+    background: var(--bg-hover);
+  }
+
+  .user-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--accent-glow);
+    border: 1px solid var(--edge);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .user-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .user-info .name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-info .role {
+    font-size: 10px;
+    color: var(--ink-muted);
+  }
+
+  .logout-btn {
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.15s;
+    display: flex;
+  }
+
+  .logout-btn:hover {
+    color: var(--ink-secondary);
+  }
+
+  /* ── Main Content (mock) ── */
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px 40px;
+  }
+
+  .mock-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .mock-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .mock-header .subtitle {
+    font-size: 14px;
+    color: var(--ink-muted);
+    margin-top: 2px;
+  }
+
+  .mock-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .mock-card {
+    background: var(--bg-content);
+    border: 1px solid var(--edge);
+    border-radius: 12px;
+    padding: 24px;
+    min-height: 120px;
+  }
+
+  .mock-card h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+
+  .mock-card .value {
+    font-size: 32px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--ink);
+  }
+
+  /* Comparison panel */
+  .comparison {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: var(--bg-content);
+    border: 1px solid var(--edge);
+    border-radius: 12px;
+    padding: 16px 20px;
+    z-index: 100;
+    max-width: 260px;
+  }
+
+  .comparison h4 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .comparison ul {
+    list-style: none;
+    font-size: 12px;
+    color: var(--ink-secondary);
+    line-height: 1.8;
+  }
+
+  .comparison li::before {
+    content: '✓ ';
+    color: var(--green);
+  }
+
+  .comparison .old {
+    color: var(--ink-faint);
+    text-decoration: line-through;
+  }
+
+  .comparison .old::before {
+    content: '✗ ';
+    color: var(--red);
+  }
+
+  /* Active page indicator text */
+  .page-indicator {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    background: var(--bg-content);
+    border: 1px solid var(--edge);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-family: 'JetBrains Mono', monospace;
+    z-index: 100;
+  }
+
+  .page-indicator span {
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <h1>Caelith</h1>
+  </div>
+
+  <nav class="sidebar-nav" id="nav">
+    <!-- Dashboard (standalone) -->
+    <div class="nav-item-dashboard">
+      <a class="nav-item active" data-page="dashboard" onclick="navigate(this)">
+        <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>
+        </svg>
+        Dashboard
+      </a>
+    </div>
+
+    <!-- MANAGE -->
+    <div class="nav-section" data-section="manage">
+      <div class="nav-section-header" onclick="toggleSection('manage')">
+        <span>Manage</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+      </div>
+      <div class="nav-section-items" id="section-manage">
+        <a class="nav-item" data-page="funds" onclick="navigate(this)">
+          <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z"/>
+          </svg>
+          Funds
+          <span class="badge orange">3</span>
+        </a>
+        <a class="nav-item" data-page="investors" onclick="navigate(this)">
+          <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
+          </svg>
+          Investors
+          <span class="badge">13</span>
+        </a>
+        <a class="nav-item has-sub" data-page="transfers" onclick="toggleSub(this, 'transfers-sub')">
+          <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/>
+          </svg>
+          Transfers
+          <svg class="expand-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+        </a>
+        <div class="nav-sub-items" id="transfers-sub">
+          <a class="nav-sub-item" data-page="transfers" onclick="navigate(this)"><span class="dot"></span>Transfer History</a>
+          <a class="nav-sub-item" data-page="holdings" onclick="navigate(this)"><span class="dot"></span>Holdings & Cap Table</a>
+          <a class="nav-sub-item" data-page="onboarding" onclick="navigate(this)"><span class="dot"></span>Onboarding</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPLIANCE -->
+    <div class="nav-section" data-section="compliance">
+      <div class="nav-section-header" onclick="toggleSection('compliance')">
+        <span>Compliance</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+      </div>
+      <div class="nav-section-items" id="section-compliance">
+        <a class="nav-item" data-page="rules" onclick="navigate(this)">
+          <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
+          </svg>
+          Rules & Screening
+        </a>
+        <a class="nav-item" data-page="decisions" onclick="navigate(this)">
+          <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/>
+          </svg>
+          Decisions
+        </a>
+        <a class="nav-item has-sub" data-page="reports" onclick="toggleSub(this, 'reports-sub')">
+          <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+          </svg>
+          Reports
+          <svg class="expand-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+        </a>
+        <div class="nav-sub-items" id="reports-sub">
+          <a class="nav-sub-item" data-page="annex-iv" onclick="navigate(this)"><span class="dot"></span>Annex IV</a>
+          <a class="nav-sub-item" data-page="evidence-bundle" onclick="navigate(this)"><span class="dot"></span>Evidence Bundle</a>
+          <a class="nav-sub-item" data-page="audit-package" onclick="navigate(this)"><span class="dot"></span>Audit Package</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- OVERSIGHT -->
+    <div class="nav-section" data-section="oversight">
+      <div class="nav-section-header" onclick="toggleSection('oversight')">
+        <span>Oversight</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+      </div>
+      <div class="nav-section-items" id="section-oversight">
+        <a class="nav-item" data-page="readiness" onclick="navigate(this)">
+          <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.745 3.745 0 011.043 3.296A3.745 3.745 0 0121 12z"/>
+          </svg>
+          AIFMD II Readiness
+          <span class="badge orange">53d</span>
+        </a>
+        <a class="nav-item" data-page="calendar" onclick="navigate(this)">
+          <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+          </svg>
+          Calendar
+          <span class="badge">2</span>
+        </a>
+        <a class="nav-item" data-page="audit-log" onclick="navigate(this)">
+          <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Audit Log
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    <button class="search-btn" onclick="alert('Search opened (Ctrl+K)')">
+      <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+      </svg>
+      Search
+      <kbd>⌘K</kbd>
+    </button>
+    <div class="user-card">
+      <div class="user-avatar">JL</div>
+      <div class="user-info">
+        <div class="name">Julian Laycock</div>
+        <div class="role">Administrator</div>
+      </div>
+      <button class="logout-btn" title="Sign out">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content Area -->
+<div class="main-content" id="main-content">
+  <div class="mock-header">
+    <div>
+      <h2 id="page-title">Dashboard</h2>
+      <div class="subtitle" id="page-subtitle">Compliance engine at a glance</div>
+    </div>
+  </div>
+  <div class="mock-cards">
+    <div class="mock-card"><h3>Funds</h3><div class="value">3</div></div>
+    <div class="mock-card"><h3>Investors</h3><div class="value">13</div></div>
+    <div class="mock-card"><h3>Compliance Score</h3><div class="value" style="color: var(--orange)">25</div></div>
+    <div class="mock-card"><h3>Actions Due</h3><div class="value" style="color: var(--red)">4</div></div>
+  </div>
+</div>
+
+<!-- Comparison panel -->
+<div class="comparison">
+  <h4>Redesign Changes</h4>
+  <ul>
+    <li>14 → 9 top-level items</li>
+    <li>Holdings → sub-item under Transfers</li>
+    <li>Onboarding → sub-item under Transfers</li>
+    <li>Reports → expandable (3 sub-items)</li>
+    <li>Screening → merged into Rules</li>
+    <li>Section names: Manage / Compliance / Oversight</li>
+    <li>Contextual badges (counts, deadlines)</li>
+    <li>Expand arrows for drill-down items</li>
+  </ul>
+</div>
+
+<div class="page-indicator">
+  Active: <span id="current-page">dashboard</span>
+</div>
+
+<script>
+  const pageData = {
+    dashboard: { title: 'Dashboard', subtitle: 'Compliance engine at a glance' },
+    funds: { title: 'Fund Structures', subtitle: 'Manage funds and view compliance reports' },
+    investors: { title: 'Investors', subtitle: 'Manage investor registry' },
+    transfers: { title: 'Transfers', subtitle: 'Simulate, execute, and review unit transfers' },
+    holdings: { title: 'Holdings & Cap Table', subtitle: 'View holdings and allocate units' },
+    onboarding: { title: 'Onboarding', subtitle: 'Manage investor onboarding and eligibility checks' },
+    rules: { title: 'Rules & Screening', subtitle: 'Configure compliance rules and run sanctions screening' },
+    decisions: { title: 'Decision Provenance', subtitle: 'Review tamper-evident compliance decisions' },
+    reports: { title: 'Reports', subtitle: 'Regulatory reports and evidence packages' },
+    'annex-iv': { title: 'Annex IV Report', subtitle: 'AIFMD Annex IV reporting for ESMA' },
+    'evidence-bundle': { title: 'Evidence Bundle', subtitle: 'Compliance evidence documentation' },
+    'audit-package': { title: 'Audit Package', subtitle: 'Complete audit trail for regulators' },
+    readiness: { title: 'AIFMD II Readiness', subtitle: 'Structured gap analysis — 53 days remaining' },
+    calendar: { title: 'Regulatory Calendar', subtitle: 'Upcoming deadlines in the next 90 days' },
+    'audit-log': { title: 'Audit Log', subtitle: 'Complete change log of all mutations' },
+  };
+
+  function navigate(el) {
+    // Remove all active states
+    document.querySelectorAll('.nav-item, .nav-sub-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+
+    const page = el.dataset.page;
+    document.getElementById('current-page').textContent = page;
+    document.getElementById('page-title').textContent = pageData[page]?.title || page;
+    document.getElementById('page-subtitle').textContent = pageData[page]?.subtitle || '';
+
+    // Prevent event propagation for sub-items
+    event.stopPropagation();
+  }
+
+  function toggleSection(name) {
+    const section = document.getElementById('section-' + name);
+    const header = section.previousElementSibling;
+    section.classList.toggle('hidden');
+    header.classList.toggle('collapsed');
+  }
+
+  function toggleSub(el, subId) {
+    const sub = document.getElementById(subId);
+    const isOpen = sub.classList.contains('expanded');
+    
+    // Close all other subs
+    document.querySelectorAll('.nav-sub-items').forEach(s => s.classList.remove('expanded'));
+    document.querySelectorAll('.nav-item.has-sub').forEach(i => i.classList.remove('open'));
+    
+    if (!isOpen) {
+      sub.classList.add('expanded');
+      el.classList.add('open');
+    }
+  }
+</script>
+
+</body>
+</html>

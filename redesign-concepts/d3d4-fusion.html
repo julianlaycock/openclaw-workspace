@@ -1,0 +1,1601 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith â€” D3Ã—D4 Fusion Concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Manrope:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ========== RESET & BASE ========== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',sans-serif;color:#1a1a1a;overflow-x:hidden;background:#111}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+button{border:none;cursor:pointer;font-family:inherit}
+
+/* ========== CSS VARIABLES ========== */
+:root{
+  --orange:#E8734A;
+  --orange-glow:rgba(232,115,74,0.35);
+  --warm-bg:#F8F6F1;
+  --dark:#111;
+  --darker:#0a0a0a;
+  --white:#fff;
+  --charcoal:#1a1a1a;
+  --grid-light:rgba(0,0,0,0.06);
+  --grid-dark:rgba(255,255,255,0.04);
+  --grid-orange:rgba(232,115,74,0.06);
+  --mono:'JetBrains Mono',monospace;
+  --body:'Inter',sans-serif;
+}
+
+/* ========== FIXED NAV ========== */
+.concept-nav{
+  position:fixed;top:0;left:0;right:0;z-index:9999;
+  background:rgba(10,10,10,0.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;height:56px;
+}
+.concept-nav .logo{font-family:'Outfit',sans-serif;font-weight:700;font-size:18px;color:#fff;letter-spacing:-0.5px}
+.concept-nav .logo span{color:var(--orange)}
+.concept-nav-links{display:flex;gap:4px}
+.concept-nav-links a{
+  font-family:var(--mono);font-size:11px;font-weight:500;
+  color:rgba(255,255,255,0.5);padding:8px 16px;border-radius:6px;
+  transition:all 0.3s;letter-spacing:0.5px;text-transform:uppercase;
+}
+.concept-nav-links a:hover,.concept-nav-links a.active{color:#fff;background:rgba(255,255,255,0.08)}
+.concept-nav-links a.active{color:var(--orange);background:rgba(232,115,74,0.1)}
+
+/* ========== GRID OVERLAY MIXIN ========== */
+.grid-overlay{
+  position:relative;
+}
+.grid-overlay::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,0,0,0.05) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.grid-overlay>*{position:relative;z-index:1}
+
+.grid-overlay-dark::before{
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.grid-overlay-orange::before{
+  background-image:
+    linear-gradient(rgba(232,115,74,0.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(232,115,74,0.05) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.grid-overlay-strong::before{
+  background-image:
+    linear-gradient(rgba(232,115,74,0.1) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(232,115,74,0.1) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+
+/* ========== SHARED COMPONENTS ========== */
+.section-pad{padding:100px 60px}
+.container{max-width:1280px;margin:0 auto;width:100%}
+.mono-label{font-family:var(--mono);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:500}
+.orange-text{color:var(--orange)}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--orange);color:#fff;font-family:var(--mono);font-size:13px;font-weight:600;
+  padding:16px 32px;border-radius:8px;letter-spacing:0.5px;
+  transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px var(--orange-glow)}
+.btn-secondary{
+  display:inline-flex;align-items:center;gap:8px;
+  background:transparent;color:inherit;font-family:var(--mono);font-size:13px;font-weight:500;
+  padding:16px 32px;border-radius:8px;border:1px solid rgba(128,128,128,0.3);
+  letter-spacing:0.5px;transition:all 0.3s;
+}
+.btn-secondary:hover{border-color:var(--orange);color:var(--orange)}
+
+/* Marquee */
+.marquee-strip{
+  overflow:hidden;white-space:nowrap;
+  padding:18px 0;font-family:var(--mono);font-size:14px;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;
+}
+.marquee-strip .marquee-track{
+  display:inline-block;animation:marquee 20s linear infinite;
+}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* Reveal */
+.reveal{opacity:0;transform:translateY(40px);transition:all 0.8s cubic-bezier(0.25,0.46,0.45,0.94)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* Separator */
+.concept-separator{
+  height:120px;background:linear-gradient(to bottom,var(--dark),var(--darker));
+  display:flex;align-items:center;justify-content:center;
+  border-top:1px solid rgba(232,115,74,0.2);border-bottom:1px solid rgba(232,115,74,0.2);
+}
+.concept-separator span{font-family:var(--mono);font-size:11px;color:var(--orange);letter-spacing:3px;text-transform:uppercase}
+
+/* Code block */
+.code-block{
+  background:#0d0d0d;border-radius:12px;padding:28px 32px;
+  font-family:var(--mono);font-size:13px;line-height:1.8;
+  color:rgba(255,255,255,0.7);border-left:3px solid var(--orange);overflow-x:auto;
+}
+.code-block .kw{color:var(--orange)}
+.code-block .str{color:#7ec699}
+.code-block .cm{color:rgba(255,255,255,0.3)}
+.code-block .fn{color:#82aaff}
+.code-block .num{color:#f78c6c}
+
+/* Pricing card */
+.pricing-card{
+  border:1px solid rgba(128,128,128,0.15);border-radius:16px;padding:40px;
+  transition:all 0.4s;position:relative;overflow:hidden;
+}
+.pricing-card:hover{transform:translateY(-4px);border-color:rgba(232,115,74,0.3)}
+.pricing-card.popular{border-color:var(--orange)}
+.pricing-card.popular::before{
+  content:'MOST POPULAR';position:absolute;top:16px;right:-30px;
+  background:var(--orange);color:#fff;font-family:var(--mono);font-size:10px;
+  padding:4px 40px;transform:rotate(45deg);letter-spacing:1px;font-weight:700;
+}
+.pricing-card h4{font-size:24px;font-weight:700;margin-bottom:8px}
+.pricing-card .price{font-size:48px;font-weight:800;margin:16px 0 8px}
+.pricing-card .price span{font-size:16px;font-weight:400;opacity:0.5}
+.pricing-card .desc{font-size:14px;opacity:0.6;margin-bottom:24px}
+.pricing-card ul{list-style:none;margin-bottom:32px}
+.pricing-card ul li{padding:8px 0;font-size:14px;border-bottom:1px solid rgba(128,128,128,0.1);display:flex;align-items:center;gap:8px}
+.pricing-card ul li::before{content:'â†’';color:var(--orange);font-family:var(--mono);font-weight:700}
+
+/* FAQ */
+.faq-item{border-bottom:1px solid rgba(128,128,128,0.15);padding:20px 0}
+.faq-q{
+  display:flex;justify-content:space-between;align-items:center;cursor:pointer;
+  font-size:17px;font-weight:600;transition:color 0.3s;
+}
+.faq-q:hover{color:var(--orange)}
+.faq-q .icon{font-size:24px;transition:transform 0.3s;color:var(--orange)}
+.faq-item.open .faq-q .icon{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.4s;font-size:15px;line-height:1.7;opacity:0.7}
+.faq-item.open .faq-a{max-height:400px;padding-top:16px}
+
+/* Comparison table */
+.comp-table{width:100%;border-collapse:collapse;font-size:14px}
+.comp-table th{font-family:var(--mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:16px;text-align:left;border-bottom:2px solid var(--orange)}
+.comp-table td{padding:14px 16px;border-bottom:1px solid rgba(128,128,128,0.1)}
+.comp-table .label-col{font-weight:600;font-size:13px}
+.comp-table .bad{color:rgba(255,100,100,0.8)}
+.comp-table .good{color:var(--orange);font-weight:600}
+
+/* Footer */
+.concept-footer{
+  padding:60px;background:var(--darker);border-top:1px solid rgba(255,255,255,0.05);
+  text-align:center;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,0.3);
+}
+.concept-footer .logo-foot{font-family:'Outfit',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:16px}
+.concept-footer .logo-foot span{color:var(--orange)}
+
+/* Device mockup */
+.device-mockup{
+  width:320px;height:220px;background:#1a1a1a;border-radius:12px;
+  border:1px solid rgba(255,255,255,0.1);padding:12px;position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+.device-mockup::before{
+  content:'';position:absolute;top:6px;left:16px;
+  width:6px;height:6px;border-radius:50%;
+  background:#ff5f56;box-shadow:14px 0 0 #ffbd2e,28px 0 0 #27c93f;
+}
+.device-mockup-content{
+  margin-top:16px;font-family:var(--mono);font-size:10px;line-height:1.8;
+  color:rgba(255,255,255,0.5);
+}
+.device-mockup-content .line-orange{color:var(--orange)}
+.device-mockup-content .line-green{color:#7ec699}
+
+/* Stat badge */
+.stat-badge{
+  background:rgba(255,255,255,0.06);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.1);border-radius:10px;
+  padding:14px 20px;font-family:var(--mono);
+}
+.stat-badge .stat-val{font-size:28px;font-weight:700;color:#fff}
+.stat-badge .stat-label{font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+
+/* Counter animation */
+.counter{display:inline-block}
+
+/* Responsive */
+@media(max-width:900px){
+  .section-pad{padding:60px 24px}
+  .concept-nav{padding:0 16px}
+  .concept-nav-links a{font-size:10px;padding:6px 10px}
+}
+@media(max-width:600px){
+  .concept-nav-links{gap:2px}
+  .concept-nav-links a{padding:6px 8px;font-size:9px}
+}
+
+/* =========================================================================
+   FUSION 1: PRECISION GRID
+   ========================================================================= */
+#f1 .hero{
+  display:grid;grid-template-columns:1fr 1fr;min-height:100vh;margin-top:56px;
+}
+#f1 .hero-left{
+  background:var(--warm-bg);padding:80px 60px;display:flex;flex-direction:column;justify-content:center;
+  position:relative;
+}
+#f1 .hero-left::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--grid-light) 1px,transparent 1px),linear-gradient(90deg,var(--grid-light) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+#f1 .hero-left>*{position:relative;z-index:1}
+#f1 .hero-right{
+  background:var(--dark);padding:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;
+}
+#f1 .hero h1{
+  font-family:'Outfit',sans-serif;font-weight:800;font-size:clamp(48px,6vw,90px);
+  line-height:0.95;letter-spacing:-3px;color:var(--charcoal);margin:24px 0;
+}
+#f1 .hero h1 .acc{color:var(--orange)}
+
+#f1 .marquee-strip{background:var(--orange);color:#fff}
+
+#f1 .social-proof{background:var(--warm-bg);padding:60px}
+#f1 .logo-row{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+#f1 .logo-placeholder{width:140px;height:48px;border:1px dashed rgba(0,0,0,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:rgba(0,0,0,0.25)}
+
+#f1 .stats-section{background:var(--dark);color:#fff}
+#f1 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:32px;text-align:center}
+#f1 .stat-item .stat-num{font-family:'Outfit',sans-serif;font-size:48px;font-weight:800;color:var(--orange)}
+#f1 .stat-item .stat-lbl{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;margin-top:8px}
+
+#f1 .features-section .feature-row{display:grid;grid-template-columns:1fr 1fr;min-height:500px}
+#f1 .features-section .feature-row:nth-child(even){direction:rtl}
+#f1 .features-section .feature-row:nth-child(even)>*{direction:ltr}
+#f1 .feature-text{padding:80px 60px;display:flex;flex-direction:column;justify-content:center}
+#f1 .feature-text h3{font-family:'Outfit',sans-serif;font-weight:700;font-size:36px;letter-spacing:-1px;margin-bottom:16px}
+#f1 .feature-text p{font-size:16px;line-height:1.7;opacity:0.7;max-width:480px}
+#f1 .feature-visual{display:flex;align-items:center;justify-content:center;padding:60px}
+
+#f1 .feature-row:nth-child(odd) .feature-text{background:var(--warm-bg)}
+#f1 .feature-row:nth-child(odd) .feature-visual{background:var(--dark)}
+#f1 .feature-row:nth-child(even) .feature-text{background:var(--dark);color:#fff}
+#f1 .feature-row:nth-child(even) .feature-visual{background:var(--warm-bg)}
+
+#f1 .process-section{background:var(--warm-bg);position:relative}
+#f1 .process-section::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--grid-light) 1px,transparent 1px),linear-gradient(90deg,var(--grid-light) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+#f1 .process-section>*{position:relative;z-index:1}
+#f1 .process-diagram{display:flex;align-items:center;justify-content:center;gap:0;margin-top:48px;flex-wrap:wrap}
+#f1 .process-step{text-align:center;position:relative}
+#f1 .process-circle{
+  width:64px;height:64px;border-radius:50%;border:2px solid var(--orange);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:16px;font-weight:700;color:var(--orange);
+  margin:0 auto 12px;background:var(--warm-bg);position:relative;z-index:2;
+}
+#f1 .process-label{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:0.5px}
+#f1 .process-line{width:80px;height:2px;background:var(--orange);margin-bottom:36px}
+
+#f1 .code-section{background:var(--dark);color:#fff}
+#f1 .pricing-section{background:var(--warm-bg);position:relative}
+#f1 .pricing-section::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--grid-light) 1px,transparent 1px),linear-gradient(90deg,var(--grid-light) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+#f1 .pricing-section>*{position:relative;z-index:1}
+#f1 .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:48px}
+#f1 .pricing-section .pricing-card{background:#fff}
+
+#f1 .comp-section{background:#fff}
+#f1 .faq-section{background:var(--warm-bg)}
+#f1 .cta-section{background:var(--dark);color:#fff;text-align:center}
+#f1 .cta-section h2{font-family:'Outfit',sans-serif;font-weight:800;font-size:clamp(36px,5vw,64px);letter-spacing:-2px}
+
+@media(max-width:900px){
+  #f1 .hero{grid-template-columns:1fr}
+  #f1 .hero-left{padding:60px 24px}
+  #f1 .features-section .feature-row{grid-template-columns:1fr}
+  #f1 .features-section .feature-row:nth-child(even){direction:ltr}
+}
+
+/* =========================================================================
+   FUSION 2: SCHEMATIC
+   ========================================================================= */
+#f2{background:var(--dark);color:#fff}
+#f2 .hero{
+  min-height:100vh;margin-top:56px;padding:0 60px;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;
+}
+#f2 .hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(232,115,74,0.08) 1px,transparent 1px),linear-gradient(90deg,rgba(232,115,74,0.08) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+#f2 .hero>*{position:relative;z-index:1}
+#f2 .hero h1{
+  font-family:'Sora',sans-serif;font-weight:700;font-size:clamp(48px,7vw,100px);
+  line-height:0.95;letter-spacing:-3px;max-width:900px;
+}
+#f2 .schematic-svg{margin:60px 0;width:100%;max-width:900px;height:80px}
+#f2 .schematic-svg .sch-line{stroke:var(--orange);stroke-width:2;fill:none;stroke-dasharray:1000;stroke-dashoffset:1000;animation:drawLine 2s ease forwards 0.5s}
+#f2 .schematic-svg .sch-node{fill:var(--orange)}
+#f2 .schematic-svg text{fill:#fff;font-family:'JetBrains Mono',monospace;font-size:11px}
+@keyframes drawLine{to{stroke-dashoffset:0}}
+
+#f2 .marquee-strip{background:var(--orange);color:#fff}
+
+#f2 .stats-section{background:var(--darker);position:relative}
+#f2 .stats-section::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--grid-dark) 1px,transparent 1px),linear-gradient(90deg,var(--grid-dark) 1px,transparent 1px);background-size:60px 60px}
+#f2 .stats-section>*{position:relative;z-index:1}
+#f2 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:32px;text-align:center}
+#f2 .stat-item .stat-num{font-family:'Sora',sans-serif;font-size:52px;font-weight:700;color:var(--orange)}
+#f2 .stat-item .stat-lbl{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin-top:8px}
+
+#f2 .features-section{position:relative}
+#f2 .features-section::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--grid-dark) 1px,transparent 1px),linear-gradient(90deg,var(--grid-dark) 1px,transparent 1px);background-size:60px 60px}
+#f2 .features-section>*{position:relative;z-index:1}
+#f2 .spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:24px;margin-top:48px}
+#f2 .spec-card{
+  border:1px solid rgba(255,255,255,0.1);border-radius:0;padding:32px;
+  transition:all 0.3s;font-family:var(--mono);font-size:13px;
+}
+#f2 .spec-card:hover{border-color:var(--orange);background:rgba(232,115,74,0.03)}
+#f2 .spec-card h4{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;letter-spacing:-0.5px}
+#f2 .spec-card .spec-row{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+#f2 .spec-card .spec-key{color:rgba(255,255,255,0.35);min-width:80px}
+#f2 .spec-card .spec-val{color:var(--orange)}
+
+#f2 .quote-section{background:var(--darker);border-top:1px solid rgba(232,115,74,0.15);border-bottom:1px solid rgba(232,115,74,0.15)}
+#f2 .quote-section blockquote{
+  font-family:'Sora',sans-serif;font-size:clamp(24px,3vw,36px);font-weight:500;
+  font-style:italic;max-width:800px;line-height:1.4;letter-spacing:-0.5px;
+}
+#f2 .quote-section cite{font-family:var(--mono);font-size:13px;color:var(--orange);margin-top:20px;display:block;font-style:normal}
+
+#f2 .comp-section{background:var(--dark)}
+#f2 .comp-section .comp-table th{color:var(--orange)}
+#f2 .comp-section .comp-table td{color:rgba(255,255,255,0.6);border-bottom-color:rgba(255,255,255,0.06)}
+#f2 .comp-section .comp-table .good{color:var(--orange)}
+#f2 .comp-section .comp-table .bad{color:rgba(255,100,100,0.6)}
+#f2 .comp-section .comp-table .label-col{color:#fff}
+
+#f2 .process-section{background:var(--darker);position:relative}
+#f2 .process-section::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--grid-dark) 1px,transparent 1px),linear-gradient(90deg,var(--grid-dark) 1px,transparent 1px);background-size:60px 60px}
+#f2 .process-section>*{position:relative;z-index:1}
+
+#f2 .code-section{background:var(--darker)}
+#f2 .pricing-section{background:var(--dark)}
+#f2 .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:48px}
+#f2 .pricing-section .pricing-card{background:rgba(255,255,255,0.02);color:#fff}
+#f2 .pricing-section .pricing-card{border-color:rgba(255,255,255,0.08)}
+#f2 .pricing-section .pricing-card ul li{border-bottom-color:rgba(255,255,255,0.06)}
+
+#f2 .faq-section{background:var(--darker);color:#fff}
+#f2 .faq-section .faq-item{border-bottom-color:rgba(255,255,255,0.08)}
+#f2 .cta-section{background:var(--dark);color:#fff;text-align:center;border-top:1px solid rgba(232,115,74,0.15)}
+#f2 .cta-section h2{font-family:'Sora',sans-serif;font-weight:700;font-size:clamp(36px,5vw,64px);letter-spacing:-2px}
+
+#f2 .social-proof{background:var(--darker)}
+#f2 .logo-row{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+#f2 .logo-placeholder{width:140px;height:48px;border:1px solid rgba(255,255,255,0.08);border-radius:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.2)}
+
+/* =========================================================================
+   FUSION 3: DATA WALL
+   ========================================================================= */
+#f3 .hero{
+  min-height:100vh;margin-top:56px;background:var(--warm-bg);
+  padding:80px 60px;display:flex;flex-direction:column;justify-content:center;
+  position:relative;
+}
+#f3 .hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,0,0,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.04) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+#f3 .hero>*{position:relative;z-index:1}
+#f3 .hero h1{
+  font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(48px,8vw,110px);
+  line-height:0.9;letter-spacing:-4px;color:var(--charcoal);max-width:1000px;
+}
+#f3 .hero h1 .days{color:var(--orange)}
+
+#f3 .data-wall{
+  background:var(--dark);padding:40px 60px;overflow:hidden;
+  font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.3);
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;
+  position:relative;
+}
+#f3 .data-wall::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--grid-dark) 1px,transparent 1px),linear-gradient(90deg,var(--grid-dark) 1px,transparent 1px);background-size:40px 40px}
+#f3 .data-wall>*{position:relative;z-index:1}
+#f3 .data-wall .dw-item{padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+#f3 .data-wall .dw-val{color:var(--orange);font-weight:700;font-size:13px}
+#f3 .data-wall .dw-label{margin-top:2px;letter-spacing:1px;text-transform:uppercase;font-size:9px}
+
+#f3 .marquee-strip{background:var(--orange);color:#fff}
+
+#f3 .social-proof{background:#fff;padding:60px}
+#f3 .logo-row{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+#f3 .logo-placeholder{width:140px;height:48px;border:1px dashed rgba(0,0,0,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:rgba(0,0,0,0.2)}
+
+#f3 .features-section{background:var(--warm-bg)}
+#f3 .features-section .feature-row{display:grid;grid-template-columns:1fr 1fr;gap:60px;padding:60px 0;border-bottom:1px solid rgba(0,0,0,0.08)}
+#f3 .features-section .feature-row:nth-child(even){direction:rtl}
+#f3 .features-section .feature-row:nth-child(even)>*{direction:ltr}
+#f3 .features-section h3{font-family:'Manrope',sans-serif;font-weight:700;font-size:32px;letter-spacing:-1px}
+#f3 .features-section p{font-size:15px;line-height:1.7;opacity:0.6;margin-top:12px}
+#f3 .feature-icon-box{
+  width:100%;height:240px;background:var(--dark);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:48px;color:var(--orange);
+}
+
+#f3 .process-section{background:#fff;position:relative}
+#f3 .process-section::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,0,0,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.03) 1px,transparent 1px);background-size:60px 60px}
+#f3 .process-section>*{position:relative;z-index:1}
+
+#f3 .comp-section{background:var(--warm-bg)}
+#f3 .pricing-section{background:#fff}
+#f3 .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:48px}
+#f3 .pricing-section .pricing-card{background:var(--warm-bg)}
+
+#f3 .code-section{background:var(--dark);color:#fff}
+#f3 .faq-section{background:var(--warm-bg)}
+#f3 .cta-section{
+  background:var(--dark);color:#fff;text-align:center;
+  position:relative;overflow:hidden;
+}
+#f3 .cta-section::before{
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:0.3;
+  background-image:linear-gradient(var(--grid-dark) 1px,transparent 1px),linear-gradient(90deg,var(--grid-dark) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+#f3 .cta-section>*{position:relative;z-index:1}
+#f3 .cta-section h2{font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(36px,5vw,64px);letter-spacing:-2px}
+
+@media(max-width:900px){
+  #f3 .features-section .feature-row{grid-template-columns:1fr;gap:24px}
+  #f3 .features-section .feature-row:nth-child(even){direction:ltr}
+}
+
+/* =========================================================================
+   FUSION 4: MAINFRAME
+   ========================================================================= */
+#f4{background:var(--dark);color:#fff}
+#f4 .hero{
+  min-height:100vh;margin-top:56px;padding:0 60px;
+  display:flex;flex-direction:column;justify-content:center;
+  position:relative;
+}
+#f4 .hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(232,115,74,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(232,115,74,0.06) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+#f4 .hero>*{position:relative;z-index:1}
+#f4 .hero h1{
+  font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(48px,8vw,120px);
+  line-height:0.9;letter-spacing:-4px;
+}
+#f4 .hero h1 .acc{color:var(--orange)}
+#f4 .status-bar{
+  display:flex;flex-wrap:wrap;gap:24px;margin-top:32px;
+  font-family:var(--mono);font-size:12px;color:rgba(255,255,255,0.5);
+}
+#f4 .status-bar .dot{width:6px;height:6px;border-radius:50%;background:#27c93f;display:inline-block;margin-right:6px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+#f4 .marquee-strip{background:var(--orange);color:#fff}
+
+#f4 .social-proof{background:var(--darker);position:relative}
+#f4 .social-proof::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--grid-orange) 1px,transparent 1px),linear-gradient(90deg,var(--grid-orange) 1px,transparent 1px);background-size:60px 60px}
+#f4 .social-proof>*{position:relative;z-index:1}
+#f4 .logo-row{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+#f4 .logo-placeholder{width:140px;height:48px;border:1px solid rgba(232,115,74,0.15);border-radius:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.2)}
+
+#f4 .features-section{background:var(--dark);position:relative}
+#f4 .features-section::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--grid-orange) 1px,transparent 1px),linear-gradient(90deg,var(--grid-orange) 1px,transparent 1px);background-size:60px 60px}
+#f4 .features-section>*{position:relative;z-index:1}
+#f4 .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-top:48px}
+#f4 .feat-card{
+  border:1px solid rgba(232,115,74,0.15);border-radius:12px;padding:36px;
+  transition:all 0.4s;background:rgba(232,115,74,0.02);
+}
+#f4 .feat-card:hover{border-color:var(--orange);box-shadow:0 0 30px rgba(232,115,74,0.1)}
+#f4 .feat-card h4{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;margin-bottom:12px}
+#f4 .feat-card p{font-size:14px;line-height:1.7;color:rgba(255,255,255,0.5)}
+#f4 .feat-card .feat-icon{font-size:32px;margin-bottom:16px;color:var(--orange)}
+
+#f4 .hash-section{background:var(--darker);position:relative;overflow:hidden}
+#f4 .hash-section::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--grid-orange) 1px,transparent 1px),linear-gradient(90deg,var(--grid-orange) 1px,transparent 1px);background-size:60px 60px}
+#f4 .hash-section>*{position:relative;z-index:1}
+#f4 .hash-chain{display:flex;align-items:center;gap:0;margin-top:48px;overflow-x:auto;padding-bottom:20px}
+#f4 .hash-block{
+  min-width:180px;border:1px solid rgba(232,115,74,0.3);border-radius:8px;
+  padding:20px;font-family:var(--mono);font-size:11px;background:rgba(232,115,74,0.03);flex-shrink:0;
+}
+#f4 .hash-block .block-id{color:var(--orange);font-weight:700;font-size:14px;margin-bottom:8px}
+#f4 .hash-block .hash-val{color:rgba(255,255,255,0.3);word-break:break-all;font-size:9px}
+#f4 .hash-arrow{color:var(--orange);font-size:24px;padding:0 12px;flex-shrink:0}
+
+#f4 .process-section{background:var(--dark);position:relative}
+#f4 .process-section::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--grid-orange) 1px,transparent 1px),linear-gradient(90deg,var(--grid-orange) 1px,transparent 1px);background-size:60px 60px}
+#f4 .process-section>*{position:relative;z-index:1}
+#f4 .timeline{position:relative;padding-left:40px;margin-top:48px}
+#f4 .timeline::before{content:'';position:absolute;left:15px;top:0;bottom:0;width:2px;background:var(--orange)}
+#f4 .timeline-step{position:relative;padding:24px 0 48px 40px}
+#f4 .timeline-dot{
+  position:absolute;left:-33px;top:28px;width:24px;height:24px;
+  border-radius:50%;border:2px solid var(--orange);background:var(--dark);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:10px;font-weight:700;color:var(--orange);
+}
+#f4 .timeline-step h4{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;margin-bottom:8px}
+#f4 .timeline-step p{font-size:14px;color:rgba(255,255,255,0.5);max-width:500px}
+
+#f4 .comp-section{background:var(--darker)}
+#f4 .comp-section .comp-table th{color:var(--orange)}
+#f4 .comp-section .comp-table td{color:rgba(255,255,255,0.6);border-bottom-color:rgba(255,255,255,0.06)}
+#f4 .comp-section .comp-table .good{color:var(--orange)}
+#f4 .comp-section .comp-table .bad{color:rgba(255,100,100,0.6)}
+#f4 .comp-section .comp-table .label-col{color:#fff}
+
+#f4 .code-section{background:var(--dark)}
+#f4 .pricing-section{background:var(--warm-bg);color:var(--charcoal);position:relative}
+#f4 .pricing-section::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--grid-light) 1px,transparent 1px),linear-gradient(90deg,var(--grid-light) 1px,transparent 1px);background-size:60px 60px}
+#f4 .pricing-section>*{position:relative;z-index:1}
+#f4 .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:48px}
+#f4 .pricing-section .pricing-card{background:#fff}
+
+#f4 .faq-section{background:var(--dark);color:#fff}
+#f4 .faq-section .faq-item{border-bottom-color:rgba(255,255,255,0.08)}
+#f4 .cta-section{background:var(--darker);color:#fff;text-align:center;position:relative}
+#f4 .cta-section::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--grid-orange) 1px,transparent 1px),linear-gradient(90deg,var(--grid-orange) 1px,transparent 1px);background-size:60px 60px}
+#f4 .cta-section>*{position:relative;z-index:1}
+#f4 .cta-section h2{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(36px,5vw,64px);letter-spacing:-2px}
+
+#f4 .stats-section{background:var(--darker);position:relative}
+#f4 .stats-section::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--grid-orange) 1px,transparent 1px),linear-gradient(90deg,var(--grid-orange) 1px,transparent 1px);background-size:60px 60px}
+#f4 .stats-section>*{position:relative;z-index:1}
+#f4 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:32px;text-align:center}
+#f4 .stat-item .stat-num{font-family:'Space Grotesk',sans-serif;font-size:52px;font-weight:700;color:var(--orange)}
+#f4 .stat-item .stat-lbl{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin-top:8px}
+</style>
+</head>
+<body>
+
+<!-- ========== FIXED NAV ========== -->
+<nav class="concept-nav">
+  <div class="logo">Cael<span>i</span>th</div>
+  <div class="concept-nav-links">
+    <a href="#f1" class="active">01 Precision Grid</a>
+    <a href="#f2">02 Schematic</a>
+    <a href="#f3">03 Data Wall</a>
+    <a href="#f4">04 Mainframe</a>
+  </div>
+</nav>
+
+<!-- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+     â•‘  FUSION 1: PRECISION GRID                                           â•‘
+     â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<section id="f1">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-left">
+      <span class="mono-label orange-text">// AIFMD II COMPLIANCE ENGINE</span>
+      <h1>Compliance infrastructure for the new <span class="acc">regulatory</span> era.</h1>
+      <p style="font-size:17px;line-height:1.7;opacity:0.6;max-width:480px;margin:20px 0 32px">Automated eligibility checks, hash-chained audit trails, and real-time regulatory evaluation for EU fund managers.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="#" class="btn-primary">Book a Demo â†’</a>
+        <a href="#" class="btn-secondary">See How It Works</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="device-mockup">
+        <div class="device-mockup-content">
+          <div class="line-orange">$ caelith evaluate --fund ELTIF-2024</div>
+          <div class="line-green">âœ“ 247 rules passed</div>
+          <div class="line-green">âœ“ Audit hash: a3f8c1...e92d</div>
+          <div style="color:rgba(255,255,255,0.3)">â± Completed in 18ms</div>
+          <div class="line-orange">$ caelith report --format annex-iv</div>
+          <div class="line-green">âœ“ Report generated</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center">
+        <div class="stat-badge"><div class="stat-val">247</div><div class="stat-label">Active Rules</div></div>
+        <div class="stat-badge"><div class="stat-val">&lt;23ms</div><div class="stat-label">Avg Latency</div></div>
+        <div class="stat-badge"><div class="stat-val">100%</div><div class="stat-label">Logged</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marquee -->
+  <div class="marquee-strip">
+    <div class="marquee-track">AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp; AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp; AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp; AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp;</div>
+  </div>
+
+  <!-- Social Proof -->
+  <div class="social-proof section-pad reveal">
+    <div class="container" style="text-align:center">
+      <p class="mono-label" style="margin-bottom:24px;opacity:0.4">Trusted by compliance teams managing â‚¬XX billion in AUM</p>
+      <div class="logo-row">
+        <div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div>
+        <div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-section section-pad reveal">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-num counter" data-target="247">0</div><div class="stat-lbl">Active Rules</div></div>
+        <div class="stat-item"><div class="stat-num">6</div><div class="stat-lbl">Frameworks</div></div>
+        <div class="stat-item"><div class="stat-num">&lt;23ms</div><div class="stat-lbl">Avg Latency</div></div>
+        <div class="stat-item"><div class="stat-num">100%</div><div class="stat-lbl">Decisions Logged</div></div>
+        <div class="stat-item"><div class="stat-num">â‚¬1.8T</div><div class="stat-lbl">EU AIF Market</div></div>
+        <div class="stat-item"><div class="stat-num">4,000+</div><div class="stat-lbl">Licensed AIFMs</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features (split-screen alternating) -->
+  <div class="features-section">
+    <div class="feature-row reveal">
+      <div class="feature-text">
+        <span class="mono-label orange-text">01 â€” Rules Engine</span>
+        <h3>247 rules. Zero ambiguity.</h3>
+        <p>Every regulatory requirement codified into deterministic, versioned rules. No interpretation gaps. No manual checklists.</p>
+      </div>
+      <div class="feature-visual">
+        <div class="device-mockup" style="width:280px;height:180px">
+          <div class="device-mockup-content">
+            <div class="line-orange">rule.evaluate(fund)</div>
+            <div class="line-green">â†’ PASS (18ms)</div>
+            <div style="color:rgba(255,255,255,0.3)">hash: 0xa3f8...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feature-row reveal">
+      <div class="feature-text">
+        <span class="mono-label orange-text">02 â€” Hash-Chained Audit Trail</span>
+        <h3>Every decision. Immutably logged.</h3>
+        <p>SHA-256 hash chains ensure tamper-proof audit trails. Every compliance decision is cryptographically linked to its predecessor.</p>
+      </div>
+      <div class="feature-visual">
+        <div style="font-family:var(--mono);font-size:11px;color:rgba(0,0,0,0.4);text-align:center;line-height:2">
+          Block #1041<br>â†’ a3f8c1...e92d<br>â†’ Block #1042<br>â†’ 7b2e4f...1a8c
+        </div>
+      </div>
+    </div>
+    <div class="feature-row reveal">
+      <div class="feature-text">
+        <span class="mono-label orange-text">03 â€” Regulatory Reporting</span>
+        <h3>Annex IV. Generated, not assembled.</h3>
+        <p>Automated report generation across all required frameworks. Pre-validated, pre-formatted, ready for submission.</p>
+      </div>
+      <div class="feature-visual">
+        <div class="device-mockup" style="width:280px;height:180px">
+          <div class="device-mockup-content">
+            <div class="line-orange">$ generate --annex-iv</div>
+            <div class="line-green">âœ“ 142 fields populated</div>
+            <div class="line-green">âœ“ Validation passed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Process -->
+  <div class="process-section section-pad reveal">
+    <div class="container" style="text-align:center">
+      <span class="mono-label orange-text">How It Works</span>
+      <h2 style="font-family:'Outfit',sans-serif;font-weight:800;font-size:clamp(32px,4vw,48px);letter-spacing:-2px;margin-top:12px">Four steps to audit-ready compliance.</h2>
+      <div class="process-diagram">
+        <div class="process-step"><div class="process-circle">01</div><div class="process-label">Configure</div></div>
+        <div class="process-line"></div>
+        <div class="process-step"><div class="process-circle">02</div><div class="process-label">Onboard</div></div>
+        <div class="process-line"></div>
+        <div class="process-step"><div class="process-circle">03</div><div class="process-label">Document</div></div>
+        <div class="process-line"></div>
+        <div class="process-step"><div class="process-circle">04</div><div class="process-label">Report</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Code Block -->
+  <div class="code-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label orange-text" style="display:block;margin-bottom:24px">// Sample Integration</span>
+      <div class="code-block">
+<span class="cm">// Initialize Caelith compliance engine</span>
+<span class="kw">const</span> caelith = <span class="kw">new</span> <span class="fn">CaelithEngine</span>({
+  <span class="str">jurisdiction</span>: <span class="str">'EU'</span>,
+  <span class="str">frameworks</span>: [<span class="str">'AIFMD_II'</span>, <span class="str">'KAGB'</span>, <span class="str">'ELTIF_2'</span>],
+  <span class="str">auditTrail</span>: <span class="kw">true</span>,
+});
+
+<span class="cm">// Evaluate fund compliance</span>
+<span class="kw">const</span> result = <span class="kw">await</span> caelith.<span class="fn">evaluate</span>({
+  <span class="str">fundId</span>: <span class="str">'ELTIF-2024-001'</span>,
+  <span class="str">investorType</span>: <span class="str">'professional'</span>,
+  <span class="str">amount</span>: <span class="num">500000</span>,
+});
+
+<span class="cm">// result.hash â†’ "a3f8c1...e92d"</span>
+<span class="cm">// result.passed â†’ 247/247 rules</span>
+<span class="cm">// result.latency â†’ 18ms</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison -->
+  <div class="comp-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label orange-text" style="display:block;margin-bottom:12px">Why Switch</span>
+      <h2 style="font-family:'Outfit',sans-serif;font-weight:800;font-size:clamp(28px,3vw,40px);letter-spacing:-1px;margin-bottom:32px">Manual compliance is a liability.</h2>
+      <table class="comp-table">
+        <thead><tr><th></th><th>Manual</th><th>Caelith</th></tr></thead>
+        <tbody>
+          <tr><td class="label-col">Audit Time</td><td class="bad">Weeks</td><td class="good">Seconds</td></tr>
+          <tr><td class="label-col">Error Rate</td><td class="bad">High</td><td class="good">Zero</td></tr>
+          <tr><td class="label-col">Coverage</td><td class="bad">Partial</td><td class="good">6 Frameworks</td></tr>
+          <tr><td class="label-col">Evidence</td><td class="bad">Screenshots</td><td class="good">Hash-chain</td></tr>
+          <tr><td class="label-col">Scalability</td><td class="bad">Linear cost</td><td class="good">Flat fee</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pricing -->
+  <div class="pricing-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label orange-text" style="display:block;margin-bottom:12px">Pricing</span>
+      <h2 style="font-family:'Outfit',sans-serif;font-weight:800;font-size:clamp(28px,3vw,40px);letter-spacing:-1px">Transparent. Scalable. No surprises.</h2>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h4>Starter</h4>
+          <div class="price" style="font-family:'Outfit',sans-serif">â‚¬299<span>/mo</span></div>
+          <div class="desc">Up to 3 funds</div>
+          <ul><li>247 Active Rules</li><li>Hash-chained audit trail</li><li>Email support</li><li>1 user seat</li></ul>
+          <a href="#" class="btn-secondary" style="width:100%;justify-content:center">Get Started</a>
+        </div>
+        <div class="pricing-card popular">
+          <h4>Professional</h4>
+          <div class="price" style="font-family:'Outfit',sans-serif">â‚¬799<span>/mo</span></div>
+          <div class="desc">Up to 25 funds</div>
+          <ul><li>Everything in Starter</li><li>Regulatory reporting</li><li>Scenario modeling</li><li>5 user seats</li><li>Priority support</li></ul>
+          <a href="#" class="btn-primary" style="width:100%;justify-content:center">Book a Demo â†’</a>
+        </div>
+        <div class="pricing-card">
+          <h4>Enterprise</h4>
+          <div class="price" style="font-family:'Outfit',sans-serif">Custom</div>
+          <div class="desc">Unlimited funds</div>
+          <ul><li>Everything in Professional</li><li>Custom integrations</li><li>Dedicated CSM</li><li>SLA guarantee</li><li>On-premise option</li></ul>
+          <a href="#" class="btn-secondary" style="width:100%;justify-content:center">Contact Sales</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section section-pad reveal">
+    <div class="container" style="max-width:800px">
+      <span class="mono-label orange-text" style="display:block;margin-bottom:12px">FAQ</span>
+      <h2 style="font-family:'Outfit',sans-serif;font-weight:800;font-size:clamp(28px,3vw,40px);letter-spacing:-1px;margin-bottom:32px">Common questions.</h2>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What is AIFMD II and when does it take effect?<span class="icon">+</span></div><div class="faq-a">AIFMD II is the updated Alternative Investment Fund Managers Directive, expanding regulatory requirements for EU fund managers. The deadline is in 56 days, requiring updated compliance processes, enhanced reporting, and documented audit trails.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">How does the hash-chained audit trail work?<span class="icon">+</span></div><div class="faq-a">Every compliance decision is recorded with a SHA-256 hash that includes the previous decision's hash, creating a tamper-proof chain. Any modification to historical records would break the chain, providing cryptographic proof of integrity.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Can Caelith integrate with our existing systems?<span class="icon">+</span></div><div class="faq-a">Yes. Caelith offers a REST API and webhooks for integration with portfolio management systems, fund administration platforms, and reporting tools. Enterprise plans include custom integration support.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is our data hosted in the EU?<span class="icon">+</span></div><div class="faq-a">Yes. All data is processed and stored within EU-hosted infrastructure. Caelith is fully GDPR-compliant with data residency guarantees.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What does "human-in-the-loop" mean?<span class="icon">+</span></div><div class="faq-a">While Caelith automates compliance evaluation, critical decisions can be flagged for human review. The system provides recommendations with full evidence, and authorized users can approve, override, or escalate â€” all logged in the audit trail.</div></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:16px">AIFMD II deadline in 56 days</span>
+      <h2>Audit-ready compliance.<br><span class="orange-text">Before the deadline.</span></h2>
+      <p style="font-size:17px;opacity:0.5;margin:24px auto;max-width:500px">Don't let regulatory change catch you unprepared. Get started with Caelith today.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px">
+        <a href="#" class="btn-primary">Book a Demo â†’</a>
+        <a href="#" class="btn-secondary" style="color:#fff;border-color:rgba(255,255,255,0.2)">See How It Works</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="concept-footer">
+    <div class="logo-foot">Cael<span>i</span>th</div>
+    <p>Â© 2024 Caelith. Compliance infrastructure for the new regulatory era.</p>
+    <p style="margin-top:8px">SHA-256 hash chains Â· Deterministic evaluation Â· EU-hosted Â· GDPR-compliant</p>
+  </div>
+</section>
+
+<!-- Separator -->
+<div class="concept-separator"><span>â–¼ Fusion 2: Schematic â–¼</span></div>
+
+<!-- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+     â•‘  FUSION 2: SCHEMATIC                                                â•‘
+     â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<section id="f2">
+
+  <!-- Hero -->
+  <div class="hero">
+    <span class="mono-label" style="color:var(--orange)">// CAELITH COMPLIANCE ENGINE v2.0</span>
+    <h1 style="margin-top:24px">The engine behind <span style="color:var(--orange)">documented</span> compliance.</h1>
+    <p style="font-size:17px;line-height:1.7;opacity:0.5;max-width:600px;margin:28px 0">Automated eligibility checks, hash-chained audit trails, and real-time regulatory evaluation for EU fund managers.</p>
+
+    <!-- Schematic SVG -->
+    <svg class="schematic-svg" viewBox="0 0 900 80">
+      <path class="sch-line" d="M 60 40 L 260 40 L 460 40 L 660 40 L 840 40"/>
+      <circle class="sch-node" cx="60" cy="40" r="16"/>
+      <circle class="sch-node" cx="260" cy="40" r="16"/>
+      <circle class="sch-node" cx="460" cy="40" r="16"/>
+      <circle class="sch-node" cx="660" cy="40" r="16"/>
+      <text x="60" y="44" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">01</text>
+      <text x="260" y="44" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">02</text>
+      <text x="460" y="44" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">03</text>
+      <text x="660" y="44" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">04</text>
+      <text x="60" y="72" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.4)">CONFIGURE</text>
+      <text x="260" y="72" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.4)">ONBOARD</text>
+      <text x="460" y="72" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.4)">DOCUMENT</text>
+      <text x="660" y="72" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.4)">REPORT</text>
+    </svg>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <a href="#" class="btn-primary">Book a Demo â†’</a>
+      <a href="#" class="btn-secondary" style="color:#fff;border-color:rgba(255,255,255,0.2)">See How It Works</a>
+    </div>
+  </div>
+
+  <!-- Marquee -->
+  <div class="marquee-strip">
+    <div class="marquee-track">AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp; AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp; AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp; AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp;</div>
+  </div>
+
+  <!-- Social Proof -->
+  <div class="social-proof section-pad reveal">
+    <div class="container" style="text-align:center">
+      <p class="mono-label" style="margin-bottom:24px;color:rgba(255,255,255,0.3)">Trusted by compliance teams managing â‚¬XX billion in AUM</p>
+      <div class="logo-row">
+        <div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div>
+        <div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-section section-pad reveal">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-num counter" data-target="247">0</div><div class="stat-lbl">Active Rules</div></div>
+        <div class="stat-item"><div class="stat-num">6</div><div class="stat-lbl">Frameworks</div></div>
+        <div class="stat-item"><div class="stat-num">&lt;23ms</div><div class="stat-lbl">Avg Latency</div></div>
+        <div class="stat-item"><div class="stat-num">100%</div><div class="stat-lbl">Decisions Logged</div></div>
+        <div class="stat-item"><div class="stat-num">â‚¬1.8T</div><div class="stat-lbl">EU AIF Market</div></div>
+        <div class="stat-item"><div class="stat-num">4,000+</div><div class="stat-lbl">Licensed AIFMs</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features as Spec Cards -->
+  <div class="features-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:12px">Technical Specifications</span>
+      <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:clamp(28px,3vw,40px);letter-spacing:-1px">Six modules. One engine.</h2>
+      <div class="spec-grid">
+        <div class="spec-card">
+          <h4>Rules Engine</h4>
+          <div class="spec-row"><span class="spec-key">INPUT</span><span class="spec-val">Portfolio data</span></div>
+          <div class="spec-row"><span class="spec-key">OUTPUT</span><span class="spec-val">Compliance decision</span></div>
+          <div class="spec-row"><span class="spec-key">LATENCY</span><span class="spec-val">&lt;23ms</span></div>
+          <div class="spec-row"><span class="spec-key">RULES</span><span class="spec-val">247 active</span></div>
+        </div>
+        <div class="spec-card">
+          <h4>Audit Trail</h4>
+          <div class="spec-row"><span class="spec-key">METHOD</span><span class="spec-val">SHA-256 hash chain</span></div>
+          <div class="spec-row"><span class="spec-key">STORAGE</span><span class="spec-val">Immutable append-only</span></div>
+          <div class="spec-row"><span class="spec-key">VERIFY</span><span class="spec-val">Cryptographic proof</span></div>
+          <div class="spec-row"><span class="spec-key">TAMPER</span><span class="spec-val">Detectable</span></div>
+        </div>
+        <div class="spec-card">
+          <h4>Regulatory Reporting</h4>
+          <div class="spec-row"><span class="spec-key">FORMAT</span><span class="spec-val">Annex IV, KAGB, ELTIF</span></div>
+          <div class="spec-row"><span class="spec-key">MODE</span><span class="spec-val">Auto-generated</span></div>
+          <div class="spec-row"><span class="spec-key">VALID</span><span class="spec-val">Pre-submission check</span></div>
+          <div class="spec-row"><span class="spec-key">OUTPUT</span><span class="spec-val">PDF, XML, JSON</span></div>
+        </div>
+        <div class="spec-card">
+          <h4>Scenario Modeling</h4>
+          <div class="spec-row"><span class="spec-key">INPUT</span><span class="spec-val">Hypothetical changes</span></div>
+          <div class="spec-row"><span class="spec-key">OUTPUT</span><span class="spec-val">Impact assessment</span></div>
+          <div class="spec-row"><span class="spec-key">SCOPE</span><span class="spec-val">Fund-level + portfolio</span></div>
+          <div class="spec-row"><span class="spec-key">SPEED</span><span class="spec-val">Real-time</span></div>
+        </div>
+        <div class="spec-card">
+          <h4>Investor Eligibility</h4>
+          <div class="spec-row"><span class="spec-key">CHECK</span><span class="spec-val">Automated KYC/AML</span></div>
+          <div class="spec-row"><span class="spec-key">TYPES</span><span class="spec-val">Professional, Semi-pro, Retail</span></div>
+          <div class="spec-row"><span class="spec-key">RULES</span><span class="spec-val">Jurisdiction-aware</span></div>
+          <div class="spec-row"><span class="spec-key">LOG</span><span class="spec-val">Full decision trail</span></div>
+        </div>
+        <div class="spec-card">
+          <h4>Fund Structure Validation</h4>
+          <div class="spec-row"><span class="spec-key">SCOPE</span><span class="spec-val">Structure + domicile</span></div>
+          <div class="spec-row"><span class="spec-key">RULES</span><span class="spec-val">Cross-framework</span></div>
+          <div class="spec-row"><span class="spec-key">ALERT</span><span class="spec-val">Real-time violations</span></div>
+          <div class="spec-row"><span class="spec-key">UPDATE</span><span class="spec-val">Auto-sync regulatory</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quote -->
+  <div class="quote-section section-pad reveal">
+    <div class="container" style="text-align:center;display:flex;flex-direction:column;align-items:center">
+      <blockquote>"Automation of documentation and audit trails is no longer optional."</blockquote>
+      <cite>â€” PwC, 2024</cite>
+    </div>
+  </div>
+
+  <!-- Comparison -->
+  <div class="comp-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:12px">Schematic Comparison</span>
+      <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:clamp(28px,3vw,40px);letter-spacing:-1px;margin-bottom:32px">Manual vs. Automated.</h2>
+      <table class="comp-table">
+        <thead><tr><th>Metric</th><th>Manual</th><th>Caelith</th></tr></thead>
+        <tbody>
+          <tr><td class="label-col">Audit Time</td><td class="bad">Weeks</td><td class="good">Seconds</td></tr>
+          <tr><td class="label-col">Error Rate</td><td class="bad">High</td><td class="good">Zero</td></tr>
+          <tr><td class="label-col">Coverage</td><td class="bad">Partial</td><td class="good">6 Frameworks</td></tr>
+          <tr><td class="label-col">Evidence</td><td class="bad">Screenshots</td><td class="good">Hash-chain</td></tr>
+          <tr><td class="label-col">Scalability</td><td class="bad">Linear cost</td><td class="good">Flat fee</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Code Block -->
+  <div class="code-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:24px">// Integration Example</span>
+      <div class="code-block">
+<span class="cm">// Caelith SDK â€” evaluate fund compliance</span>
+<span class="kw">import</span> { <span class="fn">CaelithEngine</span> } <span class="kw">from</span> <span class="str">'@caelith/sdk'</span>;
+
+<span class="kw">const</span> engine = <span class="fn">CaelithEngine</span>.<span class="fn">create</span>({
+  <span class="str">region</span>: <span class="str">'EU'</span>,
+  <span class="str">hashAlgorithm</span>: <span class="str">'SHA-256'</span>,
+});
+
+<span class="kw">const</span> { decision, hash, latency } = <span class="kw">await</span> engine.<span class="fn">evaluate</span>({
+  <span class="str">fund</span>: <span class="str">'ELTIF-2024-001'</span>,
+  <span class="str">rules</span>: <span class="str">'all'</span>,
+});
+<span class="cm">// â†’ { decision: 'PASS', hash: '0xa3f8...', latency: '18ms' }</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing -->
+  <div class="pricing-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:12px">Pricing</span>
+      <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:clamp(28px,3vw,40px);letter-spacing:-1px">Predictable costs. No per-decision fees.</h2>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h4 style="font-family:'Sora',sans-serif">Starter</h4>
+          <div class="price" style="font-family:'Sora',sans-serif;color:#fff">â‚¬299<span>/mo</span></div>
+          <div class="desc" style="color:rgba(255,255,255,0.4)">Up to 3 funds</div>
+          <ul><li>247 Active Rules</li><li>Hash-chained audit trail</li><li>Email support</li><li>1 user seat</li></ul>
+          <a href="#" class="btn-secondary" style="width:100%;justify-content:center;color:#fff;border-color:rgba(255,255,255,0.15)">Get Started</a>
+        </div>
+        <div class="pricing-card popular">
+          <h4 style="font-family:'Sora',sans-serif">Professional</h4>
+          <div class="price" style="font-family:'Sora',sans-serif;color:#fff">â‚¬799<span>/mo</span></div>
+          <div class="desc" style="color:rgba(255,255,255,0.4)">Up to 25 funds</div>
+          <ul><li>Everything in Starter</li><li>Regulatory reporting</li><li>Scenario modeling</li><li>5 user seats</li><li>Priority support</li></ul>
+          <a href="#" class="btn-primary" style="width:100%;justify-content:center">Book a Demo â†’</a>
+        </div>
+        <div class="pricing-card">
+          <h4 style="font-family:'Sora',sans-serif">Enterprise</h4>
+          <div class="price" style="font-family:'Sora',sans-serif;color:#fff">Custom</div>
+          <div class="desc" style="color:rgba(255,255,255,0.4)">Unlimited funds</div>
+          <ul><li>Everything in Professional</li><li>Custom integrations</li><li>Dedicated CSM</li><li>SLA guarantee</li><li>On-premise option</li></ul>
+          <a href="#" class="btn-secondary" style="width:100%;justify-content:center;color:#fff;border-color:rgba(255,255,255,0.15)">Contact Sales</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section section-pad reveal">
+    <div class="container" style="max-width:800px">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:12px">FAQ</span>
+      <h2 style="font-family:'Sora',sans-serif;font-weight:700;font-size:clamp(28px,3vw,40px);letter-spacing:-1px;margin-bottom:32px">Frequently asked.</h2>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What regulatory frameworks does Caelith cover?<span class="icon">+</span></div><div class="faq-a">Caelith covers AIFMD II, KAGB, ELTIF 2.0, Annex IV reporting, SIF Law, and RAIF Law. Rules are updated automatically as regulations evolve.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">How fast is the compliance evaluation?<span class="icon">+</span></div><div class="faq-a">Average latency is under 23 milliseconds per evaluation. The engine processes all 247 rules in parallel using deterministic evaluation logic.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is the audit trail legally admissible?<span class="icon">+</span></div><div class="faq-a">The SHA-256 hash-chained audit trail provides cryptographic proof of every decision, its inputs, and its timestamp. This exceeds current regulatory evidence requirements.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Can we run Caelith on-premise?<span class="icon">+</span></div><div class="faq-a">Enterprise plans include an on-premise deployment option. All plans guarantee EU data residency and GDPR compliance.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What happens when regulations change?<span class="icon">+</span></div><div class="faq-a">Caelith's rule engine is versioned. When regulations update, new rule versions are deployed automatically. Historical evaluations remain linked to the rules version that was active at the time.</div></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:16px">56 days until AIFMD II deadline</span>
+      <h2>Every decision. <span class="orange-text">Logged.</span> Verified. Audit-ready.</h2>
+      <p style="font-size:17px;opacity:0.4;margin:24px auto;max-width:500px">Start documenting compliance the way regulators expect.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px">
+        <a href="#" class="btn-primary">Book a Demo â†’</a>
+        <a href="#" class="btn-secondary" style="color:#fff;border-color:rgba(255,255,255,0.15)">See How It Works</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="concept-footer">
+    <div class="logo-foot">Cael<span>i</span>th</div>
+    <p>Â© 2024 Caelith. The engine behind documented compliance.</p>
+    <p style="margin-top:8px">SHA-256 Â· Deterministic Â· EU-hosted Â· GDPR-compliant Â· Human-in-the-loop</p>
+  </div>
+</section>
+
+<!-- Separator -->
+<div class="concept-separator"><span>â–¼ Fusion 3: Data Wall â–¼</span></div>
+
+<!-- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+     â•‘  FUSION 3: DATA WALL                                                â•‘
+     â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<section id="f3">
+
+  <!-- Hero -->
+  <div class="hero">
+    <span class="mono-label orange-text">// COUNTDOWN: AIFMD II</span>
+    <h1 style="margin-top:24px"><span class="days">56 DAYS</span> until compliance becomes mandatory.</h1>
+    <p style="font-size:17px;line-height:1.7;opacity:0.5;max-width:600px;margin:28px 0">Automated eligibility checks, hash-chained audit trails, and real-time regulatory evaluation for EU fund managers.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <a href="#" class="btn-primary">Book a Demo â†’</a>
+      <a href="#" class="btn-secondary">See How It Works</a>
+    </div>
+  </div>
+
+  <!-- Data Wall -->
+  <div class="data-wall reveal">
+    <div class="dw-item"><div class="dw-val">247</div><div class="dw-label">Active Rules</div></div>
+    <div class="dw-item"><div class="dw-val">6</div><div class="dw-label">Regulatory Frameworks</div></div>
+    <div class="dw-item"><div class="dw-val">&lt;23ms</div><div class="dw-label">Avg Latency</div></div>
+    <div class="dw-item"><div class="dw-val">100%</div><div class="dw-label">Decisions Logged</div></div>
+    <div class="dw-item"><div class="dw-val">â‚¬1.8T</div><div class="dw-label">EU AIF Market</div></div>
+    <div class="dw-item"><div class="dw-val">4,000+</div><div class="dw-label">Licensed AIFMs</div></div>
+    <div class="dw-item"><div class="dw-val">SHA-256</div><div class="dw-label">Hash Algorithm</div></div>
+    <div class="dw-item"><div class="dw-val">AIFMD II</div><div class="dw-label">Primary Framework</div></div>
+    <div class="dw-item"><div class="dw-val">KAGB</div><div class="dw-label">German Implementation</div></div>
+    <div class="dw-item"><div class="dw-val">ELTIF 2.0</div><div class="dw-label">Long-Term Funds</div></div>
+    <div class="dw-item"><div class="dw-val">EU-HOSTED</div><div class="dw-label">Data Residency</div></div>
+    <div class="dw-item"><div class="dw-val">GDPR</div><div class="dw-label">Compliant</div></div>
+    <div class="dw-item"><div class="dw-val">ANNEX IV</div><div class="dw-label">Reporting Format</div></div>
+    <div class="dw-item"><div class="dw-val">SIF LAW</div><div class="dw-label">Luxembourg</div></div>
+    <div class="dw-item"><div class="dw-val">RAIF LAW</div><div class="dw-label">Reserved AIFs</div></div>
+    <div class="dw-item"><div class="dw-val">DETERMINISTIC</div><div class="dw-label">Evaluation Mode</div></div>
+    <div class="dw-item"><div class="dw-val">IMMUTABLE</div><div class="dw-label">Audit Trail</div></div>
+    <div class="dw-item"><div class="dw-val">HITL</div><div class="dw-label">Human-in-the-Loop</div></div>
+  </div>
+
+  <!-- Marquee -->
+  <div class="marquee-strip">
+    <div class="marquee-track">AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp; AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp; AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp; AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp;</div>
+  </div>
+
+  <!-- Social Proof -->
+  <div class="social-proof section-pad reveal">
+    <div class="container" style="text-align:center">
+      <p class="mono-label" style="margin-bottom:24px;opacity:0.4">Trusted by compliance teams managing â‚¬XX billion in AUM</p>
+      <div class="logo-row">
+        <div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div>
+        <div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features (split layout) -->
+  <div class="features-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label orange-text" style="display:block;margin-bottom:12px">Core Modules</span>
+      <h2 style="font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(28px,3vw,48px);letter-spacing:-1.5px;margin-bottom:48px">Six modules. Complete coverage.</h2>
+      <div class="feature-row">
+        <div>
+          <span class="mono-label orange-text">01 â€” Rules Engine</span>
+          <h3 style="margin-top:8px">247 rules. Zero ambiguity.</h3>
+          <p>Every regulatory requirement codified into deterministic, versioned rules. No interpretation gaps.</p>
+        </div>
+        <div class="feature-icon-box">âš™</div>
+      </div>
+      <div class="feature-row">
+        <div>
+          <span class="mono-label orange-text">02 â€” Hash-Chained Audit Trail</span>
+          <h3 style="margin-top:8px">Immutable evidence.</h3>
+          <p>SHA-256 hash chains create tamper-proof records. Every decision cryptographically linked.</p>
+        </div>
+        <div class="feature-icon-box">#</div>
+      </div>
+      <div class="feature-row">
+        <div>
+          <span class="mono-label orange-text">03 â€” Regulatory Reporting</span>
+          <h3 style="margin-top:8px">Generated, not assembled.</h3>
+          <p>Automated Annex IV, KAGB, and ELTIF reports. Pre-validated and submission-ready.</p>
+        </div>
+        <div class="feature-icon-box">ðŸ“Š</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Process -->
+  <div class="process-section section-pad reveal">
+    <div class="container" style="text-align:center">
+      <span class="mono-label orange-text">How It Works</span>
+      <h2 style="font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(28px,3vw,48px);letter-spacing:-1.5px;margin-top:12px">Configure. Onboard. Document. Report.</h2>
+      <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-top:48px;flex-wrap:wrap">
+        <div style="text-align:center"><div style="width:64px;height:64px;border-radius:50%;border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;color:var(--orange);margin:0 auto 12px;background:#fff">01</div><div class="mono-label">Configure</div></div>
+        <div style="width:80px;height:2px;background:var(--orange);margin-bottom:36px"></div>
+        <div style="text-align:center"><div style="width:64px;height:64px;border-radius:50%;border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;color:var(--orange);margin:0 auto 12px;background:#fff">02</div><div class="mono-label">Onboard</div></div>
+        <div style="width:80px;height:2px;background:var(--orange);margin-bottom:36px"></div>
+        <div style="text-align:center"><div style="width:64px;height:64px;border-radius:50%;border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;color:var(--orange);margin:0 auto 12px;background:#fff">03</div><div class="mono-label">Document</div></div>
+        <div style="width:80px;height:2px;background:var(--orange);margin-bottom:36px"></div>
+        <div style="text-align:center"><div style="width:64px;height:64px;border-radius:50%;border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;color:var(--orange);margin:0 auto 12px;background:#fff">04</div><div class="mono-label">Report</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison -->
+  <div class="comp-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label orange-text" style="display:block;margin-bottom:12px">Before & After</span>
+      <h2 style="font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(28px,3vw,40px);letter-spacing:-1px;margin-bottom:32px">Manual compliance is a risk you can't afford.</h2>
+      <table class="comp-table">
+        <thead><tr><th>Metric</th><th>Manual</th><th>Caelith</th></tr></thead>
+        <tbody>
+          <tr><td class="label-col">Audit Time</td><td class="bad">Weeks</td><td class="good">Seconds</td></tr>
+          <tr><td class="label-col">Error Rate</td><td class="bad">High</td><td class="good">Zero</td></tr>
+          <tr><td class="label-col">Coverage</td><td class="bad">Partial</td><td class="good">6 Frameworks</td></tr>
+          <tr><td class="label-col">Evidence</td><td class="bad">Screenshots</td><td class="good">Hash-chain</td></tr>
+          <tr><td class="label-col">Scalability</td><td class="bad">Linear cost</td><td class="good">Flat fee</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Code -->
+  <div class="code-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:24px">// Developer Integration</span>
+      <div class="code-block">
+<span class="cm">// Hash-chain verification</span>
+<span class="kw">const</span> chain = <span class="kw">await</span> caelith.<span class="fn">getAuditChain</span>({
+  <span class="str">fundId</span>: <span class="str">'ELTIF-2024-001'</span>,
+  <span class="str">from</span>: <span class="str">'2024-01-01'</span>,
+  <span class="str">to</span>: <span class="str">'2024-12-31'</span>,
+});
+
+chain.<span class="fn">verify</span>(); <span class="cm">// â†’ true (all hashes valid)</span>
+chain.<span class="fn">export</span>(<span class="str">'pdf'</span>); <span class="cm">// â†’ Audit report with hash proofs</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing -->
+  <div class="pricing-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label orange-text" style="display:block;margin-bottom:12px">Pricing</span>
+      <h2 style="font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(28px,3vw,40px);letter-spacing:-1px">Simple pricing. Serious compliance.</h2>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h4 style="font-family:'Manrope',sans-serif">Starter</h4>
+          <div class="price" style="font-family:'Manrope',sans-serif">â‚¬299<span>/mo</span></div>
+          <div class="desc">Up to 3 funds</div>
+          <ul><li>247 Active Rules</li><li>Hash-chained audit trail</li><li>Email support</li><li>1 user seat</li></ul>
+          <a href="#" class="btn-secondary" style="width:100%;justify-content:center">Get Started</a>
+        </div>
+        <div class="pricing-card popular">
+          <h4 style="font-family:'Manrope',sans-serif">Professional</h4>
+          <div class="price" style="font-family:'Manrope',sans-serif">â‚¬799<span>/mo</span></div>
+          <div class="desc">Up to 25 funds</div>
+          <ul><li>Everything in Starter</li><li>Regulatory reporting</li><li>Scenario modeling</li><li>5 user seats</li><li>Priority support</li></ul>
+          <a href="#" class="btn-primary" style="width:100%;justify-content:center">Book a Demo â†’</a>
+        </div>
+        <div class="pricing-card">
+          <h4 style="font-family:'Manrope',sans-serif">Enterprise</h4>
+          <div class="price" style="font-family:'Manrope',sans-serif">Custom</div>
+          <div class="desc">Unlimited funds</div>
+          <ul><li>Everything in Professional</li><li>Custom integrations</li><li>Dedicated CSM</li><li>SLA guarantee</li><li>On-premise option</li></ul>
+          <a href="#" class="btn-secondary" style="width:100%;justify-content:center">Contact Sales</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section section-pad reveal">
+    <div class="container" style="max-width:800px">
+      <span class="mono-label orange-text" style="display:block;margin-bottom:12px">FAQ</span>
+      <h2 style="font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(28px,3vw,40px);letter-spacing:-1px;margin-bottom:32px">Questions & answers.</h2>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">How quickly can we get started?<span class="icon">+</span></div><div class="faq-a">Most teams are up and running within 48 hours. Configure your fund structures, import investor data, and start evaluating compliance immediately.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What makes the audit trail tamper-proof?<span class="icon">+</span></div><div class="faq-a">Each decision's hash includes the previous decision's hash (SHA-256), creating a chain. Modifying any historical record breaks all subsequent hashes, making tampering immediately detectable.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Do you support multi-jurisdiction funds?<span class="icon">+</span></div><div class="faq-a">Yes. Caelith evaluates against all applicable frameworks simultaneously â€” AIFMD II, KAGB, ELTIF 2.0, SIF Law, and RAIF Law â€” with jurisdiction-aware rule logic.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What's the uptime guarantee?<span class="icon">+</span></div><div class="faq-a">99.95% uptime SLA on Professional and Enterprise plans. EU-hosted infrastructure with multi-region redundancy.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Can compliance officers override automated decisions?<span class="icon">+</span></div><div class="faq-a">Yes. Human-in-the-loop overrides are fully supported and logged in the audit trail with the officer's identity, reasoning, and timestamp.</div></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:16px">The deadline is real. The solution is ready.</span>
+      <h2>Audit-ready compliance.<br><span class="orange-text">Before the deadline.</span></h2>
+      <p style="font-size:17px;opacity:0.5;margin:24px auto;max-width:500px;color:#fff">56 days. Start documenting compliance the way regulators expect.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px">
+        <a href="#" class="btn-primary">Book a Demo â†’</a>
+        <a href="#" class="btn-secondary" style="color:#fff;border-color:rgba(255,255,255,0.2)">See How It Works</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="concept-footer">
+    <div class="logo-foot">Cael<span>i</span>th</div>
+    <p>Â© 2024 Caelith. Data-driven compliance infrastructure.</p>
+    <p style="margin-top:8px">SHA-256 Â· Deterministic Â· EU-hosted Â· GDPR-compliant Â· Human-in-the-loop</p>
+  </div>
+</section>
+
+<!-- Separator -->
+<div class="concept-separator"><span>â–¼ Fusion 4: Mainframe â–¼</span></div>
+
+<!-- â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+     â•‘  FUSION 4: MAINFRAME                                                â•‘
+     â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<section id="f4">
+
+  <!-- Hero -->
+  <div class="hero">
+    <span class="mono-label" style="color:var(--orange)">// CAELITH MAINFRAME</span>
+    <h1 style="margin-top:24px">Every decision.<br><span class="acc">Logged.</span> Verified.<br>Audit-ready.</h1>
+    <div class="status-bar" style="margin-top:32px">
+      <span><span class="dot"></span>SYSTEM: ONLINE</span>
+      <span><span class="dot"></span>RULES: 247 ACTIVE</span>
+      <span><span class="dot"></span>FRAMEWORKS: 6</span>
+      <span><span class="dot"></span>LATENCY: 23ms</span>
+    </div>
+    <p style="font-size:17px;line-height:1.7;opacity:0.4;max-width:600px;margin:28px 0">Automated eligibility checks, hash-chained audit trails, and real-time regulatory evaluation for EU fund managers.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <a href="#" class="btn-primary">Book a Demo â†’</a>
+      <a href="#" class="btn-secondary" style="color:#fff;border-color:rgba(255,255,255,0.15)">See How It Works</a>
+    </div>
+  </div>
+
+  <!-- Marquee -->
+  <div class="marquee-strip">
+    <div class="marquee-track">AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp; AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp; AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp; AIFMD II &nbsp;â€¢&nbsp; KAGB &nbsp;â€¢&nbsp; ELTIF 2.0 &nbsp;â€¢&nbsp; ANNEX IV &nbsp;â€¢&nbsp; SIF LAW &nbsp;â€¢&nbsp; RAIF LAW &nbsp;&nbsp;&nbsp;&nbsp;</div>
+  </div>
+
+  <!-- Social Proof -->
+  <div class="social-proof section-pad reveal">
+    <div class="container" style="text-align:center">
+      <p class="mono-label" style="margin-bottom:24px;color:rgba(255,255,255,0.3)">Trusted by compliance teams managing â‚¬XX billion in AUM</p>
+      <div class="logo-row">
+        <div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div>
+        <div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div><div class="logo-placeholder">Logo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-section section-pad reveal">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-num counter" data-target="247">0</div><div class="stat-lbl">Active Rules</div></div>
+        <div class="stat-item"><div class="stat-num">6</div><div class="stat-lbl">Frameworks</div></div>
+        <div class="stat-item"><div class="stat-num">&lt;23ms</div><div class="stat-lbl">Avg Latency</div></div>
+        <div class="stat-item"><div class="stat-num">100%</div><div class="stat-lbl">Decisions Logged</div></div>
+        <div class="stat-item"><div class="stat-num">â‚¬1.8T</div><div class="stat-lbl">EU AIF Market</div></div>
+        <div class="stat-item"><div class="stat-num">4,000+</div><div class="stat-lbl">Licensed AIFMs</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features (2x2 grid with glow) -->
+  <div class="features-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:12px">System Modules</span>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(28px,3vw,40px);letter-spacing:-1px">Six modules. <span class="orange-text">One engine.</span></h2>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-icon">âš™</div>
+          <h4>Rules Engine</h4>
+          <p>247 deterministic rules covering all 6 regulatory frameworks. Zero interpretation gaps. Sub-23ms evaluation.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">#</div>
+          <h4>Hash-Chained Audit Trail</h4>
+          <p>SHA-256 hash chains create tamper-proof records. Every decision cryptographically linked to its predecessor.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">ðŸ“Š</div>
+          <h4>Regulatory Reporting</h4>
+          <p>Automated Annex IV, KAGB, and ELTIF reports. Pre-validated, pre-formatted, submission-ready.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">ðŸ”¬</div>
+          <h4>Scenario Modeling</h4>
+          <p>Test hypothetical changes before they happen. Real-time impact assessment across fund structures.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">ðŸ‘¤</div>
+          <h4>Investor Eligibility</h4>
+          <p>Automated classification and eligibility checks. Professional, semi-professional, and retail investors.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">ðŸ—</div>
+          <h4>Fund Structure Validation</h4>
+          <p>Cross-framework structure validation. Real-time violation alerts. Auto-sync with regulatory updates.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hash Chain Visualization -->
+  <div class="hash-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:12px">Hash-Chain Visualization</span>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(24px,3vw,36px);letter-spacing:-1px">Immutable. Verifiable. Tamper-proof.</h2>
+      <div class="hash-chain">
+        <div class="hash-block">
+          <div class="block-id">Block #1041</div>
+          <div style="color:rgba(255,255,255,0.5);margin-bottom:4px">Decision: PASS</div>
+          <div style="color:rgba(255,255,255,0.5);margin-bottom:4px">Fund: ELTIF-2024-001</div>
+          <div class="hash-val">prev: 0x7b2e4f...1a8c</div>
+          <div class="hash-val" style="color:var(--orange)">hash: 0xa3f8c1...e92d</div>
+        </div>
+        <div class="hash-arrow">â†’</div>
+        <div class="hash-block">
+          <div class="block-id">Block #1042</div>
+          <div style="color:rgba(255,255,255,0.5);margin-bottom:4px">Decision: PASS</div>
+          <div style="color:rgba(255,255,255,0.5);margin-bottom:4px">Fund: KAGB-2024-003</div>
+          <div class="hash-val">prev: 0xa3f8c1...e92d</div>
+          <div class="hash-val" style="color:var(--orange)">hash: 0x9c1d3e...f4b2</div>
+        </div>
+        <div class="hash-arrow">â†’</div>
+        <div class="hash-block">
+          <div class="block-id">Block #1043</div>
+          <div style="color:rgba(255,255,255,0.5);margin-bottom:4px">Decision: FLAG</div>
+          <div style="color:rgba(255,255,255,0.5);margin-bottom:4px">Fund: SIF-2024-007</div>
+          <div class="hash-val">prev: 0x9c1d3e...f4b2</div>
+          <div class="hash-val" style="color:var(--orange)">hash: 0x5e8a2b...c7d1</div>
+        </div>
+        <div class="hash-arrow">â†’</div>
+        <div class="hash-block">
+          <div class="block-id">Block #1044</div>
+          <div style="color:rgba(255,255,255,0.5);margin-bottom:4px">Decision: PASS</div>
+          <div style="color:rgba(255,255,255,0.5);margin-bottom:4px">Fund: RAIF-2024-012</div>
+          <div class="hash-val">prev: 0x5e8a2b...c7d1</div>
+          <div class="hash-val" style="color:var(--orange)">hash: 0x2f4c8d...a3e9</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Process (vertical timeline) -->
+  <div class="process-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:12px">Implementation</span>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(28px,3vw,40px);letter-spacing:-1px">Four steps to compliance.</h2>
+      <div class="timeline">
+        <div class="timeline-step">
+          <div class="timeline-dot">01</div>
+          <h4>Configure</h4>
+          <p>Define your fund structures, jurisdictions, and regulatory frameworks. Caelith maps applicable rules automatically.</p>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-dot">02</div>
+          <h4>Onboard</h4>
+          <p>Import investor data and fund portfolios. API integration or manual upload â€” both supported.</p>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-dot">03</div>
+          <h4>Document</h4>
+          <p>Every compliance decision is evaluated, logged, and hash-chained. Real-time, deterministic, immutable.</p>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-dot">04</div>
+          <h4>Report</h4>
+          <p>Generate regulatory reports on demand. Annex IV, KAGB, ELTIF â€” all pre-validated and ready for submission.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison -->
+  <div class="comp-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:12px">System Comparison</span>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(28px,3vw,40px);letter-spacing:-1px;margin-bottom:32px">Legacy vs. Caelith.</h2>
+      <table class="comp-table">
+        <thead><tr><th>Metric</th><th>Manual</th><th>Caelith</th></tr></thead>
+        <tbody>
+          <tr><td class="label-col">Audit Time</td><td class="bad">Weeks</td><td class="good">Seconds</td></tr>
+          <tr><td class="label-col">Error Rate</td><td class="bad">High</td><td class="good">Zero</td></tr>
+          <tr><td class="label-col">Coverage</td><td class="bad">Partial</td><td class="good">6 Frameworks</td></tr>
+          <tr><td class="label-col">Evidence</td><td class="bad">Screenshots</td><td class="good">Hash-chain</td></tr>
+          <tr><td class="label-col">Scalability</td><td class="bad">Linear cost</td><td class="good">Flat fee</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Code Block -->
+  <div class="code-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:24px">// Mainframe Interface</span>
+      <div class="code-block">
+<span class="cm">// Caelith Mainframe — real-time compliance stream</span>
+<span class="kw">const</span> stream = caelith.<span class="fn">createStream</span>({
+  <span class="str">mode</span>: <span class="str">'real-time'</span>,
+  <span class="str">frameworks</span>: [<span class="str">'AIFMD_II'</span>, <span class="str">'KAGB'</span>, <span class="str">'ELTIF_2'</span>],
+});
+
+stream.<span class="fn">on</span>(<span class="str">'decision'</span>, (result) =&gt; {
+  console.<span class="fn">log</span>(result.hash);    <span class="cm">// → "0xa3f8c1...e92d"</span>
+  console.<span class="fn">log</span>(result.latency); <span class="cm">// → "18ms"</span>
+  console.<span class="fn">log</span>(result.rules);   <span class="cm">// → 247/247 passed</span>
+});
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing (light section) -->
+  <div class="pricing-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label orange-text" style="display:block;margin-bottom:12px">Pricing</span>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(28px,3vw,40px);letter-spacing:-1px">Flat-fee compliance. Scale without limits.</h2>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h4 style="font-family:'Space Grotesk',sans-serif">Starter</h4>
+          <div class="price" style="font-family:'Space Grotesk',sans-serif">€299<span>/mo</span></div>
+          <div class="desc">Up to 3 funds</div>
+          <ul><li>247 Active Rules</li><li>Hash-chained audit trail</li><li>Email support</li><li>1 user seat</li></ul>
+          <a href="#" class="btn-secondary" style="width:100%;justify-content:center">Get Started</a>
+        </div>
+        <div class="pricing-card popular">
+          <h4 style="font-family:'Space Grotesk',sans-serif">Professional</h4>
+          <div class="price" style="font-family:'Space Grotesk',sans-serif">€799<span>/mo</span></div>
+          <div class="desc">Up to 25 funds</div>
+          <ul><li>Everything in Starter</li><li>Regulatory reporting</li><li>Scenario modeling</li><li>5 user seats</li><li>Priority support</li></ul>
+          <a href="#" class="btn-primary" style="width:100%;justify-content:center">Book a Demo →</a>
+        </div>
+        <div class="pricing-card">
+          <h4 style="font-family:'Space Grotesk',sans-serif">Enterprise</h4>
+          <div class="price" style="font-family:'Space Grotesk',sans-serif">Custom</div>
+          <div class="desc">Unlimited funds</div>
+          <ul><li>Everything in Professional</li><li>Custom integrations</li><li>Dedicated CSM</li><li>SLA guarantee</li><li>On-premise option</li></ul>
+          <a href="#" class="btn-secondary" style="width:100%;justify-content:center">Contact Sales</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section section-pad reveal">
+    <div class="container" style="max-width:800px">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:12px">FAQ</span>
+      <h2 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(28px,3vw,40px);letter-spacing:-1px;margin-bottom:32px;color:#fff">System questions.</h2>
+      <div class="faq-item"><div class="faq-q" style="color:#fff" onclick="this.parentElement.classList.toggle('open')">What infrastructure does Caelith run on?<span class="icon">+</span></div><div class="faq-a" style="color:rgba(255,255,255,0.6)">EU-hosted cloud infrastructure with multi-region redundancy. Enterprise plans offer on-premise deployment.</div></div>
+      <div class="faq-item"><div class="faq-q" style="color:#fff" onclick="this.parentElement.classList.toggle('open')">How is the hash chain verified?<span class="icon">+</span></div><div class="faq-a" style="color:rgba(255,255,255,0.6)">Each decision hash includes the previous hash (SHA-256). Verification walks the chain and confirms every link.</div></div>
+      <div class="faq-item"><div class="faq-q" style="color:#fff" onclick="this.parentElement.classList.toggle('open')">What's the API rate limit?<span class="icon">+</span></div><div class="faq-a" style="color:rgba(255,255,255,0.6)">Starter: 100 req/min. Professional: 1,000 req/min. Enterprise: unlimited.</div></div>
+      <div class="faq-item"><div class="faq-q" style="color:#fff" onclick="this.parentElement.classList.toggle('open')">Can we export audit data?<span class="icon">+</span></div><div class="faq-a" style="color:rgba(255,255,255,0.6)">Full export in JSON, CSV, or PDF with cryptographic hash proofs.</div></div>
+      <div class="faq-item"><div class="faq-q" style="color:#fff" onclick="this.parentElement.classList.toggle('open')">Is there a sandbox environment?<span class="icon">+</span></div><div class="faq-a" style="color:rgba(255,255,255,0.6)">Yes. All plans include a sandbox for testing before going live.</div></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section section-pad reveal">
+    <div class="container">
+      <span class="mono-label" style="color:var(--orange);display:block;margin-bottom:16px">SYSTEM: READY • DEADLINE: 56 DAYS</span>
+      <h2>Compliance <span class="orange-text">infrastructure</span><br>for the new regulatory era.</h2>
+      <p style="font-size:17px;opacity:0.4;margin:24px auto;max-width:500px">The mainframe is online. Your compliance engine is waiting.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px">
+        <a href="#" class="btn-primary">Book a Demo →</a>
+        <a href="#" class="btn-secondary" style="color:#fff;border-color:rgba(255,255,255,0.15)">See How It Works</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="concept-footer">
+    <div class="logo-foot">Cael<span>i</span>th</div>
+    <p>© 2024 Caelith. Every decision. Logged. Verified. Audit-ready.</p>
+    <p style="margin-top:8px">SHA-256 · Deterministic · EU-hosted · GDPR-compliant · Human-in-the-loop</p>
+  </div>
+</section>
+
+<!-- ========== JAVASCRIPT ========== -->
+<script>
+// Scroll reveal with IntersectionObserver
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Active nav highlighting
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.concept-nav-links a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 100;
+    if (window.pageYOffset >= sectionTop) {
+      current = section.getAttribute('id');
+    }
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+});
+
+// Counter animation
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !entry.target.dataset.counted) {
+      entry.target.dataset.counted = 'true';
+      const target = parseInt(entry.target.dataset.target);
+      const duration = 1500;
+      const start = performance.now();
+      const animate = (now) => {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        entry.target.textContent = Math.floor(eased * target);
+        if (progress < 1) requestAnimationFrame(animate);
+        else entry.target.textContent = target;
+      };
+      requestAnimationFrame(animate);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+</script>
+</body>
+</html>

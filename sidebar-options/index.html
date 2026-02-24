@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Sidebar — 3 Options</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #0f1114;
+    color: #e4e8ee;
+    min-height: 100vh;
+    padding: 40px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    color: #6b7280;
+    font-size: 14px;
+    margin-bottom: 48px;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    max-width: 1400px;
+  }
+
+  .option-card {
+    background: #16181d;
+    border-radius: 16px;
+    border: 1px solid #23262d;
+    overflow: hidden;
+  }
+  .option-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #23262d;
+  }
+  .option-header h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .option-header .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+  .tag-blue { background: rgba(59,130,246,0.15); color: #60a5fa; }
+  .tag-green { background: rgba(34,197,94,0.15); color: #4ade80; }
+  .tag-purple { background: rgba(168,85,247,0.15); color: #c084fc; }
+  .option-header p {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  /* ── Sidebar simulation ── */
+  .sidebar-sim {
+    width: 100%;
+    min-height: 620px;
+    background: #111318;
+    padding: 0;
+    position: relative;
+  }
+
+  .sidebar-sim .logo {
+    padding: 20px 20px 16px;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: #e4e8ee;
+  }
+
+  /* ── OPTION A — Flat + Grouped ── */
+  .opt-a .nav-group {
+    padding: 0 10px;
+    margin-bottom: 4px;
+  }
+  .opt-a .nav-group-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    color: #4b5563;
+    text-transform: uppercase;
+    padding: 16px 10px 6px;
+  }
+  .opt-a .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .opt-a .nav-item:hover { background: rgba(197,224,238,0.06); color: #d1d5db; }
+  .opt-a .nav-item.active {
+    background: rgba(197,224,238,0.10);
+    color: #e4e8ee;
+  }
+  .opt-a .nav-item.active .nav-icon { color: #93c5e0; }
+  .opt-a .nav-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: #6b7280;
+    flex-shrink: 0;
+  }
+  .opt-a .nav-badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 600;
+    background: rgba(239,68,68,0.15);
+    color: #f87171;
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+  .opt-a .divider {
+    height: 1px;
+    background: #1e2028;
+    margin: 8px 16px;
+  }
+
+  /* ── OPTION B — Icon Rail + Flyout ── */
+  .opt-b .sidebar-inner {
+    display: flex;
+    height: 100%;
+    min-height: 620px;
+  }
+  .opt-b .icon-rail {
+    width: 52px;
+    background: #0d0f13;
+    border-right: 1px solid #1e2028;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 16px;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .opt-b .rail-item {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: #6b7280;
+    font-size: 16px;
+    position: relative;
+  }
+  .opt-b .rail-item:hover { background: rgba(197,224,238,0.08); color: #9ca3af; }
+  .opt-b .rail-item.active { background: rgba(197,224,238,0.12); color: #93c5e0; }
+  .opt-b .rail-item .dot {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    width: 6px;
+    height: 6px;
+    background: #ef4444;
+    border-radius: 50%;
+  }
+  .opt-b .rail-divider {
+    width: 20px;
+    height: 1px;
+    background: #1e2028;
+    margin: 6px 0;
+  }
+  .opt-b .flyout-panel {
+    flex: 1;
+    padding: 16px 12px;
+  }
+  .opt-b .flyout-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 8px;
+  }
+  .opt-b .flyout-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .opt-b .flyout-item:hover { background: rgba(197,224,238,0.06); color: #d1d5db; }
+  .opt-b .flyout-item.active { color: #e4e8ee; }
+  .opt-b .flyout-item .fi-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #4b5563;
+    flex-shrink: 0;
+  }
+  .opt-b .flyout-item.active .fi-dot { background: #93c5e0; }
+
+  /* ── OPTION C — Compact Two-Row ── */
+  .opt-c .primary-nav {
+    padding: 0 10px;
+    margin-bottom: 2px;
+  }
+  .opt-c .pn-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .opt-c .pn-item:hover { background: rgba(197,224,238,0.06); color: #d1d5db; }
+  .opt-c .pn-item.active { background: rgba(197,224,238,0.10); color: #e4e8ee; }
+  .opt-c .pn-item.active .pn-icon { color: #93c5e0; }
+  .opt-c .pn-icon {
+    font-size: 14px;
+    width: 18px;
+    text-align: center;
+    color: #6b7280;
+  }
+  .opt-c .pn-expand {
+    margin-left: auto;
+    font-size: 10px;
+    color: #4b5563;
+    transition: transform 0.2s;
+  }
+  .opt-c .pn-expand.open { transform: rotate(90deg); }
+
+  .opt-c .sub-nav {
+    padding: 2px 10px 2px 38px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.2s;
+  }
+  .opt-c .sub-nav.open { max-height: 200px; }
+  .opt-c .sub-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .opt-c .sub-item:hover { color: #9ca3af; background: rgba(197,224,238,0.04); }
+  .opt-c .sub-item.active { color: #93c5e0; }
+  .opt-c .sub-item::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.5;
+  }
+
+  .opt-c .section-break {
+    height: 1px;
+    background: #1e2028;
+    margin: 10px 16px;
+  }
+  .opt-c .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #374151;
+    text-transform: uppercase;
+    padding: 12px 20px 4px;
+  }
+
+  /* ── Footer for all ── */
+  .sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #1e2028;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sidebar-footer .avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(197,224,238,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #93c5e0;
+    flex-shrink: 0;
+  }
+  .sidebar-footer .user-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .sidebar-footer .user-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #d1d5db;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sidebar-footer .user-role {
+    font-size: 10px;
+    color: #6b7280;
+  }
+
+  /* ── Rationale box ── */
+  .rationale {
+    padding: 16px 20px;
+    border-top: 1px solid #23262d;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #6b7280;
+  }
+  .rationale strong {
+    color: #9ca3af;
+    font-weight: 600;
+  }
+  .rationale ul {
+    margin: 6px 0 0 16px;
+  }
+  .rationale li { margin-bottom: 3px; }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .options-grid { grid-template-columns: 1fr; max-width: 460px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Sidebar Redesign — 3 Options</h1>
+<p class="subtitle">Each option rethinks the information architecture for a compliance dashboard with 15+ pages.</p>
+
+<div class="options-grid">
+
+<!-- ═══════════════ OPTION A: Flat + Grouped ═══════════════ -->
+<div class="option-card">
+  <div class="option-header">
+    <h2>Option A — Flat & Clean</h2>
+    <span class="tag tag-blue">Minimal</span>
+    <span class="tag tag-green">Scannable</span>
+    <p>Flatten everything. No collapsibles, no sub-items. Two clear groups separated by intent: <strong>daily work</strong> vs <strong>compliance & reporting</strong>. Every page is one click away.</p>
+  </div>
+  <div class="sidebar-sim opt-a">
+    <div class="logo">Caelith</div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Portfolio</div>
+      <div class="nav-item active">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">🏛️</span> Funds
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">👥</span> Investors
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">↔️</span> Transfers
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Compliance</div>
+      <div class="nav-item">
+        <span class="nav-icon">🛡️</span> Rules & Screening
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">📋</span> Decisions
+        <span class="nav-badge">3</span>
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">📄</span> Regulatory Reports
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">✅</span> AIFMD II Readiness
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">System</div>
+      <div class="nav-item">
+        <span class="nav-icon">📅</span> Calendar
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">🕐</span> Audit Log
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="avatar">JL</div>
+      <div class="user-info">
+        <div class="user-name">Julian Laycock</div>
+        <div class="user-role">Administrator</div>
+      </div>
+    </div>
+  </div>
+  <div class="rationale">
+    <strong>Design rationale:</strong>
+    <ul>
+      <li>10 items total — every page is visible without scrolling</li>
+      <li>No expand/collapse = zero cognitive overhead</li>
+      <li>"Rules & Screening" and "Regulatory Reports" combine related sub-pages (tab navigation on the page itself)</li>
+      <li>Holdings, Onboarding, Annex IV, Evidence Bundle move to in-page tabs — they're contextual, not top-level navigation</li>
+      <li>2 groups by mental model: <em>"what I manage"</em> vs <em>"what regulates it"</em></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════ OPTION B: Icon Rail + Flyout ═══════════════ -->
+<div class="option-card">
+  <div class="option-header">
+    <h2>Option B — Icon Rail + Panel</h2>
+    <span class="tag tag-purple">Pro UX</span>
+    <span class="tag tag-blue">Scalable</span>
+    <p>Left icon rail for categories, expandable panel for sub-pages. Collapses to just icons for maximum content space. Inspired by Linear, Notion, VS Code.</p>
+  </div>
+  <div class="sidebar-sim opt-b">
+    <div class="sidebar-inner">
+      <div class="icon-rail">
+        <div class="rail-item active" title="Portfolio">📊</div>
+        <div class="rail-item" title="Investors">👥</div>
+        <div class="rail-divider"></div>
+        <div class="rail-item" title="Compliance">🛡️</div>
+        <div class="rail-item" title="Reports">📄</div>
+        <div class="rail-item" title="Readiness">
+          ✅
+          <span class="dot"></span>
+        </div>
+        <div class="rail-divider"></div>
+        <div class="rail-item" title="Calendar">📅</div>
+        <div class="rail-item" title="Audit">🕐</div>
+      </div>
+      <div class="flyout-panel">
+        <div class="logo" style="padding: 4px 8px 16px; font-size: 16px;">Caelith</div>
+        <div class="flyout-title">Portfolio</div>
+        <div class="flyout-item active">
+          <span class="fi-dot"></span> Dashboard
+        </div>
+        <div class="flyout-item">
+          <span class="fi-dot"></span> Funds
+        </div>
+        <div class="flyout-item">
+          <span class="fi-dot"></span> Investors
+        </div>
+        <div class="flyout-item">
+          <span class="fi-dot"></span> Transfers
+        </div>
+        <div class="flyout-item">
+          <span class="fi-dot"></span> Holdings
+        </div>
+        <div style="height: 16px;"></div>
+        <div class="flyout-title">Quick Access</div>
+        <div class="flyout-item">
+          <span class="fi-dot"></span> Onboarding
+        </div>
+        <div class="flyout-item">
+          <span class="fi-dot"></span> Screening
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-footer" style="left: 52px;">
+      <div class="avatar">JL</div>
+      <div class="user-info">
+        <div class="user-name">Julian Laycock</div>
+        <div class="user-role">Administrator</div>
+      </div>
+    </div>
+  </div>
+  <div class="rationale">
+    <strong>Design rationale:</strong>
+    <ul>
+      <li>Icon rail = persistent wayfinding, always visible even collapsed</li>
+      <li>Flyout panel shows contextual sub-pages per active category</li>
+      <li>Scales infinitely — add new categories without cluttering</li>
+      <li>Collapsible: click logo or press <kbd>[</kbd> to hide panel, leaving just 52px rail</li>
+      <li>Red dot on Readiness = attention signal without text</li>
+      <li>Best for power users who navigate between many sections frequently</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════ OPTION C: Compact Hierarchy ═══════════════ -->
+<div class="option-card">
+  <div class="option-header">
+    <h2>Option C — Smart Hierarchy</h2>
+    <span class="tag tag-green">Balanced</span>
+    <span class="tag tag-blue">Familiar</span>
+    <p>Restructured two-level nav with smarter groupings. Only 5 top-level items — everything else is one expand away. Familiar pattern, better organized.</p>
+  </div>
+  <div class="sidebar-sim opt-c">
+    <div class="logo">Caelith</div>
+
+    <div class="primary-nav">
+      <div class="pn-item active">
+        <span class="pn-icon">📊</span> Dashboard
+      </div>
+    </div>
+
+    <div class="section-label">Manage</div>
+    <div class="primary-nav">
+      <div class="pn-item" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('open'); this.querySelector('.pn-expand').classList.toggle('open');">
+        <span class="pn-icon">🏛️</span> Funds & Assets
+        <span class="pn-expand">▸</span>
+      </div>
+      <div class="sub-nav">
+        <div class="sub-item">Fund Overview</div>
+        <div class="sub-item">Holdings & NAV</div>
+        <div class="sub-item">Transfers</div>
+      </div>
+
+      <div class="pn-item" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('open'); this.querySelector('.pn-expand').classList.toggle('open');">
+        <span class="pn-icon">👥</span> Investors
+        <span class="pn-expand">▸</span>
+      </div>
+      <div class="sub-nav">
+        <div class="sub-item">Investor Directory</div>
+        <div class="sub-item">Onboarding</div>
+        <div class="sub-item">KYC / Screening</div>
+      </div>
+    </div>
+
+    <div class="section-label">Compliance</div>
+    <div class="primary-nav">
+      <div class="pn-item" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('open'); this.querySelector('.pn-expand').classList.toggle('open');">
+        <span class="pn-icon">🛡️</span> Regulatory
+        <span class="pn-expand open">▸</span>
+      </div>
+      <div class="sub-nav open">
+        <div class="sub-item active">Rules Engine</div>
+        <div class="sub-item">Decisions</div>
+        <div class="sub-item">AIFMD II Readiness</div>
+      </div>
+
+      <div class="pn-item" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('open'); this.querySelector('.pn-expand').classList.toggle('open');">
+        <span class="pn-icon">📄</span> Reporting
+        <span class="pn-expand">▸</span>
+      </div>
+      <div class="sub-nav">
+        <div class="sub-item">Annex IV (AIFMD)</div>
+        <div class="sub-item">Evidence Bundle</div>
+        <div class="sub-item">Compliance Calendar</div>
+      </div>
+    </div>
+
+    <div class="section-break"></div>
+    <div class="primary-nav">
+      <div class="pn-item">
+        <span class="pn-icon">🕐</span> Audit Log
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="avatar">JL</div>
+      <div class="user-info">
+        <div class="user-name">Julian Laycock</div>
+        <div class="user-role">Administrator</div>
+      </div>
+    </div>
+  </div>
+  <div class="rationale">
+    <strong>Design rationale:</strong>
+    <ul>
+      <li>5 top-level items (down from 9) — sidebar feels light and intentional</li>
+      <li>Grouping by <em>entity</em> not <em>action</em>: "Funds & Assets" holds everything fund-related, "Investors" holds everything investor-related</li>
+      <li>Screening moves under Investors (it's investor-level) — more logical</li>
+      <li>Calendar moves under Reporting (it's compliance deadlines) — not standalone</li>
+      <li>Dashboard + Audit Log are ungrouped — they're cross-cutting</li>
+      <li>Active section auto-expands, others collapse — keeps sidebar short</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+
+<div style="margin-top: 48px; padding: 24px; background: #16181d; border-radius: 12px; border: 1px solid #23262d; max-width: 1400px;">
+  <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">📐 Comparison</h2>
+  <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+    <thead>
+      <tr style="border-bottom: 1px solid #23262d; text-align: left;">
+        <th style="padding: 8px 12px; color: #6b7280; font-weight: 600;"></th>
+        <th style="padding: 8px 12px; color: #60a5fa; font-weight: 600;">A — Flat</th>
+        <th style="padding: 8px 12px; color: #c084fc; font-weight: 600;">B — Icon Rail</th>
+        <th style="padding: 8px 12px; color: #4ade80; font-weight: 600;">C — Hierarchy</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid #1e2028;">
+        <td style="padding: 8px 12px; color: #9ca3af;">Top-level items</td>
+        <td style="padding: 8px 12px;">10</td>
+        <td style="padding: 8px 12px;">7 icons</td>
+        <td style="padding: 8px 12px;">5</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e2028;">
+        <td style="padding: 8px 12px; color: #9ca3af;">Clicks to any page</td>
+        <td style="padding: 8px 12px;">1 (always)</td>
+        <td style="padding: 8px 12px;">1-2</td>
+        <td style="padding: 8px 12px;">1-2</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e2028;">
+        <td style="padding: 8px 12px; color: #9ca3af;">Scalability</td>
+        <td style="padding: 8px 12px;">Low (max ~12)</td>
+        <td style="padding: 8px 12px;">High (∞ categories)</td>
+        <td style="padding: 8px 12px;">Medium (~20 pages)</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e2028;">
+        <td style="padding: 8px 12px; color: #9ca3af;">Cognitive load</td>
+        <td style="padding: 8px 12px;">⭐ Lowest</td>
+        <td style="padding: 8px 12px;">Medium</td>
+        <td style="padding: 8px 12px;">Low</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e2028;">
+        <td style="padding: 8px 12px; color: #9ca3af;">Feels like</td>
+        <td style="padding: 8px 12px;">Stripe, Vercel</td>
+        <td style="padding: 8px 12px;">Linear, VS Code</td>
+        <td style="padding: 8px 12px;">Notion, GitHub</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px 12px; color: #9ca3af;">Best for</td>
+        <td style="padding: 8px 12px;">Early product, demos</td>
+        <td style="padding: 8px 12px;">Power users, growth</td>
+        <td style="padding: 8px 12px;">General purpose</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 16px; font-size: 12px; color: #6b7280;">
+    <strong style="color: #9ca3af;">My recommendation:</strong> Option C for now — it fixes the clutter without over-engineering. Option B is the long-term play if we add more modules (AML, SFDR, ELTIF). Option A is safest for demos but limits growth.
+  </p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Final Two Concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; -webkit-font-smoothing:antialiased; }
+body { margin:0; padding:0; background:#09090B; color:#fff; font-family:'Inter',sans-serif; }
+a { text-decoration:none; color:inherit; }
+button { border:none; cursor:pointer; font-family:inherit; }
+img { max-width:100%; }
+
+/* ============================================================
+   CONCEPT SWITCHER (top bar)
+   ============================================================ */
+.concept-switcher {
+  position:fixed; top:0; left:0; right:0; z-index:10000;
+  display:flex; justify-content:center; gap:2px;
+  background:rgba(0,0,0,0.95); border-bottom:1px solid rgba(255,255,255,0.06);
+  padding:8px 0;
+}
+.concept-switcher a {
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:2px;
+  text-transform:uppercase; padding:8px 24px; color:rgba(255,255,255,0.4);
+  transition:color .2s, background .2s; border-radius:4px;
+}
+.concept-switcher a:hover { color:#fff; background:rgba(255,255,255,0.05); }
+.concept-switcher a.indigo:hover, .concept-switcher a.indigo.active { color:#6366F1; }
+.concept-switcher a.gold:hover, .concept-switcher a.gold.active { color:#D4AF37; }
+
+/* ============================================================
+   CONCEPT DIVIDER
+   ============================================================ */
+.concept-divider {
+  height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:#000; position:relative;
+}
+.concept-divider h2 {
+  font-family:'Space Grotesk',sans-serif; font-size:64px; font-weight:700; color:#fff;
+  margin-bottom:12px;
+}
+.concept-divider p {
+  font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:3px;
+  color:rgba(255,255,255,0.3); text-transform:uppercase;
+}
+
+/* ============================================================
+   CONCEPT 1: INDIGO CIRCUIT
+   ============================================================ */
+
+/* -- Nav -- */
+.c1-nav {
+  position:fixed; top:36px; left:0; right:0; z-index:9999;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 48px; height:56px;
+  background:rgba(9,9,11,0.8); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.c1-nav .logo { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:18px; color:#fff; }
+.c1-nav .nav-links { display:flex; align-items:center; gap:32px; }
+.c1-nav .nav-links a { font-size:13px; color:rgba(255,255,255,0.5); transition:color .2s; }
+.c1-nav .nav-links a:hover { color:#fff; }
+.c1-nav .nav-links .signin { color:rgba(255,255,255,0.4); }
+.c1-nav .nav-links .cta-nav {
+  background:#6366F1; color:#fff; padding:8px 18px; border-radius:6px;
+  font-size:13px; font-weight:500; transition:background .2s;
+}
+.c1-nav .nav-links .cta-nav:hover { background:#5558E6; }
+.c1-nav .countdown-nav {
+  font-family:'JetBrains Mono',monospace; font-size:11px; color:#6366F1;
+  margin-left:24px;
+}
+
+/* -- Hero -- */
+.c1-hero {
+  min-height:100vh; display:flex; flex-direction:column; align-items:flex-start;
+  justify-content:center; padding:0 12%; position:relative; overflow:hidden;
+  background:#09090B;
+  /* grid overlay */
+  background-image:
+    linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+.c1-hero .blob {
+  position:absolute; top:-20%; right:-10%; width:800px; height:800px; border-radius:50%;
+  background:radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(99,102,241,0.03) 40%, transparent 70%);
+  animation:blobDrift 20s ease-in-out infinite; pointer-events:none;
+}
+@keyframes blobDrift {
+  0%, 100% { transform:translate(0,0); }
+  33% { transform:translate(-60px, 40px); }
+  66% { transform:translate(30px, -50px); }
+}
+.c1-hero .label {
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:3px;
+  color:#6366F1; margin-bottom:24px;
+}
+.c1-hero h1 {
+  font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:100px;
+  line-height:1.05; color:#fff; margin-bottom:24px;
+}
+.c1-hero h1 .accent { color:#6366F1; }
+.c1-hero .sub {
+  font-size:17px; color:rgba(255,255,255,0.5); max-width:520px;
+  line-height:1.6; margin-bottom:40px;
+}
+.c1-hero .ctas { display:flex; gap:16px; margin-bottom:32px; }
+.c1-hero .cta-primary {
+  background:#6366F1; color:#fff; padding:14px 32px; border-radius:8px;
+  font-size:15px; font-weight:500; transition:transform .2s, box-shadow .2s;
+}
+.c1-hero .cta-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(99,102,241,0.3); }
+.c1-hero .cta-ghost {
+  background:transparent; color:rgba(255,255,255,0.6); padding:14px 32px;
+  border-radius:8px; border:1px solid rgba(255,255,255,0.2); font-size:15px;
+  transition:border-color .2s, color .2s;
+}
+.c1-hero .cta-ghost:hover { border-color:rgba(255,255,255,0.4); color:#fff; }
+.c1-hero .status {
+  font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(255,255,255,0.3);
+  display:flex; align-items:center; gap:8px;
+}
+.c1-hero .status .dot {
+  width:6px; height:6px; border-radius:50%; background:#6366F1;
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+/* -- Marquee -- */
+.c1-marquee { background:#09090B; padding:48px 0 40px; overflow:hidden; }
+.c1-marquee .marquee-label {
+  text-align:center; font-family:'JetBrains Mono',monospace; font-size:10px;
+  color:rgba(255,255,255,0.3); letter-spacing:2px; margin-bottom:24px;
+}
+.c1-marquee .marquee-track {
+  display:flex; gap:32px; animation:marqueeScroll 30s linear infinite;
+  width:max-content;
+}
+.c1-marquee .marquee-item {
+  width:120px; height:48px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(255,255,255,0.15);
+  flex-shrink:0;
+}
+@keyframes marqueeScroll { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+
+/* -- Stats -- */
+.c1-stats {
+  background:#09090B; padding:120px 12%;
+  background-image:
+    linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+.c1-stats .stats-row {
+  display:flex; justify-content:space-between; max-width:900px; margin:0 auto;
+  text-align:center;
+}
+.c1-stats .stat-num {
+  font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:72px;
+  color:#6366F1; margin-bottom:12px;
+}
+.c1-stats .stat-label {
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  color:rgba(255,255,255,0.4); letter-spacing:1px;
+}
+
+/* -- Problem -- */
+.c1-problem {
+  background:#FAFAFA; color:#09090B; padding:120px 12%; display:flex;
+  justify-content:space-between; align-items:flex-start; position:relative;
+}
+.c1-problem .content { max-width:600px; }
+.c1-problem .label {
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:3px;
+  color:#6366F1; margin-bottom:20px;
+}
+.c1-problem h2 {
+  font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:48px;
+  line-height:1.15; margin-bottom:32px; color:#09090B;
+}
+.c1-problem .body p {
+  font-size:16px; color:rgba(0,0,0,0.5); line-height:1.7; margin-bottom:16px;
+}
+.c1-problem .hash-texture {
+  font-family:'JetBrains Mono',monospace; font-size:10px; color:rgba(0,0,0,0.06);
+  line-height:2; text-align:right; max-width:280px; word-break:break-all;
+  user-select:none;
+}
+
+/* -- Features -- */
+.c1-features {
+  background:#09090B; padding:120px 0;
+  background-image:
+    linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+.c1-features h2 {
+  font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:48px;
+  color:#fff; text-align:center; margin-bottom:64px;
+}
+.c1-features .cards { max-width:800px; margin:0 auto; }
+.c1-features .card {
+  border-bottom:1px solid rgba(255,255,255,0.06); overflow:hidden;
+}
+.c1-features .card-header {
+  display:flex; align-items:center; gap:20px; padding:28px 0; cursor:pointer;
+  transition:opacity .2s;
+}
+.c1-features .card-header:hover { opacity:0.8; }
+.c1-features .card-toggle {
+  font-family:'Space Grotesk',sans-serif; font-size:24px; color:#6366F1;
+  width:32px; text-align:center; flex-shrink:0; transition:transform .3s;
+}
+.c1-features .card.open .card-toggle { transform:rotate(45deg); }
+.c1-features .card-title {
+  font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:20px; color:#fff;
+}
+.c1-features .card-summary {
+  font-size:14px; color:rgba(255,255,255,0.4); margin-left:auto;
+}
+.c1-features .card-body {
+  max-height:0; overflow:hidden; transition:max-height .4s ease, padding .4s ease;
+  padding:0 0 0 52px;
+}
+.c1-features .card.open .card-body { max-height:300px; padding:0 0 28px 52px; }
+.c1-features .card-body p {
+  font-size:15px; color:rgba(255,255,255,0.5); line-height:1.7; margin-bottom:16px;
+}
+.c1-features .card-body .snippet {
+  font-family:'JetBrains Mono',monospace; font-size:12px; color:rgba(255,255,255,0.4);
+  background:rgba(255,255,255,0.03); padding:16px; border-radius:8px;
+}
+
+/* -- Process / Timeline -- */
+.c1-process {
+  background:#09090B; padding:120px 12%;
+  background-image:
+    linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+.c1-process .label {
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:3px;
+  color:#6366F1; margin-bottom:48px;
+}
+.c1-process .timeline { position:relative; padding-left:48px; max-width:600px; }
+.c1-process .timeline::before {
+  content:''; position:absolute; left:11px; top:0; bottom:0; width:2px;
+  background:#6366F1; opacity:0.3;
+}
+.c1-process .step { position:relative; margin-bottom:56px; }
+.c1-process .step:last-child { margin-bottom:0; }
+.c1-process .step::before {
+  content:''; position:absolute; left:-42px; top:4px; width:12px; height:12px;
+  border-radius:50%; border:2px solid #6366F1; background:#09090B;
+  transition:background .4s;
+}
+.c1-process .step.active::before { background:#6366F1; }
+.c1-process .step-num {
+  font-family:'JetBrains Mono',monospace; font-size:13px; color:#6366F1; margin-bottom:8px;
+}
+.c1-process .step-title {
+  font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:22px;
+  color:#fff; margin-bottom:8px;
+}
+.c1-process .step-desc { font-size:15px; color:rgba(255,255,255,0.4); line-height:1.6; }
+
+/* -- Quote -- */
+.c1-quote {
+  background:#FAFAFA; color:#09090B; padding:120px 12%; text-align:center;
+  position:relative;
+}
+.c1-quote .big-mark {
+  font-family:'Space Grotesk',sans-serif; font-size:120px; color:#6366F1;
+  opacity:0.15; position:absolute; top:60px; left:50%; transform:translateX(-50%);
+  line-height:1; pointer-events:none;
+}
+.c1-quote blockquote {
+  font-style:italic; font-size:22px; color:#09090B; max-width:640px;
+  margin:0 auto 24px; line-height:1.6; position:relative; z-index:1;
+}
+.c1-quote .attribution {
+  font-family:'JetBrains Mono',monospace; font-size:12px; color:rgba(0,0,0,0.4);
+}
+
+/* -- Pricing -- */
+.c1-pricing {
+  background:#09090B; padding:120px 12%;
+  background-image:
+    linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+.c1-pricing h2 {
+  font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:48px;
+  color:#fff; text-align:center; margin-bottom:12px;
+}
+.c1-pricing .pricing-sub {
+  text-align:center; font-size:16px; color:rgba(255,255,255,0.4); margin-bottom:64px;
+}
+.c1-pricing .pricing-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+  max-width:960px; margin:0 auto;
+}
+.c1-pricing .price-card {
+  border:1px solid rgba(255,255,255,0.08); border-radius:12px;
+  padding:40px 32px; display:flex; flex-direction:column;
+}
+.c1-pricing .price-card.featured {
+  border-color:#6366F1; box-shadow:0 0 40px rgba(99,102,241,0.1);
+}
+.c1-pricing .price-card .tier {
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:2px;
+  color:rgba(255,255,255,0.4); text-transform:uppercase; margin-bottom:16px;
+}
+.c1-pricing .price-card .price {
+  font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:40px;
+  color:#fff; margin-bottom:8px;
+}
+.c1-pricing .price-card .price-period {
+  font-size:13px; color:rgba(255,255,255,0.3); margin-bottom:32px;
+}
+.c1-pricing .price-card ul { list-style:none; margin-bottom:32px; flex-grow:1; }
+.c1-pricing .price-card li {
+  font-size:14px; color:rgba(255,255,255,0.5); padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.c1-pricing .price-card li::before { content:'✓ '; color:#6366F1; }
+.c1-pricing .price-card .card-cta {
+  padding:12px 0; border-radius:8px; font-size:14px; font-weight:500;
+  text-align:center; transition:transform .2s;
+}
+.c1-pricing .price-card .card-cta:hover { transform:translateY(-1px); }
+.c1-pricing .price-card .card-cta.primary { background:#6366F1; color:#fff; }
+.c1-pricing .price-card .card-cta.ghost {
+  background:transparent; border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.6);
+}
+.c1-pricing .pricing-note {
+  text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px;
+  color:rgba(255,255,255,0.3); margin-top:48px; letter-spacing:0.5px;
+}
+
+/* -- FAQ -- */
+.c1-faq { background:#09090B; padding:120px 0; }
+.c1-faq h2 {
+  font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:48px;
+  color:#fff; text-align:center; margin-bottom:64px;
+}
+.c1-faq .cards { max-width:800px; margin:0 auto; }
+.c1-faq .card { border-bottom:1px solid rgba(255,255,255,0.06); }
+.c1-faq .card-header {
+  display:flex; align-items:center; gap:20px; padding:24px 0; cursor:pointer;
+}
+.c1-faq .card-toggle {
+  font-family:'Space Grotesk',sans-serif; font-size:24px; color:#6366F1;
+  width:32px; text-align:center; flex-shrink:0; transition:transform .3s;
+}
+.c1-faq .card.open .card-toggle { transform:rotate(45deg); }
+.c1-faq .card-title {
+  font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:18px; color:#fff;
+}
+.c1-faq .card-body {
+  max-height:0; overflow:hidden; transition:max-height .4s ease, padding .4s ease;
+  padding:0 0 0 52px;
+}
+.c1-faq .card.open .card-body { max-height:200px; padding:0 0 24px 52px; }
+.c1-faq .card-body p { font-size:15px; color:rgba(255,255,255,0.5); line-height:1.7; }
+
+/* -- CTA Finale -- */
+.c1-finale {
+  background:#09090B; min-height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center;
+}
+.c1-finale h2 {
+  font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:64px;
+  color:#fff; margin-bottom:16px;
+}
+.c1-finale p { font-size:20px; color:rgba(255,255,255,0.4); margin-bottom:48px; }
+.c1-finale .cta-primary {
+  background:#6366F1; color:#fff; padding:18px 48px; border-radius:8px;
+  font-size:16px; font-weight:500; transition:transform .2s, box-shadow .2s;
+  margin-bottom:32px; display:inline-block;
+}
+.c1-finale .cta-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(99,102,241,0.3); }
+.c1-finale .countdown {
+  font-family:'JetBrains Mono',monospace; font-size:18px; color:#6366F1;
+}
+
+/* -- Footer -- */
+.c1-footer {
+  background:#09090B; border-top:1px solid rgba(255,255,255,0.06);
+  padding:48px 12%; display:flex; justify-content:space-between; align-items:center;
+  flex-wrap:wrap; gap:24px;
+}
+.c1-footer .left .logo {
+  font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px;
+  color:#fff; margin-bottom:4px;
+}
+.c1-footer .left .tagline { font-size:13px; color:rgba(255,255,255,0.3); }
+.c1-footer .center a {
+  font-size:13px; color:rgba(255,255,255,0.4); margin:0 16px;
+  transition:color .2s;
+}
+.c1-footer .center a:hover { color:#fff; }
+.c1-footer .right {
+  font-size:13px; color:rgba(255,255,255,0.3); text-align:right;
+}
+
+/* ============================================================
+   CONCEPT 2: BLACK & GOLD
+   ============================================================ */
+.c2-wrap { background:#0A0A0A; }
+
+.gold-text {
+  background:linear-gradient(135deg, #F0E6D3, #D4AF37);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+/* -- Nav -- */
+.c2-nav {
+  position:fixed; top:36px; left:0; right:0; z-index:9998;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 48px; height:56px;
+  background:transparent; transition:background .3s, border-color .3s;
+  border-bottom:1px solid transparent;
+}
+.c2-nav.scrolled {
+  background:rgba(10,10,10,0.95); backdrop-filter:blur(20px);
+  border-bottom-color:rgba(255,255,255,0.06);
+}
+.c2-nav .logo { font-family:'Sora',sans-serif; font-weight:600; font-size:18px; color:#fff; }
+.c2-nav .nav-links { display:flex; align-items:center; gap:32px; }
+.c2-nav .nav-links a { font-size:13px; color:rgba(255,255,255,0.5); transition:color .2s; }
+.c2-nav .nav-links a:hover { color:#fff; }
+.c2-nav .nav-links .cta-nav {
+  background:#D4AF37; color:#000; padding:8px 18px; border-radius:4px;
+  font-family:'Sora',sans-serif; font-weight:600; font-size:13px;
+  transition:transform .2s, box-shadow .2s;
+}
+.c2-nav .nav-links .cta-nav:hover { transform:translateY(-1px); box-shadow:0 4px 20px rgba(212,175,55,0.3); }
+.c2-nav .countdown-nav {
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  background:linear-gradient(135deg,#F0E6D3,#D4AF37);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  margin-left:24px;
+}
+
+/* -- Hero -- */
+.c2-hero {
+  min-height:100vh; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; text-align:center; position:relative; background:#0A0A0A;
+}
+.c2-hero .label {
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:4px;
+  margin-bottom:40px;
+  background:linear-gradient(135deg,#F0E6D3,#D4AF37);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.c2-hero h1 {
+  font-family:'Sora',sans-serif; font-weight:700; font-size:120px;
+  line-height:1.0; color:#fff; margin-bottom:48px;
+}
+.c2-hero h1 .accent {
+  background:linear-gradient(135deg,#F0E6D3,#D4AF37);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.c2-hero .sub {
+  font-weight:300; font-size:18px; color:rgba(255,255,255,0.45);
+  max-width:480px; line-height:1.7; margin-bottom:48px;
+}
+.c2-hero .cta-primary {
+  background:#D4AF37; color:#000; font-family:'Sora',sans-serif; font-weight:600;
+  padding:16px 40px; border-radius:4px; font-size:16px;
+  transition:transform .2s, box-shadow .2s;
+}
+.c2-hero .cta-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(212,175,55,0.25); }
+.c2-hero .scroll-indicator {
+  position:absolute; bottom:48px; left:50%; transform:translateX(-50%);
+  width:1px; height:24px; background:#C9A96E; animation:scrollBounce 2s ease-in-out infinite;
+}
+@keyframes scrollBounce { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(8px);} }
+
+/* -- Gold Divider -- */
+.c2-divider {
+  height:1px; background:linear-gradient(90deg, transparent, #C9A96E, transparent);
+}
+
+/* -- Marquee -- */
+.c2-marquee { background:#0A0A0A; padding:48px 0; overflow:hidden; }
+.c2-marquee .marquee-track {
+  display:flex; gap:32px; animation:marqueeScroll 30s linear infinite;
+  width:max-content;
+}
+.c2-marquee .marquee-item {
+  width:120px; height:48px; border-radius:8px; border:1px solid rgba(255,255,255,0.08);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(255,255,255,0.1);
+  flex-shrink:0;
+}
+
+/* -- Stats -- */
+.c2-stats { background:#0A0A0A; padding:160px 12%; }
+.c2-stats .stats-row {
+  display:flex; justify-content:space-between; max-width:900px; margin:0 auto;
+  text-align:center;
+}
+.c2-stats .stat-num {
+  font-family:'Sora',sans-serif; font-weight:700; font-size:80px;
+  background:linear-gradient(135deg,#F0E6D3,#D4AF37);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  margin-bottom:12px;
+}
+.c2-stats .stat-label {
+  font-family:'JetBrains Mono',monospace; font-size:10px;
+  color:rgba(255,255,255,0.3); letter-spacing:2px; text-transform:uppercase;
+}
+
+/* -- Features (light section) -- */
+.c2-features {
+  background:#F5F2EA; color:#0A0A0A; padding:120px 12%;
+}
+.c2-features .label {
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:3px;
+  color:#C9A96E; text-align:center; margin-bottom:20px;
+}
+.c2-features h2 {
+  font-family:'Sora',sans-serif; font-weight:700; font-size:48px;
+  text-align:center; margin-bottom:80px; color:#0A0A0A;
+}
+.c2-features .steps-row {
+  display:flex; justify-content:space-between; max-width:900px; margin:0 auto;
+  position:relative;
+}
+.c2-features .steps-row::before {
+  content:''; position:absolute; top:32px; left:10%; right:10%;
+  height:1px; background:#C9A96E; opacity:0.3;
+}
+.c2-features .step-item { text-align:center; flex:1; position:relative; }
+.c2-features .step-num {
+  font-family:'Sora',sans-serif; font-weight:300; font-size:64px;
+  color:#C9A96E; margin-bottom:16px; position:relative; z-index:1;
+}
+.c2-features .step-title {
+  font-family:'Sora',sans-serif; font-weight:600; font-size:18px;
+  margin-bottom:8px;
+}
+.c2-features .step-desc {
+  font-weight:300; font-size:14px; color:rgba(0,0,0,0.45);
+  max-width:180px; margin:0 auto; line-height:1.6;
+}
+
+/* -- Feature Detail -- */
+.c2-detail { background:#0A0A0A; padding:120px 0; }
+.c2-detail .cards { max-width:800px; margin:0 auto; }
+.c2-detail .card { border-bottom:1px solid rgba(201,169,110,0.15); }
+.c2-detail .card-header {
+  display:flex; align-items:center; gap:20px; padding:28px 0; cursor:pointer;
+}
+.c2-detail .card-toggle {
+  font-family:'Sora',sans-serif; font-size:24px; color:#C9A96E;
+  width:32px; text-align:center; flex-shrink:0; transition:transform .3s;
+}
+.c2-detail .card.open .card-toggle { transform:rotate(45deg); }
+.c2-detail .card-title {
+  font-family:'Sora',sans-serif; font-weight:600; font-size:20px; color:#fff;
+}
+.c2-detail .card-summary {
+  font-weight:300; font-size:14px; color:rgba(255,255,255,0.35); margin-left:auto;
+}
+.c2-detail .card-body {
+  max-height:0; overflow:hidden; transition:max-height .4s ease, padding .4s ease;
+  padding:0 0 0 52px;
+}
+.c2-detail .card.open .card-body { max-height:300px; padding:0 0 28px 52px; }
+.c2-detail .card-body p {
+  font-weight:300; font-size:15px; color:rgba(255,255,255,0.5); line-height:1.7;
+  margin-bottom:16px;
+}
+.c2-detail .card-body .snippet {
+  font-family:'JetBrains Mono',monospace; font-size:12px; color:rgba(255,255,255,0.4);
+  background:rgba(255,255,255,0.03); padding:16px; border-radius:8px;
+}
+
+/* -- Quote -- */
+.c2-quote {
+  background:#0A0A0A; min-height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center; position:relative;
+}
+.c2-quote .big-mark {
+  font-family:'Sora',sans-serif; font-size:200px; color:rgba(201,169,110,0.08);
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-60%);
+  line-height:1; pointer-events:none;
+}
+.c2-quote blockquote {
+  font-weight:300; font-style:italic; font-size:24px;
+  color:rgba(255,255,255,0.7); max-width:600px; line-height:1.6;
+  margin-bottom:24px; position:relative; z-index:1;
+}
+.c2-quote .attribution {
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  background:linear-gradient(135deg,#F0E6D3,#D4AF37);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+/* -- Pricing -- */
+.c2-pricing { background:#0A0A0A; padding:120px 12%; }
+.c2-pricing h2 {
+  font-family:'Sora',sans-serif; font-weight:700; font-size:48px;
+  color:#fff; text-align:center; margin-bottom:64px;
+}
+.c2-pricing .pricing-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+  max-width:960px; margin:0 auto;
+}
+.c2-pricing .price-card {
+  border:1px solid rgba(255,255,255,0.06); border-radius:12px;
+  padding:40px 32px; display:flex; flex-direction:column; position:relative;
+}
+.c2-pricing .price-card.featured { border-color:#C9A96E; }
+.c2-pricing .price-card .popular-badge {
+  position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:3px;
+  text-transform:uppercase; padding:4px 16px;
+  background:linear-gradient(135deg,#F0E6D3,#D4AF37);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.c2-pricing .price-card .tier {
+  font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:2px;
+  color:rgba(255,255,255,0.4); text-transform:uppercase; margin-bottom:16px;
+}
+.c2-pricing .price-card .price {
+  font-family:'Sora',sans-serif; font-weight:700; font-size:36px;
+  color:#fff; margin-bottom:8px;
+}
+.c2-pricing .price-card .price-period {
+  font-weight:300; font-size:13px; color:rgba(255,255,255,0.3); margin-bottom:32px;
+}
+.c2-pricing .price-card ul { list-style:none; margin-bottom:32px; flex-grow:1; }
+.c2-pricing .price-card li {
+  font-weight:300; font-size:14px; color:rgba(255,255,255,0.5); padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.c2-pricing .price-card li::before { content:'● '; color:#C9A96E; font-size:8px; }
+.c2-pricing .price-card .card-cta {
+  padding:12px 0; border-radius:4px; font-family:'Sora',sans-serif;
+  font-weight:600; font-size:14px; text-align:center; transition:transform .2s;
+}
+.c2-pricing .price-card .card-cta:hover { transform:translateY(-1px); }
+.c2-pricing .price-card .card-cta.primary { background:#D4AF37; color:#000; }
+.c2-pricing .price-card .card-cta.ghost {
+  background:transparent; border:1px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.5);
+}
+
+/* -- FAQ -- */
+.c2-faq { background:#0A0A0A; padding:120px 0; }
+.c2-faq h2 {
+  font-family:'Sora',sans-serif; font-weight:700; font-size:48px;
+  color:#fff; text-align:center; margin-bottom:64px;
+}
+.c2-faq .cards { max-width:800px; margin:0 auto; }
+.c2-faq .card { border-bottom:1px solid rgba(201,169,110,0.15); }
+.c2-faq .card-header {
+  display:flex; align-items:center; gap:20px; padding:24px 0; cursor:pointer;
+}
+.c2-faq .card-toggle {
+  font-family:'Sora',sans-serif; font-size:24px; color:#C9A96E;
+  width:32px; text-align:center; flex-shrink:0; transition:transform .3s;
+}
+.c2-faq .card.open .card-toggle { transform:rotate(45deg); }
+.c2-faq .card-title {
+  font-family:'Sora',sans-serif; font-weight:600; font-size:18px; color:#fff;
+}
+.c2-faq .card-body {
+  max-height:0; overflow:hidden; transition:max-height .4s ease, padding .4s ease;
+  padding:0 0 0 52px;
+}
+.c2-faq .card.open .card-body { max-height:200px; padding:0 0 24px 52px; }
+.c2-faq .card-body p {
+  font-weight:300; font-size:15px; color:rgba(255,255,255,0.5); line-height:1.7;
+}
+
+/* -- CTA Finale -- */
+.c2-finale {
+  background:#0A0A0A; min-height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center;
+}
+.c2-finale h2 {
+  font-family:'Sora',sans-serif; font-weight:700; font-size:72px;
+  color:#fff; margin-bottom:16px;
+}
+.c2-finale p {
+  font-weight:300; font-size:18px; color:rgba(255,255,255,0.35); margin-bottom:48px;
+}
+.c2-finale .cta-primary {
+  background:#D4AF37; color:#000; font-family:'Sora',sans-serif; font-weight:600;
+  padding:16px 40px; border-radius:4px; font-size:16px;
+  transition:transform .2s, box-shadow .2s; margin-bottom:32px; display:inline-block;
+}
+.c2-finale .cta-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(212,175,55,0.25); }
+.c2-finale .countdown {
+  font-family:'JetBrains Mono',monospace; font-size:18px;
+  background:linear-gradient(135deg,#F0E6D3,#D4AF37);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+/* -- Footer -- */
+.c2-footer {
+  background:#0A0A0A;
+  border-top:1px solid transparent;
+  border-image:linear-gradient(90deg, transparent, #C9A96E, transparent) 1;
+  padding:48px 12%; display:flex; justify-content:space-between; align-items:center;
+  flex-wrap:wrap; gap:24px;
+}
+.c2-footer .left .logo {
+  font-family:'Sora',sans-serif; font-weight:500; font-size:16px;
+  color:#fff; margin-bottom:4px;
+}
+.c2-footer .left .tagline { font-weight:300; font-size:13px; color:rgba(255,255,255,0.3); }
+.c2-footer .center a {
+  font-weight:300; font-size:13px; color:rgba(255,255,255,0.35); margin:0 16px;
+  transition:color .2s;
+}
+.c2-footer .center a:hover { color:#fff; }
+.c2-footer .right {
+  font-weight:300; font-size:13px; color:rgba(255,255,255,0.25); text-align:right;
+}
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+.reveal { opacity:0; transform:translateY(30px); transition:opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:768px) {
+  .c1-nav, .c2-nav { padding:0 20px; }
+  .c1-nav .nav-links a:not(.cta-nav):not(.signin), .c2-nav .nav-links a:not(.cta-nav) { display:none; }
+  .c1-hero { padding:0 6%; }
+  .c1-hero h1 { font-size:48px; }
+  .c2-hero h1 { font-size:56px; }
+  .c1-stats .stats-row, .c2-stats .stats-row { flex-direction:column; gap:48px; }
+  .c1-stats .stat-num { font-size:56px; }
+  .c2-stats .stat-num { font-size:60px; }
+  .c1-problem { flex-direction:column; padding:80px 6%; }
+  .c1-problem .hash-texture { display:none; }
+  .c1-pricing .pricing-grid, .c2-pricing .pricing-grid { grid-template-columns:1fr; }
+  .c2-features .steps-row { flex-direction:column; gap:48px; }
+  .c2-features .steps-row::before { display:none; }
+  .c1-finale h2 { font-size:36px; }
+  .c2-finale h2 { font-size:40px; }
+  .c1-footer, .c2-footer { flex-direction:column; text-align:center; }
+  .c1-footer .right, .c2-footer .right { text-align:center; }
+  .c1-features .card-summary, .c2-detail .card-summary { display:none; }
+  .concept-divider h2 { font-size:36px; }
+}
+</style>
+</head>
+<body>
+
+<!-- CONCEPT SWITCHER -->
+<div class="concept-switcher">
+  <a href="#concept1" class="indigo">01 — Indigo Circuit</a>
+  <a href="#concept2" class="gold">02 — Black &amp; Gold</a>
+</div>
+
+<!-- ============================================================
+     CONCEPT 1: INDIGO CIRCUIT
+     ============================================================ -->
+<div id="concept1">
+
+<!-- NAV -->
+<nav class="c1-nav">
+  <div class="logo">Caelith</div>
+  <div class="nav-links">
+    <a href="#c1-process">How It Works</a>
+    <a href="#c1-pricing">Pricing</a>
+    <a href="#" class="signin">Sign In</a>
+    <a href="#" class="cta-nav">Book a Demo</a>
+    <span class="countdown-nav" id="c1NavCountdown"></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="c1-hero">
+  <div class="blob"></div>
+  <div class="label">// AIFMD II COMPLIANCE ENGINE</div>
+  <h1>Every decision.<br>Logged. Verified. <span class="accent">Proven.</span></h1>
+  <p class="sub">Automated eligibility checks, hash-chained audit trails, and real-time regulatory evaluation for EU fund managers.</p>
+  <div class="ctas">
+    <button class="cta-primary">Book a Demo →</button>
+    <button class="cta-ghost">See How It Works</button>
+  </div>
+  <div class="status">
+    <span class="dot"></span>
+    SYSTEM ONLINE · 247 RULES ACTIVE · 6 FRAMEWORKS · &lt;23ms
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<section class="c1-marquee">
+  <div class="marquee-label">Trusted by compliance teams across Europe</div>
+  <div class="marquee-track">
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="c1-stats">
+  <div class="stats-row reveal">
+    <div>
+      <div class="stat-num" data-target="247">0</div>
+      <div class="stat-label">Active compliance rules</div>
+    </div>
+    <div>
+      <div class="stat-num" data-target="6">0</div>
+      <div class="stat-label">Regulatory frameworks</div>
+    </div>
+    <div>
+      <div class="stat-num" data-target="23" data-prefix="<" data-suffix="ms">0</div>
+      <div class="stat-label">Average evaluation latency</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="c1-problem">
+  <div class="content reveal">
+    <div class="label">// THE PROBLEM</div>
+    <h2>€1.8 trillion in EU AIF assets.<br>Compliance is still manual.</h2>
+    <div class="body">
+      <p>Fund managers across Europe still rely on spreadsheets and email chains to track regulatory obligations. Every manual entry is a liability. Every version mismatch is a potential audit failure.</p>
+      <p>Regulatory velocity is accelerating. AIFMD II, DORA, SFDR — frameworks are compounding faster than teams can adapt. Static processes break under dynamic regulation.</p>
+      <p>When regulators come knocking, "we think we're compliant" isn't an answer. They want deterministic proof — timestamped, hash-verified, machine-readable. The gap between expectation and reality has never been wider.</p>
+    </div>
+  </div>
+  <div class="hash-texture reveal">
+    a3f8b2c1d9e4f7a6b<br>8c3d2e1f7a9b4c6d8<br>f1a2b3c4d5e6f7a8b<br>
+    9c0d1e2f3a4b5c6d7<br>e8f9a0b1c2d3e4f5a<br>6b7c8d9e0f1a2b3c4<br>
+    d5e6f7a8b9c0d1e2f<br>3a4b5c6d7e8f9a0b1<br>c2d3e4f5a6b7c8d9e<br>
+    0f1a2b3c4d5e6f7a8<br>b9c0d1e2f3a4b5c6d<br>7e8f9a0b1c2d3e4f5<br>
+    a6b7c8d9e0f1a2b3c<br>4d5e6f7a8b9c0d1e2<br>f3a4b5c6d7e8f9a0b
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="c1-features" id="c1-features">
+  <h2 class="reveal">What Caelith does</h2>
+  <div class="cards">
+    <div class="card open" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">Rules Engine</span>
+        <span class="card-summary">247 rules across 6 frameworks</span>
+      </div>
+      <div class="card-body">
+        <p>A deterministic evaluation engine that processes every investment decision against the full regulatory ruleset in real time. No interpretation gaps. No human bottlenecks. Every rule mapped, versioned, and executable.</p>
+        <div class="snippet">RULE_EVAL { framework: "AIFMD_II", rules: 247, mode: "strict", latency: "22.4ms" }</div>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">Hash-Chained Audit Trail</span>
+        <span class="card-summary">Tamper-proof documentation</span>
+      </div>
+      <div class="card-body">
+        <p>Every evaluation, decision, and override is cryptographically chained. SHA-256 hash linking means no record can be altered without detection. Regulators get verifiable proof, not promises.</p>
+        <div class="snippet">HASH a3f8b2c1...d9e4 → PREV f1a2b3c4...e6f7 → BLOCK #14,291</div>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">Regulatory Reporting</span>
+        <span class="card-summary">Annex IV and beyond</span>
+      </div>
+      <div class="card-body">
+        <p>Auto-generated regulatory reports mapped to AIFMD II Annex IV, SFDR PAI indicators, and national competent authority formats. Export-ready. Regulator-ready. Audit-ready.</p>
+        <div class="snippet">REPORT { type: "ANNEX_IV", period: "Q4_2025", status: "GENERATED", pages: 47 }</div>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">Scenario Modeling</span>
+        <span class="card-summary">Test before you deploy</span>
+      </div>
+      <div class="card-body">
+        <p>Model regulatory scenarios before they matter. Test new fund structures against current and upcoming rules. See exactly which constraints bind and where your margins sit.</p>
+        <div class="snippet">SCENARIO { fund: "AIF_EU_GROWTH", rules_tested: 247, pass: 244, warn: 3, fail: 0 }</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="c1-process" id="c1-process">
+  <div class="label reveal">// HOW IT WORKS</div>
+  <div class="timeline">
+    <div class="step reveal">
+      <div class="step-num">01</div>
+      <div class="step-title">Configure</div>
+      <div class="step-desc">Map your fund structures, jurisdictions, and regulatory obligations. Caelith ingests your universe and builds the compliance graph.</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">02</div>
+      <div class="step-title">Onboard</div>
+      <div class="step-desc">Connect your portfolio data sources. API-first integration with custodians, administrators, and internal systems. Live in days, not months.</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">03</div>
+      <div class="step-title">Document</div>
+      <div class="step-desc">Every decision is evaluated, logged, and hash-chained automatically. Your audit trail builds itself while your team focuses on alpha.</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">04</div>
+      <div class="step-title">Report</div>
+      <div class="step-desc">Generate regulator-ready reports on demand. Annex IV, SFDR, NCA formats — all populated from your verified compliance data.</div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="c1-quote">
+  <div class="big-mark">"</div>
+  <blockquote class="reveal">"Automation of documentation and audit trails is no longer optional."</blockquote>
+  <div class="attribution reveal">— PwC Global Fund Distribution Report, 2024</div>
+</section>
+
+<!-- PRICING -->
+<section class="c1-pricing" id="c1-pricing">
+  <h2 class="reveal">Simple, transparent pricing.</h2>
+  <p class="pricing-sub reveal">Per-fund pricing that scales with you.</p>
+  <div class="pricing-grid reveal">
+    <div class="price-card">
+      <div class="tier">Starter</div>
+      <div class="price">€490</div>
+      <div class="price-period">per fund / month</div>
+      <ul>
+        <li>Up to 3 funds</li>
+        <li>Core rules engine</li>
+        <li>Basic audit trail</li>
+        <li>Email support</li>
+        <li>Annex IV reporting</li>
+      </ul>
+      <button class="card-cta ghost">Get Started</button>
+    </div>
+    <div class="price-card featured">
+      <div class="tier">Professional</div>
+      <div class="price">€890</div>
+      <div class="price-period">per fund / month</div>
+      <ul>
+        <li>Up to 25 funds</li>
+        <li>Full rules engine (247 rules)</li>
+        <li>Hash-chained audit trail</li>
+        <li>Priority support + SLA</li>
+        <li>All regulatory reports</li>
+        <li>Scenario modeling</li>
+      </ul>
+      <button class="card-cta primary">Book a Demo</button>
+    </div>
+    <div class="price-card">
+      <div class="tier">Enterprise</div>
+      <div class="price">Custom</div>
+      <div class="price-period">tailored to your AUM</div>
+      <ul>
+        <li>Unlimited funds</li>
+        <li>Custom rule development</li>
+        <li>Dedicated compliance engineer</li>
+        <li>On-premise deployment option</li>
+        <li>White-label reporting</li>
+        <li>24/7 support</li>
+      </ul>
+      <button class="card-cta ghost">Contact Sales</button>
+    </div>
+  </div>
+  <p class="pricing-note reveal">All plans include EU data residency, GDPR compliance, and dedicated onboarding.</p>
+</section>
+
+<!-- FAQ -->
+<section class="c1-faq">
+  <h2 class="reveal">Frequently asked questions</h2>
+  <div class="cards">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">What frameworks does Caelith cover?</span>
+      </div>
+      <div class="card-body">
+        <p>Caelith currently covers AIFMD II, UCITS VI, SFDR, EU Taxonomy, DORA, and MiFID II. Our rules engine is continuously updated as regulatory guidance evolves, with new rules deployed within 48 hours of publication.</p>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">How does the hash-chain audit trail work?</span>
+      </div>
+      <div class="card-body">
+        <p>Every compliance evaluation generates a SHA-256 hash that references the previous record, creating a tamper-evident chain. If any historical record is modified, the chain breaks — providing cryptographic proof of data integrity to regulators.</p>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">Can I integrate with existing systems?</span>
+      </div>
+      <div class="card-body">
+        <p>Yes. Caelith offers REST APIs and pre-built connectors for major fund administrators, custodians, and portfolio management systems. Most integrations are live within 5 business days.</p>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">What happens after the free evaluation?</span>
+      </div>
+      <div class="card-body">
+        <p>After your 14-day evaluation, you choose a plan that fits your fund count. No lock-in contracts — monthly billing with the flexibility to scale up or down as your AUM changes.</p>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">Is my data stored in the EU?</span>
+      </div>
+      <div class="card-body">
+        <p>All data is processed and stored exclusively in EU data centers (Frankfurt am Main). We are fully GDPR compliant with data processing agreements available for all clients. No data ever leaves EU jurisdiction.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINALE -->
+<section class="c1-finale">
+  <h2 class="reveal">56 days until AIFMD II.</h2>
+  <p class="reveal">Are you ready?</p>
+  <button class="cta-primary reveal">Book a Demo →</button>
+  <div class="countdown" id="c1Countdown"></div>
+</section>
+
+<!-- FOOTER -->
+<footer class="c1-footer">
+  <div class="left">
+    <div class="logo">Caelith</div>
+    <div class="tagline">Deterministic compliance for EU fund managers.</div>
+  </div>
+  <div class="center">
+    <a href="#">Product</a>
+    <a href="#">Company</a>
+    <a href="#">Legal</a>
+  </div>
+  <div class="right">
+    Made in Frankfurt am Main<br>© 2026 Caelith GmbH
+  </div>
+</footer>
+
+</div><!-- end concept1 -->
+
+<!-- ============================================================
+     DIVIDER
+     ============================================================ -->
+<div class="concept-divider" id="concept2">
+  <h2>Concept 2</h2>
+  <p>Black &amp; Gold</p>
+</div>
+
+<!-- ============================================================
+     CONCEPT 2: BLACK & GOLD
+     ============================================================ -->
+<div class="c2-wrap">
+
+<!-- NAV -->
+<nav class="c2-nav" id="c2NavEl">
+  <div class="logo">Caelith</div>
+  <div class="nav-links">
+    <a href="#c2-features">How It Works</a>
+    <a href="#c2-pricing">Pricing</a>
+    <a href="#">Sign In</a>
+    <a href="#" class="cta-nav">Book a Demo</a>
+    <span class="countdown-nav" id="c2NavCountdown"></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="c2-hero">
+  <div class="label">COMPLIANCE INFRASTRUCTURE</div>
+  <h1>Deterministic<br>compliance.<br>Documented <span class="accent">proof.</span></h1>
+  <p class="sub">Automated eligibility checks, hash-chained audit trails, and real-time regulatory evaluation.</p>
+  <button class="cta-primary">Book a Demo</button>
+  <div class="scroll-indicator"></div>
+</section>
+
+<!-- GOLD DIVIDER -->
+<div class="c2-divider"></div>
+
+<!-- MARQUEE -->
+<section class="c2-marquee">
+  <div class="marquee-track">
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+    <div class="marquee-item">LOGO</div><div class="marquee-item">LOGO</div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="c2-stats">
+  <div class="stats-row reveal">
+    <div>
+      <div class="stat-num" data-target="247">0</div>
+      <div class="stat-label">Active Rules</div>
+    </div>
+    <div>
+      <div class="stat-num" data-target="100" data-suffix="%">0</div>
+      <div class="stat-label">Decisions Logged</div>
+    </div>
+    <div>
+      <div class="stat-num" data-target="23" data-prefix="<" data-suffix="ms">0</div>
+      <div class="stat-label">Evaluation Latency</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES (light section) -->
+<section class="c2-features" id="c2-features">
+  <div class="label reveal">HOW IT WORKS</div>
+  <h2 class="reveal">Four steps to audit-ready compliance.</h2>
+  <div class="steps-row reveal">
+    <div class="step-item">
+      <div class="step-num">01</div>
+      <div class="step-title">Configure</div>
+      <div class="step-desc">Map fund structures, jurisdictions, and regulatory obligations.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">02</div>
+      <div class="step-title">Onboard</div>
+      <div class="step-desc">Connect portfolio data via API-first integrations. Live in days.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">03</div>
+      <div class="step-title">Document</div>
+      <div class="step-desc">Every decision evaluated, logged, and hash-chained automatically.</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">04</div>
+      <div class="step-title">Report</div>
+      <div class="step-desc">Generate regulator-ready reports on demand. Any format. Any time.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE DETAIL -->
+<section class="c2-detail">
+  <div class="cards">
+    <div class="card open" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">Rules Engine</span>
+        <span class="card-summary">247 rules across 6 frameworks</span>
+      </div>
+      <div class="card-body">
+        <p>A deterministic evaluation engine processing every investment decision against the full regulatory ruleset in real time. No interpretation gaps. No bottlenecks.</p>
+        <div class="snippet">RULE_EVAL { framework: "AIFMD_II", rules: 247, mode: "strict", latency: "22.4ms" }</div>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">Hash-Chained Audit Trail</span>
+        <span class="card-summary">Tamper-proof documentation</span>
+      </div>
+      <div class="card-body">
+        <p>Every evaluation cryptographically chained via SHA-256. No record can be altered without detection. Regulators get verifiable proof, not promises.</p>
+        <div class="snippet">HASH a3f8b2c1...d9e4 → PREV f1a2b3c4...e6f7 → BLOCK #14,291</div>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">Regulatory Reporting</span>
+        <span class="card-summary">Annex IV and beyond</span>
+      </div>
+      <div class="card-body">
+        <p>Auto-generated reports mapped to AIFMD II Annex IV, SFDR PAI indicators, and national competent authority formats. Always export-ready.</p>
+        <div class="snippet">REPORT { type: "ANNEX_IV", period: "Q4_2025", status: "GENERATED", pages: 47 }</div>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">Scenario Modeling</span>
+        <span class="card-summary">Test before you deploy</span>
+      </div>
+      <div class="card-body">
+        <p>Model regulatory scenarios before they matter. Test new fund structures against current and upcoming rules. Know exactly where your margins sit.</p>
+        <div class="snippet">SCENARIO { fund: "AIF_EU_GROWTH", rules_tested: 247, pass: 244, warn: 3, fail: 0 }</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="c2-quote">
+  <div class="big-mark">"</div>
+  <blockquote class="reveal">"Automation of documentation and audit trails is no longer optional."</blockquote>
+  <div class="attribution reveal">PwC, 2024</div>
+</section>
+
+<!-- PRICING -->
+<section class="c2-pricing" id="c2-pricing">
+  <h2 class="reveal">Transparent pricing.</h2>
+  <div class="pricing-grid reveal">
+    <div class="price-card">
+      <div class="tier">Starter</div>
+      <div class="price">€490</div>
+      <div class="price-period">per fund / month</div>
+      <ul>
+        <li>Up to 3 funds</li>
+        <li>Core rules engine</li>
+        <li>Basic audit trail</li>
+        <li>Email support</li>
+        <li>Annex IV reporting</li>
+      </ul>
+      <button class="card-cta ghost">Get Started</button>
+    </div>
+    <div class="price-card featured">
+      <span class="popular-badge">Most Popular</span>
+      <div class="tier">Professional</div>
+      <div class="price">€890</div>
+      <div class="price-period">per fund / month</div>
+      <ul>
+        <li>Up to 25 funds</li>
+        <li>Full rules engine (247 rules)</li>
+        <li>Hash-chained audit trail</li>
+        <li>Priority support + SLA</li>
+        <li>All regulatory reports</li>
+        <li>Scenario modeling</li>
+      </ul>
+      <button class="card-cta primary">Book a Demo</button>
+    </div>
+    <div class="price-card">
+      <div class="tier">Enterprise</div>
+      <div class="price">Custom</div>
+      <div class="price-period">tailored to your AUM</div>
+      <ul>
+        <li>Unlimited funds</li>
+        <li>Custom rule development</li>
+        <li>Dedicated compliance engineer</li>
+        <li>On-premise option</li>
+        <li>White-label reporting</li>
+        <li>24/7 support</li>
+      </ul>
+      <button class="card-cta ghost">Contact Sales</button>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="c2-faq">
+  <h2 class="reveal">Questions &amp; answers</h2>
+  <div class="cards">
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">What frameworks does Caelith cover?</span>
+      </div>
+      <div class="card-body">
+        <p>AIFMD II, UCITS VI, SFDR, EU Taxonomy, DORA, and MiFID II. Rules are updated within 48 hours of new regulatory guidance.</p>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">How does the hash-chain audit trail work?</span>
+      </div>
+      <div class="card-body">
+        <p>Each compliance evaluation generates a SHA-256 hash referencing the previous record. Any modification breaks the chain — providing cryptographic proof of integrity.</p>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">Can I integrate with existing systems?</span>
+      </div>
+      <div class="card-body">
+        <p>REST APIs and pre-built connectors for major fund administrators and custodians. Most integrations go live within 5 business days.</p>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">What happens after the free evaluation?</span>
+      </div>
+      <div class="card-body">
+        <p>Choose a plan that fits your fund count. No lock-in — monthly billing with flexibility to scale as your AUM changes.</p>
+      </div>
+    </div>
+    <div class="card" onclick="toggleCard(this)">
+      <div class="card-header">
+        <span class="card-toggle">+</span>
+        <span class="card-title">Is my data stored in the EU?</span>
+      </div>
+      <div class="card-body">
+        <p>All data is processed and stored exclusively in Frankfurt am Main. Fully GDPR compliant. No data ever leaves EU jurisdiction.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINALE -->
+<section class="c2-finale">
+  <h2 class="reveal">The deadline is real.</h2>
+  <p class="reveal">AIFMD II enforcement begins April 15, 2026.</p>
+  <button class="cta-primary reveal">Book a Demo</button>
+  <div class="countdown" id="c2Countdown"></div>
+</section>
+
+<!-- FOOTER -->
+<footer class="c2-footer">
+  <div class="left">
+    <div class="logo">Caelith</div>
+    <div class="tagline">Deterministic compliance for EU fund managers.</div>
+  </div>
+  <div class="center">
+    <a href="#">Product</a>
+    <a href="#">Company</a>
+    <a href="#">Legal</a>
+  </div>
+  <div class="right">
+    Frankfurt am Main<br>© 2026 Caelith GmbH
+  </div>
+</footer>
+
+</div><!-- end c2-wrap -->
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+// Toggle cards
+function toggleCard(el) {
+  el.classList.toggle('open');
+}
+
+// Countdown to April 15, 2026
+const deadline = new Date('2026-04-15T00:00:00+02:00').getTime();
+
+function updateCountdowns() {
+  const now = Date.now();
+  const diff = deadline - now;
+  if (diff <= 0) return;
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+
+  const full = d + 'd : ' + h + 'h : ' + m + 'm : ' + s + 's';
+  const short1 = d + 'd ' + h + 'h';
+  const short2 = d + 'd';
+
+  document.getElementById('c1Countdown').textContent = full;
+  document.getElementById('c2Countdown').textContent = full;
+  document.getElementById('c1NavCountdown').textContent = short1;
+  document.getElementById('c2NavCountdown').textContent = short2;
+}
+updateCountdowns();
+setInterval(updateCountdowns, 1000);
+
+// Counter animation
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    entry.target.querySelectorAll('.stat-num').forEach(el => {
+      if (el.dataset.animated) return;
+      el.dataset.animated = '1';
+      const target = parseInt(el.dataset.target);
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix || '';
+      const duration = 1500;
+      const start = performance.now();
+      function tick(now) {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const val = Math.round(target * eased);
+        el.textContent = prefix + val + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.stats-row').forEach(el => counterObserver.observe(el));
+
+// Scroll reveal
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// Timeline step activation
+const stepObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('active');
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.c1-process .step').forEach(el => stepObserver.observe(el));
+
+// C2 nav scroll effect
+const c2Nav = document.getElementById('c2NavEl');
+const c2Start = document.getElementById('concept2');
+window.addEventListener('scroll', () => {
+  if (!c2Start) return;
+  const rect = c2Start.getBoundingClientRect();
+  if (rect.top < 0) {
+    c2Nav.classList.add('scrolled');
+  } else {
+    c2Nav.classList.remove('scrolled');
+  }
+}, { passive: true });
+</script>
+</body>
+</html>

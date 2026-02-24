@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Data Visualization Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --dark: #2D3333;
+  --light: #F8F9FA;
+  --accent: #C5E0EE;
+  --warm: #E8A87C;
+  --success: #6ee7b7;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --text: #F8F9FA;
+  --text-secondary: rgba(255,255,255,0.6);
+  --text-muted: rgba(197,224,238,0.35);
+  --border: rgba(197,224,238,0.12);
+  --card-bg: rgba(197,224,238,0.04);
+}
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  padding: 40px;
+  line-height: 1.5;
+}
+
+h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+h1 span { background: linear-gradient(135deg, var(--accent), var(--warm)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 48px; }
+
+.concept { margin-bottom: 80px; }
+.concept-header { margin-bottom: 32px; display: flex; align-items: baseline; gap: 16px; }
+.concept-label {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  background: rgba(197,224,238,0.1); color: var(--accent);
+  padding: 4px 10px; border-radius: 4px;
+}
+.concept-title { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+.concept-desc { font-size: 13px; color: var(--text-secondary); margin-top: 4px; max-width: 700px; }
+
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.chart-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.chart-card {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px; transition: border-color 0.2s;
+}
+.chart-card:hover { border-color: rgba(197,224,238,0.25); }
+.chart-title { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+.chart-subtitle { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); margin-bottom: 20px; }
+
+/* ═══════════════ CONCEPT A: Radial Gauges ═══════════════ */
+.gauge-row { display: flex; gap: 32px; justify-content: center; align-items: center; }
+.gauge-container { position: relative; width: 140px; height: 140px; }
+.gauge-svg { transform: rotate(-90deg); }
+.gauge-track { fill: none; stroke: rgba(197,224,238,0.08); stroke-width: 10; }
+.gauge-fill { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+.gauge-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.gauge-value { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; }
+.gauge-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+/* Arc chart for KYC */
+.arc-row { display: flex; gap: 12px; align-items: center; margin-top: 16px; }
+.arc-bar { height: 8px; border-radius: 4px; transition: width 0.8s ease; }
+.arc-legend { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+.arc-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
+.arc-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ═══════════════ CONCEPT B: Tufte Minimal ═══════════════ */
+.tufte-stat { padding: 20px 0; border-bottom: 1px solid var(--border); }
+.tufte-stat:last-child { border-bottom: none; }
+.tufte-row { display: flex; align-items: baseline; justify-content: space-between; }
+.tufte-label { font-size: 12px; color: var(--text-secondary); }
+.tufte-value { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; }
+.tufte-spark {
+  display: inline-block; width: 80px; height: 20px; margin-left: 12px; vertical-align: middle;
+}
+.tufte-bar-track { height: 3px; background: rgba(197,224,238,0.08); border-radius: 2px; margin-top: 8px; }
+.tufte-bar-fill { height: 3px; border-radius: 2px; transition: width 0.8s ease; }
+.tufte-inline-pct {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted);
+}
+.tufte-breakdown { margin-top: 16px; }
+.tufte-breakdown-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+.tufte-breakdown-label { font-size: 11px; color: var(--text-secondary); width: 120px; }
+.tufte-breakdown-bar { flex: 1; height: 2px; background: rgba(197,224,238,0.06); border-radius: 1px; position: relative; }
+.tufte-breakdown-fill { position: absolute; left: 0; top: 0; height: 100%; border-radius: 1px; }
+.tufte-breakdown-val { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; width: 50px; text-align: right; }
+
+/* ═══════════════ CONCEPT C: Heatmap / Treemap ═══════════════ */
+.treemap { display: flex; gap: 3px; height: 160px; border-radius: 8px; overflow: hidden; }
+.treemap-block {
+  border-radius: 6px; display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 10px; transition: opacity 0.2s; cursor: pointer; position: relative; overflow: hidden;
+}
+.treemap-block:hover { opacity: 0.85; }
+.treemap-block-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.9); }
+.treemap-block-value { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #fff; }
+
+.heatmap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.heatmap-cell {
+  aspect-ratio: 1.6; border-radius: 6px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; transition: transform 0.2s;
+  cursor: pointer;
+}
+.heatmap-cell:hover { transform: scale(1.05); }
+.heatmap-cell-code { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; }
+.heatmap-cell-val { font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.7; margin-top: 2px; }
+
+.gradient-strip { display: flex; height: 40px; border-radius: 8px; overflow: hidden; }
+.gradient-strip-seg { display: flex; align-items: center; justify-content: center; transition: flex 0.6s ease; }
+.gradient-strip-seg span { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; }
+
+/* ═══════════════ CONCEPT D: Terminal / Data-Dense ═══════════════ */
+.terminal-card {
+  background: rgba(0,0,0,0.3); border: 1px solid rgba(197,224,238,0.08);
+  border-radius: 8px; padding: 20px; font-family: 'JetBrains Mono', monospace;
+}
+.terminal-header {
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.terminal-header::before { content: '▸'; }
+.terminal-row {
+  display: flex; align-items: center; gap: 8px; padding: 4px 0;
+  font-size: 12px; color: var(--text-secondary);
+}
+.terminal-row:hover { color: var(--text); }
+.terminal-label { width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.terminal-bar-track { flex: 1; height: 4px; background: rgba(197,224,238,0.06); border-radius: 2px; }
+.terminal-bar-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+.terminal-val { width: 64px; text-align: right; font-weight: 600; color: var(--text); font-size: 11px; }
+.terminal-pct { width: 40px; text-align: right; font-size: 10px; color: var(--text-muted); }
+.terminal-divider { border: none; border-top: 1px dashed rgba(197,224,238,0.1); margin: 12px 0; }
+
+.terminal-kpi-row { display: flex; gap: 24px; margin-bottom: 16px; }
+.terminal-kpi { }
+.terminal-kpi-val { font-size: 20px; font-weight: 700; color: var(--text); }
+.terminal-kpi-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.terminal-kpi-delta { font-size: 10px; }
+.terminal-kpi-delta.up { color: var(--success); }
+.terminal-kpi-delta.down { color: var(--danger); }
+
+.dot-matrix { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; }
+.dot-cell {
+  aspect-ratio: 1; border-radius: 3px; transition: transform 0.15s;
+  cursor: pointer; position: relative;
+}
+.dot-cell:hover { transform: scale(1.3); z-index: 1; }
+.dot-cell .tooltip {
+  display: none; position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: var(--dark); border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px;
+  font-size: 10px; white-space: nowrap; color: var(--text); z-index: 10;
+}
+.dot-cell:hover .tooltip { display: block; }
+
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+
+/* Shared */
+.span-full { grid-column: 1 / -1; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mb-24 { margin-bottom: 24px; }
+</style>
+</head>
+<body>
+
+<h1>Data Visualization <span>Concepts</span></h1>
+<div class="subtitle">CAELITH DASHBOARD — 4 APPROACHES · SAME DATA</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- CONCEPT A: RADIAL GAUGES -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="concept">
+  <div class="concept-header">
+    <span class="concept-label">A</span>
+    <div>
+      <div class="concept-title">Radial Gauges</div>
+      <div class="concept-desc">Arc-based visualizations. Each metric gets a circular gauge that fills proportionally. Feels like an instrument panel — immediate readability, strong visual anchoring. Best for executive glance.</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <!-- Investor Type -->
+    <div class="chart-card">
+      <div class="chart-title">Investorentypen</div>
+      <div class="chart-subtitle">NACH ZUGEWIESENEN ANTEILEN</div>
+      <div class="gauge-row">
+        <div class="gauge-container">
+          <svg class="gauge-svg" viewBox="0 0 140 140" width="140" height="140">
+            <circle class="gauge-track" cx="70" cy="70" r="56" />
+            <circle class="gauge-fill" cx="70" cy="70" r="56" stroke="#C5E0EE"
+              stroke-dasharray="352" stroke-dashoffset="88" />
+          </svg>
+          <div class="gauge-center">
+            <div class="gauge-value" style="color: var(--accent);">75%</div>
+            <div class="gauge-label">Professionell</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 20px;">
+        <div style="display:flex; justify-content:space-between; font-size:11px; padding:6px 0; border-bottom:1px solid var(--border);">
+          <span style="color:var(--text-secondary); display:flex; align-items:center; gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:#C5E0EE;display:inline-block;"></span>Professionell</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-weight:600;">1,477,500</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:11px; padding:6px 0; border-bottom:1px solid var(--border);">
+          <span style="color:var(--text-secondary); display:flex; align-items:center; gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:#E8A87C;display:inline-block;"></span>Semi-Professionell</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-weight:600;">392,500</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:11px; padding:6px 0;">
+          <span style="color:var(--text-secondary); display:flex; align-items:center; gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:rgba(197,224,238,0.3);display:inline-block;"></span>Institutionell</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-weight:600;">100,000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jurisdiction -->
+    <div class="chart-card">
+      <div class="chart-title">Jurisdiktion</div>
+      <div class="chart-subtitle">EINHEITEN NACH HERKUNFT</div>
+      <div style="margin-top: 8px;">
+        <div style="margin-bottom: 14px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:6px;">
+            <span style="color:var(--text-secondary);">DE — Deutschland</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; color:var(--accent);">68.2%</span>
+          </div>
+          <div style="height:8px; background:rgba(197,224,238,0.06); border-radius:4px; overflow:hidden;">
+            <div style="width:68.2%; height:100%; background:linear-gradient(90deg, #C5E0EE, rgba(197,224,238,0.6)); border-radius:4px;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom: 14px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:6px;">
+            <span style="color:var(--text-secondary);">LU — Luxemburg</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; color:var(--warm);">18.5%</span>
+          </div>
+          <div style="height:8px; background:rgba(197,224,238,0.06); border-radius:4px; overflow:hidden;">
+            <div style="width:18.5%; height:100%; background:linear-gradient(90deg, #E8A87C, rgba(232,168,124,0.6)); border-radius:4px;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom: 14px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:6px;">
+            <span style="color:var(--text-secondary);">CH — Schweiz</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; color:var(--text-muted);">8.1%</span>
+          </div>
+          <div style="height:8px; background:rgba(197,224,238,0.06); border-radius:4px; overflow:hidden;">
+            <div style="width:8.1%; height:100%; background:rgba(197,224,238,0.25); border-radius:4px;"></div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:6px;">
+            <span style="color:var(--text-secondary);">NL — Niederlande</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; color:var(--text-muted);">5.2%</span>
+          </div>
+          <div style="height:8px; background:rgba(197,224,238,0.06); border-radius:4px; overflow:hidden;">
+            <div style="width:5.2%; height:100%; background:rgba(197,224,238,0.15); border-radius:4px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KYC Status -->
+    <div class="chart-card">
+      <div class="chart-title">KYC-Status</div>
+      <div class="chart-subtitle">VERIFIZIERUNGSSTATUS DER INVESTOREN</div>
+      <div style="text-align:center; margin: 16px 0;">
+        <svg viewBox="0 0 200 120" width="200" height="120" style="margin:0 auto;">
+          <!-- Background arc -->
+          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(197,224,238,0.08)" stroke-width="16" stroke-linecap="round"/>
+          <!-- Verified (75%) -->
+          <path d="M 20 100 A 80 80 0 0 1 155 32" fill="none" stroke="#6ee7b7" stroke-width="16" stroke-linecap="round"/>
+          <!-- Expiring (8%) -->
+          <path d="M 155 32 A 80 80 0 0 1 175 65" fill="none" stroke="#E8A87C" stroke-width="16" stroke-linecap="round"/>
+          <!-- Expired (17%) -->
+          <path d="M 175 65 A 80 80 0 0 1 180 100" fill="none" stroke="#f87171" stroke-width="16" stroke-linecap="round"/>
+        </svg>
+        <div style="margin-top:-10px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:28px; font-weight:700;">9 / 12</div>
+          <div style="font-size:10px; color:var(--text-muted);">verifiziert</div>
+        </div>
+      </div>
+      <div class="arc-legend" style="justify-content:center;">
+        <div class="arc-legend-item"><div class="arc-legend-dot" style="background:#6ee7b7;"></div>Verifiziert · 9</div>
+        <div class="arc-legend-item"><div class="arc-legend-dot" style="background:#E8A87C;"></div>Läuft ab · 1</div>
+        <div class="arc-legend-item"><div class="arc-legend-dot" style="background:#f87171;"></div>Abgelaufen · 2</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="chart-grid-2" style="margin-top:20px;">
+    <!-- Violations -->
+    <div class="chart-card">
+      <div class="chart-title">Regelverstöße</div>
+      <div class="chart-subtitle">NACH VERMÖGENSWERT</div>
+      <div style="margin-top:8px;">
+        <div style="display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border);">
+          <div style="width:6px; height:32px; border-radius:3px; background:#f87171;"></div>
+          <div style="flex:1;">
+            <div style="font-size:12px; font-weight:600;">Immobilien-Spezialfonds A</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">3 Verstöße · 5 Entscheidungen</div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; color:#f87171;">3</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border);">
+          <div style="width:6px; height:32px; border-radius:3px; background:#E8A87C;"></div>
+          <div style="flex:1;">
+            <div style="font-size:12px; font-weight:600;">Gewerbe-Immobilienfonds B</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">2 Verstöße · 5 Entscheidungen</div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; color:#E8A87C;">2</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; padding:10px 0;">
+          <div style="width:6px; height:32px; border-radius:3px; background:rgba(197,224,238,0.2);"></div>
+          <div style="flex:1;">
+            <div style="font-size:12px; font-weight:600;">Wohnimmobilien-Dachfonds C</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">0 Verstöße · 5 Entscheidungen</div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; color:var(--success);">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Concentration -->
+    <div class="chart-card">
+      <div class="chart-title">Konzentrationsrisiko</div>
+      <div class="chart-subtitle">INVESTORENKONZENTRATION JE FONDS</div>
+      <div style="margin-top:8px;">
+        <div style="padding:12px 0; border-bottom:1px solid var(--border);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; font-weight:600;">Spezialfonds A</span>
+            <span class="tag" style="background:rgba(248,113,113,0.15); color:#f87171;">HOCH</span>
+          </div>
+          <div style="display:flex; gap:16px;">
+            <div style="flex:1;">
+              <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Top Investor</div>
+              <div style="height:6px; background:rgba(197,224,238,0.06); border-radius:3px;">
+                <div style="width:52%; height:100%; border-radius:3px; background:linear-gradient(90deg, #f87171, #E8A87C);"></div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; margin-top:4px;">52.0%</div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Top 3</div>
+              <div style="height:6px; background:rgba(197,224,238,0.06); border-radius:3px;">
+                <div style="width:85%; height:100%; border-radius:3px; background:linear-gradient(90deg, #E8A87C, rgba(232,168,124,0.5));"></div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; margin-top:4px;">85.0%</div>
+            </div>
+            <div style="width:60px; text-align:right;">
+              <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">HHI</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:#f87171;">3,200</div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:12px 0; border-bottom:1px solid var(--border);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; font-weight:600;">Gewerbe-Fonds B</span>
+            <span class="tag" style="background:rgba(232,168,124,0.15); color:#E8A87C;">MITTEL</span>
+          </div>
+          <div style="display:flex; gap:16px;">
+            <div style="flex:1;">
+              <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Top Investor</div>
+              <div style="height:6px; background:rgba(197,224,238,0.06); border-radius:3px;">
+                <div style="width:30%; height:100%; border-radius:3px; background:#E8A87C;"></div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; margin-top:4px;">30.0%</div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Top 3</div>
+              <div style="height:6px; background:rgba(197,224,238,0.06); border-radius:3px;">
+                <div style="width:65%; height:100%; border-radius:3px; background:rgba(232,168,124,0.5);"></div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; margin-top:4px;">65.0%</div>
+            </div>
+            <div style="width:60px; text-align:right;">
+              <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">HHI</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:#E8A87C;">1,800</div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:12px 0;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-size:12px; font-weight:600;">Dachfonds C</span>
+            <span class="tag" style="background:rgba(110,231,183,0.15); color:#6ee7b7;">NIEDRIG</span>
+          </div>
+          <div style="display:flex; gap:16px;">
+            <div style="flex:1;">
+              <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Top Investor</div>
+              <div style="height:6px; background:rgba(197,224,238,0.06); border-radius:3px;">
+                <div style="width:15%; height:100%; border-radius:3px; background:#6ee7b7;"></div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; margin-top:4px;">15.0%</div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">Top 3</div>
+              <div style="height:6px; background:rgba(197,224,238,0.06); border-radius:3px;">
+                <div style="width:38%; height:100%; border-radius:3px; background:rgba(110,231,183,0.5);"></div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; margin-top:4px;">38.0%</div>
+            </div>
+            <div style="width:60px; text-align:right;">
+              <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px;">HHI</div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:#6ee7b7;">850</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- CONCEPT B: TUFTE MINIMAL -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="concept">
+  <div class="concept-header">
+    <span class="concept-label">B</span>
+    <div>
+      <div class="concept-title">Tufte Minimal</div>
+      <div class="concept-desc">Maximum data-ink ratio. No chart chrome, no axes, no gridlines. Just numbers, thin proportion bars, and whitespace. Every pixel carries information. For compliance officers who read spreadsheets all day — this feels like home, but better.</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <!-- Investor Type -->
+    <div class="chart-card">
+      <div class="chart-title">Investorentypen</div>
+      <div class="chart-subtitle">ANTEILE · ANZAHL</div>
+      <div class="tufte-breakdown">
+        <div class="tufte-breakdown-row">
+          <div class="tufte-breakdown-label">Professionell</div>
+          <div class="tufte-breakdown-bar"><div class="tufte-breakdown-fill" style="width:75%; background:var(--accent);"></div></div>
+          <div class="tufte-breakdown-val" style="color:var(--accent);">1.48M</div>
+          <div class="tufte-inline-pct">75%</div>
+        </div>
+        <div class="tufte-breakdown-row">
+          <div class="tufte-breakdown-label">Semi-Professionell</div>
+          <div class="tufte-breakdown-bar"><div class="tufte-breakdown-fill" style="width:20%; background:var(--warm);"></div></div>
+          <div class="tufte-breakdown-val" style="color:var(--warm);">393K</div>
+          <div class="tufte-inline-pct">20%</div>
+        </div>
+        <div class="tufte-breakdown-row">
+          <div class="tufte-breakdown-label">Institutionell</div>
+          <div class="tufte-breakdown-bar"><div class="tufte-breakdown-fill" style="width:5%; background:rgba(197,224,238,0.35);"></div></div>
+          <div class="tufte-breakdown-val" style="color:var(--text-muted);">100K</div>
+          <div class="tufte-inline-pct">5%</div>
+        </div>
+      </div>
+      <div style="margin-top:16px; padding-top:12px; border-top:1px solid var(--border); display:flex; justify-content:space-between; font-size:11px;">
+        <span style="color:var(--text-muted);">Gesamt</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-weight:700;">1,970,000</span>
+      </div>
+    </div>
+
+    <!-- Jurisdiction -->
+    <div class="chart-card">
+      <div class="chart-title">Jurisdiktion</div>
+      <div class="chart-subtitle">RELATIVE EXPOSITION</div>
+      <div style="margin-top:12px;">
+        <!-- Stacked strip -->
+        <div class="gradient-strip" style="height:32px; margin-bottom:16px;">
+          <div class="gradient-strip-seg" style="flex:68.2; background:#C5E0EE;"><span style="color:var(--dark);">DE</span></div>
+          <div class="gradient-strip-seg" style="flex:18.5; background:#E8A87C;"><span style="color:var(--dark);">LU</span></div>
+          <div class="gradient-strip-seg" style="flex:8.1; background:rgba(197,224,238,0.3);"><span style="color:var(--text);">CH</span></div>
+          <div class="gradient-strip-seg" style="flex:5.2; background:rgba(197,224,238,0.15);"><span style="color:var(--text-muted); font-size:9px;">NL</span></div>
+        </div>
+        <div class="tufte-breakdown">
+          <div class="tufte-breakdown-row">
+            <div class="tufte-breakdown-label">Deutschland</div>
+            <div class="tufte-breakdown-val" style="color:var(--accent);">1.34M</div>
+            <div class="tufte-inline-pct">68.2%</div>
+          </div>
+          <div class="tufte-breakdown-row">
+            <div class="tufte-breakdown-label">Luxemburg</div>
+            <div class="tufte-breakdown-val" style="color:var(--warm);">365K</div>
+            <div class="tufte-inline-pct">18.5%</div>
+          </div>
+          <div class="tufte-breakdown-row">
+            <div class="tufte-breakdown-label">Schweiz</div>
+            <div class="tufte-breakdown-val">160K</div>
+            <div class="tufte-inline-pct">8.1%</div>
+          </div>
+          <div class="tufte-breakdown-row">
+            <div class="tufte-breakdown-label">Niederlande</div>
+            <div class="tufte-breakdown-val">102K</div>
+            <div class="tufte-inline-pct">5.2%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KYC -->
+    <div class="chart-card">
+      <div class="chart-title">KYC-Status</div>
+      <div class="chart-subtitle">VERIFIZIERUNG</div>
+      <div style="margin-top:16px; text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:48px; font-weight:800; line-height:1; letter-spacing:-0.03em;">
+          <span style="color:var(--success);">9</span><span style="color:var(--text-muted); font-size:24px;"> / 12</span>
+        </div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:8px;">verifizierte Investoren</div>
+      </div>
+      <!-- Segmented strip -->
+      <div style="margin-top:24px;">
+        <div class="gradient-strip" style="height:8px; border-radius:4px;">
+          <div style="flex:9; background:#6ee7b7; border-radius:4px 0 0 4px;"></div>
+          <div style="flex:1; background:#E8A87C;"></div>
+          <div style="flex:2; background:#f87171; border-radius:0 4px 4px 0;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:12px; font-size:10px;">
+          <span style="color:#6ee7b7;">● Verifiziert 9</span>
+          <span style="color:#E8A87C;">● Läuft ab 1</span>
+          <span style="color:#f87171;">● Abgelaufen 2</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- CONCEPT C: HEATMAP / TREEMAP -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="concept">
+  <div class="concept-header">
+    <span class="concept-label">C</span>
+    <div>
+      <div class="concept-title">Heatmap & Treemap</div>
+      <div class="concept-desc">Area-based encoding. Bigger = more. Color intensity = severity. Spatial layouts that make patterns jump out — you see the problem before you read the number. Great for spotting outliers and concentration risk at a glance.</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <!-- Investor Type Treemap -->
+    <div class="chart-card">
+      <div class="chart-title">Investorentypen</div>
+      <div class="chart-subtitle">ANTEILSPROPORTIONEN</div>
+      <div class="treemap" style="margin-top:8px;">
+        <div class="treemap-block" style="flex:75; background:linear-gradient(135deg, #3a6b7a, #C5E0EE40);">
+          <div class="treemap-block-value">75%</div>
+          <div class="treemap-block-label">Professionell</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:3px; flex:25;">
+          <div class="treemap-block" style="flex:80; background:linear-gradient(135deg, #8a5f3a, #E8A87C40);">
+            <div class="treemap-block-value">20%</div>
+            <div class="treemap-block-label">Semi-Prof.</div>
+          </div>
+          <div class="treemap-block" style="flex:20; background:rgba(197,224,238,0.15);">
+            <div class="treemap-block-label" style="font-size:9px;">Inst. 5%</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px; font-size:10px; color:var(--text-muted); text-align:center; font-family:'JetBrains Mono',monospace;">
+        12 Investoren · 1,970,000 Anteile
+      </div>
+    </div>
+
+    <!-- Jurisdiction Heatmap -->
+    <div class="chart-card">
+      <div class="chart-title">Jurisdiktion</div>
+      <div class="chart-subtitle">GEOGRAPHISCHE HEATMAP</div>
+      <div class="heatmap-grid" style="margin-top:12px;">
+        <div class="heatmap-cell" style="background:rgba(197,224,238,0.35); grid-column:span 2; aspect-ratio:3.4;">
+          <div class="heatmap-cell-code" style="font-size:18px; color:var(--accent);">DE</div>
+          <div class="heatmap-cell-val" style="color:var(--accent);">68.2% · 1.34M</div>
+        </div>
+        <div class="heatmap-cell" style="background:rgba(232,168,124,0.25); grid-column:span 2; aspect-ratio:3.4;">
+          <div class="heatmap-cell-code" style="font-size:16px; color:var(--warm);">LU</div>
+          <div class="heatmap-cell-val" style="color:var(--warm);">18.5%</div>
+        </div>
+        <div class="heatmap-cell" style="background:rgba(197,224,238,0.12); grid-column:span 2;">
+          <div class="heatmap-cell-code">CH</div>
+          <div class="heatmap-cell-val">8.1%</div>
+        </div>
+        <div class="heatmap-cell" style="background:rgba(197,224,238,0.06); grid-column:span 2;">
+          <div class="heatmap-cell-code" style="font-size:11px;">NL</div>
+          <div class="heatmap-cell-val">5.2%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KYC Dot Matrix -->
+    <div class="chart-card">
+      <div class="chart-title">KYC-Status</div>
+      <div class="chart-subtitle">JEDER PUNKT = 1 INVESTOR</div>
+      <div class="dot-matrix" style="margin-top:16px; max-width:200px;">
+        <div class="dot-cell" style="background:#6ee7b7; height:24px;"><div class="tooltip">Inv. 1 · Verifiziert</div></div>
+        <div class="dot-cell" style="background:#6ee7b7; height:24px;"><div class="tooltip">Inv. 2 · Verifiziert</div></div>
+        <div class="dot-cell" style="background:#6ee7b7; height:24px;"><div class="tooltip">Inv. 3 · Verifiziert</div></div>
+        <div class="dot-cell" style="background:#6ee7b7; height:24px;"><div class="tooltip">Inv. 4 · Verifiziert</div></div>
+        <div class="dot-cell" style="background:#6ee7b7; height:24px;"><div class="tooltip">Inv. 5 · Verifiziert</div></div>
+        <div class="dot-cell" style="background:#6ee7b7; height:24px;"><div class="tooltip">Inv. 6 · Verifiziert</div></div>
+        <div class="dot-cell" style="background:#6ee7b7; height:24px;"><div class="tooltip">Inv. 7 · Verifiziert</div></div>
+        <div class="dot-cell" style="background:#6ee7b7; height:24px;"><div class="tooltip">Inv. 8 · Verifiziert</div></div>
+        <div class="dot-cell" style="background:#6ee7b7; height:24px;"><div class="tooltip">Inv. 9 · Verifiziert</div></div>
+        <div class="dot-cell" style="background:#E8A87C; height:24px;"><div class="tooltip">Inv. 10 · Läuft ab</div></div>
+        <div class="dot-cell" style="background:#f87171; height:24px;"><div class="tooltip">Inv. 11 · Abgelaufen</div></div>
+        <div class="dot-cell" style="background:#f87171; height:24px;"><div class="tooltip">Inv. 12 · Abgelaufen</div></div>
+      </div>
+      <div style="margin-top:16px; display:flex; gap:12px; font-size:10px; justify-content:center;">
+        <span style="color:#6ee7b7;">■ Verifiziert 9</span>
+        <span style="color:#E8A87C;">■ Läuft ab 1</span>
+        <span style="color:#f87171;">■ Abgelaufen 2</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- CONCEPT D: TERMINAL / DATA-DENSE -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="concept">
+  <div class="concept-header">
+    <span class="concept-label">D</span>
+    <div>
+      <div class="concept-title">Terminal Data-Dense</div>
+      <div class="concept-desc">All JetBrains Mono. Maximum information density. Feels like a Bloomberg terminal meets a modern CLI. KPIs at top, then compact data rows with inline bars. For power users who want to see everything without scrolling. The anti-chart — data itself IS the visualization.</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <!-- Investor Allocation -->
+    <div class="terminal-card">
+      <div class="terminal-header">Investorentypen</div>
+      <div class="terminal-kpi-row">
+        <div class="terminal-kpi">
+          <div class="terminal-kpi-val">12</div>
+          <div class="terminal-kpi-label">Investoren</div>
+        </div>
+        <div class="terminal-kpi">
+          <div class="terminal-kpi-val">1.97M</div>
+          <div class="terminal-kpi-label">Anteile</div>
+        </div>
+        <div class="terminal-kpi">
+          <div class="terminal-kpi-val">3</div>
+          <div class="terminal-kpi-label">Typen</div>
+        </div>
+      </div>
+      <hr class="terminal-divider">
+      <div class="terminal-row">
+        <div class="terminal-label">Professionell</div>
+        <div class="terminal-bar-track"><div class="terminal-bar-fill" style="width:75%; background:var(--accent);"></div></div>
+        <div class="terminal-val" style="color:var(--accent);">1,477K</div>
+        <div class="terminal-pct">75.0%</div>
+      </div>
+      <div class="terminal-row">
+        <div class="terminal-label">Semi-Professionell</div>
+        <div class="terminal-bar-track"><div class="terminal-bar-fill" style="width:20%; background:var(--warm);"></div></div>
+        <div class="terminal-val" style="color:var(--warm);">393K</div>
+        <div class="terminal-pct">20.0%</div>
+      </div>
+      <div class="terminal-row">
+        <div class="terminal-label">Institutionell</div>
+        <div class="terminal-bar-track"><div class="terminal-bar-fill" style="width:5%; background:rgba(197,224,238,0.35);"></div></div>
+        <div class="terminal-val">100K</div>
+        <div class="terminal-pct">5.0%</div>
+      </div>
+    </div>
+
+    <!-- Jurisdiction -->
+    <div class="terminal-card">
+      <div class="terminal-header">Jurisdiktion</div>
+      <div class="terminal-kpi-row">
+        <div class="terminal-kpi">
+          <div class="terminal-kpi-val">4</div>
+          <div class="terminal-kpi-label">Länder</div>
+        </div>
+        <div class="terminal-kpi">
+          <div class="terminal-kpi-val">68.2%</div>
+          <div class="terminal-kpi-label">DE Anteil</div>
+        </div>
+      </div>
+      <hr class="terminal-divider">
+      <div class="terminal-row">
+        <div class="terminal-label">🇩🇪 DE</div>
+        <div class="terminal-bar-track"><div class="terminal-bar-fill" style="width:68.2%; background:var(--accent);"></div></div>
+        <div class="terminal-val" style="color:var(--accent);">1,343K</div>
+        <div class="terminal-pct">68.2%</div>
+      </div>
+      <div class="terminal-row">
+        <div class="terminal-label">🇱🇺 LU</div>
+        <div class="terminal-bar-track"><div class="terminal-bar-fill" style="width:18.5%; background:var(--warm);"></div></div>
+        <div class="terminal-val" style="color:var(--warm);">365K</div>
+        <div class="terminal-pct">18.5%</div>
+      </div>
+      <div class="terminal-row">
+        <div class="terminal-label">🇨🇭 CH</div>
+        <div class="terminal-bar-track"><div class="terminal-bar-fill" style="width:8.1%; background:rgba(197,224,238,0.25);"></div></div>
+        <div class="terminal-val">160K</div>
+        <div class="terminal-pct">8.1%</div>
+      </div>
+      <div class="terminal-row">
+        <div class="terminal-label">🇳🇱 NL</div>
+        <div class="terminal-bar-track"><div class="terminal-bar-fill" style="width:5.2%; background:rgba(197,224,238,0.15);"></div></div>
+        <div class="terminal-val">102K</div>
+        <div class="terminal-pct">5.2%</div>
+      </div>
+    </div>
+
+    <!-- KYC + Violations Combined -->
+    <div class="terminal-card">
+      <div class="terminal-header">KYC & Verstöße</div>
+      <div class="terminal-kpi-row">
+        <div class="terminal-kpi">
+          <div class="terminal-kpi-val" style="color:var(--success);">9</div>
+          <div class="terminal-kpi-label">Verifiziert</div>
+        </div>
+        <div class="terminal-kpi">
+          <div class="terminal-kpi-val" style="color:var(--warm);">1</div>
+          <div class="terminal-kpi-label">Läuft ab</div>
+        </div>
+        <div class="terminal-kpi">
+          <div class="terminal-kpi-val" style="color:var(--danger);">2</div>
+          <div class="terminal-kpi-label">Abgelaufen</div>
+        </div>
+        <div class="terminal-kpi">
+          <div class="terminal-kpi-val" style="color:var(--danger);">5</div>
+          <div class="terminal-kpi-label">Verstöße</div>
+        </div>
+      </div>
+      <hr class="terminal-divider">
+      <div style="font-size:10px; color:var(--text-muted); letter-spacing:1px; margin-bottom:8px;">VERSTÖSSE JE FONDS</div>
+      <div class="terminal-row">
+        <div class="terminal-label">Spezialfonds A</div>
+        <div class="terminal-bar-track"><div class="terminal-bar-fill" style="width:60%; background:#f87171;"></div></div>
+        <div class="terminal-val" style="color:#f87171;">3</div>
+        <div class="terminal-pct">/ 5</div>
+      </div>
+      <div class="terminal-row">
+        <div class="terminal-label">Gewerbe B</div>
+        <div class="terminal-bar-track"><div class="terminal-bar-fill" style="width:40%; background:#E8A87C;"></div></div>
+        <div class="terminal-val" style="color:#E8A87C;">2</div>
+        <div class="terminal-pct">/ 5</div>
+      </div>
+      <div class="terminal-row">
+        <div class="terminal-label">Dachfonds C</div>
+        <div class="terminal-bar-track"><div class="terminal-bar-fill" style="width:0%;"></div></div>
+        <div class="terminal-val" style="color:var(--success);">0</div>
+        <div class="terminal-pct">/ 5</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center; padding:40px 0 60px; border-top:1px solid var(--border); margin-top:40px;">
+  <div style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace; letter-spacing:1px;">
+    PICK ONE · MIX AND MATCH · OR DESCRIBE WHAT YOU WANT
+  </div>
+</div>
+
+</body>
+</html>

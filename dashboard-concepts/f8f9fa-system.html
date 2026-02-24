@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — #F8F9FA Design System Across Pages</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #2D3333;
+    --bg2: rgba(197,224,238,0.03);
+    --bg-hover: rgba(197,224,238,0.04);
+    --light: #F8F9FA;
+    --ink: #F8F9FA;
+    --ink-dark: #2D3333;
+    --ink2: rgba(255,255,255,0.65);
+    --ink3: rgba(197,224,238,0.45);
+    --ink-muted: rgba(197,224,238,0.25);
+    --ink-dark2: rgba(45,51,51,0.65);
+    --ink-dark3: rgba(45,51,51,0.45);
+    --ink-dark-muted: rgba(45,51,51,0.3);
+    --border: rgba(197,224,238,0.1);
+    --border-s: rgba(197,224,238,0.06);
+    --border-strong: rgba(197,224,238,0.2);
+    --border-light: rgba(197,224,238,0.3);
+    --accent: #C5E0EE;
+    --warm: #E8A87C;
+    --success: #6ee7b7;
+    --success-bg: rgba(110,231,183,0.1);
+    --warning: #E8A87C;
+    --warning-bg: rgba(232,168,124,0.1);
+    --danger: #f87171;
+    --danger-bg: rgba(248,113,113,0.1);
+    /* Light-mode semantics for use on #F8F9FA surfaces */
+    --l-success: #16a34a;
+    --l-warning: #c07a4a;
+    --l-danger: #dc2626;
+    --sidebar-w: 200px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Sora',system-ui,sans-serif; background:#1a1f1f; color:var(--ink); -webkit-font-smoothing:antialiased; padding:32px; }
+  .mono { font-family:'JetBrains Mono',monospace; }
+
+  h1.section { font-size:20px; font-weight:800; color:var(--accent); margin:60px 0 8px; letter-spacing:-0.5px; }
+  h1.section:first-child { margin-top:0; }
+  p.section-desc { font-size:12px; color:var(--ink2); margin-bottom:24px; }
+
+  /* Page frame */
+  .page-frame { display:flex; border-radius:14px; overflow:hidden; border:1px solid var(--border-strong); background:var(--bg); margin-bottom:48px; min-height:520px; }
+
+  /* Sidebar */
+  .sb { width:var(--sidebar-w); background:rgba(0,0,0,0.2); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:0; flex-shrink:0; }
+  .sb-logo { padding:20px 20px 16px; font-size:16px; font-weight:800; color:var(--ink); letter-spacing:-0.04em; }
+  .sb-section { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:1.5px; color:var(--ink-muted); padding:16px 16px 6px; text-transform:uppercase; }
+  .sb-item { display:flex; align-items:center; gap:8px; padding:8px 14px; margin:1px 8px; border-radius:8px; font-size:12px; font-weight:500; color:var(--ink3); border-left:2px solid transparent; cursor:pointer; transition:all 0.15s; }
+  .sb-item:hover { background:var(--bg-hover); color:var(--ink2); }
+  /* ACTIVE: #F8F9FA bg */
+  .sb-item.active { background:var(--light); color:var(--ink-dark); font-weight:600; border-left-color:var(--accent); }
+  .sb-item.active .sb-icon { color:var(--ink-dark); }
+  .sb-icon { color:var(--ink-muted); font-size:14px; width:18px; text-align:center; }
+  .sb-footer { margin-top:auto; border-top:1px solid var(--border); padding:12px 14px; display:flex; align-items:center; gap:8px; }
+  /* AVATAR: #F8F9FA bg */
+  .sb-avatar { width:28px; height:28px; border-radius:8px; background:var(--light); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:var(--ink-dark); font-family:'JetBrains Mono',monospace; }
+  .sb-name { font-size:11px; color:var(--ink2); }
+  .sb-role { font-size:9px; color:var(--ink-muted); }
+
+  /* Main content area */
+  .main { flex:1; padding:0; overflow:hidden; display:flex; flex-direction:column; }
+
+  /* PAGE HEADER STRIP: #F8F9FA */
+  .page-header { background:var(--light); padding:16px 24px; border-bottom:1px solid var(--border-light); display:flex; justify-content:space-between; align-items:center; }
+  .ph-title { font-size:16px; font-weight:700; color:var(--ink-dark); letter-spacing:-0.3px; }
+  .ph-desc { font-size:11px; color:var(--ink-dark3); margin-top:2px; }
+  .ph-actions { display:flex; gap:8px; align-items:center; }
+
+  /* Buttons */
+  .btn { padding:6px 14px; border-radius:8px; font-size:11px; font-weight:600; cursor:pointer; border:none; transition:all 0.15s; }
+  .btn-primary { background:var(--ink-dark); color:var(--light); }
+  .btn-outline { background:transparent; color:var(--ink-dark2); border:1px solid var(--border-light); }
+  .btn-dark { background:rgba(197,224,238,0.08); color:var(--accent); border:1px solid var(--border); }
+  .btn-dark-outline { background:transparent; color:var(--ink3); border:1px solid var(--border); }
+
+  /* Inputs on light surface */
+  .input-light { padding:6px 12px; border-radius:8px; font-size:11px; border:1px solid var(--border-light); background:white; color:var(--ink-dark); outline:none; width:180px; }
+  .input-light::placeholder { color:var(--ink-dark-muted); }
+  .select-light { padding:6px 10px; border-radius:8px; font-size:11px; border:1px solid var(--border-light); background:white; color:var(--ink-dark); outline:none; }
+
+  /* Content body */
+  .content { flex:1; padding:20px 24px; overflow-y:auto; }
+
+  /* Cards */
+  .card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; }
+  .card-p { padding:16px; }
+
+  /* TABLE HEADER: #F8F9FA */
+  .tbl { width:100%; border-collapse:collapse; }
+  .tbl th { background:var(--light); color:var(--ink-dark3); font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; padding:8px 14px; text-align:left; border-bottom:1px solid var(--border-light); }
+  .tbl th:first-child { border-radius:8px 0 0 0; }
+  .tbl th:last-child { border-radius:0 8px 0 0; }
+  .tbl td { font-size:12px; padding:9px 14px; border-bottom:1px solid var(--border-s); color:var(--ink2); }
+  .tbl tr:hover td { background:var(--bg-hover); }
+
+  /* BADGES on #F8F9FA bg */
+  .badge-light { display:inline-block; background:var(--light); border:1px solid var(--border-light); border-radius:4px; padding:2px 8px; font-size:10px; font-weight:600; }
+  .badge-light-green { color:var(--l-success); }
+  .badge-light-red { color:var(--l-danger); }
+  .badge-light-warm { color:var(--l-warning); }
+  .badge-light-dark { color:var(--ink-dark); }
+  /* Dark bg badges */
+  .badge { display:inline-block; border-radius:4px; padding:2px 8px; font-size:10px; font-weight:600; }
+  .badge-green { background:var(--success-bg); color:var(--success); }
+  .badge-red { background:var(--danger-bg); color:var(--danger); }
+  .badge-warm { background:var(--warning-bg); color:var(--warning); }
+  .badge-gray { background:var(--bg-hover); color:var(--ink2); border:1px solid var(--border); }
+
+  /* TAB BAR: active tab = #F8F9FA */
+  .tabs { display:flex; gap:2px; padding:3px; background:rgba(197,224,238,0.04); border-radius:8px; width:fit-content; }
+  .tab { padding:5px 12px; border-radius:6px; font-size:11px; font-weight:600; color:var(--ink3); border:1px solid transparent; cursor:pointer; }
+  .tab.active { background:var(--light); color:var(--ink-dark); border-color:var(--border-light); }
+
+  /* Metric card with light number pill */
+  .metric { border-radius:12px; border:1px solid var(--border); background:var(--bg2); padding:12px 14px; }
+  .metric-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink3); margin-bottom:6px; }
+  .metric-value-pill { display:inline-block; background:var(--light); border-radius:6px; padding:2px 10px; font-size:18px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+  .metric-sub { font-size:10px; color:var(--ink2); margin-top:4px; }
+
+  /* Fund band */
+  .fund-band { display:flex; border-radius:12px; overflow:hidden; border:1px solid var(--border); }
+  .fund-strip { width:5px; flex-shrink:0; }
+  .fund-body { flex:1; padding:14px 16px; background:var(--bg2); }
+  .fund-name { font-size:13px; font-weight:600; color:var(--ink); }
+  .fund-meta { display:flex; gap:5px; margin-top:4px; }
+
+  /* Score ring on light bg */
+  .score-ring-light { width:48px; height:48px; border-radius:50%; background:var(--light); display:flex; align-items:center; justify-content:center; border:2.5px solid var(--l-warning); }
+  .score-number-light { font-size:16px; font-weight:800; color:var(--l-warning); font-family:'JetBrains Mono',monospace; }
+
+  /* Login card */
+  .login-card { background:var(--light); border-radius:16px; padding:32px; width:340px; border:1px solid var(--border-light); }
+  .login-title { font-size:18px; font-weight:700; color:var(--ink-dark); margin-bottom:4px; }
+  .login-desc { font-size:12px; color:var(--ink-dark3); margin-bottom:20px; }
+  .login-label { font-size:11px; font-weight:600; color:var(--ink-dark2); margin-bottom:4px; display:block; }
+  .login-input { width:100%; padding:8px 12px; border-radius:8px; border:1px solid var(--border-light); font-size:12px; color:var(--ink-dark); background:white; margin-bottom:12px; outline:none; }
+  .login-btn { width:100%; padding:10px; border-radius:8px; background:var(--ink-dark); color:var(--light); font-size:12px; font-weight:600; border:none; cursor:pointer; margin-top:4px; }
+
+  /* Rule template chips */
+  .rule-chip { display:inline-block; background:var(--light); color:var(--ink-dark); border:1px solid var(--border-light); border-radius:8px; padding:6px 12px; font-size:11px; font-weight:500; cursor:pointer; transition:all 0.15s; }
+  .rule-chip:hover { border-color:var(--accent); }
+
+  /* Evidence bundle card */
+  .evidence-card { background:var(--light); border:1px solid var(--border-light); border-radius:12px; padding:20px; }
+  .evidence-title { font-size:14px; font-weight:700; color:var(--ink-dark); margin-bottom:4px; }
+  .evidence-desc { font-size:11px; color:var(--ink-dark3); margin-bottom:12px; }
+
+  /* Hash verified banner */
+  .hash-banner { background:var(--light); border:1px solid rgba(22,163,74,0.2); border-radius:10px; padding:12px 16px; display:flex; align-items:center; gap:10px; }
+  .hash-check { width:20px; height:20px; border-radius:50%; background:rgba(22,163,74,0.1); display:flex; align-items:center; justify-content:center; color:var(--l-success); font-size:12px; }
+
+  /* Placeholder chart */
+  .chart-ph { height:100px; border-radius:8px; background:rgba(197,224,238,0.03); border:1px dashed var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--ink-muted); }
+
+  .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .flex-col { display:flex; flex-direction:column; gap:16px; }
+  .flex-col-sm { display:flex; flex-direction:column; gap:10px; }
+  .mb-16 { margin-bottom:16px; }
+  .mb-10 { margin-bottom:10px; }
+
+  .annotation { position:absolute; font-size:9px; font-weight:600; color:var(--accent); background:rgba(197,224,238,0.1); border:1px solid rgba(197,224,238,0.2); padding:2px 6px; border-radius:4px; white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<h1 class="section">1. Dashboard</h1>
+<p class="section-desc">#F8F9FA on: page header strip, metric value pills, active tab, fund status badges, active sidebar item, user avatar</p>
+
+<div class="page-frame">
+  <!-- Sidebar -->
+  <div class="sb">
+    <div class="sb-logo">Caelith</div>
+    <div class="sb-section">Overview</div>
+    <div class="sb-item active"><span class="sb-icon">◻</span> Dashboard</div>
+    <div class="sb-item"><span class="sb-icon">🏛</span> Funds</div>
+    <div class="sb-item"><span class="sb-icon">👥</span> Investors</div>
+    <div class="sb-item"><span class="sb-icon">⇄</span> Transfers</div>
+    <div class="sb-section">Compliance</div>
+    <div class="sb-item"><span class="sb-icon">⛨</span> Rules</div>
+    <div class="sb-item"><span class="sb-icon">📋</span> Decisions</div>
+    <div class="sb-footer">
+      <div class="sb-avatar">JL</div>
+      <div><div class="sb-name">Julian Laycock</div><div class="sb-role">Administrator</div></div>
+    </div>
+  </div>
+  <!-- Main -->
+  <div class="main">
+    <!-- #F8F9FA page header -->
+    <div class="page-header">
+      <div>
+        <div class="ph-title">Compliance Overview</div>
+        <div class="ph-desc">Regulatory status across all fund structures</div>
+      </div>
+      <div class="ph-actions">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="score-ring-light"><span class="score-number-light">78</span></div>
+          <div><div style="font-size:10px;font-weight:600;color:var(--l-warning);">Score</div><div style="font-size:9px;color:var(--ink-dark3);">Review needed</div></div>
+        </div>
+        <span style="font-size:11px;color:var(--ink-dark3);background:white;border:1px solid var(--border-light);padding:4px 12px;border-radius:8px;" class="mono">20 Feb 2026</span>
+      </div>
+    </div>
+    <div class="content">
+      <!-- Metric cards with light value pills -->
+      <div class="grid-4 mb-16">
+        <div class="metric">
+          <div class="metric-label">Active Funds</div>
+          <div class="metric-value-pill" style="color:var(--ink-dark);">3</div>
+          <div class="metric-sub">+1 this month</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Verified Investors</div>
+          <div class="metric-value-pill" style="color:var(--ink-dark);">12</div>
+          <div class="metric-sub">across all funds</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Units Allocated</div>
+          <div class="metric-value-pill" style="color:var(--l-success);">24.5K</div>
+          <div class="metric-sub">total allocated</div>
+        </div>
+        <div class="metric" style="border-color:rgba(248,113,113,0.15);">
+          <div class="metric-label" style="color:var(--danger);">Action Required</div>
+          <div class="metric-value-pill" style="color:var(--l-danger);">6</div>
+          <div class="metric-sub" style="color:rgba(248,113,113,0.5);">high + medium flags</div>
+        </div>
+      </div>
+
+      <!-- Funds -->
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px;">Fund Structures</div>
+      <div class="flex-col-sm mb-16">
+        <div class="fund-band">
+          <div class="fund-strip" style="background:linear-gradient(180deg,#fca5a5,var(--danger));"></div>
+          <div class="fund-body" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div class="fund-name">Immobilien Spezial-AIF</div>
+              <div class="fund-meta"><span class="badge-gray" style="font-size:10px;padding:2px 6px;border-radius:4px;">InvKG</span><span class="badge-gray" style="font-size:10px;padding:2px 6px;border-radius:4px;">DE</span><span class="badge-light badge-light-red">Critical</span></div>
+            </div>
+            <div style="display:flex;gap:16px;">
+              <div style="text-align:right;"><div class="mono" style="font-size:14px;font-weight:700;color:var(--warning);">72%</div><div style="font-size:9px;color:var(--ink3);">capacity</div></div>
+              <div style="text-align:right;"><div class="mono" style="font-size:14px;font-weight:700;color:var(--accent);">8</div><div style="font-size:9px;color:var(--ink3);">investors</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="fund-band">
+          <div class="fund-strip" style="background:linear-gradient(180deg,#bbf7d0,var(--success));"></div>
+          <div class="fund-body" style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div class="fund-name">Wertpapier Dachfonds</div>
+              <div class="fund-meta"><span class="badge-gray" style="font-size:10px;padding:2px 6px;border-radius:4px;">SICAV</span><span class="badge-gray" style="font-size:10px;padding:2px 6px;border-radius:4px;">LU</span><span class="badge-light badge-light-green">Compliant</span></div>
+            </div>
+            <div style="display:flex;gap:16px;">
+              <div style="text-align:right;"><div class="mono" style="font-size:14px;font-weight:700;color:var(--success);">45%</div><div style="font-size:9px;color:var(--ink3);">capacity</div></div>
+              <div style="text-align:right;"><div class="mono" style="font-size:14px;font-weight:700;color:var(--accent);">3</div><div style="font-size:9px;color:var(--ink3);">investors</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs with #F8F9FA active -->
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:10px;">Analytics</div>
+      <div class="tabs mb-10">
+        <div class="tab active">Status</div>
+        <div class="tab">Risk</div>
+        <div class="tab">Calendar</div>
+        <div class="tab">News</div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-ph">Active Violations</div>
+        <div class="chart-ph">KYC Pipeline</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<h1 class="section">2. Investors</h1>
+<p class="section-desc">#F8F9FA on: page header strip (with search + filters + CTA), table header row, KYC badges</p>
+
+<div class="page-frame">
+  <div class="sb">
+    <div class="sb-logo">Caelith</div>
+    <div class="sb-section">Overview</div>
+    <div class="sb-item"><span class="sb-icon">◻</span> Dashboard</div>
+    <div class="sb-item"><span class="sb-icon">🏛</span> Funds</div>
+    <div class="sb-item active"><span class="sb-icon">👥</span> Investors</div>
+    <div class="sb-item"><span class="sb-icon">⇄</span> Transfers</div>
+    <div class="sb-section">Compliance</div>
+    <div class="sb-item"><span class="sb-icon">⛨</span> Rules</div>
+    <div class="sb-item"><span class="sb-icon">📋</span> Decisions</div>
+    <div class="sb-footer">
+      <div class="sb-avatar">JL</div>
+      <div><div class="sb-name">Julian Laycock</div><div class="sb-role">Administrator</div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="page-header" style="flex-wrap:wrap;gap:10px;">
+      <div>
+        <div class="ph-title">Investors</div>
+        <div class="ph-desc">12 verified investors across all fund structures</div>
+      </div>
+      <div class="ph-actions">
+        <input class="input-light" placeholder="Search investors..." />
+        <select class="select-light"><option>All Types</option></select>
+        <select class="select-light"><option>All KYC</option></select>
+        <button class="btn btn-primary">+ Add Investor</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="card" style="overflow:hidden;">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Jurisdiction</th>
+              <th>KYC Status</th>
+              <th>KYC Expiry</th>
+              <th>Holdings</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--ink);font-weight:500;">Bayerische Versorgungskammer</td>
+              <td>Institutional</td>
+              <td>DE</td>
+              <td><span class="badge-light badge-light-green">Verified</span></td>
+              <td class="mono">2026-08-15</td>
+              <td class="mono">4,500</td>
+            </tr>
+            <tr>
+              <td style="color:var(--ink);font-weight:500;">Münchener Rück Pensionsfonds</td>
+              <td>Institutional</td>
+              <td>DE</td>
+              <td><span class="badge-light badge-light-green">Verified</span></td>
+              <td class="mono">2026-11-20</td>
+              <td class="mono">3,200</td>
+            </tr>
+            <tr>
+              <td style="color:var(--ink);font-weight:500;">Schneider Family Office</td>
+              <td>Professional</td>
+              <td>CH</td>
+              <td><span class="badge-light badge-light-red">Expired</span></td>
+              <td class="mono" style="color:var(--danger);">2026-01-10</td>
+              <td class="mono">1,800</td>
+            </tr>
+            <tr>
+              <td style="color:var(--ink);font-weight:500;">Weber Vermögensverwaltung</td>
+              <td>Semi-Professional</td>
+              <td>DE</td>
+              <td><span class="badge-light badge-light-warm">Pending</span></td>
+              <td>—</td>
+              <td class="mono">0</td>
+            </tr>
+            <tr>
+              <td style="color:var(--ink);font-weight:500;">Luxembourg Pension Authority</td>
+              <td>Institutional</td>
+              <td>LU</td>
+              <td><span class="badge-light badge-light-green">Verified</span></td>
+              <td class="mono">2027-03-01</td>
+              <td class="mono">2,100</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<h1 class="section">3. Decisions</h1>
+<p class="section-desc">#F8F9FA on: page header strip, table header row, result badges, hash verification banner</p>
+
+<div class="page-frame">
+  <div class="sb">
+    <div class="sb-logo">Caelith</div>
+    <div class="sb-section">Overview</div>
+    <div class="sb-item"><span class="sb-icon">◻</span> Dashboard</div>
+    <div class="sb-item"><span class="sb-icon">🏛</span> Funds</div>
+    <div class="sb-item"><span class="sb-icon">👥</span> Investors</div>
+    <div class="sb-item"><span class="sb-icon">⇄</span> Transfers</div>
+    <div class="sb-section">Compliance</div>
+    <div class="sb-item"><span class="sb-icon">⛨</span> Rules</div>
+    <div class="sb-item active"><span class="sb-icon">📋</span> Decisions</div>
+    <div class="sb-footer">
+      <div class="sb-avatar">JL</div>
+      <div><div class="sb-name">Julian Laycock</div><div class="sb-role">Administrator</div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="page-header">
+      <div>
+        <div class="ph-title">Decision Records</div>
+        <div class="ph-desc">Immutable audit trail for all compliance decisions</div>
+      </div>
+      <div class="ph-actions">
+        <select class="select-light"><option>All Types</option></select>
+        <select class="select-light"><option>All Results</option></select>
+        <button class="btn btn-outline">Export</button>
+      </div>
+    </div>
+    <div class="content">
+      <!-- Hash verification banner -->
+      <div class="hash-banner mb-16">
+        <div class="hash-check">✓</div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--l-success);">Hash Chain Verified</div>
+          <div style="font-size:10px;color:var(--ink-dark3);">17 decision records · chain integrity confirmed · last verified 2 min ago</div>
+        </div>
+      </div>
+
+      <div class="card" style="overflow:hidden;">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Type</th>
+              <th>Result</th>
+              <th>Asset</th>
+              <th>Investor</th>
+              <th>Checks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono">14:23</td>
+              <td>Eligibility Check</td>
+              <td><span class="badge-light badge-light-green">Pass</span></td>
+              <td>Share Class A</td>
+              <td>Bayerische VK</td>
+              <td style="color:var(--success);">✓ All passed</td>
+            </tr>
+            <tr style="background:rgba(248,113,113,0.03);">
+              <td class="mono">14:20</td>
+              <td>Transfer Validation</td>
+              <td><span class="badge-light badge-light-red">Fail</span></td>
+              <td>Share Class B</td>
+              <td>Schneider FO</td>
+              <td style="color:var(--danger);">✗ 2 violations</td>
+            </tr>
+            <tr>
+              <td class="mono">13:45</td>
+              <td>Eligibility Check</td>
+              <td><span class="badge-light badge-light-green">Pass</span></td>
+              <td>Share Class C</td>
+              <td>LU Pension Auth</td>
+              <td style="color:var(--success);">✓ All passed</td>
+            </tr>
+            <tr style="background:rgba(248,113,113,0.03);">
+              <td class="mono">12:10</td>
+              <td>Onboarding Approval</td>
+              <td><span class="badge-light badge-light-red">Fail</span></td>
+              <td>Share Class A</td>
+              <td>Weber Vermögen</td>
+              <td style="color:var(--danger);">✗ 1 violation</td>
+            </tr>
+            <tr>
+              <td class="mono">11:30</td>
+              <td>Eligibility Check</td>
+              <td><span class="badge-light badge-light-green">Pass</span></td>
+              <td>Share Class D</td>
+              <td>Münchener Rück</td>
+              <td style="color:var(--success);">✓ All passed</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<h1 class="section">4. Rules</h1>
+<p class="section-desc">#F8F9FA on: page header strip, rule template chips (CTAs), active tab</p>
+
+<div class="page-frame" style="min-height:440px;">
+  <div class="sb">
+    <div class="sb-logo">Caelith</div>
+    <div class="sb-section">Overview</div>
+    <div class="sb-item"><span class="sb-icon">◻</span> Dashboard</div>
+    <div class="sb-item"><span class="sb-icon">🏛</span> Funds</div>
+    <div class="sb-item"><span class="sb-icon">👥</span> Investors</div>
+    <div class="sb-item"><span class="sb-icon">⇄</span> Transfers</div>
+    <div class="sb-section">Compliance</div>
+    <div class="sb-item active"><span class="sb-icon">⛨</span> Rules</div>
+    <div class="sb-item"><span class="sb-icon">📋</span> Decisions</div>
+    <div class="sb-footer">
+      <div class="sb-avatar">JL</div>
+      <div><div class="sb-name">Julian Laycock</div><div class="sb-role">Administrator</div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="page-header">
+      <div>
+        <div class="ph-title">Compliance Rules</div>
+        <div class="ph-desc">5 rule sets · 11 eligibility criteria configured</div>
+      </div>
+      <div class="ph-actions">
+        <button class="btn btn-primary">+ Create Rule</button>
+      </div>
+    </div>
+    <div class="content">
+      <!-- Quick templates -->
+      <div style="font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:10px;">Quick Templates</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+        <div class="rule-chip">Block retail investors</div>
+        <div class="rule-chip">€125K minimum investment</div>
+        <div class="rule-chip">Restrict US persons</div>
+        <div class="rule-chip">Professional investors only</div>
+        <div class="rule-chip">KYC verified required</div>
+        <div class="rule-chip">EU/EEA residents only</div>
+      </div>
+
+      <div class="tabs mb-16">
+        <div class="tab active">All Rules</div>
+        <div class="tab">By Fund</div>
+        <div class="tab">NL Builder</div>
+      </div>
+
+      <!-- Rule cards -->
+      <div class="flex-col-sm">
+        <div class="card card-p" style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--ink);">KAGB §293 — Investor Eligibility</div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:2px;">Block retail · Require KYC verified · Min €125K semi-professional</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="badge-light badge-light-green">Active</span>
+            <span class="badge-gray" style="font-size:10px;padding:2px 6px;border-radius:4px;">3 conditions</span>
+          </div>
+        </div>
+        <div class="card card-p" style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--ink);">AIFMD II — Leverage Limits</div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:2px;">Max 150% gross · Max 100% commitment</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="badge-light badge-light-green">Active</span>
+            <span class="badge-gray" style="font-size:10px;padding:2px 6px;border-radius:4px;">2 conditions</span>
+          </div>
+        </div>
+        <div class="card card-p" style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--ink);">Concentration Risk — Single Investor</div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:2px;">Max 25% single investor · Max 60% top 3</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="badge-light badge-light-warm">Draft</span>
+            <span class="badge-gray" style="font-size:10px;padding:2px 6px;border-radius:4px;">2 conditions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<h1 class="section">5. Login</h1>
+<p class="section-desc">#F8F9FA on: login card — clean, trustworthy, professional against dark bg</p>
+
+<div class="page-frame" style="min-height:440px;justify-content:center;align-items:center;padding:40px;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:24px;">
+    <div style="font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-0.04em;">Caelith</div>
+    <div class="login-card">
+      <div class="login-title">Sign in</div>
+      <div class="login-desc">Enter your credentials to access the compliance dashboard</div>
+      <label class="login-label">Email</label>
+      <input class="login-input" type="email" placeholder="admin@caelith.com" />
+      <label class="login-label">Password</label>
+      <input class="login-input" type="password" placeholder="••••••••" />
+      <button class="login-btn">Sign in</button>
+      <div style="text-align:center;margin-top:12px;font-size:10px;color:var(--ink-dark3);">Caelith v1.0 · EU Hosted</div>
+    </div>
+  </div>
+</div>
+
+
+<h1 class="section">6. Audit / Evidence Bundle</h1>
+<p class="section-desc">#F8F9FA on: page header, evidence bundle download card (primary CTA)</p>
+
+<div class="page-frame" style="min-height:380px;">
+  <div class="sb">
+    <div class="sb-logo">Caelith</div>
+    <div class="sb-section">Overview</div>
+    <div class="sb-item"><span class="sb-icon">◻</span> Dashboard</div>
+    <div class="sb-item"><span class="sb-icon">🏛</span> Funds</div>
+    <div class="sb-item"><span class="sb-icon">👥</span> Investors</div>
+    <div class="sb-item"><span class="sb-icon">⇄</span> Transfers</div>
+    <div class="sb-section">Compliance</div>
+    <div class="sb-item"><span class="sb-icon">⛨</span> Rules</div>
+    <div class="sb-item active"><span class="sb-icon">📋</span> Decisions</div>
+    <div class="sb-footer">
+      <div class="sb-avatar">JL</div>
+      <div><div class="sb-name">Julian Laycock</div><div class="sb-role">Administrator</div></div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="page-header">
+      <div>
+        <div class="ph-title">Audit & Evidence</div>
+        <div class="ph-desc">Generate compliance evidence bundles for regulatory review</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="grid-2">
+        <div class="evidence-card">
+          <div style="display:flex;justify-content:space-between;align-items:start;">
+            <div>
+              <div class="evidence-title">📦 Evidence Bundle</div>
+              <div class="evidence-desc">Complete compliance package including decision records, hash chain verification, investor eligibility proofs, and rule configurations.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary">Download PDF</button>
+            <button class="btn btn-outline">Preview</button>
+          </div>
+        </div>
+        <div class="card card-p">
+          <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px;">Chain Integrity</div>
+          <div style="font-size:11px;color:var(--ink3);margin-bottom:12px;">Last 30 days · 17 records</div>
+          <div class="chart-ph" style="height:80px;">Integrity timeline</div>
+          <div style="margin-top:10px;display:flex;gap:8px;">
+            <span class="badge-light badge-light-green">✓ Verified</span>
+            <span style="font-size:10px;color:var(--ink3);">No tampering detected</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div style="text-align:center;padding:40px;color:var(--ink-muted);font-size:11px;">
+  — #F8F9FA Design System: "Look here first" — applied across 6 pages —
+</div>
+
+</body>
+</html>

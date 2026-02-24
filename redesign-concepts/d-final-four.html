@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Final Four Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@300;400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:#09090B;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden}
+
+/* NAV */
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(9,9,11,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:56px}
+.top-nav .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;letter-spacing:-0.5px}
+.top-nav .links{display:flex;gap:8px}
+.top-nav .links a{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.5);text-decoration:none;padding:6px 14px;border-radius:6px;transition:all 0.3s}
+.top-nav .links a:hover{color:#fff;background:rgba(255,255,255,0.06)}
+.top-nav .links a[data-c="1"]:hover{color:#6366F1}
+.top-nav .links a[data-c="2"]:hover{color:#0EA5E9}
+.top-nav .links a[data-c="3"]:hover{color:#8B5CF6}
+.top-nav .links a[data-c="4"]:hover{color:#D4AF37}
+
+/* CONCEPT DIVIDER */
+.concept-divider{padding:120px 40px 40px;text-align:center;position:relative}
+.concept-divider h2{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:4px;opacity:0.4}
+.concept-divider .num{font-family:'Space Grotesk',sans-serif;font-size:200px;font-weight:700;line-height:1;opacity:0.03;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+
+/* SCROLL REVEAL */
+.sr{opacity:0;transform:translateY(30px);transition:opacity 0.8s ease,transform 0.8s ease}
+.sr.visible{opacity:1;transform:translateY(0)}
+
+/* ============================================ */
+/* CONCEPT 1: INDIGO CIRCUIT                    */
+/* ============================================ */
+.c1{background:#09090B;position:relative}
+.c1 .grid-overlay{position:absolute;inset:0;background-image:linear-gradient(rgba(99,102,241,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+
+/* Hero */
+.c1-hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 80px;position:relative;overflow:hidden}
+.c1-hero .blob{position:absolute;top:-20%;right:-10%;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,0.15) 0%,rgba(99,102,241,0.05) 40%,transparent 70%);animation:c1blob 12s ease-in-out infinite;pointer-events:none}
+@keyframes c1blob{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-60px,40px) scale(1.1)}}
+.c1-hero .label{font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(99,102,241,0.7);letter-spacing:2px;margin-bottom:24px}
+.c1-hero h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(48px,7vw,100px);line-height:1.05;letter-spacing:-2px;max-width:900px}
+.c1-hero h1 .hi{color:#6366F1}
+.c1-hero .status{display:flex;align-items:center;gap:12px;margin-top:32px;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.4)}
+.c1-hero .status .dot{width:6px;height:6px;border-radius:50%;background:#6366F1;animation:pulse1 2s ease-in-out infinite}
+@keyframes pulse1{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(99,102,241,0.4)}50%{opacity:0.7;box-shadow:0 0 0 8px rgba(99,102,241,0)}}
+.c1-hero .ctas{display:flex;gap:12px;margin-top:40px}
+.c1 .btn-primary{background:#6366F1;color:#fff;border:none;padding:14px 32px;border-radius:8px;font-family:'Inter',sans-serif;font-weight:500;font-size:14px;cursor:pointer;transition:all 0.3s}
+.c1 .btn-primary:hover{background:#4F46E5;box-shadow:0 0 30px rgba(99,102,241,0.3)}
+.c1 .btn-ghost{background:transparent;color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.1);padding:14px 32px;border-radius:8px;font-family:'Inter',sans-serif;font-weight:500;font-size:14px;cursor:pointer;transition:all 0.3s}
+.c1 .btn-ghost:hover{color:#fff;border-color:rgba(255,255,255,0.3)}
+
+/* Stats */
+.c1-stats{padding:100px 80px;position:relative}
+.c1-stats .row{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;max-width:1000px}
+.c1-stats .stat .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:56px;color:#6366F1;line-height:1}
+.c1-stats .stat .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-top:8px}
+.c1-stats .line{height:1px;background:linear-gradient(90deg,#6366F1,transparent);margin-top:80px;max-width:600px}
+
+/* Features */
+.c1-features{padding:80px;position:relative}
+.c1-features .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;max-width:900px}
+.c1-features .card{border:1px solid rgba(99,102,241,0.15);border-radius:12px;padding:32px;transition:all 0.4s;background:rgba(99,102,241,0.02)}
+.c1-features .card:hover{box-shadow:0 0 40px rgba(99,102,241,0.12);border-color:rgba(99,102,241,0.3)}
+.c1-features .card .tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:#6366F1;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+.c1-features .card h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;margin-bottom:8px}
+.c1-features .card p{font-size:14px;color:rgba(255,255,255,0.45);line-height:1.6}
+
+/* Quote */
+.c1-quote{padding:100px 80px;position:relative}
+.c1-quote .mark{font-family:'Space Grotesk',sans-serif;font-size:120px;color:#6366F1;line-height:1;opacity:0.3}
+.c1-quote blockquote{font-family:'Inter',sans-serif;font-style:italic;font-size:20px;color:rgba(255,255,255,0.7);max-width:700px;line-height:1.7;margin-top:-40px;margin-left:20px}
+.c1-quote .attr{font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.3);margin-top:20px;margin-left:20px}
+
+/* Process */
+.c1-process{padding:80px;position:relative}
+.c1-process .timeline{display:flex;flex-direction:column;gap:0;max-width:500px;margin-left:40px;border-left:2px solid rgba(99,102,241,0.2);padding-left:40px}
+.c1-process .step{padding:30px 0;position:relative}
+.c1-process .step::before{content:'';position:absolute;left:-49px;top:34px;width:16px;height:16px;border-radius:50%;background:#09090B;border:2px solid #6366F1}
+.c1-process .step .n{font-family:'JetBrains Mono',monospace;font-size:11px;color:#6366F1;letter-spacing:2px}
+.c1-process .step h4{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;margin-top:4px}
+
+/* CTA */
+.c1-cta{padding:120px 80px;text-align:center;position:relative}
+.c1-cta h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:40px;margin-bottom:32px}
+
+/* ============================================ */
+/* CONCEPT 2: DEEP SIGNAL                       */
+/* ============================================ */
+.c2{background:#080812;position:relative}
+
+/* Star field */
+.c2 .stars{position:absolute;inset:0;pointer-events:none}
+.c2 .stars::before{content:'';position:absolute;inset:0;background:transparent;box-shadow:
+  120px 80px 0 0.5px rgba(255,255,255,0.3),
+  340px 200px 0 0.5px rgba(255,255,255,0.2),
+  560px 120px 0 0.5px rgba(255,255,255,0.15),
+  780px 340px 0 0.5px rgba(255,255,255,0.25),
+  900px 60px 0 0.5px rgba(255,255,255,0.2),
+  200px 400px 0 0.5px rgba(255,255,255,0.15),
+  450px 500px 0 0.5px rgba(255,255,255,0.3),
+  700px 450px 0 0.5px rgba(255,255,255,0.1),
+  1100px 180px 0 0.5px rgba(255,255,255,0.2),
+  1300px 320px 0 0.5px rgba(255,255,255,0.15),
+  150px 600px 0 0.5px rgba(255,255,255,0.2),
+  850px 580px 0 0.5px rgba(255,255,255,0.25),
+  1050px 500px 0 0.5px rgba(255,255,255,0.1),
+  50px 250px 0 0.5px rgba(255,255,255,0.2),
+  650px 700px 0 0.5px rgba(255,255,255,0.15)
+}
+
+/* Hero */
+.c2-hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:120px 40px;position:relative;overflow:hidden}
+.c2-hero h1{font-family:'Sora',sans-serif;font-weight:700;font-size:clamp(48px,8vw,110px);line-height:1.05;letter-spacing:-3px}
+.c2-hero h1 .hi{color:#0EA5E9}
+.c2-hero .glow-line{width:100%;max-width:700px;height:1px;background:rgba(14,165,233,0.15);position:relative;margin:40px auto;overflow:hidden}
+.c2-hero .glow-line::after{content:'';position:absolute;top:-2px;left:-20%;width:60px;height:5px;background:radial-gradient(ellipse,#0EA5E9,transparent);border-radius:50%;animation:glowmove 4s linear infinite}
+@keyframes glowmove{0%{left:-10%}100%{left:110%}}
+.c2-hero .sub{font-size:16px;color:rgba(255,255,255,0.45);max-width:580px;line-height:1.7;margin-bottom:32px}
+.c2-hero .countdown{font-family:'JetBrains Mono',monospace;font-size:clamp(28px,4vw,48px);color:#0EA5E9;letter-spacing:4px;margin-top:40px}
+.c2-hero .countdown span{color:rgba(255,255,255,0.2)}
+.c2-hero .ctas{display:flex;gap:12px;margin-top:32px}
+.c2 .btn-primary{background:#0EA5E9;color:#080812;border:none;padding:14px 32px;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.3s}
+.c2 .btn-primary:hover{background:#38BDF8;box-shadow:0 0 30px rgba(14,165,233,0.3)}
+.c2 .btn-ghost{background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.1);padding:14px 32px;border-radius:8px;font-family:'Inter',sans-serif;font-weight:500;font-size:14px;cursor:pointer;transition:all 0.3s}
+.c2 .btn-ghost:hover{border-color:rgba(14,165,233,0.4);color:#0EA5E9}
+
+/* Features */
+.c2-features{padding:80px;position:relative}
+.c2-features .cards{display:flex;flex-direction:column;gap:16px;max-width:700px}
+.c2-features .card{background:rgba(14,165,233,0.03);border-left:3px solid #0EA5E9;padding:28px 32px;font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(255,255,255,0.6);transition:all 0.3s}
+.c2-features .card:hover{background:rgba(14,165,233,0.06)}
+.c2-features .card .k{color:#0EA5E9}
+.c2-features .card h3{font-family:'Sora',sans-serif;font-weight:700;font-size:20px;color:#fff;margin-bottom:12px}
+
+/* Marquee */
+.c2-marquee{background:#0EA5E9;padding:14px 0;overflow:hidden;white-space:nowrap}
+.c2-marquee .track{display:inline-flex;animation:marquee 20s linear infinite}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.c2-marquee .item{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#080812;padding:0 40px;text-transform:uppercase;letter-spacing:2px}
+
+/* Social Proof */
+.c2-social{padding:80px;position:relative}
+.c2-social .head{font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;margin-bottom:40px}
+.c2-social .logos{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.c2-social .logos .box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;height:60px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:2px}
+
+/* CTA */
+.c2-cta{padding:120px 80px;text-align:center;position:relative}
+.c2-cta h3{font-family:'Sora',sans-serif;font-weight:700;font-size:clamp(40px,6vw,80px);color:#0EA5E9;margin-bottom:32px}
+
+/* ============================================ */
+/* CONCEPT 3: VIOLET GRID                       */
+/* ============================================ */
+.c3-dark{background:#09090B;position:relative}
+.c3-light{background:#FAFAFA;color:#09090B;position:relative}
+.c3-dark .grid-overlay,.c3-light .grid-overlay{position:absolute;inset:0;pointer-events:none}
+.c3-dark .grid-overlay{background-image:linear-gradient(rgba(139,92,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(139,92,246,0.04) 1px,transparent 1px);background-size:60px 60px}
+.c3-light .grid-overlay{background-image:linear-gradient(rgba(0,0,0,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.04) 1px,transparent 1px);background-size:60px 60px}
+
+/* Hero */
+.c3-hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 80px;position:relative;overflow:hidden}
+.c3-hero .blob{position:absolute;top:-10%;left:-10%;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.12) 0%,rgba(139,92,246,0.04) 40%,transparent 70%);animation:c3blob 14s ease-in-out infinite;pointer-events:none}
+@keyframes c3blob{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,30px) scale(1.08)}}
+.c3-hero .label{font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(139,92,246,0.7);letter-spacing:2px;margin-bottom:24px}
+.c3-hero h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(48px,7vw,100px);line-height:1.05;letter-spacing:-2px;max-width:800px}
+.c3-hero h1 .hi{color:#8B5CF6}
+.c3-hero .ctas{display:flex;gap:12px;margin-top:40px}
+.c3 .btn-primary{background:#8B5CF6;color:#fff;border:none;padding:14px 32px;border-radius:8px;font-family:'Inter',sans-serif;font-weight:500;font-size:14px;cursor:pointer;transition:all 0.3s}
+.c3 .btn-primary:hover{background:#7C3AED}
+.c3 .btn-ghost{background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.12);padding:14px 32px;border-radius:8px;font-family:'Inter',sans-serif;font-weight:500;font-size:14px;cursor:pointer;transition:all 0.3s}
+.c3 .btn-ghost:hover{border-color:#8B5CF6;color:#8B5CF6}
+
+/* Stats (light) */
+.c3-stats{padding:80px;position:relative}
+.c3-stats .row{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;max-width:900px;margin:0 auto;text-align:center}
+.c3-stats .stat .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:52px;color:#8B5CF6}
+.c3-stats .stat .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(9,9,11,0.4);text-transform:uppercase;letter-spacing:1px;margin-top:8px}
+
+/* Features (dark, alternating) */
+.c3-features{padding:80px;position:relative}
+.c3-features .feature-row{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;max-width:1000px;margin:0 auto;padding:60px 0}
+.c3-features .feature-row:not(:last-child){border-bottom:1px solid rgba(255,255,255,0.05)}
+.c3-features .feature-row.reverse .text{order:2}
+.c3-features .feature-row.reverse .code{order:1}
+.c3-features .text h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:28px;margin-bottom:12px}
+.c3-features .text p{font-size:15px;color:rgba(255,255,255,0.45);line-height:1.7}
+.c3-features .code{background:rgba(139,92,246,0.05);border:1px solid rgba(139,92,246,0.1);border-radius:12px;padding:24px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;color:rgba(255,255,255,0.5)}
+.c3-features .code .v{color:#8B5CF6}
+.c3-features .code .w{color:rgba(255,255,255,0.8)}
+
+/* Process (light) */
+.c3-process{padding:80px;position:relative}
+.c3-process .steps{display:flex;align-items:center;justify-content:center;gap:0;max-width:800px;margin:40px auto 0}
+.c3-process .step{text-align:center;flex:1}
+.c3-process .step .circle{width:40px;height:40px;border-radius:50%;background:#8B5CF6;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;margin:0 auto 12px}
+.c3-process .step h4{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;color:#09090B}
+.c3-process .connector{width:60px;height:2px;background:#8B5CF6;opacity:0.3;margin-bottom:28px}
+.c3-process .head{text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(9,9,11,0.35);text-transform:uppercase;letter-spacing:3px}
+
+/* Pricing (light) */
+.c3-pricing{padding:80px;position:relative}
+.c3-pricing .head{text-align:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:#09090B;margin-bottom:48px}
+.c3-pricing .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:900px;margin:0 auto}
+.c3-pricing .card{border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:36px;text-align:center}
+.c3-pricing .card.pop{border-color:#8B5CF6;position:relative}
+.c3-pricing .card.pop::after{content:'POPULAR';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#8B5CF6;color:#fff;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;padding:4px 12px;border-radius:4px}
+.c3-pricing .card .name{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:rgba(9,9,11,0.4);margin-bottom:8px}
+.c3-pricing .card .price{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:36px;color:#09090B}
+.c3-pricing .card .price small{font-size:14px;font-weight:400;color:rgba(9,9,11,0.4)}
+
+/* CTA dark */
+.c3-cta{padding:120px 80px;text-align:center;position:relative}
+.c3-cta h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(36px,5vw,64px);margin-bottom:16px}
+.c3-cta .countdown{font-family:'JetBrains Mono',monospace;font-size:48px;color:#8B5CF6;margin-bottom:40px}
+
+/* ============================================ */
+/* CONCEPT 4: BLACK & GOLD                      */
+/* ============================================ */
+.c4{background:#0A0A0A;position:relative}
+.gold-text{background:linear-gradient(135deg,#F0E6D3,#D4AF37);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gold-bg{background:linear-gradient(135deg,#F0E6D3,#D4AF37)}
+.gold-border{border-image:linear-gradient(135deg,#F0E6D3,#D4AF37) 1}
+
+/* Hero */
+.c4-hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:120px 40px;position:relative}
+.c4-hero h1{font-family:'Sora',sans-serif;font-weight:700;font-size:clamp(56px,9vw,120px);line-height:1.05;letter-spacing:-3px}
+.c4-hero .sub{font-family:'Inter',sans-serif;font-weight:300;font-size:17px;color:rgba(255,255,255,0.4);margin-top:24px;max-width:500px;line-height:1.7}
+.c4-hero .ctas{margin-top:48px}
+.c4-hero .btn{padding:16px 40px;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;color:#0A0A0A;border:none;cursor:pointer;transition:all 0.3s}
+.c4-hero .btn:hover{box-shadow:0 0 40px rgba(212,175,55,0.2)}
+
+/* Divider line */
+.c4-line{height:1px;background:linear-gradient(90deg,transparent,#D4AF37,transparent)}
+
+/* Stats */
+.c4-stats{padding:120px 80px;position:relative}
+.c4-stats .row{display:flex;justify-content:space-between;max-width:1000px;margin:0 auto}
+.c4-stats .stat{text-align:center}
+.c4-stats .stat .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:56px;line-height:1}
+.c4-stats .stat .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1px;margin-top:8px}
+
+/* Features */
+.c4-features{padding:40px 80px;position:relative}
+.c4-features .feature{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;padding:80px 0;max-width:1000px;margin:0 auto;border-bottom:1px solid rgba(255,255,255,0.04)}
+.c4-features .feature:last-child{border:none}
+.c4-features .feature h3{font-family:'Sora',sans-serif;font-weight:700;font-size:28px;margin-bottom:12px}
+.c4-features .feature p{font-size:15px;color:rgba(255,255,255,0.35);line-height:1.7}
+.c4-features .icon-box{width:120px;height:120px;display:flex;align-items:center;justify-content:center;margin:0 auto}
+.c4-features .icon-hex{width:80px;height:80px;border:2px solid;border-image:linear-gradient(135deg,#F0E6D3,#D4AF37) 1;transform:rotate(45deg)}
+.c4-features .icon-shield{width:60px;height:80px;border:2px solid #D4AF37;border-radius:50% 50% 0 0}
+.c4-features .icon-chain{display:flex;gap:4px}
+.c4-features .icon-chain span{width:30px;height:20px;border:2px solid #D4AF37;border-radius:10px}
+.c4-features .icon-chart{display:flex;align-items:flex-end;gap:6px;height:60px}
+.c4-features .icon-chart span{width:12px;background:linear-gradient(to top,#D4AF37,#F0E6D3);border-radius:2px 2px 0 0}
+
+/* Quote */
+.c4-quote{padding:120px 80px;text-align:center;position:relative}
+.c4-quote .mark{font-family:'Space Grotesk',sans-serif;font-size:100px;line-height:1;opacity:0.4}
+.c4-quote blockquote{font-family:'Inter',sans-serif;font-weight:300;font-style:italic;font-size:24px;color:rgba(255,255,255,0.7);max-width:700px;margin:0 auto;line-height:1.7}
+.c4-quote .attr{font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:24px}
+
+/* Process */
+.c4-process{padding:80px;position:relative}
+.c4-process .steps{display:flex;align-items:center;justify-content:center;max-width:800px;margin:0 auto}
+.c4-process .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.c4-process .conn{height:2px;flex:1;background:linear-gradient(90deg,#F0E6D3,#D4AF37);opacity:0.3}
+.c4-process .labels{display:flex;justify-content:space-between;max-width:800px;margin:12px auto 0}
+.c4-process .labels span{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px}
+
+/* Pricing */
+.c4-pricing{padding:80px;position:relative}
+.c4-pricing .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:900px;margin:0 auto}
+.c4-pricing .card{border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:40px;text-align:center}
+.c4-pricing .card.pop{border:1px solid transparent;background-image:linear-gradient(#0A0A0A,#0A0A0A),linear-gradient(135deg,#F0E6D3,#D4AF37);background-origin:border-box;background-clip:padding-box,border-box}
+.c4-pricing .card .name{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.3);margin-bottom:8px}
+.c4-pricing .card .price{font-family:'Sora',sans-serif;font-weight:700;font-size:36px}
+.c4-pricing .card .price small{font-size:14px;font-weight:400;color:rgba(255,255,255,0.3)}
+
+/* CTA */
+.c4-cta{min-height:80vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:120px 40px;position:relative}
+.c4-cta h3{font-family:'Sora',sans-serif;font-weight:700;font-size:clamp(36px,5.5vw,72px);line-height:1.15;letter-spacing:-2px;max-width:900px;margin-bottom:48px}
+
+/* Responsive */
+@media(max-width:768px){
+  .c1-hero,.c3-hero{padding:120px 24px}
+  .c1-stats,.c1-features,.c1-quote,.c1-process,.c1-cta,
+  .c2-features,.c2-social,.c2-cta,
+  .c3-stats,.c3-features,.c3-process,.c3-pricing,.c3-cta,
+  .c4-stats,.c4-features,.c4-quote,.c4-process,.c4-pricing,.c4-cta{padding:60px 24px}
+  .c1-stats .row,.c3-stats .row{grid-template-columns:repeat(2,1fr)}
+  .c1-features .grid{grid-template-columns:1fr}
+  .c2-social .logos{grid-template-columns:repeat(3,1fr)}
+  .c3-features .feature-row{grid-template-columns:1fr}
+  .c3-pricing .cards,.c4-pricing .cards{grid-template-columns:1fr}
+  .c4-features .feature{grid-template-columns:1fr}
+  .c4-stats .row{flex-wrap:wrap;gap:40px;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top-nav">
+  <div class="logo">Caelith</div>
+  <div class="links">
+    <a href="#c1" data-c="1">01 Indigo Circuit</a>
+    <a href="#c2" data-c="2">02 Deep Signal</a>
+    <a href="#c3" data-c="3">03 Violet Grid</a>
+    <a href="#c4" data-c="4">04 Black &amp; Gold</a>
+  </div>
+</nav>
+
+<!-- ========================================== -->
+<!-- CONCEPT 1: INDIGO CIRCUIT                  -->
+<!-- ========================================== -->
+<section id="c1" class="c1">
+  <div class="grid-overlay"></div>
+  <div class="concept-divider"><span class="num">01</span><h2>Concept 1 — Indigo Circuit</h2></div>
+
+  <div class="c1-hero sr">
+    <div class="blob"></div>
+    <div class="label">// AIFMD II COMPLIANCE ENGINE</div>
+    <h1>Every decision. Logged.<br><span class="hi">Documented.</span></h1>
+    <div class="status"><span class="dot"></span> SYSTEM ONLINE &nbsp;•&nbsp; 247 RULES &nbsp;•&nbsp; 6 FRAMEWORKS &nbsp;•&nbsp; &lt;23ms</div>
+    <div class="ctas">
+      <button class="btn-primary">Book a Demo</button>
+      <button class="btn-ghost">See How It Works</button>
+    </div>
+  </div>
+
+  <div class="c1-stats sr">
+    <div class="row">
+      <div class="stat"><div class="num counter" data-target="247">0</div><div class="lbl">Active Rules</div></div>
+      <div class="stat"><div class="num counter" data-target="6">0</div><div class="lbl">Frameworks</div></div>
+      <div class="stat"><div class="num">&lt;23<small style="font-size:24px">ms</small></div><div class="lbl">Latency</div></div>
+      <div class="stat"><div class="num counter" data-target="100">0</div><div class="lbl">% Logged</div></div>
+    </div>
+    <div class="line"></div>
+  </div>
+
+  <div class="c1-features sr">
+    <div class="grid">
+      <div class="card">
+        <div class="tag">Module 01</div>
+        <h3>Rules Engine</h3>
+        <p>247 regulatory rules evaluated in real-time against portfolio data with deterministic outcomes.</p>
+      </div>
+      <div class="card">
+        <div class="tag">Module 02</div>
+        <h3>Hash-Chained Audit Trail</h3>
+        <p>SHA-256 linked decision records. Every compliance check cryptographically chained and immutable.</p>
+      </div>
+      <div class="card">
+        <div class="tag">Module 03</div>
+        <h3>Regulatory Reporting</h3>
+        <p>Automated ANNEX IV, KAGB, and cross-framework report generation with export-ready outputs.</p>
+      </div>
+      <div class="card">
+        <div class="tag">Module 04</div>
+        <h3>Scenario Modeling</h3>
+        <p>Test regulatory impact before decisions. Pre-flight compliance checks across all active frameworks.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="c1-quote sr">
+    <div class="mark">&ldquo;</div>
+    <blockquote>Automation of documentation and audit trails is no longer optional.</blockquote>
+    <div class="attr">— PwC, 2024</div>
+  </div>
+
+  <div class="c1-process sr">
+    <div class="timeline">
+      <div class="step"><div class="n">01</div><h4>Configure</h4></div>
+      <div class="step"><div class="n">02</div><h4>Onboard</h4></div>
+      <div class="step"><div class="n">03</div><h4>Document</h4></div>
+      <div class="step"><div class="n">04</div><h4>Report</h4></div>
+    </div>
+  </div>
+
+  <div class="c1-cta sr">
+    <h3>Ready to automate compliance?</h3>
+    <button class="btn-primary">Book a Demo</button>
+  </div>
+</section>
+
+<!-- ========================================== -->
+<!-- CONCEPT 2: DEEP SIGNAL                     -->
+<!-- ========================================== -->
+<section id="c2" class="c2">
+  <div class="stars"></div>
+  <div class="concept-divider"><span class="num">02</span><h2>Concept 2 — Deep Signal</h2></div>
+
+  <div class="c2-hero sr">
+    <h1>Every decision.<br>Logged. <span class="hi">Verified.</span></h1>
+    <div class="glow-line"></div>
+    <p class="sub">Automated eligibility checks, hash-chained audit trails, and real-time regulatory evaluation for EU fund managers.</p>
+    <div class="ctas">
+      <button class="btn-primary">Book a Demo</button>
+      <button class="btn-ghost">See How It Works</button>
+    </div>
+    <div class="countdown">56 DAYS <span>:</span> 14 HRS <span>:</span> 45 MIN</div>
+  </div>
+
+  <div class="c2-features sr">
+    <div class="cards">
+      <div class="card">
+        <h3>Rules Engine</h3>
+        <span class="k">INPUT:</span> Portfolio data &nbsp;/&nbsp; <span class="k">OUTPUT:</span> Compliance decision &nbsp;/&nbsp; <span class="k">LATENCY:</span> &lt;23ms
+      </div>
+      <div class="card">
+        <h3>Hash-Chained Audit Trail</h3>
+        <span class="k">INPUT:</span> Decision record &nbsp;/&nbsp; <span class="k">OUTPUT:</span> SHA-256 chain &nbsp;/&nbsp; <span class="k">FORMAT:</span> Immutable
+      </div>
+      <div class="card">
+        <h3>Regulatory Reporting</h3>
+        <span class="k">INPUT:</span> Framework rules &nbsp;/&nbsp; <span class="k">OUTPUT:</span> ANNEX IV / KAGB &nbsp;/&nbsp; <span class="k">STATUS:</span> Export-ready
+      </div>
+      <div class="card">
+        <h3>Scenario Modeling</h3>
+        <span class="k">INPUT:</span> Hypothetical data &nbsp;/&nbsp; <span class="k">OUTPUT:</span> Pre-flight check &nbsp;/&nbsp; <span class="k">MODE:</span> Sandbox
+      </div>
+    </div>
+  </div>
+
+  <div class="c2-marquee">
+    <div class="track">
+      <span class="item">AIFMD II</span><span class="item">KAGB</span><span class="item">ELTIF 2.0</span><span class="item">ANNEX IV</span><span class="item">SIF LAW</span><span class="item">RAIF LAW</span>
+      <span class="item">AIFMD II</span><span class="item">KAGB</span><span class="item">ELTIF 2.0</span><span class="item">ANNEX IV</span><span class="item">SIF LAW</span><span class="item">RAIF LAW</span>
+    </div>
+  </div>
+
+  <div class="c2-social sr">
+    <div class="head">Trusted by compliance teams managing €XX billion in AUM</div>
+    <div class="logos">
+      <div class="box">Logo</div><div class="box">Logo</div><div class="box">Logo</div>
+      <div class="box">Logo</div><div class="box">Logo</div><div class="box">Logo</div>
+    </div>
+  </div>
+
+  <div class="c2-cta sr">
+    <h3>Let's Talk</h3>
+    <button class="btn-primary">Book a Demo</button>
+  </div>
+</section>
+
+<!-- ========================================== -->
+<!-- CONCEPT 3: VIOLET GRID                     -->
+<!-- ========================================== -->
+<section id="c3" class="c3">
+
+  <div class="c3-dark">
+    <div class="grid-overlay"></div>
+    <div class="concept-divider"><span class="num">03</span><h2>Concept 3 — Violet Grid</h2></div>
+
+    <div class="c3-hero sr">
+      <div class="blob"></div>
+      <div class="label">// COMPLIANCE INFRASTRUCTURE</div>
+      <h1>The engine behind<br><span class="hi">audit-ready compliance.</span></h1>
+      <div class="ctas">
+        <button class="btn-primary">Book a Demo</button>
+        <button class="btn-ghost">See How It Works</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="c3-light">
+    <div class="grid-overlay"></div>
+    <div class="c3-stats sr">
+      <div class="row">
+        <div class="stat"><div class="num counter" data-target="247">0</div><div class="lbl">Active Rules</div></div>
+        <div class="stat"><div class="num counter" data-target="6">0</div><div class="lbl">Frameworks</div></div>
+        <div class="stat"><div class="num">&lt;23<small style="font-size:20px">ms</small></div><div class="lbl">Latency</div></div>
+        <div class="stat"><div class="num">€1.8T</div><div class="lbl">EU AIF Market</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c3-dark">
+    <div class="grid-overlay"></div>
+    <div class="c3-features sr">
+      <div class="feature-row">
+        <div class="text">
+          <h3>Rules Engine</h3>
+          <p>247 regulatory rules evaluated deterministically. Every portfolio transaction checked against active frameworks in under 23ms.</p>
+        </div>
+        <div class="code">
+          <span class="w">evaluate</span>(<span class="v">portfolio</span>, <span class="v">frameworks</span>)<br>
+          → result: <span class="v">COMPLIANT</span><br>
+          → rules_checked: <span class="v">247</span><br>
+          → latency: <span class="v">18ms</span><br>
+          → hash: <span class="v">sha256:a3f8...</span>
+        </div>
+      </div>
+      <div class="feature-row reverse">
+        <div class="text">
+          <h3>Hash-Chained Audit Trail</h3>
+          <p>Every decision cryptographically chained to its predecessor. Tamper-evident, auditor-friendly, regulator-ready.</p>
+        </div>
+        <div class="code">
+          block[<span class="v">n</span>].prev_hash = block[<span class="v">n-1</span>].hash<br>
+          block[<span class="v">n</span>].data = <span class="v">decision_record</span><br>
+          block[<span class="v">n</span>].hash = SHA256(<span class="v">...</span>)<br>
+          → chain_valid: <span class="v">true</span>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="text">
+          <h3>Regulatory Reporting</h3>
+          <p>Automated generation of ANNEX IV, KAGB, and cross-framework reports. Export-ready PDFs with full audit context.</p>
+        </div>
+        <div class="code">
+          <span class="w">generate_report</span>(<span class="v">"ANNEX_IV"</span>)<br>
+          → status: <span class="v">COMPLETE</span><br>
+          → pages: <span class="v">47</span><br>
+          → format: <span class="v">PDF/XML</span><br>
+          → signed: <span class="v">true</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c3-light">
+    <div class="grid-overlay"></div>
+    <div class="c3-process sr">
+      <div class="head">How It Works</div>
+      <div class="steps">
+        <div class="step"><div class="circle">01</div><h4>Configure</h4></div>
+        <div class="connector"></div>
+        <div class="step"><div class="circle">02</div><h4>Onboard</h4></div>
+        <div class="connector"></div>
+        <div class="step"><div class="circle">03</div><h4>Document</h4></div>
+        <div class="connector"></div>
+        <div class="step"><div class="circle">04</div><h4>Report</h4></div>
+      </div>
+    </div>
+
+    <div class="c3-pricing sr">
+      <div class="head">Pricing</div>
+      <div class="cards">
+        <div class="card">
+          <div class="name">Starter</div>
+          <div class="price">€299<small>/mo</small></div>
+        </div>
+        <div class="card pop">
+          <div class="name">Professional</div>
+          <div class="price">€799<small>/mo</small></div>
+        </div>
+        <div class="card">
+          <div class="name">Enterprise</div>
+          <div class="price">Custom</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c3-dark">
+    <div class="grid-overlay"></div>
+    <div class="c3-cta sr">
+      <h3>56 days until AIFMD II.</h3>
+      <div class="countdown">56 : 14 : 45</div>
+      <button class="btn-primary">Book a Demo</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========================================== -->
+<!-- CONCEPT 4: BLACK & GOLD                    -->
+<!-- ========================================== -->
+<section id="c4" class="c4">
+  <div class="concept-divider"><span class="num">04</span><h2>Concept 4 — Black &amp; Gold</h2></div>
+
+  <div class="c4-hero sr">
+    <h1>Deterministic compliance.<br>Documented <span class="gold-text">Proof.</span></h1>
+    <p class="sub">Automated eligibility checks, hash-chained audit trails, and real-time regulatory evaluation for EU fund managers.</p>
+    <div class="ctas">
+      <button class="btn gold-bg">Book a Demo</button>
+    </div>
+  </div>
+
+  <div class="c4-line"></div>
+
+  <div class="c4-stats sr">
+    <div class="row">
+      <div class="stat"><div class="num gold-text">247</div><div class="lbl">Active Rules</div></div>
+      <div class="stat"><div class="num gold-text">6</div><div class="lbl">Frameworks</div></div>
+      <div class="stat"><div class="num gold-text">&lt;23ms</div><div class="lbl">Latency</div></div>
+      <div class="stat"><div class="num gold-text">100%</div><div class="lbl">Logged</div></div>
+    </div>
+  </div>
+
+  <div class="c4-line"></div>
+
+  <div class="c4-features sr">
+    <div class="feature">
+      <div>
+        <h3>Rules Engine</h3>
+        <p>247 regulatory rules evaluated in real-time with deterministic, auditable outcomes across all active frameworks.</p>
+      </div>
+      <div class="icon-box"><div class="icon-hex"></div></div>
+    </div>
+    <div class="feature">
+      <div>
+        <h3>Hash-Chained Audit Trail</h3>
+        <p>SHA-256 linked records. Every compliance decision cryptographically chained, immutable, and regulator-ready.</p>
+      </div>
+      <div class="icon-box"><div class="icon-chain"><span></span><span></span><span></span></div></div>
+    </div>
+    <div class="feature">
+      <div>
+        <h3>Regulatory Reporting</h3>
+        <p>Automated ANNEX IV, KAGB, and cross-framework report generation with full audit trail context.</p>
+      </div>
+      <div class="icon-box"><div class="icon-shield"></div></div>
+    </div>
+    <div class="feature">
+      <div>
+        <h3>Scenario Modeling</h3>
+        <p>Pre-flight compliance checks. Test regulatory impact across hypothetical portfolio changes before execution.</p>
+      </div>
+      <div class="icon-box">
+        <div class="icon-chart">
+          <span style="height:20px"></span><span style="height:35px"></span><span style="height:50px"></span><span style="height:40px"></span><span style="height:55px"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c4-quote sr">
+    <div class="mark gold-text">&ldquo;</div>
+    <blockquote>Automation of documentation and audit trails is no longer optional.</blockquote>
+    <div class="attr gold-text">— PwC, 2024</div>
+  </div>
+
+  <div class="c4-process sr">
+    <div class="steps">
+      <div class="dot gold-bg"></div><div class="conn"></div>
+      <div class="dot gold-bg"></div><div class="conn"></div>
+      <div class="dot gold-bg"></div><div class="conn"></div>
+      <div class="dot gold-bg"></div>
+    </div>
+    <div class="labels">
+      <span>Configure</span><span>Onboard</span><span>Document</span><span>Report</span>
+    </div>
+  </div>
+
+  <div class="c4-line" style="margin-top:80px"></div>
+
+  <div class="c4-pricing sr">
+    <div class="cards">
+      <div class="card">
+        <div class="name">Starter</div>
+        <div class="price">€299<small>/mo</small></div>
+      </div>
+      <div class="card pop">
+        <div class="name">Professional</div>
+        <div class="price">€799<small>/mo</small></div>
+      </div>
+      <div class="card">
+        <div class="name">Enterprise</div>
+        <div class="price">Custom</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c4-cta sr">
+    <h3>Deterministic compliance.<br><span class="gold-text">Documented proof.</span></h3>
+    <button class="btn gold-bg" style="font-size:14px;padding:16px 40px;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;color:#0A0A0A;cursor:pointer">Book a Demo</button>
+  </div>
+</section>
+
+<script>
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }});
+}, { threshold: 0.1 });
+document.querySelectorAll('.sr').forEach(el => obs.observe(el));
+
+// Rolling counters
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const el = e.target;
+      const target = parseInt(el.dataset.target);
+      let current = 0;
+      const step = Math.max(1, Math.floor(target / 40));
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= target) { current = target; clearInterval(timer); }
+        el.textContent = current;
+      }, 30);
+      counterObs.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.counter').forEach(el => counterObs.observe(el));
+</script>
+</body>
+</html>

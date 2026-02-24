@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Dashboard Options A & B</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #2D3333;
+  --bg-card: #343B3B;
+  --bg-card-hover: #3A4242;
+  --border: #434D4D;
+  --accent: #C5E0EE;
+  --accent-dim: rgba(197,224,238,0.15);
+  --warm: #E8A87C;
+  --success: #6ee7b7;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --text: #E8ECEC;
+  --text-dim: #8A9696;
+  --text-muted: #5F6E6E;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Sora', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background: #1E2424; color: var(--text); font-family: var(--sans); }
+
+/* ===== SECTION WRAPPER ===== */
+.option-section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 60px 40px;
+}
+.option-label {
+  font-size: 11px;
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--warm);
+  margin-bottom: 8px;
+}
+.option-title {
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.option-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 40px;
+  max-width: 600px;
+  line-height: 1.6;
+}
+.divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 0;
+}
+
+/* ===== SHARED CARD STYLES ===== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: rgba(197,224,238,0.25); }
+
+/* ===== OPTION A: Progressive Disclosure ===== */
+.a-dashboard { background: var(--bg); border-radius: 16px; padding: 32px; }
+
+.a-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.a-kpi {
+  padding: 28px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+  position: relative;
+}
+.a-kpi-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.a-kpi-content { flex: 1; min-width: 0; }
+.a-kpi-number {
+  font-family: var(--mono);
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.a-kpi-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+.a-kpi-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-family: var(--mono);
+}
+.a-kpi-expand {
+  font-size: 10px;
+  color: var(--text-muted);
+  position: absolute;
+  bottom: 10px;
+  right: 14px;
+  font-family: var(--mono);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.a-kpi:hover .a-kpi-expand { opacity: 1; }
+
+/* Expandable detail panel inside KPI */
+.a-detail {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+  border-top: 0px solid transparent;
+}
+.a-detail.open {
+  max-height: 500px;
+  border-top: 1px solid var(--border);
+}
+.a-detail-inner {
+  padding: 20px 24px;
+}
+
+/* Middle row: 2 wide cards */
+.a-wide-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.a-wide-card {
+  padding: 28px;
+}
+.a-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+/* Calendar strip */
+.a-calendar-strip {
+  padding: 20px 28px;
+}
+.a-cal-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.a-cal-item {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 10px;
+  border-left: 3px solid transparent;
+  min-width: 180px;
+}
+.a-cal-date {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.a-cal-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+.a-cal-badge {
+  font-size: 9px;
+  font-family: var(--mono);
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 6px;
+  display: inline-block;
+}
+
+/* ===== Concentration & Leverage shared (Option A) ===== */
+.fund-row { margin-bottom: 18px; }
+.fund-row:last-child { margin-bottom: 0; }
+.fund-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.fund-name { font-size: 13px; font-weight: 500; }
+.fund-meta { font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
+.bar-track {
+  height: 22px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  position: relative;
+  overflow: visible;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  transition: width 0.4s ease;
+}
+.bar-limit {
+  position: absolute;
+  top: -3px;
+  height: calc(100% + 6px);
+  width: 2px;
+  border-radius: 1px;
+}
+.bar-limit::after {
+  content: attr(data-label);
+  position: absolute;
+  top: -15px;
+  left: 4px;
+  font-size: 9px;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+.fund-stats {
+  display: flex;
+  gap: 14px;
+  margin-top: 6px;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+.fund-stats span { font-family: var(--mono); }
+.chip {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  display: inline-block;
+}
+
+/* ===== Detail panels (Option A expandables) ===== */
+.detail-violation {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.15);
+  font-size: 12px;
+}
+.detail-violation:last-child { border-bottom: none; }
+.sev-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.detail-violation .meta {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.kyc-pipeline-bar {
+  display: flex;
+  gap: 2px;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.kyc-pipeline-bar div { height: 100%; }
+.kyc-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 4px 0;
+}
+.kyc-row .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.kyc-row .cnt { margin-left: auto; font-family: var(--mono); font-weight: 600; }
+
+.audit-fund-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.audit-fund-bar .name { font-size: 12px; min-width: 120px; }
+.audit-fund-bar .track {
+  flex: 1; height: 7px; background: rgba(0,0,0,0.2); border-radius: 4px; overflow: hidden;
+}
+.audit-fund-bar .fill { height: 100%; border-radius: 4px; }
+.audit-fund-bar .pct { font-family: var(--mono); font-size: 11px; min-width: 36px; text-align: right; }
+
+/* ===== OPTION B: Tabbed ===== */
+.b-dashboard { background: var(--bg); border-radius: 16px; padding: 32px; }
+.b-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 32px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+  padding: 4px;
+  width: fit-content;
+}
+.b-tab {
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  background: none;
+  font-family: var(--sans);
+}
+.b-tab:hover { color: var(--text); }
+.b-tab.active {
+  background: var(--bg-card);
+  color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.b-panel { display: none; }
+.b-panel.active { display: block; }
+
+/* Tab 1: Status — 3 cards in a row */
+.b-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.b-card {
+  padding: 28px;
+}
+.b-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.b-badge {
+  font-size: 10px;
+  font-family: var(--mono);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+.b-hero-num {
+  font-family: var(--mono);
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.b-hero-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+/* Tab 2: Risk — 2 cards */
+.b-risk-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* Tab 3: Calendar expanded */
+.b-cal-card { padding: 28px; }
+.b-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.b-cal-event {
+  padding: 20px;
+  background: rgba(0,0,0,0.12);
+  border-radius: 12px;
+  border-left: 3px solid transparent;
+}
+.b-cal-event-date {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.b-cal-event-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.b-cal-event-badge {
+  font-size: 9px;
+  font-family: var(--mono);
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+.b-cal-event-type {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* Violation list (Tab 1) */
+.b-viol-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.15);
+  font-size: 12px;
+}
+.b-viol-item:last-child { border-bottom: none; }
+.b-viol-text { flex: 1; }
+.b-viol-text .sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.b-viol-meta { font-family: var(--mono); font-size: 10px; color: var(--text-muted); white-space: nowrap; text-align: right; }
+.b-new-tag {
+  font-size: 9px; background: rgba(248,113,113,0.2); color: var(--danger);
+  padding: 1px 5px; border-radius: 4px; font-weight: 600;
+}
+
+/* Severity pills for Tab 1 violations */
+.b-sev-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.b-sev-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+.b-sev-pill .n { font-family: var(--mono); font-size: 20px; font-weight: 700; }
+
+/* Tab 1 KYC */
+.b-kyc-hero {
+  font-family: var(--mono);
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.b-kyc-unit { font-size: 14px; color: var(--text-dim); margin-bottom: 16px; }
+
+@media (max-width: 1100px) {
+  .a-kpi-row, .b-status-grid { grid-template-columns: 1fr; }
+  .a-wide-row, .b-risk-grid { grid-template-columns: 1fr; }
+  .b-cal-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ======================== OPTION A ======================== -->
+<div class="option-section">
+  <div class="option-label">Option A</div>
+  <div class="option-title">Progressive Disclosure</div>
+  <div class="option-desc">Clean KPI headlines up top. Details expand on click. The dashboard loads minimal — the user decides what to dig into.</div>
+
+  <div class="a-dashboard">
+
+    <!-- TOP ROW: 3 KPI headline cards -->
+    <div class="a-kpi-row">
+
+      <!-- KPI 1: Violations -->
+      <div class="card a-kpi" onclick="toggleDetail('a-det-viol')">
+        <div class="a-kpi-icon" style="background:rgba(248,113,113,0.12)">
+          <span style="color:var(--danger)">⚠</span>
+        </div>
+        <div class="a-kpi-content">
+          <div class="a-kpi-number" style="color:var(--danger)">4</div>
+          <div class="a-kpi-label">Aktive Verstöße</div>
+          <div class="a-kpi-sub">2 kritisch · 1 warnung · 1 info</div>
+        </div>
+        <span class="a-kpi-expand">▼ Details</span>
+      </div>
+
+      <!-- KPI 2: KYC Pipeline -->
+      <div class="card a-kpi" onclick="toggleDetail('a-det-kyc')">
+        <div class="a-kpi-icon" style="background:rgba(251,191,36,0.12)">
+          <span style="color:var(--warning)">◉</span>
+        </div>
+        <div class="a-kpi-content">
+          <div class="a-kpi-number" style="color:var(--accent)">87<span style="font-size:18px;color:var(--text-dim)">%</span></div>
+          <div class="a-kpi-label">KYC-Abdeckung</div>
+          <div class="a-kpi-sub">47/54 verifiziert · 3 überfällig</div>
+        </div>
+        <span class="a-kpi-expand">▼ Details</span>
+      </div>
+
+      <!-- KPI 3: Audit Readiness -->
+      <div class="card a-kpi" onclick="toggleDetail('a-det-audit')">
+        <div class="a-kpi-icon" style="background:rgba(251,191,36,0.12)">
+          <span style="color:var(--warning)">✓</span>
+        </div>
+        <div class="a-kpi-content">
+          <div class="a-kpi-number" style="color:var(--warning)">84<span style="font-size:18px;color:var(--text-dim)">%</span></div>
+          <div class="a-kpi-label">Prüfungsbereitschaft</div>
+          <div class="a-kpi-sub">142/156 Dokumente · 85T bis BaFin</div>
+        </div>
+        <span class="a-kpi-expand">▼ Details</span>
+      </div>
+    </div>
+
+    <!-- Expandable detail: Violations -->
+    <div class="card" style="margin-bottom:24px;overflow:hidden">
+      <div class="a-detail" id="a-det-viol">
+        <div class="a-detail-inner">
+          <div class="detail-violation">
+            <div class="sev-dot" style="background:var(--danger)"></div>
+            <div>
+              <div>Konzentrationslimit überschritten</div>
+              <div style="font-size:10px;color:var(--text-muted)">Top-Investor > 25% — KAGB §262</div>
+            </div>
+            <span class="b-new-tag">NEU</span>
+            <span class="meta">Rheingold I · 2h</span>
+          </div>
+          <div class="detail-violation">
+            <div class="sev-dot" style="background:var(--danger)"></div>
+            <div>
+              <div>Leverage Commitment > Limit</div>
+              <div style="font-size:10px;color:var(--text-muted)">218% von 200% — AIFMD Art. 25</div>
+            </div>
+            <span class="meta">Alpenvorland · 3T</span>
+          </div>
+          <div class="detail-violation">
+            <div class="sev-dot" style="background:var(--warning)"></div>
+            <div>
+              <div>KYC-Review überfällig</div>
+              <div style="font-size:10px;color:var(--text-muted)">Müller Familienstiftung — 14T überfällig</div>
+            </div>
+            <span class="meta">14T</span>
+          </div>
+          <div class="detail-violation">
+            <div class="sev-dot" style="background:var(--accent)"></div>
+            <div>
+              <div>Annex IV Daten unvollständig</div>
+              <div style="font-size:10px;color:var(--text-muted)">3 Felder fehlen — Q4 Meldung</div>
+            </div>
+            <span class="meta">Nordstern II · 5T</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expandable detail: KYC -->
+    <div class="card" style="margin-bottom:24px;overflow:hidden">
+      <div class="a-detail" id="a-det-kyc">
+        <div class="a-detail-inner">
+          <div class="kyc-pipeline-bar">
+            <div style="width:87%;background:var(--success)"></div>
+            <div style="width:5.5%;background:var(--danger)"></div>
+            <div style="width:3.7%;background:var(--warning)"></div>
+            <div style="width:3.8%;background:var(--accent)"></div>
+          </div>
+          <div class="kyc-row"><div class="dot" style="background:var(--danger)"></div>Überfällig<span class="cnt" style="color:var(--danger)">3</span></div>
+          <div class="kyc-row"><div class="dot" style="background:var(--warning)"></div>Läuft ab &lt; 30T<span class="cnt" style="color:var(--warning)">2</span></div>
+          <div class="kyc-row"><div class="dot" style="background:var(--accent)"></div>Erstprüfung ausstehend<span class="cnt" style="color:var(--accent)">2</span></div>
+          <div class="kyc-row"><div class="dot" style="background:var(--success)"></div>Verifiziert<span class="cnt" style="color:var(--success)">47</span></div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:20px;font-size:11px;color:var(--text-dim)">
+            <span>EDD: <span style="font-family:var(--mono);color:var(--warm)">4</span></span>
+            <span>PEP: <span style="font-family:var(--mono);color:var(--warning)">1</span></span>
+            <span>Sanktionen: <span style="font-family:var(--mono);color:var(--success)">✓</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expandable detail: Audit -->
+    <div class="card" style="margin-bottom:24px;overflow:hidden">
+      <div class="a-detail" id="a-det-audit">
+        <div class="a-detail-inner">
+          <div class="audit-fund-bar">
+            <span class="name">Rheingold I</span>
+            <div class="track"><div class="fill" style="width:72%;background:var(--warning)"></div></div>
+            <span class="pct" style="color:var(--warning)">72%</span>
+          </div>
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:12px;padding-left:132px">⚠ Bewertungsgutachten fehlt · Anlegerregister unvollständig</div>
+          <div class="audit-fund-bar">
+            <span class="name">Alpenvorland</span>
+            <div class="track"><div class="fill" style="width:88%;background:var(--success)"></div></div>
+            <span class="pct" style="color:var(--success)">88%</span>
+          </div>
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:12px;padding-left:132px">⚠ Risikobericht Q4 ausstehend</div>
+          <div class="audit-fund-bar">
+            <span class="name">Nordstern II</span>
+            <div class="track"><div class="fill" style="width:94%;background:var(--success)"></div></div>
+            <span class="pct" style="color:var(--success)">94%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIDDLE ROW: 2 wider cards -->
+    <div class="a-wide-row">
+
+      <!-- Concentration Risk -->
+      <div class="card a-wide-card">
+        <div class="a-card-title">Konzentrationsrisiko <span class="b-badge" style="background:rgba(248,113,113,0.15);color:var(--danger)">1 Verstoß</span></div>
+
+        <div class="fund-row">
+          <div class="fund-header">
+            <span class="fund-name">Rheingold Immobilien I</span>
+            <span class="fund-meta">HHI 2.840</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:31%;background:var(--danger);color:var(--bg)">31%</div>
+            <div class="bar-limit" style="left:25%;background:var(--danger);opacity:0.6" data-label="25%"></div>
+          </div>
+          <div class="fund-stats">
+            <span class="chip" style="background:var(--accent-dim);color:var(--accent)">68% Inst.</span>
+            <span class="chip" style="background:rgba(232,168,124,0.15);color:var(--warm)">22% Prof.</span>
+            <span class="chip" style="background:rgba(110,231,183,0.1);color:var(--success)">10% Semi</span>
+          </div>
+        </div>
+
+        <div class="fund-row">
+          <div class="fund-header">
+            <span class="fund-name">Alpenvorland Spezial AIF</span>
+            <span class="fund-meta">HHI 1.620</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:18%;background:var(--success);color:var(--bg)">18%</div>
+            <div class="bar-limit" style="left:25%;background:var(--text-dim);opacity:0.5" data-label="25%"></div>
+          </div>
+          <div class="fund-stats">
+            <span class="chip" style="background:var(--accent-dim);color:var(--accent)">82% Inst.</span>
+            <span class="chip" style="background:rgba(232,168,124,0.15);color:var(--warm)">18% Prof.</span>
+          </div>
+        </div>
+
+        <div class="fund-row">
+          <div class="fund-header">
+            <span class="fund-name">Nordstern Infrastructure II</span>
+            <span class="fund-meta">HHI 980</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:12%;background:var(--success);color:var(--bg)">12%</div>
+            <div class="bar-limit" style="left:25%;background:var(--text-dim);opacity:0.5" data-label="25%"></div>
+          </div>
+          <div class="fund-stats">
+            <span class="chip" style="background:var(--accent-dim);color:var(--accent)">55% Inst.</span>
+            <span class="chip" style="background:rgba(232,168,124,0.15);color:var(--warm)">30% Prof.</span>
+            <span class="chip" style="background:rgba(110,231,183,0.1);color:var(--success)">15% Semi</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leverage Utilization -->
+      <div class="card a-wide-card">
+        <div class="a-card-title">Leverage-Auslastung <span class="b-badge" style="background:rgba(248,113,113,0.15);color:var(--danger)">1 Überschreitung</span></div>
+
+        <div class="fund-row">
+          <div class="fund-header">
+            <span class="fund-name">Rheingold Immobilien I</span>
+            <span class="fund-meta">Commitment</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:62%;background:var(--success);color:var(--bg)">124%</div>
+          </div>
+          <div class="fund-stats">Commitment: <span>124%</span> &nbsp;·&nbsp; Gross: <span>138%</span> &nbsp;·&nbsp; Limit: <span>200%</span></div>
+        </div>
+
+        <div class="fund-row">
+          <div class="fund-header">
+            <span class="fund-name" style="color:var(--danger)">Alpenvorland Spezial AIF</span>
+            <span class="fund-meta">Commitment</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:100%;background:var(--danger);color:white">218%</div>
+          </div>
+          <div class="fund-stats">Commitment: <span style="color:var(--danger)">218%</span> &nbsp;·&nbsp; Gross: <span style="color:var(--danger)">245%</span> &nbsp;·&nbsp; Limit: <span>200%</span></div>
+        </div>
+
+        <div class="fund-row">
+          <div class="fund-header">
+            <span class="fund-name">Nordstern Infrastructure II</span>
+            <span class="fund-meta">Commitment</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:46.5%;background:var(--success);color:var(--bg)">93%</div>
+          </div>
+          <div class="fund-stats">Commitment: <span>93%</span> &nbsp;·&nbsp; Gross: <span>105%</span> &nbsp;·&nbsp; Limit: <span>200%</span></div>
+        </div>
+
+        <div style="margin-top:auto;padding-top:14px;font-size:10px;color:var(--text-muted);font-family:var(--mono)">
+          AIFMD II Art. 25 · Commitment-Methode · 19.02.2026
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM: Calendar strip -->
+    <div class="card a-calendar-strip">
+      <div class="a-card-title" style="margin-bottom:14px">Regulatorischer Kalender <span style="font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0;font-size:11px;margin-left:8px">90-Tage-Vorschau →</span></div>
+      <div class="a-cal-row">
+        <div class="a-cal-item" style="border-left-color:var(--danger)">
+          <div class="a-cal-date" style="color:var(--danger)">21.02.</div>
+          <div class="a-cal-desc">KYC-Review Müller Familienstiftung</div>
+          <span class="a-cal-badge" style="background:rgba(248,113,113,0.15);color:var(--danger)">ÜBERFÄLLIG</span>
+        </div>
+        <div class="a-cal-item" style="border-left-color:var(--warning)">
+          <div class="a-cal-date" style="color:var(--warning)">28.02.</div>
+          <div class="a-cal-desc">Annex IV Meldung Q4/2025 — BaFin</div>
+          <span class="a-cal-badge" style="background:rgba(251,191,36,0.15);color:var(--warning)">9 TAGE</span>
+        </div>
+        <div class="a-cal-item" style="border-left-color:var(--warning)">
+          <div class="a-cal-date" style="color:var(--warning)">01.03.</div>
+          <div class="a-cal-desc">Jahresabschluss Rheingold I — WP</div>
+          <span class="a-cal-badge" style="background:rgba(251,191,36,0.15);color:var(--warning)">10 TAGE</span>
+        </div>
+        <div class="a-cal-item" style="border-left-color:var(--accent)">
+          <div class="a-cal-date" style="color:var(--accent)">15.03.</div>
+          <div class="a-cal-desc">GwG-Risikoanalyse Update</div>
+          <span class="a-cal-badge" style="background:var(--accent-dim);color:var(--accent)">24 TAGE</span>
+        </div>
+        <div class="a-cal-item" style="border-left-color:var(--accent)">
+          <div class="a-cal-date" style="color:var(--accent)">31.03.</div>
+          <div class="a-cal-desc">AIFMD II Leverage-Meldung Q1</div>
+          <span class="a-cal-badge" style="background:var(--accent-dim);color:var(--accent)">40 TAGE</span>
+        </div>
+        <div class="a-cal-item" style="border-left-color:var(--text-muted)">
+          <div class="a-cal-date">30.04.</div>
+          <div class="a-cal-desc">Halbjahresbericht Nordstern II</div>
+          <span class="a-cal-badge" style="background:rgba(0,0,0,0.2);color:var(--text-dim)">70 TAGE</span>
+        </div>
+        <div class="a-cal-item" style="border-left-color:var(--text-muted)">
+          <div class="a-cal-date">15.05.</div>
+          <div class="a-cal-desc">BaFin Prüfung — Vor-Ort</div>
+          <span class="a-cal-badge" style="background:rgba(0,0,0,0.2);color:var(--text-dim)">85 TAGE</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ======================== OPTION B ======================== -->
+<div class="option-section">
+  <div class="option-label">Option B</div>
+  <div class="option-title">Tabbed Sections</div>
+  <div class="option-desc">Three focused views the user switches between. Each tab answers one question. Never more than 3 cards visible at once.</div>
+
+  <div class="b-dashboard">
+
+    <div class="b-tabs">
+      <button class="b-tab active" onclick="switchTab('status')">Status</button>
+      <button class="b-tab" onclick="switchTab('risk')">Risiko</button>
+      <button class="b-tab" onclick="switchTab('calendar')">Kalender</button>
+    </div>
+
+    <!-- TAB 1: Status -->
+    <div class="b-panel active" id="panel-status">
+      <div class="b-status-grid">
+
+        <!-- Violations -->
+        <div class="card b-card">
+          <div class="b-card-title">Aktive Verstöße <span class="b-badge" style="background:rgba(248,113,113,0.15);color:var(--danger)">4 offen</span></div>
+
+          <div class="b-sev-row">
+            <div class="b-sev-pill"><span class="n" style="color:var(--danger)">2</span><span style="font-size:11px;color:var(--text-dim)">Krit.</span></div>
+            <div class="b-sev-pill"><span class="n" style="color:var(--warning)">1</span><span style="font-size:11px;color:var(--text-dim)">Warn.</span></div>
+            <div class="b-sev-pill"><span class="n" style="color:var(--accent)">1</span><span style="font-size:11px;color:var(--text-dim)">Info</span></div>
+          </div>
+
+          <div class="b-viol-item">
+            <div class="sev-dot" style="background:var(--danger)"></div>
+            <div class="b-viol-text">Konzentrationslimit überschritten<div class="sub">KAGB §262 · Rheingold I</div></div>
+            <div><span class="b-new-tag">NEU</span><div class="b-viol-meta" style="margin-top:4px">2h</div></div>
+          </div>
+          <div class="b-viol-item">
+            <div class="sev-dot" style="background:var(--danger)"></div>
+            <div class="b-viol-text">Leverage > Limit<div class="sub">AIFMD Art. 25 · Alpenvorland</div></div>
+            <div class="b-viol-meta">3T</div>
+          </div>
+          <div class="b-viol-item">
+            <div class="sev-dot" style="background:var(--warning)"></div>
+            <div class="b-viol-text">KYC-Review überfällig<div class="sub">Müller Familienstiftung</div></div>
+            <div class="b-viol-meta">14T</div>
+          </div>
+          <div class="b-viol-item">
+            <div class="sev-dot" style="background:var(--accent)"></div>
+            <div class="b-viol-text">Annex IV unvollständig<div class="sub">3 Felder · Nordstern II</div></div>
+            <div class="b-viol-meta">5T</div>
+          </div>
+        </div>
+
+        <!-- KYC Pipeline -->
+        <div class="card b-card">
+          <div class="b-card-title">KYC / AML Pipeline <span class="b-badge" style="background:rgba(251,191,36,0.15);color:var(--warning)">3 überfällig</span></div>
+
+          <div class="b-kyc-hero" style="color:var(--accent)">87<span style="font-size:20px;color:var(--text-dim)">%</span></div>
+          <div class="b-kyc-unit">47 / 54 Investoren verifiziert</div>
+
+          <div class="kyc-pipeline-bar" style="margin-bottom:16px">
+            <div style="width:87%;background:var(--success)"></div>
+            <div style="width:5.5%;background:var(--danger)"></div>
+            <div style="width:3.7%;background:var(--warning)"></div>
+            <div style="width:3.8%;background:var(--accent)"></div>
+          </div>
+
+          <div class="kyc-row"><div class="dot" style="background:var(--danger)"></div>Überfällig<span class="cnt" style="color:var(--danger)">3</span></div>
+          <div class="kyc-row"><div class="dot" style="background:var(--warning)"></div>Läuft ab &lt; 30T<span class="cnt" style="color:var(--warning)">2</span></div>
+          <div class="kyc-row"><div class="dot" style="background:var(--accent)"></div>Erstprüfung ausstehend<span class="cnt" style="color:var(--accent)">2</span></div>
+          <div class="kyc-row"><div class="dot" style="background:var(--success)"></div>Verifiziert<span class="cnt" style="color:var(--success)">47</span></div>
+
+          <div style="margin-top:auto;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:20px;font-size:11px;color:var(--text-dim)">
+            <span>EDD: <span style="font-family:var(--mono);color:var(--warm)">4</span></span>
+            <span>PEP: <span style="font-family:var(--mono);color:var(--warning)">1</span></span>
+            <span>Sanktionen: <span style="font-family:var(--mono);color:var(--success)">✓</span></span>
+          </div>
+        </div>
+
+        <!-- Audit Readiness -->
+        <div class="card b-card">
+          <div class="b-card-title">Prüfungsbereitschaft <span class="b-badge" style="background:rgba(251,191,36,0.15);color:var(--warning)">2 Lücken</span></div>
+
+          <div class="b-hero-num" style="color:var(--warning)">84<span style="font-size:20px;color:var(--text-dim)">%</span></div>
+          <div class="b-hero-sub">Gesamtbereitschaft · BaFin in 85 Tagen</div>
+
+          <div style="display:flex;flex-direction:column;gap:12px;flex:1">
+            <div class="audit-fund-bar">
+              <span class="name">Rheingold I</span>
+              <div class="track"><div class="fill" style="width:72%;background:var(--warning)"></div></div>
+              <span class="pct" style="color:var(--warning)">72%</span>
+            </div>
+            <div class="audit-fund-bar">
+              <span class="name">Alpenvorland</span>
+              <div class="track"><div class="fill" style="width:88%;background:var(--success)"></div></div>
+              <span class="pct" style="color:var(--success)">88%</span>
+            </div>
+            <div class="audit-fund-bar">
+              <span class="name">Nordstern II</span>
+              <div class="track"><div class="fill" style="width:94%;background:var(--success)"></div></div>
+              <span class="pct" style="color:var(--success)">94%</span>
+            </div>
+          </div>
+
+          <div style="margin-top:auto;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:14px;font-size:10px;color:var(--text-muted)">
+            <span>Dok: <span style="font-family:var(--mono);color:var(--text)">142/156</span></span>
+            <span>Prozesse: <span style="font-family:var(--mono);color:var(--text)">18/19</span></span>
+            <span>Verträge: <span style="font-family:var(--mono);color:var(--text)">31/31</span></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: Risk -->
+    <div class="b-panel" id="panel-risk">
+      <div class="b-risk-grid">
+
+        <!-- Concentration Risk -->
+        <div class="card b-card">
+          <div class="b-card-title">Konzentrationsrisiko <span class="b-badge" style="background:rgba(248,113,113,0.15);color:var(--danger)">1 Verstoß</span></div>
+
+          <div class="fund-row">
+            <div class="fund-header">
+              <span class="fund-name">Rheingold Immobilien I</span>
+              <span class="fund-meta">HHI 2.840</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:31%;background:var(--danger);color:var(--bg)">31%</div>
+              <div class="bar-limit" style="left:25%;background:var(--danger);opacity:0.6" data-label="Limit 25%"></div>
+            </div>
+            <div class="fund-stats">
+              Top: Bayerische Versorgungskammer (31%)
+              <span class="chip" style="background:var(--accent-dim);color:var(--accent);margin-left:auto">68% Inst.</span>
+            </div>
+          </div>
+
+          <div class="fund-row">
+            <div class="fund-header">
+              <span class="fund-name">Alpenvorland Spezial AIF</span>
+              <span class="fund-meta">HHI 1.620</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:18%;background:var(--success);color:var(--bg)">18%</div>
+              <div class="bar-limit" style="left:25%;background:var(--text-dim);opacity:0.5" data-label="25%"></div>
+            </div>
+            <div class="fund-stats">
+              Top: Hamburger Pensionskasse (18%)
+              <span class="chip" style="background:var(--accent-dim);color:var(--accent);margin-left:auto">82% Inst.</span>
+            </div>
+          </div>
+
+          <div class="fund-row">
+            <div class="fund-header">
+              <span class="fund-name">Nordstern Infrastructure II</span>
+              <span class="fund-meta">HHI 980</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:12%;background:var(--success);color:var(--bg)">12%</div>
+              <div class="bar-limit" style="left:25%;background:var(--text-dim);opacity:0.5" data-label="25%"></div>
+            </div>
+            <div class="fund-stats">
+              Top: Rheinische Ärzteversorgung (12%)
+              <span class="chip" style="background:var(--accent-dim);color:var(--accent);margin-left:auto">55% Inst.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leverage -->
+        <div class="card b-card">
+          <div class="b-card-title">Leverage-Auslastung <span class="b-badge" style="background:rgba(248,113,113,0.15);color:var(--danger)">1 Überschreitung</span></div>
+
+          <div class="fund-row">
+            <div class="fund-header">
+              <span class="fund-name">Rheingold Immobilien I</span>
+              <span class="fund-meta">Commitment</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:62%;background:var(--success);color:var(--bg)">124%</div>
+            </div>
+            <div class="fund-stats">Commitment: <span>124%</span> &nbsp;·&nbsp; Gross: <span>138%</span> &nbsp;·&nbsp; Limit: <span>200%</span></div>
+          </div>
+
+          <div class="fund-row">
+            <div class="fund-header">
+              <span class="fund-name" style="color:var(--danger)">Alpenvorland Spezial AIF</span>
+              <span class="fund-meta">Commitment</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:100%;background:var(--danger);color:white">218%</div>
+            </div>
+            <div class="fund-stats">Commitment: <span style="color:var(--danger)">218%</span> &nbsp;·&nbsp; Gross: <span style="color:var(--danger)">245%</span> &nbsp;·&nbsp; Limit: <span>200%</span></div>
+          </div>
+
+          <div class="fund-row">
+            <div class="fund-header">
+              <span class="fund-name">Nordstern Infrastructure II</span>
+              <span class="fund-meta">Commitment</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:46.5%;background:var(--success);color:var(--bg)">93%</div>
+            </div>
+            <div class="fund-stats">Commitment: <span>93%</span> &nbsp;·&nbsp; Gross: <span>105%</span> &nbsp;·&nbsp; Limit: <span>200%</span></div>
+          </div>
+
+          <div style="margin-top:auto;padding-top:14px;font-size:10px;color:var(--text-muted);font-family:var(--mono)">
+            AIFMD II Art. 25 · Commitment-Methode · 19.02.2026
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 3: Calendar -->
+    <div class="b-panel" id="panel-calendar">
+      <div class="card b-cal-card">
+        <div class="b-card-title" style="margin-bottom:24px">Regulatorischer Kalender <span style="font-weight:400;color:var(--text-muted);text-transform:none;letter-spacing:0;font-size:11px">90-Tage-Vorschau · 7 anstehende Fristen</span></div>
+
+        <div class="b-cal-grid">
+          <div class="b-cal-event" style="border-left-color:var(--danger)">
+            <div class="b-cal-event-date" style="color:var(--danger)">21. Feb</div>
+            <div class="b-cal-event-desc">KYC-Review<br>Müller Familienstiftung</div>
+            <span class="b-cal-event-badge" style="background:rgba(248,113,113,0.15);color:var(--danger)">ÜBERFÄLLIG</span>
+            <div class="b-cal-event-type">GwG · Investorprüfung</div>
+          </div>
+          <div class="b-cal-event" style="border-left-color:var(--warning)">
+            <div class="b-cal-event-date" style="color:var(--warning)">28. Feb</div>
+            <div class="b-cal-event-desc">Annex IV Meldung<br>Q4/2025 — BaFin</div>
+            <span class="b-cal-event-badge" style="background:rgba(251,191,36,0.15);color:var(--warning)">9 TAGE</span>
+            <div class="b-cal-event-type">AIFMD · Quartalsmeldung</div>
+          </div>
+          <div class="b-cal-event" style="border-left-color:var(--warning)">
+            <div class="b-cal-event-date" style="color:var(--warning)">01. Mär</div>
+            <div class="b-cal-event-desc">Jahresabschluss<br>Rheingold I — WP</div>
+            <span class="b-cal-event-badge" style="background:rgba(251,191,36,0.15);color:var(--warning)">10 TAGE</span>
+            <div class="b-cal-event-type">KAGB · Wirtschaftsprüfer</div>
+          </div>
+          <div class="b-cal-event" style="border-left-color:var(--accent)">
+            <div class="b-cal-event-date" style="color:var(--accent)">15. Mär</div>
+            <div class="b-cal-event-desc">GwG-Risikoanalyse<br>Update fällig</div>
+            <span class="b-cal-event-badge" style="background:var(--accent-dim);color:var(--accent)">24 TAGE</span>
+            <div class="b-cal-event-type">GwG · Risikoanalyse</div>
+          </div>
+          <div class="b-cal-event" style="border-left-color:var(--accent)">
+            <div class="b-cal-event-date" style="color:var(--accent)">31. Mär</div>
+            <div class="b-cal-event-desc">AIFMD II<br>Leverage-Meldung Q1/2026</div>
+            <span class="b-cal-event-badge" style="background:var(--accent-dim);color:var(--accent)">40 TAGE</span>
+            <div class="b-cal-event-type">AIFMD II · Quartalsmeldung</div>
+          </div>
+          <div class="b-cal-event" style="border-left-color:var(--text-muted)">
+            <div class="b-cal-event-date">30. Apr</div>
+            <div class="b-cal-event-desc">Halbjahresbericht<br>Nordstern Infrastructure II</div>
+            <span class="b-cal-event-badge" style="background:rgba(0,0,0,0.2);color:var(--text-dim)">70 TAGE</span>
+            <div class="b-cal-event-type">KAGB · Berichtspflicht</div>
+          </div>
+          <div class="b-cal-event" style="border-left-color:var(--text-muted)">
+            <div class="b-cal-event-date">15. Mai</div>
+            <div class="b-cal-event-desc">BaFin Prüfung<br>Vor-Ort Termin</div>
+            <span class="b-cal-event-badge" style="background:rgba(0,0,0,0.2);color:var(--text-dim)">85 TAGE</span>
+            <div class="b-cal-event-type">BaFin · Sonderprüfung</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Option A: Toggle detail panels
+function toggleDetail(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+// Option B: Tab switching
+function switchTab(name) {
+  document.querySelectorAll('.b-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.b-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>

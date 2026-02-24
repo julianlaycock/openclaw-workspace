@@ -1,0 +1,26 @@
+name,jurisdiction,investor_type,accredited,kyc_status,kyc_expiry
+CalPERS,US,institutional,true,verified,2028-12-31
+Norges Bank Investment Management,NO,institutional,true,verified,2028-06-30
+Allianz Global Investors,DE,institutional,true,verified,2027-09-15
+Temasek Holdings,SG,institutional,true,verified,2028-03-31
+Dublin Capital Partners,IE,institutional,true,verified,2027-11-30
+Rothschild & Co Wealth Management,CH,professional,true,verified,2027-06-30
+Baillie Gifford & Co,GB,professional,true,verified,2026-04-16
+Lombard Odier Group,CH,professional,true,verified,2027-12-31
+Tikehau Capital,FR,professional,true,verified,2027-08-15
+Chen Wei Investment Ltd,SG,professional,true,verified,2027-04-30
+Dr. Sarah Bennett,GB,professional,true,verified,2027-01-20
+Klaus Schmidt,DE,semi_professional,true,verified,2027-03-15
+Erik Nordström,NO,semi_professional,true,verified,2027-05-20
+Hans Weber,DE,semi_professional,true,verified,2027-08-15
+Mueller Family Office,DE,semi_professional,true,verified,2026-05-01
+Van der Berg Holding,NL,semi_professional,true,expired,2025-10-15
+Dr. Sofia Papadopoulos,GR,well_informed,true,verified,2027-04-30
+Henrik Lindqvist,SE,well_informed,false,pending,
+Margaret Chen-Williams,HK,well_informed,true,verified,2026-04-01
+Thomas Keller,DE,retail,false,verified,2027-06-30
+Amelie Dubois,FR,retail,false,verified,2027-09-15
+Anna Kowalski,PL,retail,false,pending,
+Li Wei Zhang,CN,retail,false,expired,2025-08-30
+Marie Laurent,FR,retail,false,verified,2027-12-31
+Miguel Santos,PT,retail,false,expired,2025-11-30

@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Dashboard — Final 2 Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #2D3333;
+    --bg-secondary: rgba(197,224,238,0.03);
+    --bg-hover: rgba(197,224,238,0.04);
+
+    --text-primary: #F8F9FA;
+    --text-secondary: rgba(255,255,255,0.65);
+    --text-tertiary: rgba(197,224,238,0.45);
+    --text-muted: rgba(197,224,238,0.25);
+
+    --border: rgba(197,224,238,0.1);
+    --border-subtle: rgba(197,224,238,0.06);
+    --border-strong: rgba(197,224,238,0.2);
+    --border-warm: rgba(232,168,124,0.15);
+
+    --accent: #C5E0EE;
+    --accent-50: #f0f7fb;
+    --accent-100: #dceef7;
+    --accent-200: #C5E0EE;
+    --accent-300: #a0cde0;
+    --warm: #E8A87C;
+
+    --success: #6ee7b7;
+    --success-bg: rgba(110,231,183,0.1);
+    --success-light: #bbf7d0;
+    --warning: #E8A87C;
+    --warning-bg: rgba(232,168,124,0.1);
+    --danger: #f87171;
+    --danger-bg: rgba(248,113,113,0.1);
+    --danger-light: #fca5a5;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Sora', system-ui, sans-serif;
+    background: #242a2a;
+    color: var(--text-primary);
+    padding: 32px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1.page-title { font-size: 24px; font-weight: 800; margin-bottom: 48px; text-align: center; color: var(--accent); letter-spacing: -0.5px; }
+
+  .option { margin-bottom: 80px; background: var(--bg-primary); border-radius: 16px; border: 1px solid var(--border-strong); overflow: hidden; }
+  .option-header { padding: 18px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .option-header h2 { font-size: 15px; font-weight: 700; }
+  .option-header .tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; background: rgba(197,224,238,0.08); color: var(--accent); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(197,224,238,0.15); }
+  .option-body { padding: 24px; }
+  .option-rationale { padding: 16px 24px; background: rgba(197,224,238,0.03); border-top: 1px solid var(--border); font-size: 12px; color: var(--text-secondary); line-height: 1.7; }
+  .option-rationale strong { color: var(--text-primary); }
+
+  .dash { display: flex; flex-direction: column; gap: 18px; }
+  .col-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .col-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  .card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .card-flush { padding: 0; overflow: hidden; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px; }
+
+  .badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.04em; }
+  .badge-green { background: var(--success-bg); color: var(--success); }
+  .badge-red { background: var(--danger-bg); color: var(--danger); }
+  .badge-warm { background: var(--warning-bg); color: var(--warning); }
+  .badge-gray { background: var(--bg-hover); color: var(--text-secondary); border: 1px solid var(--border); }
+  .badge-accent { background: rgba(197,224,238,0.08); color: var(--accent); border: 1px solid rgba(197,224,238,0.15); }
+
+  .tab-bar { display: flex; gap: 2px; padding: 3px; background: rgba(197,224,238,0.04); border-radius: 8px; width: fit-content; margin-bottom: 14px; }
+  .tab { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; color: var(--text-tertiary); border: 1px solid transparent; }
+  .tab.active { background: rgba(197,224,238,0.1); color: var(--text-primary); border-color: rgba(197,224,238,0.2); }
+
+  .bar { height: 5px; border-radius: 3px; background: rgba(197,224,238,0.06); overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; }
+
+  .table { width: 100%; text-align: left; border-collapse: collapse; }
+  .table th { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); padding: 8px 14px; border-bottom: 1px solid var(--border); }
+  .table td { font-size: 12px; padding: 8px 14px; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); }
+
+  .action-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 14px; border-bottom: 1px solid var(--border-subtle); }
+  .action-item:last-child { border-bottom: none; }
+
+  .placeholder { height: 130px; border-radius: 8px; background: rgba(197,224,238,0.03); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 10px; border: 1px dashed var(--border); }
+
+  .fund-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .fund-meta { display: flex; gap: 5px; margin-top: 4px; }
+  .header-title { font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+  .header-subtitle { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .sidebar-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Final 2 — Variant B + Lighter Tones</h1>
+
+<!-- ============================================================ -->
+<!-- OPTION 1: Frosted Accent -->
+<!-- ============================================================ -->
+<div class="option">
+  <div class="option-header">
+    <h2>Option 1 — Frosted Accent</h2>
+    <span class="tag">B structure · Light accent lifts</span>
+  </div>
+  <div class="option-body">
+    <div class="dash">
+
+      <!-- Banner — #F8F9FA light card -->
+      <div style="background:#F8F9FA;border:1px solid rgba(197,224,238,0.3);border-radius:14px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:18px;font-weight:700;color:#2D3333;letter-spacing:-0.3px;">Compliance Overview</div>
+          <div style="font-size:12px;color:rgba(45,51,51,0.55);margin-top:2px;">Regulatory status across all fund structures</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:24px;">
+          <div style="display:flex;gap:24px;">
+            <div style="text-align:center;">
+              <div class="mono" style="font-size:18px;font-weight:700;color:#2D3333;">3</div>
+              <div style="font-size:9px;color:rgba(45,51,51,0.45);text-transform:uppercase;letter-spacing:0.06em;">Funds</div>
+            </div>
+            <div style="text-align:center;">
+              <div class="mono" style="font-size:18px;font-weight:700;color:#2D3333;">12</div>
+              <div style="font-size:9px;color:rgba(45,51,51,0.45);text-transform:uppercase;letter-spacing:0.06em;">Investors</div>
+            </div>
+            <div style="text-align:center;">
+              <div class="mono" style="font-size:18px;font-weight:700;color:#16a34a;">24.5K</div>
+              <div style="font-size:9px;color:rgba(45,51,51,0.45);text-transform:uppercase;letter-spacing:0.06em;">Units</div>
+            </div>
+            <div style="text-align:center;">
+              <div class="mono" style="font-size:18px;font-weight:700;color:#dc2626;">6</div>
+              <div style="font-size:9px;color:#dc2626;text-transform:uppercase;letter-spacing:0.06em;">Actions</div>
+            </div>
+          </div>
+          <div style="width:1px;height:36px;background:rgba(197,224,238,0.3);"></div>
+          <!-- Score -->
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:44px;height:44px;border-radius:50%;border:2.5px solid #c07a4a;display:flex;align-items:center;justify-content:center;">
+              <span class="mono" style="font-size:16px;font-weight:800;color:#c07a4a;">78</span>
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:600;color:#c07a4a;">Score</div>
+              <div style="font-size:9px;color:rgba(45,51,51,0.45);">Review</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:rgba(45,51,51,0.5);background:rgba(197,224,238,0.15);border:1px solid rgba(197,224,238,0.3);padding:4px 12px;border-radius:8px;" class="mono">20 Feb 2026</div>
+        </div>
+      </div>
+
+      <!-- Main split -->
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start;">
+        <!-- LEFT -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+
+          <!-- Fund bands -->
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--accent-200);margin-bottom:10px;">Fund Structures</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <!-- Fund 1 — Critical: red band, softer interior with accent-toned text -->
+              <div style="display:flex;border-radius:12px;overflow:hidden;border:1px solid rgba(248,113,113,0.12);">
+                <div style="width:5px;background:linear-gradient(180deg, var(--danger-light), var(--danger));flex-shrink:0;"></div>
+                <div style="flex:1;padding:14px 16px;background:linear-gradient(90deg, rgba(248,113,113,0.05) 0%, var(--bg-secondary) 25%);">
+                  <div style="display:flex;justify-content:space-between;align-items:start;">
+                    <div>
+                      <div class="fund-name">Immobilien Spezial-AIF</div>
+                      <div class="fund-meta" style="margin-top:5px;">
+                        <span class="badge badge-gray">InvKG</span>
+                        <span class="badge badge-gray">DE</span>
+                        <span class="badge badge-red">2 high flags</span>
+                      </div>
+                    </div>
+                    <div style="display:flex;gap:20px;align-items:center;">
+                      <div style="text-align:right;">
+                        <div class="mono" style="font-size:14px;font-weight:700;color:var(--warning);">72%</div>
+                        <div style="font-size:9px;color:var(--text-tertiary);">capacity</div>
+                      </div>
+                      <div style="text-align:right;">
+                        <div class="mono" style="font-size:14px;font-weight:700;color:var(--accent-200);">8</div>
+                        <div style="font-size:9px;color:var(--text-tertiary);">investors</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fund 2 — Compliant: green band, light green accents -->
+              <div style="display:flex;border-radius:12px;overflow:hidden;border:1px solid rgba(110,231,183,0.1);">
+                <div style="width:5px;background:linear-gradient(180deg, var(--success-light), var(--success));flex-shrink:0;"></div>
+                <div style="flex:1;padding:14px 16px;background:linear-gradient(90deg, rgba(110,231,183,0.04) 0%, var(--bg-secondary) 25%);">
+                  <div style="display:flex;justify-content:space-between;align-items:start;">
+                    <div>
+                      <div class="fund-name">Wertpapier Dachfonds</div>
+                      <div class="fund-meta" style="margin-top:5px;">
+                        <span class="badge badge-gray">SICAV</span>
+                        <span class="badge badge-gray">LU</span>
+                        <span class="badge badge-green">Compliant</span>
+                      </div>
+                    </div>
+                    <div style="display:flex;gap:20px;align-items:center;">
+                      <div style="text-align:right;">
+                        <div class="mono" style="font-size:14px;font-weight:700;color:var(--success-light);">45%</div>
+                        <div style="font-size:9px;color:var(--text-tertiary);">capacity</div>
+                      </div>
+                      <div style="text-align:right;">
+                        <div class="mono" style="font-size:14px;font-weight:700;color:var(--accent-200);">3</div>
+                        <div style="font-size:9px;color:var(--text-tertiary);">investors</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fund 3 — Review: warm band -->
+              <div style="display:flex;border-radius:12px;overflow:hidden;border:1px solid rgba(232,168,124,0.1);">
+                <div style="width:5px;background:linear-gradient(180deg, #f0c9a6, var(--warning));flex-shrink:0;"></div>
+                <div style="flex:1;padding:14px 16px;background:linear-gradient(90deg, rgba(232,168,124,0.04) 0%, var(--bg-secondary) 25%);">
+                  <div style="display:flex;justify-content:space-between;align-items:start;">
+                    <div>
+                      <div class="fund-name">Multi-Asset Opportunity</div>
+                      <div class="fund-meta" style="margin-top:5px;">
+                        <span class="badge badge-gray">GmbH & Co. KG</span>
+                        <span class="badge badge-gray">DE</span>
+                        <span class="badge badge-warm">Review</span>
+                      </div>
+                    </div>
+                    <div style="display:flex;gap:20px;align-items:center;">
+                      <div style="text-align:right;">
+                        <div class="mono" style="font-size:14px;font-weight:700;color:var(--accent-300);">30%</div>
+                        <div style="font-size:9px;color:var(--text-tertiary);">capacity</div>
+                      </div>
+                      <div style="text-align:right;">
+                        <div class="mono" style="font-size:14px;font-weight:700;color:var(--accent-200);">1</div>
+                        <div style="font-size:9px;color:var(--text-tertiary);">investors</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analytics — #F8F9FA light card -->
+          <div style="background:#F8F9FA;border:1px solid rgba(197,224,238,0.3);border-radius:12px;padding:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <div style="display:flex;gap:2px;padding:3px;background:rgba(45,51,51,0.06);border-radius:8px;width:fit-content;">
+                <div style="padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(45,51,51,0.08);color:#2D3333;border:1px solid rgba(45,51,51,0.1);">Status</div>
+                <div style="padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;color:rgba(45,51,51,0.4);border:1px solid transparent;">Risk</div>
+                <div style="padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;color:rgba(45,51,51,0.4);border:1px solid transparent;">Calendar</div>
+                <div style="padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;color:rgba(45,51,51,0.4);border:1px solid transparent;">News</div>
+              </div>
+            </div>
+            <div class="col-2" style="gap:10px;">
+              <div style="border-radius:8px;border:1px dashed rgba(197,224,238,0.3);overflow:hidden;background:rgba(45,51,51,0.02);">
+                <div style="height:3px;background:linear-gradient(90deg, #fca5a5, #dc2626);"></div>
+                <div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(45,51,51,0.3);">Active Violations</div>
+              </div>
+              <div style="border-radius:8px;border:1px dashed rgba(197,224,238,0.3);overflow:hidden;background:rgba(45,51,51,0.02);">
+                <div style="height:3px;background:linear-gradient(90deg, #dceef7, #C5E0EE);"></div>
+                <div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(45,51,51,0.3);">KYC Pipeline</div>
+              </div>
+              <div style="border-radius:8px;border:1px dashed rgba(197,224,238,0.3);overflow:hidden;background:rgba(45,51,51,0.02);">
+                <div style="height:3px;background:linear-gradient(90deg, #bbf7d0, #16a34a);"></div>
+                <div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(45,51,51,0.3);">Investor Types</div>
+              </div>
+              <div style="border-radius:8px;border:1px dashed rgba(197,224,238,0.3);overflow:hidden;background:rgba(45,51,51,0.02);">
+                <div style="height:3px;background:linear-gradient(90deg, #f0c9a6, #c07a4a);"></div>
+                <div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(45,51,51,0.3);">Jurisdictions</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Decisions -->
+          <div class="card card-flush">
+            <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:rgba(197,224,238,0.03);">
+              <div class="card-title" style="margin:0;color:var(--accent-200);">Recent Decisions</div>
+              <span class="badge badge-accent">17 total</span>
+            </div>
+            <table class="table">
+              <thead><tr><th>Time</th><th>Type</th><th>Result</th><th>Asset</th><th>Checks</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">14:23</td><td>eligibility</td><td><span class="badge badge-green">pass</span></td><td>Share Class A</td><td style="color:var(--success-light);">✓ All passed</td></tr>
+                <tr style="background:rgba(248,113,113,0.03);"><td class="mono">14:20</td><td style="color:var(--text-primary);">transfer</td><td><span class="badge badge-red">fail</span></td><td style="color:var(--text-primary);">Share Class B</td><td style="color:var(--danger-light);">✗ 2 violations</td></tr>
+                <tr><td class="mono">13:45</td><td>eligibility</td><td><span class="badge badge-green">pass</span></td><td>Share Class C</td><td style="color:var(--success-light);">✓ All passed</td></tr>
+                <tr style="background:rgba(248,113,113,0.03);"><td class="mono">12:10</td><td style="color:var(--text-primary);">transfer</td><td><span class="badge badge-red">fail</span></td><td style="color:var(--text-primary);">Share Class A</td><td style="color:var(--danger-light);">✗ 1 violation</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- RIGHT: Sidebar -->
+        <div style="display:flex;flex-direction:column;gap:12px;position:sticky;top:20px;">
+
+          <!-- Action Queue -->
+          <div class="sidebar-card" style="overflow:hidden;">
+            <div style="padding:12px 14px;background:linear-gradient(90deg, rgba(248,113,113,0.08) 0%, rgba(252,165,165,0.03) 100%);border-bottom:1px solid rgba(248,113,113,0.08);display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:var(--danger-light);">⚡ Action Queue</span>
+              <span style="font-size:13px;font-weight:800;color:var(--danger);background:rgba(248,113,113,0.12);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;">5</span>
+            </div>
+            <div class="action-item">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:3px;height:24px;border-radius:2px;background:linear-gradient(180deg, var(--danger-light), var(--danger));"></div>
+                <div>
+                  <div style="font-size:11px;font-weight:600;color:var(--danger-light);">KYC Renewals Overdue</div>
+                  <div style="font-size:10px;color:var(--text-tertiary);">2 investors · ≤30d</div>
+                </div>
+              </div>
+            </div>
+            <div class="action-item">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:3px;height:24px;border-radius:2px;background:linear-gradient(180deg, var(--danger-light), var(--danger));"></div>
+                <div>
+                  <div style="font-size:11px;font-weight:600;color:var(--danger-light);">High Risk Flags</div>
+                  <div style="font-size:10px;color:var(--text-tertiary);">3 across 2 funds</div>
+                </div>
+              </div>
+            </div>
+            <div class="action-item">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:3px;height:24px;border-radius:2px;background:linear-gradient(180deg, #f0c9a6, var(--warning));"></div>
+                <div>
+                  <div style="font-size:11px;font-weight:600;color:#f0c9a6;">Rejected Decisions</div>
+                  <div style="font-size:10px;color:var(--text-tertiary);">5 need review</div>
+                </div>
+              </div>
+            </div>
+            <div class="action-item">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:3px;height:24px;border-radius:2px;background:linear-gradient(180deg, #f0c9a6, var(--warning));"></div>
+                <div>
+                  <div style="font-size:11px;font-weight:600;color:#f0c9a6;">Onboarding Queue</div>
+                  <div style="font-size:10px;color:var(--text-tertiary);">4 pending</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fund Health — lighter tinted rows -->
+          <div class="sidebar-card" style="padding:14px;">
+            <div style="font-size:12px;font-weight:700;color:var(--accent-200);margin-bottom:10px;">Fund Health</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:rgba(248,113,113,0.06);border:1px solid rgba(252,165,165,0.08);">
+                <div style="width:8px;height:8px;border-radius:50%;background:var(--danger-light);flex-shrink:0;"></div>
+                <span style="font-size:11px;color:var(--text-primary);flex:1;">Immobilien</span>
+                <span style="font-size:10px;font-weight:600;color:var(--danger-light);">2 high · 1 med</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:rgba(110,231,183,0.06);border:1px solid rgba(187,247,208,0.08);">
+                <div style="width:8px;height:8px;border-radius:50%;background:var(--success-light);flex-shrink:0;"></div>
+                <span style="font-size:11px;color:var(--text-primary);flex:1;">Wertpapier</span>
+                <span style="font-size:10px;font-weight:600;color:var(--success-light);">All clear</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:rgba(232,168,124,0.06);border:1px solid rgba(240,201,166,0.08);">
+                <div style="width:8px;height:8px;border-radius:50%;background:#f0c9a6;flex-shrink:0;"></div>
+                <span style="font-size:11px;color:var(--text-primary);flex:1;">Multi-Asset</span>
+                <span style="font-size:10px;font-weight:600;color:#f0c9a6;">1 med</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deadlines -->
+          <div class="sidebar-card" style="padding:14px;">
+            <div style="font-size:12px;font-weight:700;color:#f0c9a6;margin-bottom:10px;">Upcoming Deadlines</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:6px 10px;border-radius:6px;background:rgba(232,168,124,0.06);border:1px solid rgba(240,201,166,0.08);">
+                <span style="color:var(--text-primary);font-weight:500;">AIFMD II Annex IV</span>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <span class="mono" style="color:#f0c9a6;font-weight:600;">Mar 15</span>
+                  <span style="font-size:9px;color:#2D3333;background:linear-gradient(135deg, #f0c9a6, var(--warning));padding:1px 6px;border-radius:3px;font-weight:700;">23d</span>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:6px 10px;">
+                <span style="color:var(--text-secondary);">BaFin Annual Report</span>
+                <span class="mono" style="color:var(--text-tertiary);">Apr 30</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:6px 10px;">
+                <span style="color:var(--text-secondary);">AMLR Implementation</span>
+                <span class="mono" style="color:var(--text-tertiary);">Jul 2027</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="option-rationale">
+    <strong>Lighter tones introduced:</strong> Fund band left strips use <strong>gradient from light→saturated</strong> (#fca5a5→#f87171, #bbf7d0→#6ee7b7, #f0c9a6→#E8A87C) adding depth without new colors. KPI numbers use lighter variants (#bbf7d0 for units, #fca5a5 for actions) that feel softer against the dark bg. Sidebar text uses light tones (#fca5a5, #f0c9a6, #bbf7d0) instead of full-saturation colors — easier on the eyes in peripheral vision. Chart top strips also gradient light→saturated. The accent-100 (#dceef7) appears in the KYC pipeline chart strip. Section titles use accent-200 for a gentle lift vs pure white. Overall: same B structure, same bold color zones, but the lighter tones add <strong>luminosity and depth</strong> — the UI feels less flat, more layered.
+  </div>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- OPTION 2: Warm-Cool Contrast -->
+<!-- ============================================================ -->
+<div class="option">
+  <div class="option-header">
+    <h2>Option 2 — Warm-Cool Contrast</h2>
+    <span class="tag">B structure · Warm sidebar · Cool main</span>
+  </div>
+  <div class="option-body">
+    <div class="dash">
+
+      <!-- Banner — #F8F9FA light card -->
+      <div style="background:#F8F9FA;border:1px solid rgba(197,224,238,0.3);border-radius:14px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:18px;font-weight:700;color:#2D3333;letter-spacing:-0.3px;">Compliance Overview</div>
+          <div style="font-size:12px;color:rgba(45,51,51,0.5);margin-top:2px;">Regulatory status across all fund structures</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:24px;">
+          <div style="display:flex;gap:24px;">
+            <div style="text-align:center;">
+              <div class="mono" style="font-size:18px;font-weight:700;color:#2D3333;">3</div>
+              <div style="font-size:9px;color:rgba(45,51,51,0.4);text-transform:uppercase;letter-spacing:0.06em;">Funds</div>
+            </div>
+            <div style="text-align:center;">
+              <div class="mono" style="font-size:18px;font-weight:700;color:#2D3333;">12</div>
+              <div style="font-size:9px;color:rgba(45,51,51,0.4);text-transform:uppercase;letter-spacing:0.06em;">Investors</div>
+            </div>
+            <div style="text-align:center;">
+              <div class="mono" style="font-size:18px;font-weight:700;color:#16a34a;">24.5K</div>
+              <div style="font-size:9px;color:rgba(45,51,51,0.4);text-transform:uppercase;letter-spacing:0.06em;">Units</div>
+            </div>
+            <div style="text-align:center;">
+              <div class="mono" style="font-size:18px;font-weight:700;color:#dc2626;">6</div>
+              <div style="font-size:9px;color:#dc2626;text-transform:uppercase;letter-spacing:0.06em;">Actions</div>
+            </div>
+          </div>
+          <div style="width:1px;height:36px;background:rgba(197,224,238,0.3);"></div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:44px;height:44px;border-radius:50%;border:2.5px solid #c07a4a;display:flex;align-items:center;justify-content:center;">
+              <span class="mono" style="font-size:16px;font-weight:800;color:#c07a4a;">78</span>
+            </div>
+            <div>
+              <div style="font-size:10px;font-weight:600;color:#c07a4a;">Score</div>
+              <div style="font-size:9px;color:rgba(45,51,51,0.4);">Review</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:rgba(45,51,51,0.5);background:rgba(197,224,238,0.15);border:1px solid rgba(197,224,238,0.3);padding:4px 12px;border-radius:8px;" class="mono">20 Feb 2026</div>
+        </div>
+      </div>
+
+      <!-- Main split -->
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start;">
+        <!-- LEFT — cool-toned main area -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+
+          <!-- Fund bands — accent-toned neutral numbers, status colors only for status -->
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--accent-100);margin-bottom:10px;">Fund Structures</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+
+              <!-- Fund 1 -->
+              <div style="display:flex;border-radius:12px;overflow:hidden;border:1px solid rgba(248,113,113,0.1);">
+                <div style="width:5px;background:linear-gradient(180deg, #fca5a5, var(--danger));flex-shrink:0;"></div>
+                <div style="flex:1;padding:14px 16px;background:linear-gradient(90deg, rgba(248,113,113,0.04) 0%, var(--bg-secondary) 20%);">
+                  <div style="display:flex;justify-content:space-between;align-items:start;">
+                    <div>
+                      <div class="fund-name">Immobilien Spezial-AIF</div>
+                      <div class="fund-meta" style="margin-top:5px;">
+                        <span class="badge badge-gray">InvKG</span><span class="badge badge-gray">DE</span>
+                        <span class="badge badge-red">2 high</span><span class="badge badge-warm">1 med</span>
+                      </div>
+                    </div>
+                    <div style="display:flex;gap:20px;">
+                      <div style="text-align:right;">
+                        <div class="mono" style="font-size:14px;font-weight:700;color:var(--warning);">72%</div>
+                        <div style="font-size:9px;color:var(--text-tertiary);">capacity</div>
+                      </div>
+                      <div style="text-align:right;">
+                        <div class="mono" style="font-size:14px;font-weight:700;color:var(--accent-100);">8</div>
+                        <div style="font-size:9px;color:var(--text-tertiary);">investors</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fund 2 -->
+              <div style="display:flex;border-radius:12px;overflow:hidden;border:1px solid rgba(110,231,183,0.08);">
+                <div style="width:5px;background:linear-gradient(180deg, #bbf7d0, var(--success));flex-shrink:0;"></div>
+                <div style="flex:1;padding:14px 16px;background:linear-gradient(90deg, rgba(110,231,183,0.03) 0%, var(--bg-secondary) 20%);">
+                  <div style="display:flex;justify-content:space-between;align-items:start;">
+                    <div>
+                      <div class="fund-name">Wertpapier Dachfonds</div>
+                      <div class="fund-meta" style="margin-top:5px;">
+                        <span class="badge badge-gray">SICAV</span><span class="badge badge-gray">LU</span>
+                        <span class="badge badge-green">Compliant</span>
+                      </div>
+                    </div>
+                    <div style="display:flex;gap:20px;">
+                      <div style="text-align:right;">
+                        <div class="mono" style="font-size:14px;font-weight:700;color:var(--success-light);">45%</div>
+                        <div style="font-size:9px;color:var(--text-tertiary);">capacity</div>
+                      </div>
+                      <div style="text-align:right;">
+                        <div class="mono" style="font-size:14px;font-weight:700;color:var(--accent-100);">3</div>
+                        <div style="font-size:9px;color:var(--text-tertiary);">investors</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fund 3 -->
+              <div style="display:flex;border-radius:12px;overflow:hidden;border:1px solid rgba(232,168,124,0.08);">
+                <div style="width:5px;background:linear-gradient(180deg, #f0c9a6, var(--warning));flex-shrink:0;"></div>
+                <div style="flex:1;padding:14px 16px;background:linear-gradient(90deg, rgba(232,168,124,0.03) 0%, var(--bg-secondary) 20%);">
+                  <div style="display:flex;justify-content:space-between;align-items:start;">
+                    <div>
+                      <div class="fund-name">Multi-Asset Opportunity</div>
+                      <div class="fund-meta" style="margin-top:5px;">
+                        <span class="badge badge-gray">GmbH & Co. KG</span><span class="badge badge-gray">DE</span>
+                        <span class="badge badge-warm">Review</span>
+                      </div>
+                    </div>
+                    <div style="display:flex;gap:20px;">
+                      <div style="text-align:right;">
+                        <div class="mono" style="font-size:14px;font-weight:700;color:var(--accent-300);">30%</div>
+                        <div style="font-size:9px;color:var(--text-tertiary);">capacity</div>
+                      </div>
+                      <div style="text-align:right;">
+                        <div class="mono" style="font-size:14px;font-weight:700;color:var(--accent-100);">1</div>
+                        <div style="font-size:9px;color:var(--text-tertiary);">investors</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analytics — #F8F9FA light card -->
+          <div style="background:#F8F9FA;border:1px solid rgba(197,224,238,0.3);border-radius:12px;padding:16px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <div style="display:flex;gap:2px;padding:3px;background:rgba(45,51,51,0.06);border-radius:8px;width:fit-content;">
+                <div style="padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(45,51,51,0.08);color:#2D3333;border:1px solid rgba(45,51,51,0.1);">Status</div>
+                <div style="padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;color:rgba(45,51,51,0.4);border:1px solid transparent;">Risk</div>
+                <div style="padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;color:rgba(45,51,51,0.4);border:1px solid transparent;">Calendar</div>
+                <div style="padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;color:rgba(45,51,51,0.4);border:1px solid transparent;">News</div>
+              </div>
+              <span style="font-size:10px;color:rgba(45,51,51,0.35);">Updated 2 min ago</span>
+            </div>
+            <div class="col-2" style="gap:10px;">
+              <div style="border-radius:8px;border:1px dashed rgba(197,224,238,0.3);overflow:hidden;background:rgba(45,51,51,0.02);">
+                <div style="height:3px;background:linear-gradient(90deg, #fca5a5, #dc2626);"></div>
+                <div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(45,51,51,0.3);">Active Violations</div>
+              </div>
+              <div style="border-radius:8px;border:1px dashed rgba(197,224,238,0.3);overflow:hidden;background:rgba(45,51,51,0.02);">
+                <div style="height:3px;background:linear-gradient(90deg, #dceef7, #C5E0EE);"></div>
+                <div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(45,51,51,0.3);">KYC Pipeline</div>
+              </div>
+              <div style="border-radius:8px;border:1px dashed rgba(197,224,238,0.3);overflow:hidden;background:rgba(45,51,51,0.02);">
+                <div style="height:3px;background:linear-gradient(90deg, #bbf7d0, #16a34a);"></div>
+                <div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(45,51,51,0.3);">Investor Types</div>
+              </div>
+              <div style="border-radius:8px;border:1px dashed rgba(197,224,238,0.3);overflow:hidden;background:rgba(45,51,51,0.02);">
+                <div style="height:3px;background:linear-gradient(90deg, #f0c9a6, #c07a4a);"></div>
+                <div style="height:120px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(45,51,51,0.3);">Jurisdictions</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Decisions -->
+          <div class="card card-flush">
+            <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:rgba(197,224,238,0.03);">
+              <div class="card-title" style="margin:0;color:var(--accent-100);">Recent Decisions</div>
+              <span class="badge badge-accent">17 total</span>
+            </div>
+            <table class="table">
+              <thead><tr><th>Time</th><th>Type</th><th>Result</th><th>Asset</th><th>Checks</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">14:23</td><td>eligibility</td><td><span class="badge badge-green">pass</span></td><td>Share Class A</td><td style="color:var(--success-light);">✓ All passed</td></tr>
+                <tr style="background:rgba(248,113,113,0.03);"><td class="mono">14:20</td><td style="color:var(--text-primary);">transfer</td><td><span class="badge badge-red">fail</span></td><td style="color:var(--text-primary);">Share Class B</td><td style="color:var(--danger-light);">✗ 2 violations</td></tr>
+                <tr><td class="mono">13:45</td><td>eligibility</td><td><span class="badge badge-green">pass</span></td><td>Share Class C</td><td style="color:var(--success-light);">✓ All passed</td></tr>
+                <tr style="background:rgba(248,113,113,0.03);"><td class="mono">12:10</td><td style="color:var(--text-primary);">transfer</td><td><span class="badge badge-red">fail</span></td><td style="color:var(--text-primary);">Share Class A</td><td style="color:var(--danger-light);">✗ 1 violation</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- RIGHT: Sidebar — warm-toned zone -->
+        <div style="display:flex;flex-direction:column;gap:12px;position:sticky;top:20px;">
+
+          <!-- Action Queue — warm-accented danger zone -->
+          <div class="sidebar-card" style="overflow:hidden;border-color:rgba(232,168,124,0.1);">
+            <div style="padding:12px 14px;background:linear-gradient(90deg, rgba(248,113,113,0.07) 0%, rgba(232,168,124,0.05) 100%);border-bottom:1px solid rgba(232,168,124,0.08);display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#fca5a5;">⚡ Action Queue</span>
+              <span style="font-size:13px;font-weight:800;color:var(--danger);background:rgba(248,113,113,0.1);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;">5</span>
+            </div>
+            <div class="action-item">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:3px;height:24px;border-radius:2px;background:linear-gradient(180deg, #fca5a5, var(--danger));"></div>
+                <div>
+                  <div style="font-size:11px;font-weight:600;color:#fca5a5;">KYC Renewals Overdue</div>
+                  <div style="font-size:10px;color:var(--text-tertiary);">2 investors · ≤30d</div>
+                </div>
+              </div>
+            </div>
+            <div class="action-item">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:3px;height:24px;border-radius:2px;background:linear-gradient(180deg, #fca5a5, var(--danger));"></div>
+                <div>
+                  <div style="font-size:11px;font-weight:600;color:#fca5a5;">High Risk Flags</div>
+                  <div style="font-size:10px;color:var(--text-tertiary);">3 across 2 funds</div>
+                </div>
+              </div>
+            </div>
+            <div class="action-item">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:3px;height:24px;border-radius:2px;background:linear-gradient(180deg, #f0c9a6, var(--warning));"></div>
+                <div>
+                  <div style="font-size:11px;font-weight:600;color:#f0c9a6;">Rejected Decisions</div>
+                  <div style="font-size:10px;color:var(--text-tertiary);">5 need review</div>
+                </div>
+              </div>
+            </div>
+            <div class="action-item">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:3px;height:24px;border-radius:2px;background:linear-gradient(180deg, #f0c9a6, var(--warning));"></div>
+                <div>
+                  <div style="font-size:11px;font-weight:600;color:#f0c9a6;">Onboarding Queue</div>
+                  <div style="font-size:10px;color:var(--text-tertiary);">4 pending</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fund Health — warm border, accent title -->
+          <div class="sidebar-card" style="padding:14px;border-color:rgba(197,224,238,0.08);">
+            <div style="font-size:12px;font-weight:700;color:var(--accent-100);margin-bottom:10px;">Fund Health</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:rgba(248,113,113,0.05);border:1px solid rgba(252,165,165,0.06);">
+                <div style="width:8px;height:8px;border-radius:50%;background:#fca5a5;flex-shrink:0;box-shadow:0 0 6px rgba(252,165,165,0.3);"></div>
+                <span style="font-size:11px;color:var(--text-primary);flex:1;">Immobilien</span>
+                <span style="font-size:10px;font-weight:600;color:#fca5a5;">2 high · 1 med</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:rgba(110,231,183,0.05);border:1px solid rgba(187,247,208,0.06);">
+                <div style="width:8px;height:8px;border-radius:50%;background:#bbf7d0;flex-shrink:0;box-shadow:0 0 6px rgba(187,247,208,0.3);"></div>
+                <span style="font-size:11px;color:var(--text-primary);flex:1;">Wertpapier</span>
+                <span style="font-size:10px;font-weight:600;color:#bbf7d0;">All clear</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;background:rgba(232,168,124,0.05);border:1px solid rgba(240,201,166,0.06);">
+                <div style="width:8px;height:8px;border-radius:50%;background:#f0c9a6;flex-shrink:0;box-shadow:0 0 6px rgba(240,201,166,0.3);"></div>
+                <span style="font-size:11px;color:var(--text-primary);flex:1;">Multi-Asset</span>
+                <span style="font-size:10px;font-weight:600;color:#f0c9a6;">1 med</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deadlines — warm zone -->
+          <div class="sidebar-card" style="padding:14px;border-color:rgba(232,168,124,0.08);">
+            <div style="font-size:12px;font-weight:700;color:#f0c9a6;margin-bottom:10px;">Upcoming Deadlines</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:6px 10px;border-radius:6px;background:rgba(232,168,124,0.05);border:1px solid rgba(240,201,166,0.06);">
+                <span style="color:var(--text-primary);font-weight:500;">AIFMD II Annex IV</span>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <span class="mono" style="color:#f0c9a6;font-weight:600;">Mar 15</span>
+                  <span style="font-size:9px;color:#2D3333;background:linear-gradient(135deg, #f0c9a6, var(--warning));padding:1px 6px;border-radius:3px;font-weight:700;">23d</span>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:6px 10px;">
+                <span style="color:var(--text-secondary);">BaFin Annual Report</span>
+                <span class="mono" style="color:var(--accent-300);">Apr 30</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;padding:6px 10px;">
+                <span style="color:var(--text-secondary);">AMLR Implementation</span>
+                <span class="mono" style="color:var(--accent-300);">Jul 2027</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="option-rationale">
+    <strong>Warm-Cool contrast:</strong> The main content area leans <strong>cool</strong> — section titles in accent-100 (#dceef7), investor counts in accent-100, neutral dates in accent-300 (#a0cde0), the analytics header bar in soft accent. The sidebar leans <strong>warm</strong> — action queue uses the warm-to-danger gradient, deadlines live in warm territory, the header gradient blends danger→warm. This creates a <strong>natural visual boundary</strong> between "information" (left, cool, calm) and "attention" (right, warm, urgent) without needing explicit borders or backgrounds. The Fund Health dots have <strong>soft glows</strong> (#fca5a5 with box-shadow, #bbf7d0 with box-shadow) that add dimensionality. Non-urgent future deadlines use accent-300 instead of text-tertiary — still muted but cooler, matching the left column's temperature. The banner is now fully cool-gradient (accent tones) with only the score ring being warm — it bridges both zones.
+  </div>
+</div>
+
+<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:11px;">— End —</div>
+
+</body>
+</html>

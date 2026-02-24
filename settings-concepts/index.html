@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Settings — Design Concepts</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #0e0e10; color: #C5E0EE; min-height: 100vh; padding: 48px 24px; }
+  .container { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 800; color: #e8eff4; letter-spacing: -0.04em; margin-bottom: 6px; }
+  .subtitle { font-size: 14px; color: rgba(197,224,238,0.4); margin-bottom: 40px; }
+  .concepts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 700px) { .concepts { grid-template-columns: 1fr; } }
+  .concept-card {
+    background: rgba(197,224,238,0.03); border: 1px solid rgba(197,224,238,0.08);
+    border-radius: 14px; overflow: hidden; transition: all 0.2s; cursor: pointer;
+    text-decoration: none; color: inherit; display: block;
+  }
+  .concept-card:hover { border-color: rgba(197,224,238,0.18); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+  .concept-preview {
+    height: 180px; background: rgba(197,224,238,0.02); border-bottom: 1px solid rgba(197,224,238,0.06);
+    display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
+  }
+  .concept-preview .layout-icon { opacity: 0.15; }
+  .concept-number {
+    position: absolute; top: 12px; left: 12px; width: 28px; height: 28px; border-radius: 8px;
+    background: rgba(197,224,238,0.08); border: 1px solid rgba(197,224,238,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #C5E0EE;
+  }
+  .concept-info { padding: 20px; }
+  .concept-info h3 { font-size: 15px; font-weight: 600; color: #dceef7; margin-bottom: 4px; }
+  .concept-info p { font-size: 12px; color: rgba(197,224,238,0.45); line-height: 1.5; }
+  .concept-tag {
+    display: inline-block; margin-top: 10px; padding: 3px 8px; border-radius: 5px;
+    font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    background: rgba(197,224,238,0.06); color: rgba(197,224,238,0.5);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Settings Page Concepts</h1>
+  <p class="subtitle">4 layout approaches for the Caelith admin settings page — click to preview</p>
+
+  <div class="concepts">
+    <a class="concept-card" href="concept-1.html">
+      <div class="concept-preview">
+        <div class="concept-number">1</div>
+        <svg class="layout-icon" width="200" height="120" viewBox="0 0 200 120" fill="none">
+          <rect x="10" y="10" width="50" height="100" rx="4" stroke="#C5E0EE" stroke-width="1.5"/>
+          <rect x="16" y="24" width="38" height="6" rx="2" fill="#C5E0EE" opacity="0.3"/>
+          <rect x="16" y="36" width="38" height="6" rx="2" fill="#C5E0EE" opacity="0.3"/>
+          <rect x="16" y="48" width="38" height="6" rx="2" fill="#C5E0EE" opacity="0.3"/>
+          <rect x="16" y="60" width="38" height="6" rx="2" fill="#C5E0EE" opacity="0.3"/>
+          <rect x="70" y="10" width="120" height="100" rx="4" stroke="#C5E0EE" stroke-width="1"/>
+          <rect x="78" y="22" width="60" height="8" rx="2" fill="#C5E0EE" opacity="0.2"/>
+          <rect x="78" y="38" width="104" height="28" rx="4" fill="#C5E0EE" opacity="0.08"/>
+          <rect x="78" y="72" width="104" height="28" rx="4" fill="#C5E0EE" opacity="0.08"/>
+        </svg>
+      </div>
+      <div class="concept-info">
+        <h3>Vertical Tabs (Sidebar)</h3>
+        <p>Left sidebar with section tabs, content area on the right. Classic settings pattern — familiar and scannable.</p>
+        <span class="concept-tag">Best for deep navigation</span>
+      </div>
+    </a>
+
+    <a class="concept-card" href="concept-2.html">
+      <div class="concept-preview">
+        <div class="concept-number">2</div>
+        <svg class="layout-icon" width="200" height="120" viewBox="0 0 200 120" fill="none">
+          <rect x="10" y="10" width="180" height="100" rx="4" stroke="#C5E0EE" stroke-width="1"/>
+          <rect x="16" y="16" width="24" height="6" rx="2" fill="#C5E0EE" opacity="0.4"/>
+          <rect x="44" y="16" width="24" height="6" rx="2" fill="#C5E0EE" opacity="0.2"/>
+          <rect x="72" y="16" width="24" height="6" rx="2" fill="#C5E0EE" opacity="0.2"/>
+          <rect x="100" y="16" width="24" height="6" rx="2" fill="#C5E0EE" opacity="0.2"/>
+          <line x1="10" y1="26" x2="190" y2="26" stroke="#C5E0EE" opacity="0.15"/>
+          <rect x="16" y="34" width="82" height="66" rx="4" fill="#C5E0EE" opacity="0.08"/>
+          <rect x="104" y="34" width="80" height="66" rx="4" fill="#C5E0EE" opacity="0.08"/>
+        </svg>
+      </div>
+      <div class="concept-info">
+        <h3>Horizontal Tabs</h3>
+        <p>Top tabs with two-column card layouts. Modern SaaS feel — uses horizontal space efficiently.</p>
+        <span class="concept-tag">Best for wide screens</span>
+      </div>
+    </a>
+
+    <a class="concept-card" href="concept-3.html">
+      <div class="concept-preview">
+        <div class="concept-number">3</div>
+        <svg class="layout-icon" width="200" height="120" viewBox="0 0 200 120" fill="none">
+          <rect x="40" y="6" width="120" height="108" rx="4" stroke="#C5E0EE" stroke-width="1"/>
+          <rect x="48" y="14" width="40" height="4" rx="1" fill="#C5E0EE" opacity="0.15"/>
+          <rect x="48" y="22" width="104" height="20" rx="3" fill="#C5E0EE" opacity="0.08"/>
+          <rect x="48" y="46" width="40" height="4" rx="1" fill="#C5E0EE" opacity="0.15"/>
+          <rect x="48" y="54" width="104" height="20" rx="3" fill="#C5E0EE" opacity="0.08"/>
+          <rect x="48" y="78" width="40" height="4" rx="1" fill="#C5E0EE" opacity="0.15"/>
+          <rect x="48" y="86" width="104" height="20" rx="3" fill="#C5E0EE" opacity="0.08"/>
+        </svg>
+      </div>
+      <div class="concept-info">
+        <h3>Single Scrollable Page</h3>
+        <p>All sections stacked vertically with jump links. No hidden content — everything visible at once.</p>
+        <span class="concept-tag">Best for quick scanning</span>
+      </div>
+    </a>
+
+    <a class="concept-card" href="concept-4.html">
+      <div class="concept-preview">
+        <div class="concept-number">4</div>
+        <svg class="layout-icon" width="200" height="120" viewBox="0 0 200 120" fill="none">
+          <rect x="10" y="10" width="86" height="46" rx="4" fill="#C5E0EE" opacity="0.08" stroke="#C5E0EE" stroke-width="0.5"/>
+          <rect x="104" y="10" width="86" height="46" rx="4" fill="#C5E0EE" opacity="0.08" stroke="#C5E0EE" stroke-width="0.5"/>
+          <rect x="10" y="64" width="86" height="46" rx="4" fill="#C5E0EE" opacity="0.08" stroke="#C5E0EE" stroke-width="0.5"/>
+          <rect x="104" y="64" width="86" height="46" rx="4" fill="#C5E0EE" opacity="0.08" stroke="#C5E0EE" stroke-width="0.5"/>
+        </svg>
+      </div>
+      <div class="concept-info">
+        <h3>Card Grid</h3>
+        <p>Each section as a card in a responsive grid. Dashboard-style overview — great at a glance.</p>
+        <span class="concept-tag">Best for overview</span>
+      </div>
+    </a>
+  </div>
+</div>
+</body>
+</html>

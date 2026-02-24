@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "pptxgenjs": "^4.0.1",
+    "puppeteer": "^24.37.5"
+  },
+  "name": "pitch-deck",
+  "version": "1.0.0",
+  "description": "Single-file HTML pitch deck for Caelith's pre-seed raise. 14 slides, self-contained, works locally and hosted.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
