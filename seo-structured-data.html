@@ -1,0 +1,186 @@
+<!-- Caelith Structured Data — JSON-LD blocks for landing page <head> -->
+<!-- Copy all <script> blocks below into landing-en.html and landing-de.html <head> sections -->
+
+<!-- 1. Organization -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Caelith",
+  "url": "https://www.caelith.tech",
+  "logo": "https://www.caelith.tech/logo-caelith.svg",
+  "description": "AI compliance agents for European fund managers. Autonomous AIFMD II filing, sanctions screening, and regulatory reporting.",
+  "foundingDate": "2026",
+  "foundingLocation": "Berlin, Germany",
+  "sameAs": [
+    "https://www.linkedin.com/company/caelithtech",
+    "https://github.com/julianlaycock"
+  ],
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Mariendorfer Damm 1",
+    "postalCode": "12099",
+    "addressLocality": "Berlin",
+    "addressCountry": "DE"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "julian.laycock@caelith.tech",
+    "contactType": "sales"
+  }
+}
+</script>
+
+<!-- 2. SoftwareApplication -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Caelith",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "description": "Autonomous AI compliance agents for EU fund managers. AIFMD II Annex IV filing, sanctions screening, investor due diligence, and regulatory reporting — filed autonomously to BaFin, CSSF, and other NCAs.",
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Essentials",
+      "price": "990",
+      "priceCurrency": "EUR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "990",
+        "priceCurrency": "EUR",
+        "billingDuration": "P1M"
+      }
+    },
+    {
+      "@type": "Offer",
+      "name": "Professional",
+      "price": "1990",
+      "priceCurrency": "EUR",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "1990",
+        "priceCurrency": "EUR",
+        "billingDuration": "P1M"
+      }
+    }
+  ],
+  "featureList": [
+    "Autonomous BaFin Annex IV filing",
+    "ESMA XSD-validated XML generation",
+    "Real-time EU/UN sanctions screening (6,863 entities)",
+    "GLEIF LEI verification",
+    "SHA-256 cryptographic audit trail",
+    "AIFMD II readiness assessment",
+    "Compliance Copilot AI",
+    "EMT/EET/EPT template generation"
+  ]
+}
+</script>
+
+<!-- 3. FAQPage -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What regulatory frameworks does Caelith cover?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AIFMD II, KAGB (including §1(19)), ELTIF 2.0, RAIF Law, SIF Law, and MiFID II provisions. 13 rules across 6 frameworks. Annex IV XML validated against ESMA XSD Rev 6 v1.2."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the BaFin filing agent work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The BaFin Filing Agent reads your fund data, maps it to the ESMA Annex IV taxonomy (147 fields), generates XSD-validated XML, authenticates with BaFin's MVP Portal, uploads the filing, and captures a confirmation receipt with a SHA-256 audit hash. The entire process runs autonomously overnight."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the Annex IV XML ESMA-validated?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, every XML file is validated against ESMA's official Annex IV XSD schema (Rev 6, AIFMD_DATMAN_V1.2.xsd) before submission. Zero-tolerance validation — if any error is detected, the filing is paused and you're notified immediately."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where is my data stored?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "All data is processed and stored on EU-hosted infrastructure (Railway Amsterdam, eu-west region). GDPR-compliant by design — no data leaves the European Union. We provide a Data Processing Agreement (DPA) to every customer."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does Caelith cost compared to manual compliance?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Caelith starts at €990/month for up to 3 funds — 93% cheaper than the average €150-200K/year spent on compliance consulting with Big 4 firms. The Professional plan at €1,990/month includes 15 funds, unlimited investors, and full agent access."
+      }
+    }
+  ]
+}
+</script>
+
+<!-- 4. WebSite with SearchAction -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Caelith",
+  "url": "https://www.caelith.tech",
+  "description": "AI compliance agents for European fund managers.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://www.caelith.tech/blog?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<!-- 5. BreadcrumbList -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.caelith.tech/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Agents",
+      "item": "https://www.caelith.tech/agents"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Readiness Check",
+      "item": "https://www.caelith.tech/readiness-check"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Blog",
+      "item": "https://www.caelith.tech/blog"
+    },
+    {
+      "@type": "ListItem",
+      "position": 5,
+      "name": "API Docs",
+      "item": "https://www.caelith.tech/api/docs"
+    }
+  ]
+}
+</script>

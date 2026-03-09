@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Disaster Recovery Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f1419;color:#c5cdd9;font-family:'Inter',sans-serif;line-height:1.7;padding:2rem}
+.container{max-width:1000px;margin:0 auto}
+h1{font-size:2rem;color:#e2e8f0;font-weight:700}
+h2{font-size:1.4rem;color:#7dd3fc;margin:2rem 0 .75rem;border-bottom:1px solid #1e293b;padding-bottom:.5rem}
+h3{font-size:1.1rem;color:#a5f3fc;margin:1.2rem 0 .5rem}
+.subtitle{color:#64748b;font-size:.95rem;margin-bottom:2rem}
+.card{background:#1a2028;border-radius:12px;padding:1.5rem;margin-bottom:1.25rem;border:1px solid #1e293b}
+.warn{border-left:4px solid #f59e0b;padding-left:1rem;margin:1rem 0;color:#fbbf24;font-size:.9rem}
+.danger{border-left:4px solid #ef4444;padding-left:1rem;margin:1rem 0;color:#f87171;font-size:.9rem}
+.ok{border-left:4px solid #22c55e;padding-left:1rem;margin:1rem 0;color:#4ade80;font-size:.9rem}
+table{width:100%;border-collapse:collapse;margin:1rem 0}
+th{text-align:left;color:#7dd3fc;border-bottom:2px solid #1e293b;padding:8px 12px;font-weight:600;font-size:.85rem}
+td{padding:8px 12px;border-bottom:1px solid #1e293b;font-size:.88rem}
+ul{padding-left:1.5rem}li{margin-bottom:.35rem;font-size:.9rem}
+code{background:#1e293b;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+.metric{display:inline-block;background:#1e293b;padding:8px 16px;border-radius:8px;margin:4px;text-align:center}
+.metric-value{font-size:1.4rem;font-weight:700;color:#f59e0b}
+.metric-label{font-size:.75rem;color:#64748b}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>🔥 Disaster Recovery Plan</h1>
+<p class="subtitle">Caelith — Recovery Procedures & Business Continuity</p>
+
+<h2>Recovery Objectives</h2>
+<div class="card">
+<div style="display:flex;gap:1rem;flex-wrap:wrap">
+<div class="metric"><div class="metric-value">~15 min</div><div class="metric-label">RTO (Recovery Time Objective)</div></div>
+<div class="metric"><div class="metric-value">~24 hrs</div><div class="metric-label">RPO (Recovery Point Objective)</div></div>
+<div class="metric"><div class="metric-value">1</div><div class="metric-label">Region (Railway)</div></div>
+</div>
+<p style="margin-top:1rem;font-size:.85rem;color:#94a3b8">RTO assumes Railway is operational. RPO depends on backup frequency (currently manual via <code>scripts/backup-db.ts</code>). With automated daily backups, RPO drops to ~24h. Without them, RPO = time since last manual backup.</p>
+</div>
+
+<h2>Scenario 1: Railway Platform Outage</h2>
+<div class="card">
+<div class="danger">⚠️ Current mitigation: <strong>None.</strong> Single-region Railway deployment = single point of failure.</div>
+<h3>Impact</h3>
+<ul>
+<li>Frontend, API, and database all become unavailable</li>
+<li>No failover or redundancy exists</li>
+<li>Estimated time to resolution: depends entirely on Railway (typically 15-60 min)</li>
+</ul>
+<h3>Immediate Actions</h3>
+<ol>
+<li>Check <a href="https://status.railway.app" style="color:#7dd3fc">Railway Status Page</a></li>
+<li>Notify affected customers (see Incident Response Playbook)</li>
+<li>Monitor Railway status for recovery</li>
+</ol>
+<h3>Recommendations</h3>
+<ul>
+<li>Add Cloudflare DNS with failover page for graceful degradation</li>
+<li>Consider multi-region deployment or standby on Fly.io/Render</li>
+<li>Implement external uptime monitoring (UptimeRobot, Betterstack)</li>
+</ul>
+</div>
+
+<h2>Scenario 2: Database Loss / Corruption</h2>
+<div class="card">
+<h3>Backup Procedure</h3>
+<div class="ok">✅ Existing: <code>scripts/backup-db.ts</code> and <code>scripts/backup-db.ps1</code></div>
+<ol>
+<li>Run backup: <code>npx tsx scripts/backup-db.ts</code></li>
+<li>Backup creates a <code>pg_dump</code> file with full schema + data</li>
+<li>Store backups off-Railway (S3, local machine, etc.)</li>
+</ol>
+<h3>Restore Procedure</h3>
+<ol>
+<li>Create new Railway PostgreSQL instance</li>
+<li>Connect via <code>psql</code> using Railway connection string</li>
+<li>Restore: <code>psql $DATABASE_URL &lt; backup_file.sql</code></li>
+<li>Update <code>DATABASE_URL</code> env var in Railway service</li>
+<li>Redeploy API server</li>
+<li>Verify via health check: <code>curl https://www.caelith.tech/api/health/ready</code></li>
+</ol>
+<h3>Point-in-Time Recovery</h3>
+<div class="warn">⚠️ Railway PostgreSQL does not offer built-in PITR. For PITR capability, migrate to a managed provider (Supabase, Neon, or AWS RDS) that supports WAL archiving.</div>
+</div>
+
+<h2>Scenario 3: DNS / SSL Issues</h2>
+<div class="card">
+<h3>Symptoms</h3>
+<ul>
+<li>Site unreachable but Railway services are healthy</li>
+<li>SSL certificate errors in browser</li>
+<li>DNS resolution failures</li>
+</ul>
+<h3>Actions</h3>
+<ol>
+<li>Check DNS propagation: <code>dig caelith.tech</code> or use <a href="https://dnschecker.org" style="color:#7dd3fc">dnschecker.org</a></li>
+<li>If using Cloudflare: check Cloudflare dashboard for certificate status</li>
+<li>Railway custom domains: verify CNAME records point to Railway</li>
+<li>SSL renewal: Railway auto-renews via Let's Encrypt; if failed, remove and re-add custom domain</li>
+</ol>
+<h3>Recommendation</h3>
+<ul>
+<li>Move DNS to Cloudflare for DDoS protection, caching, and faster propagation</li>
+<li>Enable "Always Use HTTPS" and set minimum TLS to 1.2</li>
+</ul>
+</div>
+
+<h2>Scenario 4: Security Breach</h2>
+<div class="card">
+<ol>
+<li><strong>Isolate:</strong> Disable Railway deployments, rotate all secrets</li>
+<li><strong>Assess:</strong> Check audit_trail table for unauthorized access patterns</li>
+<li><strong>Rotate:</strong> JWT_SECRET, database password, API keys, session cookies</li>
+<li><strong>Notify:</strong> If PII compromised → GDPR notification within 72 hours</li>
+<li><strong>Remediate:</strong> Patch vulnerability, redeploy, monitor</li>
+</ol>
+</div>
+
+<h2>Improvement Roadmap</h2>
+<div class="card">
+<table>
+<tr><th>Priority</th><th>Action</th><th>Impact</th></tr>
+<tr><td>P0</td><td>Automated daily database backups to S3</td><td>RPO → 24h guaranteed</td></tr>
+<tr><td>P0</td><td>External uptime monitoring</td><td>Immediate alert on outage</td></tr>
+<tr><td>P1</td><td>Cloudflare DNS + CDN</td><td>DDoS protection, failover page</td></tr>
+<tr><td>P1</td><td>Managed PostgreSQL (Supabase/Neon)</td><td>PITR, automatic backups</td></tr>
+<tr><td>P2</td><td>Multi-region standby</td><td>RTO → ~2 min</td></tr>
+<tr><td>P2</td><td>Database read replicas</td><td>Read scalability + warm standby</td></tr>
+</table>
+</div>
+
+<footer style="text-align:center;color:#475569;margin-top:3rem;padding:1rem;border-top:1px solid #1e293b;font-size:.8rem">
+Caelith Disaster Recovery Plan — v1.0 — 2026-02-28 — Confidential
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BAfA Meeting Prep — Gründungszuschuss — 5. März 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root {
+    --bg:#0f1419;--bg-card:#1a2028;--border:rgba(255,255,255,0.06);
+    --text:rgba(255,255,255,0.88);--text-muted:rgba(255,255,255,0.52);--text-dim:rgba(255,255,255,0.3);
+    --accent:#C5E0EE;--green:#34d399;--yellow:#fbbf24;--red:#f87171;--orange:#fb923c;--warm:#E8A87C;
+    --radius:12px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;padding:40px 20px}
+  .container{max-width:860px;margin:0 auto}
+
+  .header{text-align:center;padding:44px 0 32px;border-bottom:1px solid var(--border);margin-bottom:36px}
+  .badge{display:inline-block;background:rgba(232,168,124,0.12);color:var(--warm);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;border:1px solid rgba(232,168,124,0.2);margin-bottom:14px}
+  .header h1{font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px}
+  .header .sub{color:var(--text-muted);font-size:14px}
+  .header .meta{color:var(--warm);font-size:13px;font-weight:500;margin-top:10px}
+
+  .section{margin-bottom:32px}
+  .section-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  .section h2{font-size:19px;font-weight:600;margin-bottom:16px}
+
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:10px}
+  .card h3{font-size:14px;font-weight:600;margin-bottom:10px}
+  .card p{color:var(--text-muted);font-size:13px;margin-bottom:6px;line-height:1.7}
+  .card p:last-child{margin-bottom:0}
+  .card strong{color:var(--text)}
+
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:640px){.grid-2{grid-template-columns:1fr}}
+
+  .callout{background:rgba(197,224,238,0.06);border:1px solid rgba(197,224,238,0.15);border-radius:8px;padding:16px 20px;margin:12px 0}
+  .callout p{font-size:13px;color:var(--text)}
+  .callout .mono{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.8}
+
+  .warn{background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.25);border-radius:8px;padding:16px 20px;margin:12px 0}
+  .warn p{color:rgba(255,255,255,0.75);font-size:13px;line-height:1.7}
+  .warn strong{color:var(--red)}
+
+  .flag{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:16px 20px;margin:12px 0}
+  .flag p{color:rgba(255,255,255,0.75);font-size:13px;line-height:1.7}
+  .flag strong{color:var(--yellow)}
+
+  .tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:0.5px;margin-right:5px}
+  .tag.green{background:rgba(52,211,153,0.12);color:var(--green)}
+  .tag.yellow{background:rgba(251,191,36,0.12);color:var(--yellow)}
+  .tag.red{background:rgba(248,113,113,0.12);color:var(--red)}
+  .tag.blue{background:rgba(197,224,238,0.1);color:var(--accent)}
+  .tag.orange{background:rgba(251,146,60,0.12);color:var(--orange)}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;padding:9px 12px;color:var(--text-dim);font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
+  td{padding:11px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)}
+  td strong{color:var(--text)}
+  tr:last-child td{border-bottom:none}
+
+  .qa{margin-bottom:18px}
+  .qa .q{font-weight:600;font-size:13px;color:var(--red);margin-bottom:6px}
+  .qa .a{color:var(--text-muted);font-size:13px;padding-left:14px;border-left:2px solid rgba(197,224,238,0.3);line-height:1.8}
+
+  .checklist{list-style:none}
+  .checklist li{padding:7px 0;font-size:13px;color:var(--text-muted);display:flex;align-items:flex-start;gap:10px;border-bottom:1px solid var(--border)}
+  .checklist li:last-child{border-bottom:none}
+  .checklist li::before{content:"○";color:var(--text-dim);flex-shrink:0;margin-top:1px}
+  .checklist li.warn-item::before{content:"⚠";color:var(--yellow);flex-shrink:0}
+  .checklist li.done::before{content:"●";color:var(--green)}
+
+  .phase-box{border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:8px}
+  .phase-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
+  .phase-title{font-size:14px;font-weight:600;color:#fff;margin-bottom:4px}
+  .phase-amount{font-size:22px;font-weight:700;color:var(--green);letter-spacing:-0.03em}
+  .phase-desc{font-size:12px;color:var(--text-muted);margin-top:4px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <div class="badge">Bundesagentur für Arbeit</div>
+  <h1>Gründungszuschuss — Meeting Prep</h1>
+  <div class="sub">Bundesagentur für Arbeit (BAfA) · Berlin · Donnerstag, 5. März 2026</div>
+  <div class="meta">🎯 Ziel: Antrag auf Gründungszuschuss einleiten · Unterlagen prüfen · Sequenzierung GZ ↔ EXIST klären</div>
+</div>
+
+<!-- ════ KRITISCHE WARNUNG ════ -->
+<div class="warn">
+  <p>🚨 <strong>DREI DINGE, DIE DU VOR DEM MEETING WISSEN MUSST:</strong></p>
+  <p style="margin-top:10px">1. <strong>Nicht als Freiberufler anmelden</strong> — Noch nicht. Solange kein Gewerbe und keine Freiberufler-Anmeldung, hat die BAfA keinen Grund, dich als "bereits gegründet" zu werten. Warte auf grünes Licht vom Sachbearbeiter.</p>
+  <p style="margin-top:8px">2. <strong>GZ und EXIST können NICHT gleichzeitig bezogen werden.</strong> Das ist amtlich (Förderdatenbank.de). Sequenzierung entscheidet alles — GZ zuerst, dann EXIST, oder umgekehrt. Frag explizit danach.</p>
+  <p style="margin-top:8px">3. <strong>HWR-Einschreibung April 2026 ist ein Risikofaktor.</strong> GZ setzt "hauptberuflich selbstständig" voraus. Wenn die BAfA das Studium als Haupttätigkeit wertet, gefährdet das den Anspruch. Diesen Punkt klar ansprechen.</p>
+</div>
+
+<!-- ════ FÖRDERUNG IM ÜBERBLICK ════ -->
+<div class="section">
+  <div class="section-label">Die Förderung</div>
+  <h2>Was ist der Gründungszuschuss?</h2>
+
+  <div class="grid-2">
+    <div class="phase-box" style="border-color:rgba(52,211,153,0.2)">
+      <div class="phase-num">Phase 1 · 6 Monate</div>
+      <div class="phase-title">ALG I + Pauschale</div>
+      <div class="phase-amount">~€2.300–2.800/mo</div>
+      <div class="phase-desc">Dein ALG I Tagessatz × 30 + €300/Monat Sozialversicherungspauschale. Berechnung: ALG I Betrag den du beziehst.</div>
+    </div>
+    <div class="phase-box" style="border-color:rgba(197,224,238,0.15)">
+      <div class="phase-num">Phase 2 · 9 Monate (optional)</div>
+      <div class="phase-title">Nur Pauschale</div>
+      <div class="phase-amount">€300/mo</div>
+      <div class="phase-desc">Separat beantragen. Nachweis hauptberuflicher Selbstständigkeit erforderlich. Kein automatischer Übergang.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:10px">
+    <h3>Gesamtförderung (geschätzt)</h3>
+    <table>
+      <tr><th>Phase</th><th>Dauer</th><th>Betrag/Mo (Schätzung)</th><th>Gesamt</th></tr>
+      <tr><td><strong>Phase 1</strong></td><td>6 Monate</td><td>~€2.000 ALG I + €300</td><td><strong style="color:var(--green)">~€13.800</strong></td></tr>
+      <tr><td><strong>Phase 2</strong></td><td>9 Monate</td><td>€300</td><td><strong style="color:var(--green)">€2.700</strong></td></tr>
+      <tr><td colspan="3"><strong>Gesamtpotenzial</strong></td><td><strong style="color:var(--green);font-size:16px">~€16.500+</strong></td></tr>
+    </table>
+    <p style="margin-top:10px;font-size:11px;color:var(--text-dim)">Exakter Betrag = dein tatsächlicher ALG I Tagessatz × 180 Tage + 15 × €300. Tagessatz aus dem Bewilligungsbescheid entnehmen.</p>
+  </div>
+</div>
+
+<!-- ════ VORAUSSETZUNGEN ════ -->
+<div class="section">
+  <div class="section-label">Eligibility Check</div>
+  <h2>Voraussetzungen — Was die BAfA prüft</h2>
+
+  <div class="card">
+    <table>
+      <tr><th>Kriterium</th><th>Anforderung</th><th>Status</th></tr>
+      <tr>
+        <td><strong>ALG I Bezug</strong></td>
+        <td>Muss aktiv bezogen werden. Mindestens 1 Tag vor Gründung.</td>
+        <td><span class="tag green">✓ Prüfen</span></td>
+      </tr>
+      <tr>
+        <td><strong>Restanspruch ALG I</strong></td>
+        <td><strong>≥ 150 Tage</strong> zum Zeitpunkt der Gründung. Harte Grenze.</td>
+        <td><span class="tag yellow">⚠ Kritisch</span></td>
+      </tr>
+      <tr>
+        <td><strong>Hauptberuflichkeit</strong></td>
+        <td>Selbstständigkeit muss <strong>hauptberuflich</strong> sein. Nebenberuflich = keine Förderung.</td>
+        <td><span class="tag yellow">⚠ HWR-Risiko</span></td>
+      </tr>
+      <tr>
+        <td><strong>Tragfähigkeit</strong></td>
+        <td>Businessplan + fachkundige Stellungnahme müssen wirtschaftliche Tragfähigkeit belegen.</td>
+        <td><span class="tag blue">Vorbereiten</span></td>
+      </tr>
+      <tr>
+        <td><strong>Ermessen</strong></td>
+        <td>GZ ist eine <strong>Kann-Leistung</strong> — kein Rechtsanspruch. Sachbearbeiter entscheidet.</td>
+        <td><span class="tag orange">Kein Anrecht</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="flag">
+    <p><strong>⚠ Restanspruch-Rechnung — jetzt prüfen:</strong> Schau in deinen ALG I Bewilligungsbescheid. Wann endet dein ALG I Anspruch? Zähle die verbleibenden Tage. Wenn weniger als 150 Tage bleiben, <strong>ist der GZ nicht mehr beantragbar</strong>. Das ist die wichtigste Zahl für morgen.</p>
+    <p style="margin-top:8px">Formel: <code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px">Enddatum ALG I − Morgen (05.03.2026) = Restanspruch in Tagen ≥ 150?</code></p>
+  </div>
+</div>
+
+<!-- ════ SEQUENZIERUNG ════ -->
+<div class="section">
+  <div class="section-label">Strategische Frage</div>
+  <h2>GZ ↔ EXIST — Sequenzierung</h2>
+
+  <div class="warn">
+    <p><strong>Gleichzeitig ist ausgeschlossen.</strong> Die Förderdatenbank des Bundes bestätigt explizit: EXIST-Gründungsstipendium und Gründungszuschuss können <strong>nicht</strong> gleichzeitig bezogen werden. Beide finanzieren Lebensunterhalt — das ist der Ausschlussgrund.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card" style="border-color:rgba(52,211,153,0.2)">
+      <h3 style="color:var(--green)">Option A — GZ zuerst (empfohlen)</h3>
+      <p>GZ jetzt beantragen (März 2026). Phase 1: 6 Monate ~€2.300/mo. Phase 2: 9 Monate €300/mo. Gesamt: 15 Monate.</p>
+      <p style="margin-top:8px">Danach EXIST beantragen: 12 Monate €1.000–2.500/mo + €10K Sachmittel. Gesamtlaufzeit: ~27 Monate Förderung.</p>
+      <p style="margin-top:8px"><strong>Vorteil:</strong> GZ-Fenster schließt sich wenn ALG I endet. Jetzt handeln oder nie.</p>
+    </div>
+    <div class="card" style="border-color:rgba(248,113,113,0.15)">
+      <h3 style="color:var(--red)">Option B — EXIST zuerst (riskant)</h3>
+      <p>EXIST jetzt einreichen (in Bearbeitung via HWR). Laufzeit 12 Monate. Danach GZ beantragen.</p>
+      <p style="margin-top:8px"><strong>Problem:</strong> Wenn ALG I bis EXIST-Ende abläuft, ist GZ danach nicht mehr beantragbar. Das EXIST-Bewerbungsprozess dauert Monate. Das GZ-Fenster könnte sich schließen.</p>
+      <p style="margin-top:8px"><strong>Empfehlung: Nicht.</strong></p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p><strong>Frage explizit stellen morgen:</strong></p>
+    <div class="mono">"Ich habe eine parallele EXIST-Bewerbung über die HWR Berlin laufen. Kann ich den Gründungszuschuss jetzt beantragen und danach nahtlos zum EXIST-Stipendium wechseln — ohne dass eine Förderung die andere ausschließt, solange sie nicht gleichzeitig laufen?"</div>
+  </div>
+</div>
+
+<!-- ════ HWR RISIKO ════ -->
+<div class="section">
+  <div class="section-label">Kritisches Risiko</div>
+  <h2>HWR Einschreibung April 2026 — Was du ansprechen musst</h2>
+
+  <div class="warn">
+    <p><strong>Das ist das größte Risiko für den GZ-Antrag.</strong> GZ erfordert "hauptberufliche Selbstständigkeit." Wenn du ab April als Vollzeitstudent an der HWR eingeschrieben bist, kann die BAfA argumentieren, das Studium sei die Haupttätigkeit und Caelith die Nebentätigkeit — und den GZ verweigern oder zurückfordern.</p>
+  </div>
+
+  <div class="card">
+    <h3>Wie du es framen solltest</h3>
+    <p>Das HWR-Studium ist ein <strong>Teilzeitstudium / berufsbegleitendes Format</strong> (Abends oder blended). Caelith ist die Hauptbeschäftigung. Das Studium dient der fachlichen Vertiefung des Gründungsvorhabens — es <em>unterstützt</em> die Selbstständigkeit, ersetzt sie nicht.</p>
+    <p style="margin-top:8px">Frag die BAfA morgen explizit: "Ist ein berufsbegleitendes Studium parallel zum GZ förderschädlich, wenn die Selbstständigkeit klar die Haupttätigkeit ist und mehr als 40h/Woche beansprucht?"</p>
+  </div>
+</div>
+
+<!-- ════ DOKUMENTE ════ -->
+<div class="section">
+  <div class="section-label">Checkliste</div>
+  <h2>Was du mitbringen / vorbereiten musst</h2>
+
+  <div class="card">
+    <ul class="checklist">
+      <li class="done"><div><strong>Personalausweis / Reisepass</strong> — Identifikation</div></li>
+      <li class="done"><div><strong>ALG I Bewilligungsbescheid</strong> — Zeigt Tagessatz und Enddatum. Kritisch für Restanspruch-Berechnung.</div></li>
+      <li><div><strong>Lebenslauf (aktuell)</strong> — Belegt Qualifikation und relevante Erfahrung. Unternehmerisch, technisch, Branchenkenntnisse hervorheben.</div></li>
+      <li><div><strong>Businessplan Caelith</strong> — Vollständig: Marktanalyse, Wettbewerb, Finanzplan (3 Jahre), Umsatzprognose. Muss Tragfähigkeit belegen. Siehe unten.</div></li>
+      <li><div><strong>Fachkundige Stellungnahme</strong> — Von IHK Berlin oder Steuerberater / Wirtschaftsprüfer. <strong>Noch nicht eingeholt?</strong> Frag die BAfA morgen, ob du sie nachreichen kannst.</div></li>
+      <li class="warn-item"><div><strong>Gewerbeanmeldung / Freiberufler-Status</strong> — NOCH NICHT ANMELDEN. Frag die BAfA morgen, wann genau du gründen musst und was der offizielle Starttermin für den GZ ist.</div></li>
+      <li><div><strong>Rentabilitätsvorschau</strong> — Oft Teil des Businessplans: Einnahmen, Kosten, Break-even. Monatlich für Jahr 1, quartalsweise für Jahr 2–3.</div></li>
+    </ul>
+  </div>
+
+  <div class="flag">
+    <p><strong>⚠ Fachkundige Stellungnahme — IHK Berlin:</strong> Die IHK Berlin stellt Stellungnahmen für gewerbliche Gründungsvorhaben aus (kein Handwerk). Caelith als SaaS/Tech-Unternehmen fällt darunter. Kontakt: <code style="font-family:'JetBrains Mono',monospace;font-size:11px">ihk.de/berlin → Gründungszuschuss-Stellungnahme</code>. Bearbeitungszeit ca. 1–2 Wochen. Morgen fragen ob die BAfA akzeptiert, dass die Stellungnahme nachgereicht wird.</p>
+  </div>
+</div>
+
+<!-- ════ BUSINESSPLAN SUMMARY ════ -->
+<div class="section">
+  <div class="section-label">Für den Businessplan</div>
+  <h2>Caelith — Executive Summary (BAfA-Sprache)</h2>
+
+  <div class="card">
+    <h3>Das Unternehmen</h3>
+    <p><strong>Caelith</strong> ist eine B2B SaaS-Plattform für regulatorische Compliance von EU-Alternativfonds. Zielgruppe sind die ca. 704 bei der BaFin registrierten Kapitalverwaltungsgesellschaften (KVGs) in Deutschland sowie ~3.500 AIFMs EU-weit.</p>
+    <p style="margin-top:8px">Das Kernprodukt automatisiert die Erstellung und Einreichung von <strong>Annex IV XML-Berichten</strong> gemäß ESMA-Vorgaben — ein quartalsweise/halbjährlich fälliger Pflichtbericht, den derzeit Unternehmensberater für €5.000–15.000 pro Zyklus manuell erstellen.</p>
+  </div>
+
+  <div class="card">
+    <h3>Markt & Timing</h3>
+    <p>AIFMD II tritt am <strong>16. April 2026</strong> in Kraft (nationale Umsetzungsfrist). Ab <strong>30. Juni 2026</strong> macht Norwegen XML-Einreichungen verbindlich (Finanstilsynet). Ab <strong>April 2027</strong> gelten neue ESMA-Meldevorlagen. Compliance-Teams bereiten sich jetzt vor — das ist das Einstiegsfenster.</p>
+    <p style="margin-top:8px">Direkte Konkurrenz: anevis solutions (Managed Service, €50–80K/Jahr, nicht self-service), Big-4 Berater (€150–200K/Jahr). Kein direktes Self-Service-SaaS für deutsche KVGs auf dem Markt.</p>
+  </div>
+
+  <div class="card">
+    <h3>Umsatzprognose (konservativ)</h3>
+    <table>
+      <tr><th>Jahr</th><th>Kunden</th><th>Ø ACV</th><th>ARR</th></tr>
+      <tr><td><strong>2026</strong></td><td>3</td><td>€14.400/Jahr (€1.200/mo)</td><td><strong>€43.200</strong></td></tr>
+      <tr><td><strong>2027</strong></td><td>12</td><td>€15.600/Jahr</td><td><strong>€187.200</strong></td></tr>
+      <tr><td><strong>2028</strong></td><td>30</td><td>€18.000/Jahr</td><td><strong>€540.000</strong></td></tr>
+    </table>
+    <p style="margin-top:10px;font-size:12px;color:var(--text-dim)">Pricing: Essentials €990/mo · Professional €1.990/mo · Enterprise ab €3.500/mo. 5% Marktdurchdringung BaFin-KVGs bis Jahr 3 = konservativ.</p>
+  </div>
+
+  <div class="card">
+    <h3>Gründer</h3>
+    <p><strong>Julian Laycock</strong>, CEO & Alleingesellschafter. Technischer Gründer mit Erfahrung in Softwareentwicklung und Unternehmertum. Hat das vollständige Produkt (Next.js Frontend, Express/PostgreSQL Backend, ESMA XSD-validiertes XML-Filing, KI-Compliance-Assistent) in 10 Wochen solo aufgebaut. Live unter caelith.tech.</p>
+    <p style="margin-top:8px">Einschreibung HWR Berlin SS2026 (April 2026) — berufsbegleitend, fachliche Vertiefung parallel zur hauptberuflichen Selbstständigkeit.</p>
+  </div>
+</div>
+
+<!-- ════ HARD QUESTIONS ════ -->
+<div class="section">
+  <div class="section-label">Schwierige Fragen</div>
+  <h2>Was die BAfA fragen könnte</h2>
+
+  <div class="qa">
+    <div class="q">Q: "Sie studieren ab April — wie ist das vereinbar mit hauptberuflicher Selbstständigkeit?"</div>
+    <div class="a">"Das Studium an der HWR Berlin ist berufsbegleitend und abends / im Blended-Format konzipiert. Caelith ist und bleibt meine Haupttätigkeit mit mehr als 40 Stunden pro Woche. Das Studium dient der fachlichen Vertiefung meines Gründungsvorhabens — insbesondere im Bereich Unternehmensfinanzierung und Regulatorik. Es ersetzt nicht die Selbstständigkeit, es unterstützt sie."</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: "Sie haben noch keine Kunden — wie belegen Sie die Tragfähigkeit?"</div>
+    <div class="a">"Das Produkt ist live und getestet. Ich befinde mich in aktiven Gesprächen mit qualifizierten Interessenten. Der Markt ist klar definiert (704 BaFin-KVGs), die regulatorischen Fristen erzeugen akuten Handlungsdruck, und der Preisvorteil gegenüber bestehenden Lösungen (€990/Monat vs. €50–80K/Jahr bei Managed Services) ist dokumentiert. Der Businessplan enthält konservative Umsatzprojektionen auf Basis nachvollziehbarer Annahmen."</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: "Warum haben Sie noch nicht gegründet / kein Gewerbe angemeldet?"</div>
+    <div class="a">"Ich wollte zuerst die Beratung durch die Agentur für Arbeit wahrnehmen, bevor ich formale Schritte unternehme — genau um sicherzustellen, dass die Fördervoraussetzungen nicht gefährdet werden. Ich bitte Sie heute um Orientierung, wann und in welcher Form ich die Anmeldung vornehmen sollte."</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: "Haben Sie eine fachkundige Stellungnahme?"</div>
+    <div class="a">"Die Stellungnahme der IHK Berlin ist in Vorbereitung. Ich bitte Sie heute um Auskunft, ob ich diese nachreichen kann und welchen Zeitrahmen Sie für die Antragsprüfung vorsehen."</div>
+  </div>
+</div>
+
+<!-- ════ EINSTIEGSGELD ════ -->
+<div class="section">
+  <div class="section-label">Alternative</div>
+  <h2>Einstiegsgeld — Falls ALG II relevant wird</h2>
+  <div class="card">
+    <p>Das <strong>Einstiegsgeld</strong> (§ 16b SGB II) ist die Alternative für Bürgergeld-Bezieher (ALG II). Da Julian ALG I bezieht, ist Einstiegsgeld aktuell nicht relevant. Sollte der ALG I Anspruch aber enden bevor der GZ genehmigt wird und kein EXIST läuft, könnte ein Übergang zu Bürgergeld erfolgen — dann wäre Einstiegsgeld die Förderung der Wahl.</p>
+    <p style="margin-top:8px"><strong>Kurz:</strong> Jetzt nicht relevant — aber frag die BAfA, was passiert wenn das ALG I ausläuft bevor der GZ bewilligt ist.</p>
+  </div>
+</div>
+
+<!-- ════ FRAGEN AN SACHBEARBEITER ════ -->
+<div class="section">
+  <div class="section-label">Deine Agenda</div>
+  <h2>Fragen, die du morgen stellen musst</h2>
+  <div class="card">
+    <ul class="checklist">
+      <li><div><strong>Wie viele Tage ALG I Restanspruch habe ich laut Ihrer Akte?</strong> (Cross-check mit deinem Bescheid)</div></li>
+      <li><div><strong>Kann ich den GZ beantragen und danach nahtlos in das EXIST-Stipendium wechseln</strong> — solange beide nicht gleichzeitig laufen?</div></li>
+      <li><div><strong>Ist meine Einschreibung an der HWR Berlin (berufsbegleitend, ab April) förderschädlich</strong> für den GZ, wenn Caelith klar die Haupttätigkeit ist?</div></li>
+      <li><div><strong>Wann genau muss ich das Gewerbe / die Freiberufler-Anmeldung vornehmen</strong> — vor oder nach der Antragstellung?</div></li>
+      <li><div><strong>Kann die fachkundige Stellungnahme (IHK) nachgereicht werden</strong> und wie lange habe ich dafür Zeit?</div></li>
+      <li><div><strong>Welchen Zeitrahmen hat die Prüfung</strong> — wann kann ich mit einem Bescheid rechnen?</div></li>
+      <li><div><strong>Gilt der GZ auch für hauptberuflich Selbstständige ohne festes Einkommen in den ersten Monaten</strong> (Pre-Revenue Stage)?</div></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ════ CHECKLIST ════ -->
+<div class="section">
+  <div class="section-label">Pre-Meeting</div>
+  <h2>Checkliste für heute Abend</h2>
+  <div class="card">
+    <ul class="checklist">
+      <li><div>ALG I Bewilligungsbescheid raussuchen — Enddatum und Tagessatz notieren</div></li>
+      <li><div>Restanspruch berechnen: Enddatum − 05.03.2026 = Tage. ≥ 150?</div></li>
+      <li><div>Lebenslauf aktualisieren (Caelith, Entwicklungsarbeit, Tech-Hintergrund)</div></li>
+      <li><div>Businessplan ausdrucken oder auf Laptop — Zahlen auswendig kennen</div></li>
+      <li><div>caelith.tech auf dem Handy / Laptop zum Vorzeigen bereit haben</div></li>
+      <li class="warn-item"><div>NICHT als Freiberufler / Gewerbe anmelden bis nach dem Meeting</div></li>
+    </ul>
+  </div>
+</div>
+
+<div style="text-align:center;padding:28px 0;color:var(--text-dim);font-size:11px;border-top:1px solid var(--border);margin-top:20px">
+  Caelith · BAfA Meeting Prep · 5. März 2026 · Vertraulich
+</div>
+
+</div>
+</body>
+</html>

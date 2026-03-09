@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Landing Page Audit — Agent Repositioning</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root {
+    --bg:#0d1117;--bg2:#161b22;--bg3:#1c2128;
+    --border:rgba(255,255,255,0.07);
+    --accent:#C5E0EE;--warm:#E8A87C;
+    --green:#3fb950;--yellow:#e3b341;--red:#f85149;
+    --text:rgba(255,255,255,0.9);--muted:rgba(255,255,255,0.45);--dim:rgba(255,255,255,0.2);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;padding:40px 20px}
+  .container{max-width:900px;margin:0 auto}
+  h1{font-size:32px;font-weight:800;letter-spacing:-1px;text-align:center;margin-bottom:8px}
+  .subtitle{text-align:center;color:var(--muted);font-size:14px;margin-bottom:48px}
+  h2{font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px;margin-top:48px}
+  h3{font-size:16px;font-weight:600;margin-bottom:8px}
+  .label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+  .label.blue{color:var(--accent)}.label.red{color:var(--red)}.label.green{color:var(--green)}.label.yellow{color:var(--yellow)}
+  .card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:12px}
+  .card p{color:var(--muted);font-size:13px;margin-bottom:6px}
+  .card p:last-child{margin-bottom:0}
+  .card strong{color:var(--text)}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:640px){.grid-2{grid-template-columns:1fr}}
+  .tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:0.5px;margin-right:5px}
+  .tag.red{background:rgba(248,113,113,0.12);color:var(--red)}
+  .tag.green{background:rgba(63,185,80,0.12);color:var(--green)}
+  .tag.yellow{background:rgba(227,179,65,0.12);color:var(--yellow)}
+  .tag.blue{background:rgba(197,224,238,0.12);color:var(--accent)}
+  .callout{background:rgba(197,224,238,0.06);border:1px solid rgba(197,224,238,0.15);border-radius:8px;padding:16px 20px;margin:14px 0}
+  .callout p{color:var(--text);font-size:13px}
+  .warn{background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.15);border-radius:8px;padding:16px 20px;margin:14px 0}
+  .warn p{color:rgba(255,255,255,0.75);font-size:13px}
+  .good{background:rgba(63,185,80,0.06);border:1px solid rgba(63,185,80,0.15);border-radius:8px;padding:16px 20px;margin:14px 0}
+  .good p{color:rgba(255,255,255,0.75);font-size:13px}
+  .score{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+  .score:last-child{border-bottom:none}
+  .score-bar{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+  .score-fill{height:100%;border-radius:4px;transition:width 0.6s ease}
+  .score-label{font-size:13px;width:180px;flex-shrink:0}
+  .score-val{font-family:'JetBrains Mono',monospace;font-size:12px;width:40px;text-align:right;flex-shrink:0}
+  .mono{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);line-height:1.9}
+  .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:start;margin:16px 0}
+  .vs-mid{color:var(--dim);font-size:12px;font-weight:600;padding-top:6px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+  th{text-align:left;padding:8px 12px;color:var(--dim);font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--muted)}
+  td strong{color:var(--text)}
+  tr:last-child td{border-bottom:none}
+  .slogan{font-size:24px;font-weight:700;letter-spacing:-0.5px;color:var(--text);margin:16px 0 6px}
+  .slogan-sub{font-size:14px;color:var(--muted);margin-bottom:20px}
+  .rank{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:700;margin-right:8px;flex-shrink:0}
+  .rank.gold{background:rgba(227,179,65,0.2);color:var(--yellow)}
+  .rank.silver{background:rgba(197,224,238,0.15);color:var(--accent)}
+  .rank.bronze{background:rgba(255,255,255,0.08);color:var(--muted)}
+  .section-divider{height:1px;background:var(--border);margin:48px 0}
+  .verdict{text-align:center;padding:32px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;margin-top:48px}
+  .verdict h2{margin-top:0}
+  .verdict .grade{font-size:48px;font-weight:800;margin:8px 0}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Landing Page Audit</h1>
+<div class="subtitle">Sphinx vs. Caelith · Agent Repositioning Analysis · March 6, 2026</div>
+
+<!-- ═══ EXECUTIVE SUMMARY ═══ -->
+<div class="label blue">Executive Summary</div>
+<h2 style="margin-top:6px">The Core Problem</h2>
+
+<div class="warn">
+  <p>⚠️ <strong>Caelith's homepage positions it as a compliance dashboard. Sphinx positions itself as a compliance team member.</strong> If we're going 100% agents, this is the single biggest thing to fix. Every other recommendation flows from this.</p>
+</div>
+
+<div class="vs">
+  <div class="card" style="border-color:rgba(63,185,80,0.2)">
+    <p style="color:var(--green);font-weight:600;font-size:11px;letter-spacing:1px;text-transform:uppercase">Sphinx says</p>
+    <p style="font-size:18px;font-weight:700;color:var(--text);margin-top:6px">"Meet Sphinx.<br>Your last compliance hire."</p>
+    <p style="margin-top:8px">7 words. Tells you: (1) it's a teammate, not a tool, (2) you'll never hire for this role again, (3) it has a personality.</p>
+  </div>
+  <div class="vs-mid">vs.</div>
+  <div class="card" style="border-color:rgba(248,81,73,0.2)">
+    <p style="color:var(--red);font-weight:600;font-size:11px;letter-spacing:1px;text-transform:uppercase">Caelith says</p>
+    <p style="font-size:18px;font-weight:700;color:var(--text);margin-top:6px">"Fund compliance,<br>automated."</p>
+    <p style="margin-top:8px">3 words. Tells you: (1) it does compliance, (2) it's automated. That's it. Could be <em>any</em> RegTech company. Zero personality. Zero hook. Zero reason to scroll.</p>
+  </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ═══ SPHINX DEEP DIVE ═══ -->
+<div class="label green">What Sphinx Gets Right</div>
+<h2 style="margin-top:6px">Sphinx's Playbook — Steal These Patterns</h2>
+
+<div class="card">
+  <h3>1. Agents are people, not features</h3>
+  <p>Every piece of copy frames agents as teammates: "Your last compliance hire," "AI analysts," "Your team of AI compliance analysts." They never say "our software" or "our platform." The agent IS the product. It has a name (Sphinx), a role (compliance analyst), and a job description (clear KYB & AML cases).</p>
+  <p><span class="tag green">Steal this</span> Caelith agents need names or roles. "BaFin Filing Agent" is good. "Your fund's compliance department" is better.</p>
+</div>
+
+<div class="card">
+  <h3>2. Animated demo above the fold</h3>
+  <p>Sphinx shows a live interactive demo right in the hero — screening alerts resolving in real-time with false positives being identified. You SEE the agent working before you read a single paragraph. This is massively effective.</p>
+  <p><span class="tag green">Steal this</span> We have the agent trace animation on /agents. It needs to be on the homepage hero. A compliance officer should see the agent filing to BaFin within 3 seconds of landing.</p>
+</div>
+
+<div class="card">
+  <h3>3. Outcome metrics, not feature lists</h3>
+  <p>Above the fold: <strong>87% fewer false positives, 64% fewer drop-offs, 98% cases resolved same day, 4.2x ops cost reduction.</strong> All outcomes. Not "we support 147 Annex IV fields."</p>
+  <p><span class="tag green">Steal this</span> Our hero metrics should be: "25 sec per filing" / "8 funds overnight" / "93% cost reduction" / "0 human reviewers" — outcomes, not capabilities.</p>
+</div>
+
+<div class="card">
+  <h3>4. Before/After kills features pages</h3>
+  <p>"Common Workflow: Compliance still runs on human glue" → visual showing emails, PDFs, manual steps. Then Sphinx workflow → automated, clean, resolved. One image tells the entire story.</p>
+  <p><span class="tag green">Steal this</span> We built this for /agents already. Bring the comparison to the homepage. "8 hours manual vs. 25 seconds with Caelith" is our single strongest selling visual.</p>
+</div>
+
+<div class="card">
+  <h3>5. Real customer stories with real numbers</h3>
+  <p>Named humans (James Simcox, COO), named companies, specific metrics (124 hours/month, 90.8% reduction). This is what VCs and prospects look for. It's proof, not promises.</p>
+  <p><span class="tag yellow">Can't steal yet</span> We're pre-customer. But we CAN use: grant validation (NGI Zero, Campus Founders), VC thesis validation ($7.1M Sphinx + $12.7M Kobalt), and the Egor Tarakanov quote if we get permission.</p>
+</div>
+
+<div class="card">
+  <h3>6. Single CTA repeated 3 times</h3>
+  <p>"Book a demo" appears in nav, hero, and technology section. Same button. Same action. Same color. No confusion. No "Try Free" vs "Readiness Check" vs "API Docs" fighting for attention.</p>
+  <p><span class="tag red">Critical fix</span> Caelith has 4+ different CTAs competing. Pick ONE primary: "Book a Demo." Everything else is secondary.</p>
+</div>
+
+<div class="card">
+  <h3>7. Trust section is early and visual</h3>
+  <p>SOC 2 Type II badge, GDPR compliance, "100% transparent decisions," "Audit trails your regulator trusts" — all in a dedicated section with cards and iconography. Not tiny pills at the bottom.</p>
+  <p><span class="tag green">Steal this</span> Our trust signals (ESMA XSD, DORA audit trail, EU-hosted, open-source core) are currently tiny pills. They need to be a proper section with visual weight.</p>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ═══ CAELITH AUDIT ═══ -->
+<div class="label red">Critical Review</div>
+<h2 style="margin-top:6px">What's Wrong With caelith.tech Right Now</h2>
+
+<div class="card">
+  <h3>🔴 CRITICAL: Hero says nothing about agents</h3>
+  <p>"Fund compliance, automated." — This is a tagline for a dashboard product. We decided to go 100% agents. The homepage has <strong>zero mention</strong> of agents, AI, or autonomous filing. The /agents page exists but it's completely disconnected from the homepage. A visitor doesn't know agents exist unless they find it in the nav.</p>
+  <p><strong>Impact:</strong> First impression = "another compliance SaaS." Visitors leave in 5 seconds.</p>
+</div>
+
+<div class="card">
+  <h3>🔴 CRITICAL: Terminal/code preview alienates the buyer</h3>
+  <p>The hero shows a code terminal with API responses. <strong>Compliance officers don't write code.</strong> They're the buyer. The Geschäftsführer at a KVG sees code and thinks "this is for developers, not for me." Sphinx shows a visual screening demo. We show JSON.</p>
+  <p><strong>Impact:</strong> The person who signs the check bounces because the product looks technical, not operational.</p>
+</div>
+
+<div class="card">
+  <h3>🔴 CRITICAL: Too many CTAs = no CTA</h3>
+  <p>Current CTAs on one page: "Start Readiness Check" (hero), "Book a 15-Min Demo" (hero), "See API Docs" (hero), "Try Demo" (multiple), "Readiness Check" (pricing), various nav links. The visitor doesn't know what to click. Choice paralysis = they click nothing.</p>
+  <p><strong>Fix:</strong> ONE primary CTA: "Book a Demo." One secondary: "Check Your Readiness." Everything else goes to nav or footer.</p>
+</div>
+
+<div class="card">
+  <h3>🟡 HIGH: No before/after comparison on homepage</h3>
+  <p>The €180K manual vs €1,890 automated comparison is strong but it's buried in a text section. No visual comparison. No workflow comparison. The /agents page has an excellent before/after grid — it's not on the homepage.</p>
+</div>
+
+<div class="card">
+  <h3>🟡 HIGH: Features section is generic</h3>
+  <p>"Built for compliance. Engineered for speed." — followed by feature descriptions that read like every SaaS product page. "ESMA Annex IV XML in seconds" is good but buried. The features should be framed as agent capabilities, not software features.</p>
+</div>
+
+<div class="card">
+  <h3>🟡 HIGH: Trust signals are weak</h3>
+  <p>Tiny pills that say "ESMA XSD" and "Campus Founders" — most visitors won't even notice them. No dedicated trust/security section. No badges. No visual weight.</p>
+</div>
+
+<div class="card">
+  <h3>🟠 MEDIUM: FAQ is bloated</h3>
+  <p>7 FAQ items on the landing page. Sphinx has zero. FAQ sections signal uncertainty — "we need to explain ourselves." A confident product page answers questions before they're asked, through the copy itself. Keep 3-4 max, move the rest to a /faq page.</p>
+</div>
+
+<div class="card">
+  <h3>🟠 MEDIUM: "Technical guidance" section doesn't belong</h3>
+  <p>"Technical guidance & regulatory insights" is a blog/resources feature, not a landing page section. It dilutes the message. Kill it from the homepage; link to /blog in the nav.</p>
+</div>
+
+<div class="card">
+  <h3>🟢 KEEP: Dashboard screenshot section</h3>
+  <p>"See it in action" with the dashboard preview is good. But reframe it: instead of "look at our dashboard," make it "here's what your agent reports back to you." The dashboard is the agent's reporting interface, not the product itself.</p>
+</div>
+
+<div class="card">
+  <h3>🟢 KEEP: Pricing section</h3>
+  <p>Visible pricing is a differentiator vs. enterprise competitors. The €990/€1,990/€3,500 tiers are clear. Keep but move below the trust section.</p>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ═══ SCORECARD ═══ -->
+<div class="label yellow">Scorecard</div>
+<h2 style="margin-top:6px">Caelith vs. Sphinx — Category Breakdown</h2>
+
+<div class="card">
+  <div class="score">
+    <div class="score-label">Hero / First impression</div>
+    <div class="score-bar"><div class="score-fill" style="width:25%;background:var(--red)"></div></div>
+    <div class="score-val" style="color:var(--red)">2/10</div>
+  </div>
+  <div class="score">
+    <div class="score-label">Agent positioning</div>
+    <div class="score-bar"><div class="score-fill" style="width:15%;background:var(--red)"></div></div>
+    <div class="score-val" style="color:var(--red)">1/10</div>
+  </div>
+  <div class="score">
+    <div class="score-label">Visual demo / proof</div>
+    <div class="score-bar"><div class="score-fill" style="width:30%;background:var(--red)"></div></div>
+    <div class="score-val" style="color:var(--red)">3/10</div>
+  </div>
+  <div class="score">
+    <div class="score-label">CTA clarity</div>
+    <div class="score-bar"><div class="score-fill" style="width:25%;background:var(--red)"></div></div>
+    <div class="score-val" style="color:var(--red)">2/10</div>
+  </div>
+  <div class="score">
+    <div class="score-label">Trust / social proof</div>
+    <div class="score-bar"><div class="score-fill" style="width:30%;background:var(--yellow)"></div></div>
+    <div class="score-val" style="color:var(--yellow)">3/10</div>
+  </div>
+  <div class="score">
+    <div class="score-label">Pricing transparency</div>
+    <div class="score-bar"><div class="score-fill" style="width:80%;background:var(--green)"></div></div>
+    <div class="score-val" style="color:var(--green)">8/10</div>
+  </div>
+  <div class="score">
+    <div class="score-label">Content quality</div>
+    <div class="score-bar"><div class="score-fill" style="width:60%;background:var(--yellow)"></div></div>
+    <div class="score-val" style="color:var(--yellow)">6/10</div>
+  </div>
+  <div class="score">
+    <div class="score-label">Technical execution</div>
+    <div class="score-bar"><div class="score-fill" style="width:70%;background:var(--green)"></div></div>
+    <div class="score-val" style="color:var(--green)">7/10</div>
+  </div>
+  <div class="score">
+    <div class="score-label">Mobile experience</div>
+    <div class="score-bar"><div class="score-fill" style="width:65%;background:var(--yellow)"></div></div>
+    <div class="score-val" style="color:var(--yellow)">6/10</div>
+  </div>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ═══ SLOGANS ═══ -->
+<div class="label blue">Marketing Slogans</div>
+<h2 style="margin-top:6px">Hero Options — Ranked</h2>
+
+<div class="callout">
+  <p><strong>Design principle:</strong> The hero must answer 3 questions in under 5 seconds: (1) What is this? (2) Who is it for? (3) Why should I care RIGHT NOW?</p>
+</div>
+
+<div class="card">
+  <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">
+    <span class="rank gold">1</span>
+    <div>
+      <div class="slogan">Meet Caelith.<br>Your fund's compliance department.</div>
+      <div class="slogan-sub">Autonomous agents that file your Annex IV, screen your investors, and report to BaFin — while you sleep.</div>
+    </div>
+  </div>
+  <p><span class="tag green">Why this wins</span> Direct parallel to Sphinx's framing but adapted for fund management. "Compliance department" > "compliance hire" because fund managers think in departments, not individual hires. It's bold — claims to replace an entire function. That's the agent promise.</p>
+  <p><strong>Subtext:</strong> "100% autonomous · 25 seconds per filing · ESMA XSD-validated"</p>
+</div>
+
+<div class="card">
+  <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">
+    <span class="rank gold">2</span>
+    <div>
+      <div class="slogan">Your Annex IV,<br>filed by 2 AM.</div>
+      <div class="slogan-sub">Caelith agents generate, validate, and submit your AIFMD II filings to BaFin overnight. You wake up to a confirmation and an audit hash.</div>
+    </div>
+  </div>
+  <p><span class="tag green">Why this works</span> Insanely specific. Every compliance officer who reads "Annex IV" and "BaFin" knows exactly what this is AND whether they need it. The "2 AM" detail makes it feel real — not a pitch deck promise but a thing that actually runs. Specificity = credibility.</p>
+  <p><strong>Subtext:</strong> "8 funds filed overnight · 0 human reviewers · 93% cheaper than Big 4"</p>
+</div>
+
+<div class="card">
+  <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">
+    <span class="rank silver">3</span>
+    <div>
+      <div class="slogan">The compliance engine<br>that never clocks out.</div>
+      <div class="slogan-sub">AI agents for AIFMD II reporting, investor screening, and regulatory filing — running autonomously, 24/7, with full audit trail.</div>
+    </div>
+  </div>
+  <p><span class="tag blue">Good alternative</span> "Never clocks out" humanizes the agent (it works like a person but doesn't stop). Less specific than #2 but more poetic. Good for brand campaigns or LinkedIn headers.</p>
+</div>
+
+<div class="card">
+  <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">
+    <span class="rank silver">4</span>
+    <div>
+      <div class="slogan">Agents that file.<br>So you don't have to.</div>
+      <div class="slogan-sub">Caelith handles your AIFMD II Annex IV submissions to BaFin and CSSF — from fund data to filed receipt in under 4 minutes.</div>
+    </div>
+  </div>
+  <p><span class="tag blue">Clean parallel</span> Simple. Direct. The "So you don't have to" creates relief — the exact emotion a compliance officer drowning in AIFMD II prep wants to feel.</p>
+</div>
+
+<div class="card">
+  <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">
+    <span class="rank bronze">5</span>
+    <div>
+      <div class="slogan">Fund compliance<br>on autopilot.</div>
+      <div class="slogan-sub">AI agents that file to BaFin, screen investors against 6,800+ sanctions entities, and monitor regulatory changes — all autonomously.</div>
+    </div>
+  </div>
+  <p><span class="tag yellow">Safe option</span> "Autopilot" is understood instantly. Less bold than #1-2 but still clearly agent-positioned. Good if "Your fund's compliance department" feels too aggressive.</p>
+</div>
+
+<div class="card">
+  <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px">
+    <span class="rank bronze">6</span>
+    <div>
+      <div class="slogan">The last Annex IV<br>you'll file manually.</div>
+      <div class="slogan-sub">Caelith agents take it from here — autonomous AIFMD II filing, investor screening, and regulatory submissions for EU fund managers.</div>
+    </div>
+  </div>
+  <p><span class="tag yellow">Sphinx-adjacent</span> Adapts Sphinx's "last compliance hire" to our specific use case. Works well but might sound like a one-trick pony (just Annex IV). Pair with agent fleet section to show breadth.</p>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ═══ SUPPORTING LINES ═══ -->
+<div class="label blue">Supporting Copy</div>
+<h2 style="margin-top:6px">Section Headlines & Supporting Lines</h2>
+
+<table>
+  <tr><th>Section</th><th>Current</th><th>Proposed</th></tr>
+  <tr>
+    <td><strong>Hero subtitle</strong></td>
+    <td>From filing to insights, we help fund managers stay compliant across EU jurisdictions</td>
+    <td>AI agents that file to BaFin at 2 AM, screen 6,800+ sanctions entities, and generate XSD-validated Annex IV XML — while you sleep.</td>
+  </tr>
+  <tr>
+    <td><strong>Features section</strong></td>
+    <td>Built for compliance. Engineered for speed.</td>
+    <td>Your agent fleet — always on, always compliant.</td>
+  </tr>
+  <tr>
+    <td><strong>Dashboard section</strong></td>
+    <td>See it in action. No signup required.</td>
+    <td>Your agents report back here. Full visibility, zero manual work.</td>
+  </tr>
+  <tr>
+    <td><strong>Pricing section</strong></td>
+    <td>Simple pricing. No surprises.</td>
+    <td>€180K manual. Or €1,890 automated. Your call.</td>
+  </tr>
+  <tr>
+    <td><strong>Trust section</strong></td>
+    <td>(tiny pills)</td>
+    <td>Built for regulators. Trusted by fund managers. ESMA XSD-validated. DORA-compliant audit trail. EU-hosted. Open-source core.</td>
+  </tr>
+  <tr>
+    <td><strong>Before/After</strong></td>
+    <td>(doesn't exist on homepage)</td>
+    <td>Old way: 3 analysts, 4 weeks, €15K per cycle. Caelith: 1 agent, 25 seconds, €990/month.</td>
+  </tr>
+  <tr>
+    <td><strong>FAQ header</strong></td>
+    <td>Common questions.</td>
+    <td>What compliance officers ask us. (4 questions max)</td>
+  </tr>
+</table>
+
+<div class="section-divider"></div>
+
+<!-- ═══ PAGE STRUCTURE ═══ -->
+<div class="label green">Recommended Structure</div>
+<h2 style="margin-top:6px">New Homepage — Section by Section</h2>
+
+<div class="card">
+  <h3>Section 1: Hero + Agent Animation</h3>
+  <p><strong>Slogan + subtitle + animated agent trace</strong> (from /agents page). Show the BaFin filing agent running through its steps live. Metrics bar: 25 sec / 100% XSD / 8 funds / €0 review cost. Single primary CTA: "Book a Demo." Secondary: "Watch the Agent Work →" (scrolls to trace).</p>
+  <p><span class="tag red">Kill</span> Terminal/code preview. <span class="tag red">Kill</span> "Start Readiness Check" as primary CTA.</p>
+</div>
+
+<div class="card">
+  <h3>Section 2: Trust Bar</h3>
+  <p>Immediately after hero: "ESMA XSD Validated · Campus Founders-Backed · NGI Zero Grantee · EU-Hosted · Open Source Core" — visual badges, not text pills. If we get customer logos later, this becomes the social proof bar.</p>
+</div>
+
+<div class="card">
+  <h3>Section 3: Before / After</h3>
+  <p>The manual process (7 steps, ~16 hours) vs. Caelith Agent (7 steps, 3 min 47 sec). Already built for /agents. This is the most compelling section on that page — bring it to the homepage.</p>
+</div>
+
+<div class="card">
+  <h3>Section 4: Agent Fleet</h3>
+  <p>6 agent cards with Live/Building/Soon badges. Shows breadth: BaFin Filing, CSSF Filing, Investor DD, Sanctions Monitoring, Readiness Assessment, Regulatory Watch. Positions Caelith as a platform, not a single-feature tool.</p>
+</div>
+
+<div class="card">
+  <h3>Section 5: Dashboard Preview</h3>
+  <p>Reframed: "Your agents report back here." Screenshot of the Caelith dashboard. Emphasis on visibility and control — the human stays in charge, agents do the work. CTA: "Try the Demo →" (links to /demo-dashboard).</p>
+</div>
+
+<div class="card">
+  <h3>Section 6: Trust & Security</h3>
+  <p>Dedicated section (like Sphinx's Auditability block). ESMA XSD validation, SHA-256 audit chain, DORA compliance, EU-hosted (Railway Amsterdam), open-source serializer. Visual cards with icons.</p>
+</div>
+
+<div class="card">
+  <h3>Section 7: Pricing</h3>
+  <p>Keep current structure. Add the "€180K manual vs. €1,890" comparison as the section intro. It's the strongest conversion line on the page.</p>
+</div>
+
+<div class="card">
+  <h3>Section 8: Urgency + CTA</h3>
+  <p>Countdown to April 16 AIFMD II deadline + final "Book a Demo" CTA. "41 days until enforcement. Your agent is ready."</p>
+</div>
+
+<div class="card">
+  <h3>Section 9: FAQ (4 questions max)</h3>
+  <p>Only the 4 questions compliance officers actually ask: (1) "How does the agent file to BaFin?" (2) "Is the XML ESMA-validated?" (3) "Where is my data stored?" (4) "Can I try it before buying?"</p>
+</div>
+
+<div class="card" style="border-color:rgba(248,81,73,0.2)">
+  <h3>Kill List — Remove These Sections</h3>
+  <p><span class="tag red">Kill</span> "Technical guidance & regulatory insights" — belongs on /blog, not homepage</p>
+  <p><span class="tag red">Kill</span> Terminal/code preview in hero — replace with agent trace animation</p>
+  <p><span class="tag red">Kill</span> FAQ questions 5-7 — keep only 4, move rest to /faq</p>
+  <p><span class="tag red">Kill</span> Multiple competing CTAs — one primary, one secondary, everywhere</p>
+  <p><span class="tag red">Kill</span> "See API Docs" as a prominent CTA — it's for developers, not buyers. Put it in nav/footer</p>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ═══ QUICK WINS ═══ -->
+<div class="label yellow">Implementation</div>
+<h2 style="margin-top:6px">Priority — What to Ship First</h2>
+
+<table>
+  <tr><th>Priority</th><th>Change</th><th>Impact</th><th>Effort</th></tr>
+  <tr>
+    <td><span class="tag red">P0</span></td>
+    <td><strong>Replace hero slogan + subtitle</strong></td>
+    <td>First impression goes from "generic SaaS" to "this is what I need"</td>
+    <td>30 min</td>
+  </tr>
+  <tr>
+    <td><span class="tag red">P0</span></td>
+    <td><strong>Replace code terminal with agent trace</strong></td>
+    <td>Buyer sees the product working, not API output</td>
+    <td>2-3 hrs</td>
+  </tr>
+  <tr>
+    <td><span class="tag red">P0</span></td>
+    <td><strong>Unify CTAs — "Book a Demo" primary</strong></td>
+    <td>Eliminates choice paralysis, increases click-through</td>
+    <td>1 hr</td>
+  </tr>
+  <tr>
+    <td><span class="tag yellow">P1</span></td>
+    <td><strong>Add Before/After section</strong></td>
+    <td>The single most convincing visual for compliance officers</td>
+    <td>2 hrs</td>
+  </tr>
+  <tr>
+    <td><span class="tag yellow">P1</span></td>
+    <td><strong>Add Agent Fleet section</strong></td>
+    <td>Shows breadth, prevents "Annex IV only" perception</td>
+    <td>1-2 hrs</td>
+  </tr>
+  <tr>
+    <td><span class="tag blue">P2</span></td>
+    <td><strong>Dedicated trust/security section</strong></td>
+    <td>Enterprise buyers need this before signing</td>
+    <td>1-2 hrs</td>
+  </tr>
+  <tr>
+    <td><span class="tag blue">P2</span></td>
+    <td><strong>Reframe dashboard as "agent reporting interface"</strong></td>
+    <td>Consistent agent positioning throughout</td>
+    <td>30 min</td>
+  </tr>
+  <tr>
+    <td><span class="tag blue">P2</span></td>
+    <td><strong>Kill FAQ to 4 items, remove "Technical guidance"</strong></td>
+    <td>Cleaner page, less scrolling, more confident</td>
+    <td>30 min</td>
+  </tr>
+</table>
+
+<div class="section-divider"></div>
+
+<!-- ═══ VERDICT ═══ -->
+<div class="verdict">
+  <div class="label red">Current Grade</div>
+  <div class="grade" style="color:var(--yellow)">C+</div>
+  <h2 style="margin-top:4px">Good product, wrong homepage.</h2>
+  <p style="color:var(--muted);font-size:14px;max-width:500px;margin:8px auto 0">The product is strong — 72 endpoints, 231 tests, XSD validation, live demo. But the homepage sells a dashboard when it should be selling an agent. Fix the hero, add the trace, unify the CTAs, and this goes from C+ to B+ overnight. Customer stories and metrics will push it to A.</p>
+</div>
+
+<div style="text-align:center;padding:28px 0;color:var(--dim);font-size:11px;border-top:1px solid var(--border);margin-top:48px">
+  Caelith · Landing Page Audit · March 6, 2026 · Confidential
+</div>
+
+</div>
+</body>
+</html>

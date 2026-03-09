@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Hero Final</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1f1f;--bg2:#2D3333;--accent:#8EC5E0;--accent2:#6BB8D9;--warm:#E8A87C;
+  --text:#f0f0f0;--text2:rgba(255,255,255,0.65);--text3:rgba(255,255,255,0.4);
+  --border:rgba(255,255,255,0.08);
+  --radius:14px;--grad:linear-gradient(135deg,#8EC5E0,#E8A87C);
+  --glass:rgba(255,255,255,0.03);--glass-b:rgba(255,255,255,0.08);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;color:var(--text);background:var(--bg2);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;letter-spacing:-0.03em;line-height:1.1}
+a{text-decoration:none;color:inherit}
+.grad{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* ═══ HERO — exact production background ═══ */
+.hero{
+  position:relative;
+  padding:120px clamp(28px,6vw,100px) 80px;
+  min-height:100vh;
+  display:flex;align-items:center;
+  overflow:hidden;
+  background:radial-gradient(ellipse at 30% 0%,rgba(200,230,240,0.3) 0%,transparent 60%),#2D3333;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 20%,rgba(100,180,200,0.12) 0%,transparent 50%),
+             radial-gradient(ellipse at 80% 80%,rgba(140,100,200,0.06) 0%,transparent 50%);
+  background-size:200% 200%;animation:gradShift 20s ease infinite;pointer-events:none;z-index:0;
+}
+@keyframes gradShift{0%{background-position:0% 0%}50%{background-position:100% 100%}100%{background-position:0% 0%}}
+
+/* Floating orbs */
+.hero-bg{position:absolute;inset:0;overflow:hidden;z-index:0}
+.orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.35}
+.orb.o1{width:600px;height:600px;background:radial-gradient(circle,rgba(107,184,217,.35),transparent 70%);top:-10%;right:-5%;animation:orbF 12s ease-in-out infinite}
+.orb.o2{width:500px;height:500px;background:radial-gradient(circle,rgba(232,168,124,.25),transparent 70%);bottom:-15%;left:-10%;animation:orbF 15s ease-in-out infinite reverse}
+@keyframes orbF{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,30px)}}
+
+/* Grid */
+.hero-inner{max-width:1260px;margin:0 auto;display:grid;grid-template-columns:.88fr 1.12fr;gap:52px;align-items:start;position:relative;z-index:1;width:100%}
+
+/* Left */
+.hero-left{padding-top:8px}
+.label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:8px;color:var(--accent);margin-bottom:20px}
+.label svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5}
+.hero-left h1{font-size:clamp(36px,4.2vw,52px);font-weight:800;color:#fff;margin-bottom:18px}
+.hero-left .sub{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:12px;max-width:440px}
+.hero-left .sub-strong{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7;margin-bottom:32px;max-width:440px;font-style:italic}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:40px}
+.btn{font-family:'Sora';font-weight:600;border:none;border-radius:999px;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+.btn-md{font-size:14px;padding:13px 28px}
+.btn-accent{background:var(--grad);color:#1a1f1f;font-weight:700}
+.btn-accent:hover{box-shadow:0 0 40px rgba(142,197,224,0.25);transform:translateY(-2px)}
+.btn-ghost{background:transparent;border:1px solid var(--glass-b);color:var(--text2)}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.2);color:#fff}
+.arrow{transition:transform .2s}.btn:hover .arrow{transform:translateX(4px)}
+
+/* ═══ STACK ═══ */
+.stack{display:flex;flex-direction:column;gap:0}
+.stack-row{
+  display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:14px;
+  padding:16px 20px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--glass-b);
+  border-bottom:none;
+  transition:all .3s;cursor:default;
+}
+.stack-row:first-child{border-radius:var(--radius) var(--radius) 0 0}
+.stack-row:last-child{border-bottom:1px solid var(--glass-b);border-radius:0 0 var(--radius) var(--radius)}
+.stack-row:hover{background:rgba(255,255,255,0.045)}
+
+/* Agents row — emphasized */
+.stack-row.featured{
+  background:rgba(142,197,224,0.05);
+  border-color:rgba(142,197,224,0.14);
+  border-bottom:1px solid rgba(142,197,224,0.14);
+  position:relative;
+}
+.stack-row.featured+.stack-row{border-top:none}
+.stack-row.featured::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:var(--grad);border-radius:2px 0 0 2px;
+}
+
+.ico{
+  width:44px;height:44px;border-radius:10px;
+  border:1px solid var(--glass-b);
+  background:rgba(255,255,255,0.03);
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color .3s;flex-shrink:0;
+}
+.stack-row:hover .ico{border-color:rgba(142,197,224,0.2)}
+.stack-row.featured .ico{border-color:rgba(142,197,224,0.2);background:rgba(142,197,224,0.07)}
+.ico svg{width:20px;height:20px;stroke:var(--accent);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+.row-text h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+.row-text p{font-size:11px;color:var(--text3);line-height:1.5;margin:0}
+.stack-row.featured .row-text h4{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+.badge{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;padding:3px 10px;border-radius:999px;letter-spacing:.5px;flex-shrink:0}
+.badge.live{background:rgba(34,197,94,0.08);color:#4ade80;border:1px solid rgba(34,197,94,0.12)}
+.badge.beta{background:rgba(232,168,124,0.08);color:var(--warm);border:1px solid rgba(232,168,124,0.12)}
+
+/* Agent callout */
+.agent-callout{
+  margin-top:16px;padding:14px 18px;
+  background:rgba(142,197,224,0.035);
+  border:1px solid rgba(142,197,224,0.1);
+  border-radius:var(--radius);
+  display:flex;align-items:flex-start;gap:12px;
+}
+.agent-callout-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg,rgba(142,197,224,0.12),rgba(232,168,124,0.08));
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.agent-callout-icon svg{width:16px;height:16px;stroke:var(--accent);fill:none;stroke-width:1.5}
+.agent-callout-text{font-size:12px;color:var(--text2);line-height:1.6}
+.agent-callout-text strong{color:#fff;font-weight:600}
+
+/* ═══ AGENT CHAT WINDOW ═══ */
+.agent-window{
+  background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);
+  border-radius:var(--radius);overflow:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,0.4),0 0 80px rgba(142,197,224,0.04);
+}
+.agent-bar{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 18px;background:rgba(0,0,0,0.35);
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.agent-bar .dots{display:flex;gap:5px}
+.agent-bar .d{width:7px;height:7px;border-radius:50%}
+.agent-bar .d.r{background:#FF5F56}.agent-bar .d.y{background:#FFBD2E}.agent-bar .d.g{background:#27C93F}
+.agent-bar .t{
+  flex:1;text-align:center;
+  font-family:'Sora',sans-serif;font-size:12px;font-weight:600;
+  color:rgba(255,255,255,0.55);letter-spacing:-0.01em;
+}
+.agent-bar .live-badge{
+  display:flex;align-items:center;gap:6px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;
+  color:#86efac;
+  padding:3px 10px;border-radius:999px;
+  background:rgba(34,197,94,0.08);
+  border:1px solid rgba(34,197,94,0.12);
+}
+.agent-bar .live-badge::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:#86efac;animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.agent-body{padding:18px 16px;min-height:480px;display:flex;flex-direction:column;gap:0;overflow:hidden}
+
+/* Messages */
+.m{max-width:84%;padding:11px 15px;border-radius:12px;font-size:12px;line-height:1.7;opacity:0;transform:translateY(10px);transition:opacity .35s,transform .35s;margin-bottom:9px}
+.m.v{opacity:1;transform:translateY(0)}
+.m.co{align-self:flex-end;background:rgba(107,184,217,0.1);border:1px solid rgba(107,184,217,0.14);color:var(--accent)}
+.m.ag{align-self:flex-start;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);color:var(--text2)}
+.m.ag b{color:#fff;font-weight:600}
+.m.ag code{font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(0,0,0,0.3);padding:1px 6px;border-radius:3px;color:var(--warm)}
+.m.ag .ok{color:#6ee7b7}
+.m.ag .hash{color:rgba(255,255,255,0.15);font-family:'JetBrains Mono',monospace;font-size:9px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:999px;margin:2px 3px 2px 0}
+.chip.ok{background:rgba(34,197,94,0.08);color:#4ade80;border:1px solid rgba(34,197,94,0.1)}
+.chip.info{background:rgba(142,197,224,0.08);color:var(--accent);border:1px solid rgba(142,197,224,0.1)}
+.chip.warn{background:rgba(232,168,124,0.08);color:var(--warm);border:1px solid rgba(232,168,124,0.1)}
+.pbar{height:2px;border-radius:1px;background:rgba(255,255,255,0.05);margin-top:8px;overflow:hidden}
+.pbar .f{height:100%;border-radius:1px;background:var(--grad);width:0%;transition:width 1s cubic-bezier(.4,0,.2,1)}
+
+/* Typing */
+.typ{display:flex;gap:4px;padding:11px 15px;align-self:flex-start;opacity:0;transition:opacity .25s}
+.typ.v{opacity:1}
+.typ i{width:5px;height:5px;background:rgba(255,255,255,0.2);border-radius:50%;animation:td 1.4s infinite;display:block}
+.typ i:nth-child(2){animation-delay:.2s}
+.typ i:nth-child(3){animation-delay:.4s}
+@keyframes td{0%,60%,100%{opacity:.2;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+
+/* NCA footer */
+.nca-foot{display:flex;align-items:center;justify-content:center;gap:20px;padding:11px 18px;border-top:1px solid rgba(255,255,255,0.04);background:rgba(0,0,0,0.15);font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3)}
+.nca-foot span{display:flex;align-items:center;gap:5px}
+.nca-foot .nd{width:4px;height:4px;border-radius:50%}
+.nca-foot .nd.on{background:#4ade80}.nca-foot .nd.wip{background:var(--warm)}.nca-foot .nd.off{background:rgba(255,255,255,0.15)}
+
+/* Responsive */
+@media(max-width:1024px){.hero-inner{grid-template-columns:1fr;gap:40px}}
+@media(max-width:768px){.stack-row{grid-template-columns:38px 1fr auto;padding:14px 16px;gap:10px}.ico{width:38px;height:38px}.nca-foot{flex-wrap:wrap;gap:10px}}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-bg">
+    <div class="orb o1"></div>
+    <div class="orb o2"></div>
+  </div>
+
+  <div class="hero-inner">
+    <!-- LEFT -->
+    <div class="hero-left">
+      <div class="label">
+        <svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Autonomous compliance agents
+      </div>
+      <h1>Compliance<br>infrastructure<br><span class="grad">for Europe.</span></h1>
+      <p class="sub">The first autonomous compliance agent platform built specifically for European AIFMs.</p>
+      <div class="hero-ctas">
+        <a href="/demo-dashboard" class="btn btn-md btn-accent">Try the live demo <span class="arrow">→</span></a>
+        <a href="https://calendly.com/julian-laycock-caelith/30min" class="btn btn-md btn-ghost">Book a demo <span class="arrow">→</span></a>
+      </div>
+
+      <!-- 4-Layer Stack -->
+      <div class="stack">
+        <div class="stack-row">
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg></div>
+          <div class="row-text">
+            <h4>Regulatory Feed</h4>
+            <p>ESMA, BaFin, CSSF — live change stream with topic classification</p>
+          </div>
+          <div class="badge live">Live</div>
+        </div>
+        <div class="stack-row">
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg></div>
+          <div class="row-text">
+            <h4>Filing Pipeline</h4>
+            <p>Validate, generate XML, submit to NCA — one API call</p>
+          </div>
+          <div class="badge live">Live</div>
+        </div>
+        <div class="stack-row featured">
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z"/></svg></div>
+          <div class="row-text">
+            <h4>AI Compliance Agents</h4>
+            <p>Autonomous Annex IV filing, sanctions screening, regulatory monitoring</p>
+          </div>
+          <div class="badge beta">Beta</div>
+        </div>
+        <div class="stack-row">
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg></div>
+          <div class="row-text">
+            <h4>Dashboard & Copilot</h4>
+            <p>Full compliance workspace — built on its own APIs</p>
+          </div>
+          <div class="badge live">Live</div>
+        </div>
+      </div>
+
+      <!-- Agent callout -->
+      <div class="agent-callout">
+        <div class="agent-callout-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div class="agent-callout-text">
+          <strong>AIFMD II deadline: 39 days.</strong> Our agents validate, generate, and submit Annex IV XML to BaFin and CSSF — autonomously. No portal logins. No manual uploads.
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Agent Chat -->
+    <div class="agent-window">
+      <div class="agent-bar">
+        <div class="dots"><div class="d r"></div><div class="d y"></div><div class="d g"></div></div>
+        <div class="t">Caelith Annex IV Filing Agent</div>
+        <div class="live-badge">Active</div>
+      </div>
+      <div class="agent-body" id="chat"></div>
+      <div class="nca-foot">
+        <span><span class="nd on"></span>BaFin</span>
+        <span><span class="nd wip"></span>CSSF</span>
+        <span><span class="nd off"></span>FMA</span>
+        <span><span class="nd off"></span>AMF</span>
+        <span><span class="nd off"></span>AFM</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  var chat = document.getElementById('chat');
+  if (!chat) return;
+
+  var convo = [
+    { t:'co', d:500,
+      h:'We have 39 days until the AIFMD II transposition. What\'s our readiness status?' },
+    { t:'typ', d:600, dur:1200 },
+    { t:'ag', d:0,
+      h:'<b>AIFMD II readiness assessment</b> — 6 registered funds<br><br>' +
+        '<span class="ok">✓</span> Delegation & Outsourcing — <span class="chip ok">5/5</span><br>' +
+        '<span class="ok">✓</span> Liquidity Management — <span class="chip warn">3/4 · 1 open</span><br>' +
+        '<span class="ok">✓</span> Reporting & Disclosure — <span class="chip warn">2/5 · 3 open</span><br>' +
+        '<span class="ok">✓</span> Investor Classification — <span class="chip ok">Complete</span><br><br>' +
+        'Overall: <b>33% ready.</b> The 3 open reporting items are Annex IV filings for Q1 2026.' },
+    { t:'co', d:2200,
+      h:'Start with Süddeutscher Immobilien-Spezialfonds. File the Annex IV to BaFin now.' },
+    { t:'typ', d:500, dur:1400 },
+    { t:'ag', d:0,
+      h:'<b>Preparing Annex IV submission</b><br><br>' +
+        'Fund: Süddeutscher Immobilien-Spezialfonds I<br>' +
+        'Jurisdiction: DE · Type: Spezial_AIF · 9 investors<br>' +
+        '<div class="pbar"><div class="f" data-w="30"></div></div>' },
+    { t:'typ', d:1800, dur:1000 },
+    { t:'ag', d:0,
+      h:'<b>Validation passed</b><br><br>' +
+        '<span class="chip ok">XSD valid</span><span class="chip ok">LEI active</span><span class="chip ok">0 sanctions</span><br><br>' +
+        'Schema: <code>AIFMD_DATAIF_V1.2.xsd</code> (ESMA Rev 6)<br>' +
+        'LEI: <code>529900T8BM49AURSDO55</code> verified via GLEIF<br>' +
+        'Screened 9 investors against 6,863 EU + UN entities' +
+        '<div class="pbar"><div class="f" data-w="65"></div></div>' },
+    { t:'co', d:2000,
+      h:'Looks clean. Submit it.' },
+    { t:'typ', d:400, dur:1200 },
+    { t:'ag', d:0,
+      h:'<b>Submitted to BaFin MVP Portal</b><br><br>' +
+        '<span class="ok">✓</span> WS-Security signed → <code>portal.mvp.bafin.de</code><br>' +
+        '<span class="ok">✓</span> <b style="color:var(--warm)">meldungsId: 847291</b> — filing accepted<br>' +
+        '<span class="ok">✓</span> X.509 signature verified (GlobalSign RSA)<br><br>' +
+        '<span class="chip ok">Accepted</span><span class="chip info">Audit block #1248</span><br>' +
+        '<span class="hash">hash: a3f7c912e4b1...8b2de44719cf</span>' +
+        '<div class="pbar"><div class="f" data-w="100"></div></div>' },
+    { t:'co', d:2400,
+      h:'Good. What about the other two funds? And any regulatory updates from this week?' },
+    { t:'typ', d:500, dur:1100 },
+    { t:'ag', d:0,
+      h:'<b>Remaining Q1 filings:</b><br><br>' +
+        'Norddeutsche Gewerbeimmobilien II — <span class="chip info">Ready to file</span><br>' +
+        'Caelith Real Estate Opportunities — <span class="chip warn">Missing AIFM LEI</span><br><br>' +
+        '<b>This week\'s updates:</b><br>' +
+        '<span class="chip info">ESMA</span> Updated Q&A on leverage reporting methods<br>' +
+        '<span class="chip warn">BaFin</span> FoMaStG draft revised — new §1(19) classifications<br>' +
+        '<span class="chip info">CSSF</span> eDesk S3 maintenance: March 15, 02:00–06:00 CET' },
+    { t:'restart', d:5000 }
+  ];
+
+  function clear(){chat.innerHTML=''}
+  function add(item){
+    return new Promise(function(res){
+      if(item.t==='typ'){
+        var t=document.createElement('div');t.className='typ';
+        t.innerHTML='<i></i><i></i><i></i>';
+        chat.appendChild(t);chat.scrollTop=chat.scrollHeight;
+        requestAnimationFrame(function(){t.classList.add('v')});
+        setTimeout(function(){t.remove();res()},item.dur);return;
+      }
+      if(item.t==='restart'){
+        setTimeout(function(){
+          chat.querySelectorAll('.m').forEach(function(m){m.style.opacity='0';m.style.transform='translateY(-6px)'});
+          setTimeout(function(){clear();res()},400);
+        },item.d);return;
+      }
+      var el=document.createElement('div');
+      el.className='m '+(item.t==='co'?'co':'ag');
+      el.innerHTML=item.h;
+      chat.appendChild(el);chat.scrollTop=chat.scrollHeight;
+      requestAnimationFrame(function(){requestAnimationFrame(function(){
+        el.classList.add('v');
+        el.querySelectorAll('.pbar .f').forEach(function(b){
+          var w=b.getAttribute('data-w');
+          setTimeout(function(){b.style.width=w+'%'},150);
+        });
+      })});
+      setTimeout(res,300);
+    });
+  }
+  function run(){
+    var i=0;
+    function next(){
+      if(i>=convo.length){run();return}
+      var item=convo[i];i++;
+      if(item.t==='restart'){add(item).then(next);return}
+      setTimeout(function(){add(item).then(next)},item.d);
+    }
+    clear();next();
+  }
+  var obs=new IntersectionObserver(function(e){
+    if(e[0].isIntersecting){obs.disconnect();run()}
+  },{threshold:.15});
+  obs.observe(chat);
+})();
+</script>
+
+</body>
+</html>

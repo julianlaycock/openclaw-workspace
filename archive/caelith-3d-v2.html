@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — 3D Hero Concept</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050510;overflow:hidden;cursor:crosshair}
+canvas{display:block;position:fixed;inset:0}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+// ═══════════════════════════════════════════════
+// SCENE SETUP
+// ═══════════════════════════════════════════════
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x050510, 0.035);
+
+const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 100);
+camera.position.set(0, 0.5, 6);
+
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true, alpha: false });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+
+// Post-processing bloom
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.8, 0.4, 0.85);
+composer.addPass(bloom);
+
+// ═══════════════════════════════════════════════
+// LIGHTING — Cinematic 3-point + rim
+// ═══════════════════════════════════════════════
+const ambientLight = new THREE.AmbientLight(0x1a1a3e, 0.4);
+scene.add(ambientLight);
+
+// Key light — warm teal from top-left
+const keyLight = new THREE.DirectionalLight(0x4ecdc4, 2.5);
+keyLight.position.set(-3, 4, 3);
+scene.add(keyLight);
+
+// Fill light — soft purple from right
+const fillLight = new THREE.DirectionalLight(0x6c63ff, 1.2);
+fillLight.position.set(3, 1, 2);
+scene.add(fillLight);
+
+// Rim light — warm from behind
+const rimLight = new THREE.DirectionalLight(0xf7797d, 1.8);
+rimLight.position.set(0, 2, -4);
+scene.add(rimLight);
+
+// Bottom accent
+const bottomLight = new THREE.PointLight(0x4ecdc4, 1.5, 8);
+bottomLight.position.set(0, -3, 2);
+scene.add(bottomLight);
+
+// ═══════════════════════════════════════════════
+// ENVIRONMENT MAP — fake studio HDRI
+// ═══════════════════════════════════════════════
+const cubeRT = new THREE.WebGLCubeRenderTarget(256);
+const cubeCamera = new THREE.CubeCamera(0.1, 10, cubeRT);
+
+// Create a gradient environment sphere
+const envScene = new THREE.Scene();
+const envGeo = new THREE.SphereGeometry(5, 32, 32);
+const envMat = new THREE.ShaderMaterial({
+  side: THREE.BackSide,
+  uniforms: {},
+  vertexShader: `varying vec3 vWorldPos; void main(){ vWorldPos = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+  fragmentShader: `
+    varying vec3 vWorldPos;
+    void main(){
+      float y = normalize(vWorldPos).y;
+      vec3 top = vec3(0.15, 0.1, 0.35);
+      vec3 mid = vec3(0.05, 0.15, 0.2);
+      vec3 bot = vec3(0.02, 0.02, 0.08);
+      vec3 col = mix(bot, mid, smoothstep(-1.0, 0.0, y));
+      col = mix(col, top, smoothstep(0.0, 1.0, y));
+      // Hot spots for reflections
+      float spot1 = smoothstep(0.95, 1.0, dot(normalize(vWorldPos), normalize(vec3(-1.0, 1.0, 0.5))));
+      float spot2 = smoothstep(0.93, 1.0, dot(normalize(vWorldPos), normalize(vec3(1.0, 0.5, -0.5))));
+      col += vec3(0.3, 0.8, 0.7) * spot1 * 2.0;
+      col += vec3(0.5, 0.3, 0.9) * spot2 * 1.5;
+      gl_FragColor = vec4(col, 1.0);
+    }`
+});
+envScene.add(new THREE.Mesh(envGeo, envMat));
+cubeCamera.update(renderer, envScene);
+scene.environment = cubeRT.texture;
+
+// ═══════════════════════════════════════════════
+// MATERIALS — Glass, chrome, iridescent
+// ═══════════════════════════════════════════════
+const shieldMat = new THREE.MeshPhysicalMaterial({
+  color: 0x4ecdc4,
+  metalness: 0.3,
+  roughness: 0.08,
+  transmission: 0.15,
+  thickness: 1.5,
+  clearcoat: 1.0,
+  clearcoatRoughness: 0.05,
+  iridescence: 0.8,
+  iridescenceIOR: 1.5,
+  iridescenceThicknessRange: [200, 600],
+  sheen: 0.3,
+  sheenColor: new THREE.Color(0x6c63ff),
+  envMapIntensity: 2.5,
+  side: THREE.DoubleSide
+});
+
+const glassMat = new THREE.MeshPhysicalMaterial({
+  color: 0xffffff,
+  metalness: 0.0,
+  roughness: 0.0,
+  transmission: 0.95,
+  thickness: 0.5,
+  ior: 1.5,
+  clearcoat: 1.0,
+  envMapIntensity: 1.5
+});
+
+const chromeMat = new THREE.MeshPhysicalMaterial({
+  color: 0xaaeedd,
+  metalness: 1.0,
+  roughness: 0.05,
+  clearcoat: 0.5,
+  envMapIntensity: 3.0,
+  iridescence: 0.6,
+  iridescenceIOR: 2.0
+});
+
+const glowMat = new THREE.MeshBasicMaterial({ color: 0x4ecdc4, transparent: true, opacity: 0.6 });
+
+// ═══════════════════════════════════════════════
+// SHIELD GEOMETRY — Extruded shape
+// ═══════════════════════════════════════════════
+const shieldShape = new THREE.Shape();
+shieldShape.moveTo(0, 1.3);
+shieldShape.bezierCurveTo(0.6, 1.3, 1.0, 1.1, 1.0, 0.8);
+shieldShape.lineTo(1.0, 0.0);
+shieldShape.bezierCurveTo(1.0, -0.8, 0.3, -1.2, 0, -1.5);
+shieldShape.bezierCurveTo(-0.3, -1.2, -1.0, -0.8, -1.0, 0.0);
+shieldShape.lineTo(-1.0, 0.8);
+shieldShape.bezierCurveTo(-1.0, 1.1, -0.6, 1.3, 0, 1.3);
+
+const extrudeSettings = { depth: 0.35, bevelEnabled: true, bevelThickness: 0.08, bevelSize: 0.06, bevelSegments: 8, curveSegments: 32 };
+const shieldGeo = new THREE.ExtrudeGeometry(shieldShape, extrudeSettings);
+shieldGeo.center();
+
+const shield = new THREE.Mesh(shieldGeo, shieldMat);
+shield.scale.set(1.1, 1.1, 1.1);
+scene.add(shield);
+
+// Inner shield (glass layer)
+const innerShieldShape = new THREE.Shape();
+innerShieldShape.moveTo(0, 1.05);
+innerShieldShape.bezierCurveTo(0.45, 1.05, 0.78, 0.88, 0.78, 0.64);
+innerShieldShape.lineTo(0.78, 0.0);
+innerShieldShape.bezierCurveTo(0.78, -0.6, 0.22, -0.95, 0, -1.18);
+innerShieldShape.bezierCurveTo(-0.22, -0.95, -0.78, -0.6, -0.78, 0.0);
+innerShieldShape.lineTo(-0.78, 0.64);
+innerShieldShape.bezierCurveTo(-0.78, 0.88, -0.45, 1.05, 0, 1.05);
+
+const innerGeo = new THREE.ExtrudeGeometry(innerShieldShape, { depth: 0.1, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.02, bevelSegments: 4, curveSegments: 24 });
+innerGeo.center();
+const innerShield = new THREE.Mesh(innerGeo, glassMat);
+innerShield.position.z = 0.2;
+scene.add(innerShield);
+
+// ═══════════════════════════════════════════════
+// CHECKMARK — Chrome tubes
+// ═══════════════════════════════════════════════
+const checkPath = new THREE.CurvePath();
+const p1 = new THREE.Vector3(-0.35, -0.05, 0.35);
+const p2 = new THREE.Vector3(-0.1, -0.35, 0.35);
+const p3 = new THREE.Vector3(0.4, 0.35, 0.35);
+checkPath.add(new THREE.LineCurve3(p1, p2));
+checkPath.add(new THREE.LineCurve3(p2, p3));
+const checkGeo = new THREE.TubeGeometry(checkPath, 20, 0.06, 12, false);
+const checkmark = new THREE.Mesh(checkGeo, chromeMat);
+scene.add(checkmark);
+
+// Checkmark glow
+const checkGlow = new THREE.Mesh(new THREE.TubeGeometry(checkPath, 20, 0.12, 12, false), glowMat);
+scene.add(checkGlow);
+
+// ═══════════════════════════════════════════════
+// FLOATING ORBS — Glass spheres with inner glow
+// ═══════════════════════════════════════════════
+const orbGroup = new THREE.Group();
+scene.add(orbGroup);
+
+const orbData = [
+  { pos: [-2.2, 0.8, -0.5], size: 0.25, color: 0x4ecdc4, speed: 0.7 },
+  { pos: [2.0, -0.3, 0.5], size: 0.2, color: 0x6c63ff, speed: 0.9 },
+  { pos: [-1.5, -1.0, 1.0], size: 0.15, color: 0xf7797d, speed: 1.1 },
+  { pos: [1.8, 1.2, -0.3], size: 0.18, color: 0xdca064, speed: 0.8 },
+  { pos: [-0.8, 1.5, 0.8], size: 0.12, color: 0x4ecdc4, speed: 1.3 },
+  { pos: [0.5, -1.3, 1.2], size: 0.14, color: 0x6c63ff, speed: 1.0 },
+  { pos: [-2.5, -0.2, 0.3], size: 0.1, color: 0xf7797d, speed: 1.5 },
+  { pos: [2.5, 0.5, -0.8], size: 0.22, color: 0x44b3a8, speed: 0.6 },
+];
+
+orbData.forEach(d => {
+  const orbMat = new THREE.MeshPhysicalMaterial({
+    color: d.color,
+    metalness: 0.1,
+    roughness: 0.0,
+    transmission: 0.9,
+    thickness: 2.0,
+    ior: 2.0,
+    clearcoat: 1.0,
+    envMapIntensity: 2.0,
+    iridescence: 1.0,
+    iridescenceIOR: 1.8
+  });
+  const orb = new THREE.Mesh(new THREE.SphereGeometry(d.size, 32, 32), orbMat);
+  orb.position.set(...d.pos);
+  orb.userData = d;
+  orbGroup.add(orb);
+  
+  // Inner glow
+  const glowOrb = new THREE.Mesh(
+    new THREE.SphereGeometry(d.size * 0.6, 16, 16),
+    new THREE.MeshBasicMaterial({ color: d.color, transparent: true, opacity: 0.4 })
+  );
+  glowOrb.position.copy(orb.position);
+  glowOrb.userData = { parent: orb };
+  orbGroup.add(glowOrb);
+});
+
+// ═══════════════════════════════════════════════
+// RING — Orbiting chrome ring around shield
+// ═══════════════════════════════════════════════
+const ringGeo = new THREE.TorusGeometry(1.7, 0.02, 16, 100);
+const ring = new THREE.Mesh(ringGeo, chromeMat);
+ring.rotation.x = Math.PI * 0.45;
+scene.add(ring);
+
+const ring2Geo = new THREE.TorusGeometry(1.9, 0.015, 16, 100);
+const ring2 = new THREE.Mesh(ring2Geo, new THREE.MeshPhysicalMaterial({
+  color: 0x6c63ff, metalness: 1.0, roughness: 0.1, envMapIntensity: 2.0
+}));
+ring2.rotation.x = Math.PI * 0.55;
+ring2.rotation.y = Math.PI * 0.3;
+scene.add(ring2);
+
+// ═══════════════════════════════════════════════
+// PARTICLES — Floating dust
+// ═══════════════════════════════════════════════
+const particleCount = 500;
+const particleGeo = new THREE.BufferGeometry();
+const positions = new Float32Array(particleCount * 3);
+const sizes = new Float32Array(particleCount);
+for (let i = 0; i < particleCount; i++) {
+  positions[i * 3] = (Math.random() - 0.5) * 15;
+  positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
+  positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+  sizes[i] = Math.random() * 3 + 0.5;
+}
+particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+particleGeo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+const particleMat = new THREE.PointsMaterial({
+  color: 0x4ecdc4,
+  size: 0.03,
+  transparent: true,
+  opacity: 0.4,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false
+});
+const particles = new THREE.Points(particleGeo, particleMat);
+scene.add(particles);
+
+// ═══════════════════════════════════════════════
+// GROUND PLANE — Reflective dark surface
+// ═══════════════════════════════════════════════
+const groundGeo = new THREE.PlaneGeometry(20, 20);
+const groundMat = new THREE.MeshPhysicalMaterial({
+  color: 0x080818,
+  metalness: 0.8,
+  roughness: 0.3,
+  envMapIntensity: 0.5
+});
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -2.2;
+scene.add(ground);
+
+// ═══════════════════════════════════════════════
+// MOUSE TRACKING
+// ═══════════════════════════════════════════════
+let mx = 0, my = 0, tmx = 0, tmy = 0;
+document.addEventListener('mousemove', e => {
+  tmx = (e.clientX / innerWidth - 0.5) * 2;
+  tmy = (e.clientY / innerHeight - 0.5) * 2;
+});
+
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight);
+});
+
+// ═══════════════════════════════════════════════
+// ANIMATION LOOP
+// ═══════════════════════════════════════════════
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  const dt = clock.getDelta();
+  
+  // Smooth mouse follow
+  mx += (tmx - mx) * 0.03;
+  my += (tmy - my) * 0.03;
+  
+  // Shield rotation — mouse + gentle auto-rotate
+  shield.rotation.y = mx * 0.4 + Math.sin(t * 0.3) * 0.1;
+  shield.rotation.x = -my * 0.2 + Math.cos(t * 0.25) * 0.05;
+  shield.rotation.z = Math.sin(t * 0.2) * 0.03;
+  shield.position.y = Math.sin(t * 0.5) * 0.08 + 0.1;
+  
+  // Inner shield follows
+  innerShield.rotation.copy(shield.rotation);
+  innerShield.position.y = shield.position.y;
+  
+  // Checkmark follows shield
+  checkmark.rotation.copy(shield.rotation);
+  checkmark.position.y = shield.position.y;
+  checkGlow.rotation.copy(shield.rotation);
+  checkGlow.position.y = shield.position.y;
+  checkGlow.material.opacity = 0.3 + Math.sin(t * 2) * 0.15;
+  
+  // Rings orbit
+  ring.rotation.z = t * 0.15;
+  ring.rotation.x = Math.PI * 0.45 + Math.sin(t * 0.2) * 0.1;
+  ring2.rotation.z = -t * 0.12;
+  ring2.rotation.x = Math.PI * 0.55 + Math.cos(t * 0.18) * 0.08;
+  
+  // Orbs float
+  orbGroup.children.forEach(child => {
+    if (child.userData.speed) {
+      const d = child.userData;
+      child.position.x = d.pos[0] + Math.sin(t * d.speed * 0.5) * 0.3;
+      child.position.y = d.pos[1] + Math.cos(t * d.speed * 0.4) * 0.25;
+      child.position.z = d.pos[2] + Math.sin(t * d.speed * 0.3 + 1) * 0.2;
+    }
+    if (child.userData.parent) {
+      child.position.copy(child.userData.parent.position);
+    }
+  });
+  
+  // Particles drift
+  const posArr = particleGeo.attributes.position.array;
+  for (let i = 0; i < particleCount; i++) {
+    posArr[i * 3 + 1] += Math.sin(t + i) * 0.0003;
+    posArr[i * 3] += Math.cos(t * 0.5 + i * 0.1) * 0.0002;
+  }
+  particleGeo.attributes.position.needsUpdate = true;
+  
+  // Camera gentle sway
+  camera.position.x = mx * 0.5;
+  camera.position.y = 0.5 - my * 0.3;
+  camera.lookAt(0, 0, 0);
+  
+  // Animate material iridescence
+  shieldMat.iridescenceThicknessRange = [200 + Math.sin(t * 0.5) * 100, 600 + Math.cos(t * 0.3) * 100];
+  
+  // Lights subtle movement
+  keyLight.position.x = -3 + Math.sin(t * 0.4) * 0.5;
+  fillLight.position.y = 1 + Math.cos(t * 0.3) * 0.3;
+  
+  composer.render();
+}
+
+animate();
+</script>
+</body>
+</html>

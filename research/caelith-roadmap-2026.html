@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — 1-Year Development Roadmap 2026</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2128;
+    --border: rgba(255,255,255,0.08);
+    --accent: #c5e0ee;
+    --warm: #e8a87c;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --purple: #a78bfa;
+    --text: #e6edf3;
+    --muted: rgba(230,237,243,0.5);
+    --grad: linear-gradient(135deg, #c5e0ee, #e8a87c);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 48px 24px 80px;
+  }
+  .page { max-width: 1100px; margin: 0 auto; }
+
+  /* Header */
+  .header { margin-bottom: 56px; }
+  .header-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+  }
+  .header h1 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .header-meta {
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .header-meta strong { color: var(--text); }
+
+  /* Thesis bar */
+  .thesis {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 48px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .thesis strong { color: var(--text); }
+
+  /* Section headers */
+  .section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Timeline */
+  .timeline { margin-bottom: 64px; }
+  .quarter { margin-bottom: 40px; }
+  .q-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .q-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--bg);
+    background: var(--grad);
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .q-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .q-subtitle { font-size: 12px; color: var(--muted); }
+  .q-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .milestone-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+  }
+  .milestone {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .milestone:hover { border-color: rgba(197,224,238,0.25); }
+  .milestone-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .milestone-icon { font-size: 18px; flex-shrink: 0; }
+  .milestone-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .milestone-track {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 10px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .track-product { background: rgba(197,224,238,0.1); color: var(--accent); }
+  .track-biz { background: rgba(232,168,124,0.1); color: var(--warm); }
+  .track-agent { background: rgba(167,139,250,0.1); color: var(--purple); }
+  .track-infra { background: rgba(34,197,94,0.1); color: var(--green); }
+  .track-grant { background: rgba(234,179,8,0.1); color: var(--yellow); }
+
+  .milestone-body {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .milestone-kpi {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+  }
+
+  .milestone.done { border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.04); }
+  .milestone.done .milestone-title::after {
+    content: ' ✓';
+    color: var(--green);
+    font-weight: 400;
+  }
+  .milestone.critical { border-color: rgba(239,68,68,0.3); }
+  .milestone.critical .milestone-title { color: #fca5a5; }
+
+  /* Revenue ladder */
+  .revenue-ladder {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+  .rev-step {
+    background: var(--surface);
+    padding: 20px;
+    text-align: center;
+  }
+  .rev-step:first-child { border-radius: 12px 0 0 12px; }
+  .rev-step:last-child { border-radius: 0 12px 12px 0; }
+  .rev-step .rev-q {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .rev-step .rev-target {
+    font-size: 22px;
+    font-weight: 800;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+  .rev-step .rev-label { font-size: 11px; color: var(--muted); }
+  .rev-step .rev-customers {
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+  }
+
+  /* Kill criteria */
+  .kill-box {
+    background: rgba(239,68,68,0.05);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 48px;
+  }
+  .kill-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .kill-header h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fca5a5;
+  }
+  .kill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .kill-item {
+    background: rgba(239,68,68,0.06);
+    border: 1px solid rgba(239,68,68,0.15);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .kill-item .kill-trigger {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fca5a5;
+    margin-bottom: 6px;
+  }
+  .kill-item .kill-deadline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(252,165,165,0.6);
+    margin-bottom: 8px;
+  }
+  .kill-item .kill-action {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .kill-item .kill-action strong { color: var(--text); }
+
+  /* Signals / monitoring */
+  .signals {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-bottom: 64px;
+  }
+  .signal-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .signal-card .signal-icon { font-size: 20px; margin-bottom: 8px; }
+  .signal-card .signal-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .signal-card .signal-body {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .signal-card .signal-action {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+  }
+
+  /* Agent roadmap */
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .agent-card {
+    background: var(--surface);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .agent-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--purple);
+    margin-bottom: 8px;
+  }
+  .agent-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .agent-body { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+  .agent-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .spec-tag {
+    background: rgba(167,139,250,0.1);
+    color: var(--purple);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* Competitor watch */
+  .competitor-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 48px;
+    font-size: 12px;
+  }
+  .competitor-table th {
+    text-align: left;
+    padding: 10px 14px;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 11px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+  .competitor-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+  .competitor-table tr:last-child td { border-bottom: none; }
+  .competitor-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .risk-high { color: #fca5a5; }
+  .risk-med { color: var(--yellow); }
+  .risk-low { color: var(--green); }
+
+  /* Footer */
+  .roadmap-footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  @media (max-width: 700px) {
+    .agent-grid { grid-template-columns: 1fr; }
+    .revenue-ladder { grid-template-columns: repeat(2,1fr); }
+    .milestone-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-eyebrow">Live product · Pre-revenue</div>
+    <h1>Caelith 1-Year Roadmap</h1>
+    <div class="header-meta">
+      <strong>March 2026 → March 2027</strong> &nbsp;·&nbsp; Generated March 3, 2026
+      &nbsp;·&nbsp; Confidential — internal use only
+    </div>
+  </div>
+
+  <!-- THESIS -->
+  <div class="thesis">
+    <strong>Strategic thesis:</strong> "Sphinx for EU fund compliance." Compliance intelligence + autonomous agents for European fund managers. Sphinx raised $7.1M (Cherry Ventures + YC) for US fintech compliance agents. We do it for EU AIFMs — same thesis, zero overlap. <strong>AIFMD II enforcement: April 16, 2026 (44 days).</strong> AML Regulation (AMLR) goes live July 2027 — our next growth engine.
+  </div>
+
+  <!-- REVENUE TARGETS -->
+  <div class="section-title">Revenue Ladder</div>
+  <div class="revenue-ladder">
+    <div class="rev-step">
+      <div class="rev-q">Q1 2026</div>
+      <div class="rev-target">€0</div>
+      <div class="rev-label">Pre-revenue<br>Product-market fit validation</div>
+      <div class="rev-customers">0 customers</div>
+    </div>
+    <div class="rev-step">
+      <div class="rev-q">Q2 2026</div>
+      <div class="rev-target">€3–6K</div>
+      <div class="rev-label">MRR target<br>First 3 paying KVGs</div>
+      <div class="rev-customers">3 customers</div>
+    </div>
+    <div class="rev-step">
+      <div class="rev-q">Q3 2026</div>
+      <div class="rev-target">€15–25K</div>
+      <div class="rev-label">MRR target<br>Fund admin API deal closes</div>
+      <div class="rev-customers">8–12 customers</div>
+    </div>
+    <div class="rev-step">
+      <div class="rev-q">Q1 2027</div>
+      <div class="rev-target">€50K+</div>
+      <div class="rev-label">MRR target<br>Series A prep. AMLR in scope.</div>
+      <div class="rev-customers">25–40 customers</div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="section-title">Quarterly Milestones</div>
+  <div class="timeline">
+
+    <!-- Q1 2026 (NOW) -->
+    <div class="quarter">
+      <div class="q-header">
+        <div class="q-label">Q1 2026</div>
+        <div>
+          <div class="q-title">Foundation &amp; First Revenue</div>
+          <div class="q-subtitle">Jan – Mar 2026 · <span style="color:var(--green)">NOW — 44 days to AIFMD II enforcement</span></div>
+        </div>
+        <div class="q-line"></div>
+      </div>
+      <div class="milestone-grid">
+        <div class="milestone done">
+          <div class="milestone-header">
+            <div class="milestone-icon">🚀</div>
+            <div class="milestone-title">Live product on production</div>
+            <div class="milestone-track track-product">Product</div>
+          </div>
+          <div class="milestone-body">caelith.tech live. 72+ API endpoints, 231 passing tests, 73 DB migrations. Sanctions (6,863 entities), LEI validation (GLEIF), ESMA XSD Annex IV, Compliance Copilot, readiness check with email gate.</div>
+        </div>
+        <div class="milestone done">
+          <div class="milestone-header">
+            <div class="milestone-icon">📦</div>
+            <div class="milestone-title">open-annex-iv published</div>
+            <div class="milestone-track track-grant">Open Core</div>
+          </div>
+          <div class="milestone-body">Apache 2.0 AIFMD Annex IV library on npm. ESMA XSD Rev 6 v1.2. TypeScript + Python SDKs. OpenAPI at /api/docs. Community flywheel started.</div>
+          <div class="milestone-kpi">npmjs.com/package/open-annex-iv</div>
+        </div>
+        <div class="milestone done">
+          <div class="milestone-header">
+            <div class="milestone-icon">🎓</div>
+            <div class="milestone-title">Grant pipeline: €110K+</div>
+            <div class="milestone-track track-grant">Grants</div>
+          </div>
+          <div class="milestone-body">NGI Zero Commons Fund submitted (€50K, code 2026-04-087). Campus Founders Batch 4 submitted (€25K). EXIST in progress via HWR Berlin. BAfA Gründungszuschuss meeting March 5.</div>
+          <div class="milestone-kpi">€110K+ non-dilutive pipeline</div>
+        </div>
+        <div class="milestone done">
+          <div class="milestone-header">
+            <div class="milestone-icon">📧</div>
+            <div class="milestone-title">Outreach engine live</div>
+            <div class="milestone-track track-biz">Business</div>
+          </div>
+          <div class="milestone-body">18 KVGs in active pipeline. LinkedIn outreach cron running daily to 50 compliance officers. Egor Tarakanov (Montold) responding positively. Finch Capital intro call completed.</div>
+          <div class="milestone-kpi">Target: 3 paying customers by May</div>
+        </div>
+        <div class="milestone critical">
+          <div class="milestone-header">
+            <div class="milestone-icon">💳</div>
+            <div class="milestone-title">First paying customer</div>
+            <div class="milestone-track track-biz">Business</div>
+          </div>
+          <div class="milestone-body">Close first KVG at €990/mo Essentials. This is the only Q1 milestone that's still open. Everything else is product-ready — this is pure sales execution.</div>
+          <div class="milestone-kpi">Target: March 31, 2026</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🏛️</div>
+            <div class="milestone-title">BaFin MVP Portal agent — PoC</div>
+            <div class="milestone-track track-agent">Agent</div>
+          </div>
+          <div class="milestone-body">Build proof-of-concept browser agent that logs into BaFin MVP Portal and uploads a test Annex IV XML file. This is the demo wow-factor for Q2 fundraising.</div>
+          <div class="milestone-kpi">Target: end of March 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 2026 -->
+    <div class="quarter">
+      <div class="q-header">
+        <div class="q-label">Q2 2026</div>
+        <div>
+          <div class="q-title">Agent Launch &amp; First Revenue</div>
+          <div class="q-subtitle">Apr – Jun 2026 · AIFMD II enforcement April 16</div>
+        </div>
+        <div class="q-line"></div>
+      </div>
+      <div class="milestone-grid">
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🤖</div>
+            <div class="milestone-title">BaFin Filing Agent v1 — live</div>
+            <div class="milestone-track track-agent">Agent</div>
+          </div>
+          <div class="milestone-body">Production-ready browser agent: log into BaFin MVP Portal, validate Annex IV XML, upload, handle errors, return confirmation. Positioned as "automated Annex IV submission."</div>
+          <div class="milestone-kpi">2–3 weeks build · highest demo ROI</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🇱🇺</div>
+            <div class="milestone-title">CSSF eDesk Filing Agent</div>
+            <div class="milestone-track track-agent">Agent</div>
+          </div>
+          <div class="milestone-body">Luxembourg market. Reuses 70% of BaFin agent. CSSF manages €5.5T AUM — biggest fund admin market in Europe. Key for fund admin sales (Q3 target).</div>
+          <div class="milestone-kpi">2 weeks build · unlocks LU market</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">💰</div>
+            <div class="milestone-title">3 paying KVGs</div>
+            <div class="milestone-track track-biz">Business</div>
+          </div>
+          <div class="milestone-body">AIFMD II enforcement deadline (Apr 16) creates urgency. Push existing pipeline to close. Target mix: 2× Essentials €990, 1× Professional €1,990. MRR: €3–5K.</div>
+          <div class="milestone-kpi">KPI for Campus Founders + EXIST</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🔬</div>
+            <div class="milestone-title">Investor DD Research Agent</div>
+            <div class="milestone-track track-agent">Agent</div>
+          </div>
+          <div class="milestone-body">Automated investor due diligence: GLEIF hierarchy, Transparenzregister, EU/UN sanctions, adverse media. 3–4 weeks build. Differentiates from pure-form-filler competitors.</div>
+          <div class="milestone-kpi">3–4 weeks · major product moat</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🌱</div>
+            <div class="milestone-title">Seed fundraise prep</div>
+            <div class="milestone-track track-biz">Business</div>
+          </div>
+          <div class="milestone-body">Compile deck v4 with agent demo video, traction metrics, ARR projections. Target: €600K–1.2M seed round. Primary targets: Cherry Ventures, La Famiglia, Cavalry, Fly Ventures.</div>
+          <div class="milestone-kpi">Timeline: Q3 close target</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🏗️</div>
+            <div class="milestone-title">Legal entity: UG → GmbH prep</div>
+            <div class="milestone-track track-biz">Business</div>
+          </div>
+          <div class="milestone-body">Register Caelith UG (haftungsbeschränkt). Required for Campus Founders KPI, serious B2B contracts, and EXIST grant. Budget: ~€1K notary + fees. Timeline: May 2026.</div>
+          <div class="milestone-kpi">Blocker for institutional sales</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 2026 -->
+    <div class="quarter">
+      <div class="q-header">
+        <div class="q-label">Q3 2026</div>
+        <div>
+          <div class="q-title">Fund Admin GTM &amp; API Monetization</div>
+          <div class="q-subtitle">Jul – Sep 2026 · First institutional deal target</div>
+        </div>
+        <div class="q-line"></div>
+      </div>
+      <div class="milestone-grid">
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🏦</div>
+            <div class="milestone-title">First fund admin API deal</div>
+            <div class="milestone-track track-biz">Business</div>
+          </div>
+          <div class="milestone-body">Target: mid-size fund administrator (Caceis, SGSS, Universal-Investment tier). Deal structure: per-fund API access at €500–2K/fund/year. 1 deal = €50–200K ARR.</div>
+          <div class="milestone-kpi">This single deal changes the trajectory</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">⚡</div>
+            <div class="milestone-title">Multi-NCA agent orchestration</div>
+            <div class="milestone-track track-agent">Agent</div>
+          </div>
+          <div class="milestone-body">Single workflow that files to multiple NCAs (BaFin + CSSF + FCA + AMF) in parallel. Massive time saving for pan-European fund managers. Unique capability vs. any competitor.</div>
+          <div class="milestone-kpi">Unlocks Enterprise tier upsell</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">📊</div>
+            <div class="milestone-title">Analytics &amp; audit trail</div>
+            <div class="milestone-track track-product">Product</div>
+          </div>
+          <div class="milestone-body">Filing history, change detection, compliance timeline visualization, regulatory gap tracking across portfolio. Stickiness driver — data locked in = retention.</div>
+          <div class="milestone-kpi">Drives NRR above 110%</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🔑</div>
+            <div class="milestone-title">API key marketplace / self-serve</div>
+            <div class="milestone-track track-product">Product</div>
+          </div>
+          <div class="milestone-body">Self-serve API key provisioning, usage dashboard, billing integration (Stripe). Enables AI agent builders to access Caelith regulatory data programmatically.</div>
+          <div class="milestone-kpi">New revenue stream: developer tier</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">💼</div>
+            <div class="milestone-title">Seed round close</div>
+            <div class="milestone-track track-biz">Business</div>
+          </div>
+          <div class="milestone-body">Close €600K–1.2M seed. Primary use: 2 engineers (BE + agent), sales hire, legal. Investors: EU-focused fintech/regtech VCs. Milestone: 3 paying customers + agent demo live.</div>
+          <div class="milestone-kpi">Target: September 2026</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🇩🇪</div>
+            <div class="milestone-title">FRiG transposition coverage</div>
+            <div class="milestone-track track-product">Product</div>
+          </div>
+          <div class="milestone-body">Germany's AIFMD II transposition via FRiG (Fondsrechtsgesetz). Update rules engine, BaFin-specific requirements, transition guidance. Keep German KVGs ahead of regulators.</div>
+          <div class="milestone-kpi">Defensive moat in core market</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 2026 -->
+    <div class="quarter">
+      <div class="q-header">
+        <div class="q-label">Q4 2026</div>
+        <div>
+          <div class="q-title">Scale &amp; AMLR Positioning</div>
+          <div class="q-subtitle">Oct – Dec 2026 · AMLR enforcement July 2027 enters pipeline</div>
+        </div>
+        <div class="q-line"></div>
+      </div>
+      <div class="milestone-grid">
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🛡️</div>
+            <div class="milestone-title">AMLR module — early access</div>
+            <div class="milestone-track track-product">Product</div>
+          </div>
+          <div class="milestone-body">EU Anti-Money Laundering Regulation (AMLR), live July 2027. Build AMLR readiness assessment + early monitoring module. Sell as add-on to existing customers. Same urgency playbook as AIFMD II.</div>
+          <div class="milestone-kpi">Next growth engine — 9 months runway</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🌍</div>
+            <div class="milestone-title">Expand: NL, AT, DK markets</div>
+            <div class="milestone-track track-biz">Business</div>
+          </div>
+          <div class="milestone-body">Post-CSSF expansion. Netherlands (AFM), Austria (FMA), Denmark (Finanstilsynet). Each NCA requires localization + filing agent calibration. Germany + Luxembourg first — then cluster outward.</div>
+          <div class="milestone-kpi">Target: 3 markets active by Dec</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🤝</div>
+            <div class="milestone-title">Fund admin partnerships — 2 signed</div>
+            <div class="milestone-track track-biz">Business</div>
+          </div>
+          <div class="milestone-body">Structured reseller or white-label agreement with 2 fund administrators. They embed Caelith filing APIs in their client portals. Revenue share model. Target: Hauck Aufhäuser, Metzler, DZ BANK tier.</div>
+          <div class="milestone-kpi">Each partnership = 10–50 clients</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🧠</div>
+            <div class="milestone-title">Regulatory intelligence AI</div>
+            <div class="milestone-track track-agent">Agent</div>
+          </div>
+          <div class="milestone-body">Automated regulatory change detection (ESMA, BaFin, CSSF RSS feeds), impact analysis on client portfolios, proactive alerts. Turns compliance from reactive to predictive.</div>
+          <div class="milestone-kpi">Key differentiator vs. anevis/Infront</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">📈</div>
+            <div class="milestone-title">€15–25K MRR</div>
+            <div class="milestone-track track-biz">Business</div>
+          </div>
+          <div class="milestone-body">Revenue milestone: 8–15 direct KVG customers + first fund admin API revenue. Required to unlock Series A conversation and next grant tranche (EXIST milestone-based).</div>
+          <div class="milestone-kpi">Series A threshold signal</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🏗️</div>
+            <div class="milestone-title">Platform SOC 2 Type I prep</div>
+            <div class="milestone-track track-infra">Infra</div>
+          </div>
+          <div class="milestone-body">Enterprise sales require compliance certifications. Begin SOC 2 Type I audit process. Prerequisite for fund admin deals above €50K. 3–6 month process.</div>
+          <div class="milestone-kpi">Required for enterprise tier</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q1 2027 -->
+    <div class="quarter">
+      <div class="q-header">
+        <div class="q-label">Q1 2027</div>
+        <div>
+          <div class="q-title">Series A Readiness &amp; AMLR Lead</div>
+          <div class="q-subtitle">Jan – Mar 2027 · AMLR enforcement 6 months out</div>
+        </div>
+        <div class="q-line"></div>
+      </div>
+      <div class="milestone-grid">
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🚀</div>
+            <div class="milestone-title">AMLR full module launch</div>
+            <div class="milestone-track track-product">Product</div>
+          </div>
+          <div class="milestone-body">Full AML compliance module: UBO identification, sanctions screening (enhanced), transaction monitoring readiness, AMLR reporting templates. Positioned as "AIFMD II is solved, AMLR is next."</div>
+          <div class="milestone-kpi">Same urgency wave as AIFMD II 2026</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">💶</div>
+            <div class="milestone-title">Series A — process launched</div>
+            <div class="milestone-track track-biz">Business</div>
+          </div>
+          <div class="milestone-body">Launch formal Series A process. Target: €3–5M. Metrics required: €50K+ MRR, 25+ customers, SOC 2 Type I, 2+ fund admin partnerships, AMLR pipeline demonstrable.</div>
+          <div class="milestone-kpi">Target: close Q2–Q3 2027</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-header">
+            <div class="milestone-icon">🔄</div>
+            <div class="milestone-title">Automated regulatory update pipeline</div>
+            <div class="milestone-track track-infra">Infra</div>
+          </div>
+          <div class="milestone-body">When ESMA or BaFin publish new technical standards, Caelith auto-ingests, parses, flags impact on customer configurations, and proposes rule updates. True infrastructure play.</div>
+          <div class="milestone-kpi">Moat: nobody can replicate fast</div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /timeline -->
+
+  <!-- AGENT ROADMAP -->
+  <div class="section-title">Agent Roadmap — Priority Order</div>
+  <div class="agent-grid">
+    <div class="agent-card">
+      <div class="agent-num">AGENT 01 · Q1 2026</div>
+      <div class="agent-title">BaFin MVP Portal Filing Agent</div>
+      <div class="agent-body">Browser-native agent. Logs into BaFin MVP Portal, selects filing period, uploads XSD-validated Annex IV XML, handles errors, confirms submission. Biggest demo wow-factor. No CAPTCHA on MVP Portal — automatable now.</div>
+      <div class="agent-specs">
+        <span class="spec-tag">Playwright</span>
+        <span class="spec-tag">XSD-validated XML</span>
+        <span class="spec-tag">2–3 weeks</span>
+        <span class="spec-tag">Germany-first</span>
+      </div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-num">AGENT 02 · Q2 2026</div>
+      <div class="agent-title">CSSF eDesk Filing Agent</div>
+      <div class="agent-body">Luxembourg NCA (Commission de Surveillance du Secteur Financier). €5.5T AUM under management. 70% code reuse from BaFin agent. Unlocks the largest fund admin market in Europe — required for fund admin sales.</div>
+      <div class="agent-specs">
+        <span class="spec-tag">Playwright</span>
+        <span class="spec-tag">CSSF eDesk API</span>
+        <span class="spec-tag">2 weeks</span>
+        <span class="spec-tag">LU market</span>
+      </div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-num">AGENT 03 · Q2 2026</div>
+      <div class="agent-title">Investor Due Diligence Agent</div>
+      <div class="agent-body">Automated investor KYC: GLEIF entity + hierarchy lookup, Transparenzregister UBO check, EU/UN sanctions with fuzzy match, adverse media scan. Returns structured DD report per investor. Major product differentiator.</div>
+      <div class="agent-specs">
+        <span class="spec-tag">GLEIF API</span>
+        <span class="spec-tag">Sanctions fuzzy</span>
+        <span class="spec-tag">3–4 weeks</span>
+        <span class="spec-tag">EU/UN data</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- KILL CRITERIA -->
+  <div class="kill-box">
+    <div class="kill-header">
+      <span style="font-size:20px">🔴</span>
+      <h2>Kill Criteria — When to Pivot or Stop</h2>
+    </div>
+    <div class="kill-grid">
+      <div class="kill-item">
+        <div class="kill-trigger">Less than 3/10 discovery calls show interest</div>
+        <div class="kill-deadline">Deadline: Week 4 from first outreach batch</div>
+        <div class="kill-action"><strong>Action:</strong> Stop product build. Spend 2 weeks on discovery only. Re-evaluate ICP — pivot from KVGs to fund admins, or from AIFMD to AML.</div>
+      </div>
+      <div class="kill-item">
+        <div class="kill-trigger">0 paying customers by June 30, 2026</div>
+        <div class="kill-deadline">Deadline: End of Q2 2026</div>
+        <div class="kill-action"><strong>Action:</strong> Kill the KVG direct-sales channel. Pivot entirely to fund admin reseller model or pivot to a B2D (developer) API play. Don't spend Q3 selling to the same non-buyers.</div>
+      </div>
+      <div class="kill-item">
+        <div class="kill-trigger">Seed round not closed by October 2026</div>
+        <div class="kill-deadline">Deadline: Oct 31, 2026</div>
+        <div class="kill-action"><strong>Action:</strong> Cut burn to zero. Move to grant-only funding mode. Reduce scope to 1 core product (filing agent). Apply for IBB Berlin + Prototype Fund. No hiring.</div>
+      </div>
+      <div class="kill-item">
+        <div class="kill-trigger">Enterprise competitor enters EU mid-market</div>
+        <div class="kill-deadline">Monitor: Quarterly competitive scan</div>
+        <div class="kill-action"><strong>Action:</strong> If Workiva, Broadridge, or a well-funded EU startup targets exact same ICP with agents — accelerate fund admin pivot (infrastructure moat vs. dashboard moat).</div>
+      </div>
+      <div class="kill-item">
+        <div class="kill-trigger">ESMA delays or weakens AIFMD II enforcement</div>
+        <div class="kill-deadline">Monitor: ESMA announcements</div>
+        <div class="kill-action"><strong>Action:</strong> If enforcement is pushed to 2027+, urgency narrative collapses. Pivot messaging to AMLR (July 2027) immediately. The infrastructure play still holds — just different urgency.</div>
+      </div>
+      <div class="kill-item">
+        <div class="kill-trigger">MRR below €5K at 12 months</div>
+        <div class="kill-deadline">Deadline: March 31, 2027</div>
+        <div class="kill-action"><strong>Action:</strong> Full strategic review. Either the market is too small, the ICP is wrong, or the product isn't working. Bring in an external advisor. Don't keep grinding without changing inputs.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MONITORING / SIGNALS -->
+  <div class="section-title">What We're Watching</div>
+  <div class="signals">
+    <div class="signal-card">
+      <div class="signal-icon">📡</div>
+      <div class="signal-title">ESMA &amp; BaFin Regulatory Feed</div>
+      <div class="signal-body">ITS/RTS updates, enforcement guidance, Q&amp;A publications, Level 3 supervisory measures. Any change to Annex IV schema or reporting timelines directly impacts our product.</div>
+      <div class="signal-action">→ auto-monitored via eu-reg-feed</div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-icon">💰</div>
+      <div class="signal-title">Competitor Fundraises</div>
+      <div class="signal-body">Anevis Solutions (DE), Infront Compliance, Limina, Kneip (LU), CACEIS tech investments. If a direct competitor raises >€2M, accelerate our fundraise timeline and narrow ICP.</div>
+      <div class="signal-action">→ Crunchbase alerts + LinkedIn</div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-icon">🤖</div>
+      <div class="signal-title">Agent &amp; AI Compliance Entrants</div>
+      <div class="signal-body">Sphinx ($7.1M, US fintech) validated the thesis. Watch for EU-focused agent startups targeting same ICP. Key signal: any EU regtech startup mentioning "AIFMD + agents" in fundraise press.</div>
+      <div class="signal-action">→ YC batches, Berlin/Paris startups</div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-icon">📊</div>
+      <div class="signal-title">AIFMD II Enforcement Activity</div>
+      <div class="signal-body">Are NCAs actually enforcing? First BaFin fines or notices create massive urgency. Conversely, if enforcement is light in Q2 2026, expect reduced urgency from prospects. Adjust sales messaging accordingly.</div>
+      <div class="signal-action">→ BaFin press releases, legal news</div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-icon">🏦</div>
+      <div class="signal-title">Fund Admin M&amp;A Activity</div>
+      <div class="signal-body">Fund administrators acquiring compliance tech (like anevis buying IT vendors) means the market is consolidating. If a major fund admin acquires a competitor, target the remaining independents urgently.</div>
+      <div class="signal-action">→ Pensions &amp; Investments, FundForum</div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-icon">🔬</div>
+      <div class="signal-title">Norway XML Mandate (June 2026)</div>
+      <div class="signal-body">Norway Finanstilsynet mandating XML-only Annex IV from June 2026. First country to go fully digital after AIFMD II transposition. Early indicator of NCA digitization pace across EU. More are coming.</div>
+      <div class="signal-action">→ Finanstilsynet.no announcements</div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-icon">📉</div>
+      <div class="signal-title">Discovery Call Conversion Rate</div>
+      <div class="signal-body">Internal KPI. Target: 30% of calls → pilot. Below 15% means messaging mismatch or ICP is wrong. Track by: channel (LinkedIn vs. email), company size, fund type. Log every call outcome.</div>
+      <div class="signal-action">→ track in CRM weekly</div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-icon">⚖️</div>
+      <div class="signal-title">AMLR ITS / Level 2 Measures</div>
+      <div class="signal-body">EU Anti-Money Laundering Regulation Level 2 measures being published throughout 2026. Each publication = product update needed + sales opportunity. Position Caelith as "AMLR-ready" before July 2027.</div>
+      <div class="signal-action">→ EBA, ESMA legislative tracker</div>
+    </div>
+  </div>
+
+  <!-- COMPETITOR WATCH -->
+  <div class="section-title">Competitive Landscape — Watch List</div>
+  <table class="competitor-table">
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Focus</th>
+        <th>Positioning vs. Caelith</th>
+        <th>Threat Level</th>
+        <th>Watch Signal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>anevis Solutions</strong></td>
+        <td>AIFMD reporting, Annex IV, Germany</td>
+        <td>Managed service / enterprise. We're self-service / mid-market. They don't do agents.</td>
+        <td class="risk-med">⚠️ Medium</td>
+        <td>If they add automation / agent features</td>
+      </tr>
+      <tr>
+        <td><strong>Sphinx</strong></td>
+        <td>US fintech compliance agents ($7.1M)</td>
+        <td>Zero overlap — US only, AML/KYC for banks. They validate our thesis, not compete with it.</td>
+        <td class="risk-low">✓ Low</td>
+        <td>If they expand to EU fund managers</td>
+      </tr>
+      <tr>
+        <td><strong>Kneip</strong></td>
+        <td>Luxembourg fund data &amp; reporting</td>
+        <td>Enterprise, €€€, legacy. Slow. No agents. Fund admins frustrated with them = our opportunity.</td>
+        <td class="risk-low">✓ Low</td>
+        <td>If they acquire a startup to modernize</td>
+      </tr>
+      <tr>
+        <td><strong>Broadridge / Workiva</strong></td>
+        <td>Global reporting infrastructure</td>
+        <td>Way too big for mid-market KVGs. No EU-specific agent layer. Enterprise procurement = 18-month sales cycle.</td>
+        <td class="risk-low">✓ Low</td>
+        <td>If they launch an EU mid-market product line</td>
+      </tr>
+      <tr>
+        <td><strong>Infront Compliance</strong></td>
+        <td>EU fund compliance SaaS</td>
+        <td>Dashboard-heavy, no agents, older UX. Same ICP as Caelith but no automation differentiation.</td>
+        <td class="risk-high">🔴 High</td>
+        <td>If they ship agent/automation features in 2026</td>
+      </tr>
+      <tr>
+        <td><strong>YC W26 / EU accelerator</strong></td>
+        <td>Unknown regtech entrant</td>
+        <td>A new well-funded startup targeting exact same niche could compress our runway. First-mover matters.</td>
+        <td class="risk-med">⚠️ Medium</td>
+        <td>YC batch announcements, Dealroom EU deals</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- FOOTER -->
+  <div class="roadmap-footer">
+    <div>Caelith GmbH (UG in formation) · Berlin, Germany · caelith.tech</div>
+    <div>Generated March 3, 2026 · For internal use only</div>
+  </div>
+
+</div>
+</body>
+</html>

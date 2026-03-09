@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — LinkedIn Visual</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0d0f0f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Sora', sans-serif;
+  }
+
+  .card {
+    width: 1200px;
+    height: 627px;
+    background: #111515;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 48px 60px 36px;
+  }
+
+  /* Background grid */
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(197,224,238,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(197,224,238,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+
+  /* Glow blobs */
+  .glow-left {
+    position: absolute;
+    top: -120px;
+    left: -120px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(197,224,238,0.07) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .glow-right {
+    position: absolute;
+    bottom: -100px;
+    right: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(232,168,124,0.05) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    z-index: 2;
+  }
+
+  .headline {
+    max-width: 680px;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #C5E0EE;
+    margin-bottom: 10px;
+  }
+
+  .title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #F8F9FA;
+    line-height: 1.2;
+  }
+
+  .title span {
+    color: #C5E0EE;
+  }
+
+  .logo svg {
+    height: 28px;
+    width: auto;
+    opacity: 0.75;
+  }
+
+  /* Pipeline */
+  .pipeline {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 0 -8px;
+  }
+
+  .node {
+    flex: 1;
+    background: #1a1f1f;
+    border: 1px solid #2a3333;
+    border-radius: 10px;
+    padding: 16px 14px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+
+  .node.highlight {
+    border-color: #C5E0EE;
+    background: rgba(197,224,238,0.05);
+  }
+
+  .node-icon {
+    font-size: 20px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .node-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: #C5E0EE;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .node-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #F8F9FA;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .node-detail {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #5a7070;
+    line-height: 1.6;
+  }
+
+  .node-detail span {
+    color: #8aaa9a;
+  }
+
+  .node-badge {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    background: #C5E0EE;
+    color: #0d0f0f;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .node-badge.orange {
+    background: #E8A87C;
+  }
+
+  .node-badge.green {
+    background: #4ade80;
+  }
+
+  /* Arrow */
+  .arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 0 6px;
+    flex-shrink: 0;
+  }
+
+  .arrow-line {
+    width: 28px;
+    height: 1px;
+    background: linear-gradient(90deg, #2a3333, #C5E0EE44);
+  }
+
+  .arrow-head {
+    width: 0;
+    height: 0;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-left: 6px solid #C5E0EE44;
+    margin-top: -5px;
+    margin-left: 22px;
+  }
+
+  .arrow-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    color: #3a5050;
+    white-space: nowrap;
+  }
+
+  /* NCA outputs */
+  .nca-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+  }
+
+  .nca-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #161c1c;
+    border: 1px solid #222a2a;
+    border-radius: 6px;
+    padding: 6px 10px;
+  }
+
+  .nca-flag { font-size: 13px; }
+
+  .nca-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: #8aaa9a;
+    flex: 1;
+  }
+
+  .nca-status {
+    font-size: 9px;
+    font-weight: 700;
+    color: #4ade80;
+    background: rgba(74,222,128,0.1);
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+
+  /* Footer */
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .stat-row {
+    display: flex;
+    gap: 32px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 600;
+    color: #C5E0EE;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: #4a6060;
+    margin-top: 2px;
+  }
+
+  .cta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  .cta-main {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #C5E0EE;
+    font-weight: 600;
+  }
+
+  .cta-sub {
+    font-size: 10px;
+    color: #3a5050;
+  }
+
+  .deadline-pill {
+    background: rgba(232,168,124,0.12);
+    border: 1px solid rgba(232,168,124,0.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #E8A87C;
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="glow-left"></div>
+  <div class="glow-right"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="headline">
+      <div class="eyebrow">How Caelith works under the hood</div>
+      <div class="title">From raw fund data to<br><span>NCA-compliant filing in minutes.</span></div>
+    </div>
+    <div class="logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48">
+        <text x="0" y="38" font-family="Sora, sans-serif" font-weight="800" font-size="40" letter-spacing="-2" fill="#F8F9FA">Caelith</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Pipeline -->
+  <div class="pipeline">
+
+    <!-- Node 1: Input -->
+    <div class="node">
+      <span class="node-icon">📂</span>
+      <div class="node-label">Input</div>
+      <div class="node-title">Fund Data</div>
+      <div class="node-detail">
+        <span>Portfolio positions</span><br>
+        <span>Investor records</span><br>
+        <span>Leverage metrics</span><br>
+        <span>Liquidity profiles</span>
+      </div>
+    </div>
+
+    <div class="arrow">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+      <div class="arrow-label">ingest</div>
+    </div>
+
+    <!-- Node 2: Field Mapper -->
+    <div class="node highlight">
+      <div class="node-badge">Core Engine</div>
+      <span class="node-icon">🔁</span>
+      <div class="node-label">Step 1</div>
+      <div class="node-title">Field Mapper</div>
+      <div class="node-detail">
+        <span>300+ ESMA fields</span><br>
+        <span>Rev 6 schema</span><br>
+        <span>Auto-classification</span><br>
+        <span>Type coercion</span>
+      </div>
+    </div>
+
+    <div class="arrow">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+      <div class="arrow-label">map</div>
+    </div>
+
+    <!-- Node 3: XSD Validator -->
+    <div class="node highlight">
+      <div class="node-badge">Open Source</div>
+      <span class="node-icon">✅</span>
+      <div class="node-label">Step 2</div>
+      <div class="node-title">XSD Validator</div>
+      <div class="node-detail">
+        <span>ESMA Rev 6 spec</span><br>
+        <span>Same validator as BaFin</span><br>
+        <span>179 test cases</span><br>
+        <span>Zero false passes</span>
+      </div>
+    </div>
+
+    <div class="arrow">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+      <div class="arrow-label">validate</div>
+    </div>
+
+    <!-- Node 4: NCA Rules Engine -->
+    <div class="node highlight">
+      <div class="node-badge orange">Key Moat</div>
+      <span class="node-icon">🌍</span>
+      <div class="node-label">Step 3</div>
+      <div class="node-title">NCA Rules Engine</div>
+      <div class="node-detail">
+        <span>8 regulators</span><br>
+        <span>Jurisdiction quirks</span><br>
+        <span>Frequency logic</span><br>
+        <span>Rejection prevention</span>
+      </div>
+    </div>
+
+    <div class="arrow">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+      <div class="arrow-label">route</div>
+    </div>
+
+    <!-- Node 5: Output -->
+    <div class="node" style="flex: 0.9;">
+      <div class="node-badge green">Output</div>
+      <span class="node-icon">📤</span>
+      <div class="node-label">Submit</div>
+      <div class="node-title">NCA Filing</div>
+      <div class="nca-grid" style="margin-top:8px;">
+        <div class="nca-row">
+          <span class="nca-flag">🇩🇪</span>
+          <span class="nca-name">BaFin MVP</span>
+          <span class="nca-status">✓ Ready</span>
+        </div>
+        <div class="nca-row">
+          <span class="nca-flag">🇱🇺</span>
+          <span class="nca-name">CSSF eDesk</span>
+          <span class="nca-status">✓ Ready</span>
+        </div>
+        <div class="nca-row">
+          <span class="nca-flag">🇫🇷</span>
+          <span class="nca-name">AMF</span>
+          <span class="nca-status">✓ Ready</span>
+        </div>
+        <div class="nca-row">
+          <span class="nca-flag">🇦🇹</span>
+          <span class="nca-name">FMA</span>
+          <span class="nca-status">✓ Ready</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="stat-row">
+      <div class="stat">
+        <div class="stat-num">300+</div>
+        <div class="stat-label">ESMA fields automated</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">8</div>
+        <div class="stat-label">NCAs supported</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">&lt;5 min</div>
+        <div class="stat-label">vs 40–80h consultant</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">179</div>
+        <div class="stat-label">validation test cases</div>
+      </div>
+    </div>
+    <div class="cta">
+      <div class="deadline-pill">⏳ AIFMD II — April 16, 2026</div>
+      <div class="cta-main">caelith.tech · github.com/julianlaycock/open-annex-iv</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

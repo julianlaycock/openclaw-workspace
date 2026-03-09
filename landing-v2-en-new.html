@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a1f1f">
+<title>Caelith — AIFMD II Compliance Platform for EU Fund Managers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1f1f;--bg2:#2D3333;--accent:#8EC5E0;--accent-sat:#6BB8D9;--warm:#E8A87C;
+  --text:#f0f0f0;--text2:rgba(255,255,255,0.7);--text3:rgba(255,255,255,0.5);
+  --text-dark:#1a1f1f;--text-dark2:#5a6666;--text-dark3:#8a9494;
+  --border:rgba(255,255,255,0.08);--border-light:rgba(45,51,51,0.08);
+  --radius:12px;--grad:linear-gradient(135deg,#8EC5E0,#E8A87C);
+  --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.10);
+  --light-bg:#F8F9FA;--light-card:#FFFFFF;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:60px}
+body{font-family:'Inter',sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden;overscroll-behavior-y:none}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;letter-spacing:-0.03em;line-height:1.15}
+a{text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent}
+.grad{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* ═══ REDUCED MOTION ═══ */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+  html{scroll-behavior:auto!important}
+  .reveal{opacity:1!important;transform:none!important}
+}
+
+/* ═══ SCROLL PROGRESS ═══ */
+.scroll-progress{position:fixed;top:0;left:0;height:2px;background:var(--grad);z-index:10001;width:0%;pointer-events:none}
+
+/* ═══ NAV ═══ */
+.nav-wrap{position:fixed;top:0;left:0;right:0;z-index:1000;padding-top:var(--safe-top);transition:background .3s,box-shadow .3s}
+.nav-wrap.scrolled{background:rgba(26,31,31,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 1px 0 rgba(255,255,255,0.06)}
+nav{padding:12px 20px;display:flex;align-items:center;justify-content:space-between;min-height:48px}
+.nav-logo{font-family:'Sora';font-weight:800;font-size:17px;color:#fff}
+.nav-links{display:none}
+.hamburger{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:0;background:none;border:none;cursor:pointer;width:44px;height:44px;-webkit-tap-highlight-color:transparent;position:relative}
+.hamburger span{display:block;width:20px;height:1.5px;background:#fff;border-radius:1px;position:absolute;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.hamburger span:nth-child(1){transform:translateY(-6px)}
+.hamburger span:nth-child(2){opacity:1}
+.hamburger span:nth-child(3){transform:translateY(6px)}
+/* X morph */
+.hamburger.active span:nth-child(1){transform:rotate(45deg)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:rotate(-45deg)}
+
+/* Mobile menu */
+.mobile-menu{position:fixed;inset:0;z-index:999;background:rgba(26,31,31,0.98);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;opacity:0;pointer-events:none;transition:opacity .3s;overscroll-behavior:contain}
+.mobile-menu.open{opacity:1;pointer-events:auto}
+.mobile-menu a{font-family:'Sora';font-size:22px;font-weight:600;color:var(--text2);padding:14px 0;text-align:center}
+.mobile-menu a:active{color:#fff;transform:scale(0.97)}
+.mobile-menu .menu-divider{width:32px;height:1px;background:var(--border);margin:4px 0}
+.mobile-menu .menu-cta{margin-top:28px;font-size:14px;padding:14px 36px;border-radius:999px;background:var(--grad);color:#fff;font-weight:700}
+.mobile-menu .menu-cta:active{transform:scale(0.96);opacity:0.9}
+
+/* ═══ BUTTONS ═══ */
+.btn{font-family:'Sora';font-weight:600;border:none;border-radius:var(--radius);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:6px;-webkit-tap-highlight-color:transparent;min-height:44px}
+.btn:active{transform:scale(0.97);opacity:0.85}
+.btn-md{font-size:13px;padding:12px 22px}
+.btn-lg{font-size:14px;padding:14px 28px}
+.btn-accent{background:var(--grad);color:#fff;font-weight:700}
+.btn-outline{background:transparent;border:1px solid var(--glass-border);color:var(--text2)}
+.btn-outline-dark{background:transparent;border:1px solid var(--border-light);color:var(--text-dark2)}
+.btn-ghost{background:transparent;color:var(--text-dark3);font-size:11px;padding:10px 16px;border:1px solid var(--border-light);min-height:40px}
+.arrow{transition:transform .2s;font-size:12px}
+
+/* ═══ SECTIONS ═══ */
+.section{padding:56px 20px}
+.section-inner{max-width:1200px;margin:0 auto}
+.label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+
+/* ═══ 1. HERO ═══ */
+.hero{position:relative;padding:calc(72px + var(--safe-top)) 20px 40px;display:flex;flex-direction:column;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 30% 0%,rgba(200,230,240,0.15) 0%,transparent 60%),#2D3333;min-height:100vh;min-height:100dvh}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(100,180,200,0.1) 0%,transparent 50%);pointer-events:none}
+.hero-content{position:relative;z-index:1}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:2px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.hero-label .pulse{width:5px;height:5px;background:#22c55e;border-radius:50%;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-weight:800;font-size:32px;margin-bottom:14px;letter-spacing:-0.04em;line-height:1.1;color:#fff}
+.hero-sub{font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:22px}
+.hero-ctas{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.hero-ctas .btn{width:100%}
+.hero-meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3)}
+
+/* Terminal — hidden on very short screens, compact otherwise */
+.terminal{background:rgba(255,255,255,0.02);border:1px solid var(--glass-border);border-radius:var(--radius);overflow:hidden;margin-top:24px}
+.term-bar{display:flex;align-items:center;gap:6px;padding:8px 12px;background:rgba(0,0,0,0.3);border-bottom:1px solid rgba(255,255,255,0.05)}
+.term-dot{width:6px;height:6px;border-radius:50%}
+.term-dot.r{background:#FF5F56}.term-dot.y{background:#FFBD2E}.term-dot.g{background:#27C93F}
+.term-title{flex:1;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,0.25)}
+.term-body{padding:10px;font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.75;color:rgba(255,255,255,0.4);max-height:170px;overflow:hidden}
+.term-body .cmd{color:var(--accent);font-weight:500}
+.term-body .ok{color:#6ee7b7}
+.term-body .hash{color:rgba(255,255,255,0.2)}
+.term-body .warn{color:var(--warm)}
+.term-line{opacity:1}
+
+/* Hide terminal on very short phones */
+@media(max-height:650px){
+  .terminal{display:none}
+  .hero{min-height:auto;padding-bottom:32px}
+}
+
+/* ═══ 2. FEATURES (LIGHT) ═══ */
+.features-section{background:var(--light-bg)}
+
+.readiness-inline{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-radius:var(--radius);background:linear-gradient(135deg,rgba(142,197,224,0.08),rgba(232,168,124,0.06));border:1px solid rgba(142,197,224,0.15);margin-bottom:28px;text-align:center}
+.readiness-inline p{font-size:13px;color:var(--text-dark2);line-height:1.5}
+.readiness-inline p strong{color:var(--accent-sat);font-weight:700}
+.countdown-hint{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--warm);margin-top:2px}
+.btn-readiness{font-family:'Sora';font-weight:700;font-size:13px;padding:12px 20px;border-radius:999px;background:var(--grad);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:44px;-webkit-tap-highlight-color:transparent}
+.btn-readiness:active{transform:scale(0.97);opacity:0.85}
+
+/* Feature cards — horizontal compact */
+.feat-grid{display:flex;flex-direction:column;gap:10px}
+.feat-card{display:flex;gap:12px;padding:14px;border-radius:10px;background:linear-gradient(145deg,rgba(142,197,224,0.05),rgba(232,168,124,0.03));border:1px solid rgba(142,197,224,0.10);align-items:flex-start}
+.feat-card:active{background:linear-gradient(145deg,rgba(142,197,224,0.1),rgba(232,168,124,0.06))}
+.feat-icon{width:34px;height:34px;min-width:34px;border-radius:8px;background:linear-gradient(135deg,rgba(107,184,217,0.12),rgba(232,168,124,0.08));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.feat-icon svg{width:16px;height:16px;stroke:var(--accent-sat);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.feat-text h3{font-size:13px;font-weight:700;margin-bottom:2px;color:var(--text-dark)}
+.feat-text p{font-size:11px;color:var(--text-dark2);line-height:1.55}
+
+/* ═══ 3. PLATFORM (DARK) ═══ */
+.platform-section{background:var(--bg)}
+
+.dash-mobile-notice{background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:var(--radius);padding:20px 16px;text-align:center}
+.dash-mobile-notice .notice-icon{font-size:28px;margin-bottom:10px}
+.dash-mobile-notice .badge-desktop{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:999px;padding:5px 12px;margin-bottom:12px}
+.dash-mobile-notice h4{font-family:'Sora';font-size:14px;font-weight:700;color:#fff;margin-bottom:6px}
+.dash-mobile-notice p{font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:14px}
+
+/* Copilot */
+.chat-window{background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:var(--radius);overflow:hidden;margin-top:16px}
+.chat-header{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.2);display:flex;align-items:center;gap:8px}
+.chat-header .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:pulse 2s ease-in-out infinite}
+.chat-header span{font-family:'Sora';font-size:12px;font-weight:600;color:rgba(255,255,255,0.7)}
+.chat-body{padding:12px;display:flex;flex-direction:column;gap:8px}
+.chat-msg{max-width:88%;padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.55}
+.chat-msg.user{align-self:flex-end;background:rgba(107,184,217,0.12);border:1px solid rgba(107,184,217,0.15);color:var(--accent);font-size:11px}
+.chat-msg.bot{align-self:flex-start;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:var(--text2);font-size:12px}
+.chat-msg.bot strong{color:#fff;font-weight:600}
+.chat-msg.bot code{font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(0,0,0,0.3);padding:1px 4px;border-radius:3px;color:var(--warm)}
+.typing-indicator{display:flex;gap:3px;padding:8px 12px;align-self:flex-start}
+.typing-indicator span{width:4px;height:4px;background:rgba(255,255,255,0.2);border-radius:50%;animation:typeDot 1.4s infinite}
+.typing-indicator span:nth-child(2){animation-delay:.2s}
+.typing-indicator span:nth-child(3){animation-delay:.4s}
+@keyframes typeDot{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+
+/* ═══ 4. COMPARISON (LIGHT) ═══ */
+.comp-section{background:var(--light-bg)}
+.comp-cards{display:flex;flex-direction:column;gap:8px}
+.comp-card{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:10px;background:var(--light-card);border:1px solid var(--border-light)}
+.comp-card .metric{font-size:12px;font-weight:600;color:var(--text-dark)}
+.comp-card .old-val{font-size:10px;color:var(--text-dark3);text-decoration:line-through}
+.comp-card .new-val{font-size:13px;font-weight:700;color:#2a8a6e;text-align:right;white-space:nowrap}
+
+/* ═══ 5. API + OSS (DARK) ═══ */
+.dev-section{background:var(--bg)}
+.api-features{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.api-features li{font-size:11px;color:var(--text2);padding-left:16px;position:relative;font-family:'JetBrains Mono',monospace}
+.api-features li::before{content:'\2713';position:absolute;left:0;color:var(--accent)}
+.api-code{border-radius:var(--radius);overflow:hidden;background:rgba(255,255,255,0.02);border:1px solid var(--glass-border);margin-top:16px}
+.api-code-bar{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06);font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,0.25);display:flex;justify-content:space-between;background:rgba(0,0,0,0.3)}
+.api-code-body{padding:12px;font-family:'JetBrains Mono',monospace;font-size:9.5px;line-height:1.75;color:rgba(255,255,255,0.45);overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:pre;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent}
+.api-code-body::-webkit-scrollbar{height:4px}
+.api-code-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:2px}
+.api-code-body .kw{color:var(--accent)}.api-code-body .str{color:var(--warm)}.api-code-body .cmt{color:rgba(255,255,255,0.2)}
+/* Scroll hint fade on code */
+.api-code{position:relative}
+.api-code::after{content:'';position:absolute;right:0;top:30px;bottom:0;width:24px;background:linear-gradient(to right,transparent,rgba(26,31,31,0.8));pointer-events:none;border-radius:0 0 var(--radius) 0}
+
+.oss-inline{margin-top:16px;display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:var(--radius);background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);text-align:center}
+.oss-inline .oss-cmd{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);background:rgba(0,0,0,0.3);padding:8px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
+.oss-inline .oss-label{font-size:11px;color:var(--text3)}
+.oss-inline .oss-label strong{color:var(--text2)}
+.dev-btns{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.dev-btns .btn{width:100%}
+
+/* ═══ 6. PRICING (LIGHT) ═══ */
+.pricing-section{background:var(--light-bg)}
+.pricing-grid{display:flex;flex-direction:column;gap:14px}
+.price-col{padding:20px 16px;border-radius:var(--radius);position:relative;border:1px solid var(--border-light);background:var(--light-card)}
+.price-col.featured{border:none;box-shadow:0 8px 32px rgba(0,0,0,0.06)}
+.price-col.featured::before{content:'';position:absolute;inset:-2px;border-radius:calc(var(--radius) + 2px);background:var(--grad);z-index:-1}
+.price-col.featured::after{content:'';position:absolute;inset:0;border-radius:var(--radius);background:var(--light-card);z-index:-1}
+.price-badge{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:2px}
+.tier{font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text-dark)}
+.price-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.amount{font-family:'Sora';font-weight:800;font-size:26px;color:var(--text-dark)}
+.amount span{font-size:12px;font-weight:400;color:var(--text-dark3)}
+.pdesc{font-size:11px;color:var(--text-dark3)}
+.price-col ul{list-style:none;display:flex;flex-wrap:wrap;gap:4px 0;margin-bottom:14px}
+.price-col li{font-size:11px;color:var(--text-dark2);padding-left:14px;position:relative;width:100%}
+.price-col li::before{content:'\2713';position:absolute;left:0;color:var(--accent-sat);font-size:10px}
+.price-ctas{display:flex;gap:8px}
+.price-ctas .btn,.price-ctas .btn-ghost{flex:1;text-align:center;font-size:12px}
+
+/* ═══ 7. TRUST + RESOURCES (DARK) ═══ */
+.trust-section{background:var(--bg2)}
+/* Trust pills — 2-col grid to prevent orphans */
+.trust-bar{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:28px}
+.trust-pill{padding:8px 10px;border-radius:999px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);display:flex;align-items:center;justify-content:center;gap:4px;text-align:center;white-space:nowrap}
+.trust-pill:last-child{grid-column:1/-1;justify-self:center;width:auto;padding:8px 20px}
+.trust-pill svg{width:11px;height:11px;stroke:var(--accent);fill:none;stroke-width:1.5;flex-shrink:0}
+.resources-grid{display:flex;flex-direction:column;gap:10px}
+.resource-card{display:block;padding:16px;border-radius:var(--radius);background:rgba(255,255,255,0.03);border:1px solid var(--glass-border)}
+.resource-card:active{background:rgba(255,255,255,0.06)}
+.resource-card .tag{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1px;margin-bottom:4px}
+.resource-card h3{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
+.resource-card p{font-size:11px;color:var(--text2);line-height:1.55}
+
+/* ═══ 8. CTA + FAQ (DARK) ═══ */
+.cta-faq-section{background:var(--bg)}
+.cta-compact{text-align:center;margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid var(--border)}
+.cta-countdown{display:inline-flex;align-items:center;gap:12px;padding:10px 20px;border-radius:999px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);margin-bottom:16px}
+.cta-countdown .days{font-family:'Sora';font-weight:800;font-size:24px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.cta-countdown .ctx-wrap{text-align:left}
+.cta-countdown .ctx{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;line-height:1.4}
+.cta-countdown .ctx.warm{color:var(--warm)}
+.cta-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.cta-btns .btn{width:100%}
+.faq-inner{max-width:720px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:14px 0;cursor:pointer;font-family:'Sora';font-weight:500;font-size:13px;color:var(--text);gap:12px;-webkit-tap-highlight-color:transparent;min-height:44px}
+.faq-q:active{color:var(--accent)}
+.faq-tog{font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--text3);transition:transform .3s;flex-shrink:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.faq-item.open .faq-tog{transform:rotate(45deg);color:var(--accent)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.faq-item.open .faq-a{max-height:280px}
+.faq-a-inner{padding:0 0 14px;font-size:12px;color:var(--text2);line-height:1.65}
+.faq-a-inner a{color:var(--accent)}
+
+/* ═══ 9. FOOTER ═══ */
+footer{background:var(--bg);border-top:1px solid var(--border);padding:32px 20px calc(80px + var(--safe-bottom))}
+.footer-inner{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.footer-brand{grid-column:1/-1}
+.footer-logo{font-family:'Sora';font-weight:800;font-size:15px;color:#fff}
+footer .brand-p{font-size:11px;color:var(--text3);line-height:1.6;margin-top:4px}
+.social-links{display:flex;gap:8px;margin-top:10px}
+.social-links a{width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center}
+.social-links a:active{background:rgba(255,255,255,0.1)}
+.social-links a svg{width:13px;height:13px;fill:var(--text3)}
+.footer-col h4{font-size:9px;font-weight:600;color:var(--text3);margin-bottom:8px;letter-spacing:1px;text-transform:uppercase}
+.footer-col a{display:block;font-size:11px;color:var(--text3);margin-bottom:5px;padding:2px 0;min-height:24px;display:flex;align-items:center}
+.footer-col a:active{color:#fff}
+.footer-bottom{grid-column:1/-1;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:4px}
+
+/* ═══ STICKY BOTTOM CTA ═══ */
+.sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:900;background:rgba(26,31,31,0.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,0.06);padding:10px 20px calc(10px + var(--safe-bottom));display:flex;gap:8px;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.sticky-cta.visible{transform:translateY(0)}
+.sticky-cta .btn{flex:1;font-size:12px;padding:10px 0;min-height:42px}
+
+/* ═══ COOKIE CONSENT ═══ */
+.consent-bar{position:fixed;bottom:0;left:0;right:0;background:#2D3333;border-top:1px solid rgba(255,255,255,0.1);padding:14px 20px calc(14px + var(--safe-bottom));z-index:950;font-size:11px;color:rgba(248,249,250,0.6);display:flex;flex-direction:column;gap:10px;text-align:center;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.consent-bar a{color:#8EC5E0}
+.consent-btns{display:flex;gap:8px}
+.consent-btns button{flex:1;padding:10px;border-radius:8px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;border:none;min-height:44px;-webkit-tap-highlight-color:transparent}
+.consent-btns button:active{opacity:0.8}
+.consent-accept{background:linear-gradient(135deg,#8EC5E0,#E8A87C);color:#1a1f1f;font-weight:600}
+.consent-reject{background:rgba(255,255,255,0.08);color:rgba(248,249,250,0.6);border:1px solid rgba(255,255,255,0.1)!important}
+
+/* ═══ REVEALS ═══ */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.19,1,.22,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.08s}
+.reveal-d2{transition-delay:.16s}
+
+body{animation:pageLoad .4s ease}
+@keyframes pageLoad{from{opacity:0}to{opacity:1}}
+
+/* ═══ 320px (iPhone SE) ═══ */
+@media(max-width:350px){
+  .hero h1{font-size:28px}
+  .section{padding:48px 16px}
+  .hero{padding-left:16px;padding-right:16px}
+  nav{padding:12px 16px}
+  .cta-countdown{padding:8px 14px;gap:10px}
+  .cta-countdown .days{font-size:20px}
+  .trust-bar{grid-template-columns:1fr}
+  .trust-pill:last-child{grid-column:auto}
+  .footer-inner{grid-template-columns:1fr}
+  .price-ctas{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- NAV -->
+<div class="nav-wrap" id="navWrap">
+<nav>
+  <a class="nav-logo" href="#">Caelith</a>
+  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+</div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#features" class="menu-link">Features</a>
+  <div class="menu-divider"></div>
+  <a href="#platform" class="menu-link">Platform</a>
+  <div class="menu-divider"></div>
+  <a href="#developers" class="menu-link">API</a>
+  <div class="menu-divider"></div>
+  <a href="#pricing" class="menu-link">Pricing</a>
+  <div class="menu-divider"></div>
+  <a href="#faq" class="menu-link">FAQ</a>
+  <a href="/readiness-check" class="menu-cta">Readiness Check →</a>
+  <a href="/api/landing?lang=de" style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:8px">🇩🇪 DE</a>
+</div>
+
+<!-- ═══ 1. HERO ═══ -->
+<section class="hero" id="heroSection">
+  <div class="hero-content">
+    <div class="hero-label"><span class="pulse"></span> AIFMD II COMPLIANCE PLATFORM</div>
+    <h1>Fund compliance,<br><span class="grad">automated.</span></h1>
+    <p class="hero-sub">Every decision logged, verified, and cryptographically proven — before your regulator asks.</p>
+    <div class="hero-ctas">
+      <a href="/readiness-check" class="btn btn-md btn-accent">Free Readiness Check <span class="arrow">→</span></a>
+      <a href="/api/copilot-demo" class="btn btn-md btn-outline">Try the Copilot <span class="arrow">→</span></a>
+    </div>
+    <div class="hero-meta">
+      <span>✓ ESMA XSD-validated</span>
+      <span>✓ EU hosted</span>
+      <span>✓ Open source core</span>
+    </div>
+    <div class="terminal">
+      <div class="term-bar">
+        <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+        <div class="term-title">caelith — compliance eval</div>
+      </div>
+      <div class="term-body" id="termBody"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 2. FEATURES (LIGHT) ═══ -->
+<section class="section features-section" id="features">
+  <div class="section-inner">
+    <div style="margin-bottom:20px">
+      <div class="label" style="color:var(--accent-sat)">Capabilities</div>
+      <h2 style="color:var(--text-dark);font-size:22px">Built for compliance.<br><span class="grad">Engineered for speed.</span></h2>
+    </div>
+    <div class="readiness-inline reveal">
+      <p>Ready for <strong>AIFMD II</strong>? Free assessment. 3 minutes.</p>
+      <div class="countdown-hint"><span id="readinessDays">46</span> days until enforcement →</div>
+      <a href="/readiness-check" class="btn-readiness">Take the Readiness Check →</a>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card reveal"><div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg></div><div class="feat-text"><h3>Rules Engine</h3><p>13 rules across AIFMD II, KAGB, ELTIF 2.0. Real-time classification.</p></div></div>
+      <div class="feat-card reveal reveal-d1"><div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div><div class="feat-text"><h3>Audit Trail</h3><p>SHA-256 hashed & chained. Tamper-proof, regulator-ready.</p></div></div>
+      <div class="feat-card reveal"><div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div class="feat-text"><h3>Annex IV Reporting</h3><p>XSD-validated XML. One-click export for BaFin, CSSF, FMA.</p></div></div>
+      <div class="feat-card reveal reveal-d1"><div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></div><div class="feat-text"><h3>Sanctions Screening</h3><p>6,863 EU & UN entities. Fuzzy matching, real-time.</p></div></div>
+      <div class="feat-card reveal"><div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0"/></svg></div><div class="feat-text"><h3>LEI Verification</h3><p>GLEIF API validation. Auto-verify investor identity.</p></div></div>
+      <div class="feat-card reveal reveal-d1"><div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg></div><div class="feat-text"><h3>EMT / EET / EPT</h3><p>Auto-generate MiFID, ESG, Cost templates. 43+ fields.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3. PLATFORM (DARK) ═══ -->
+<section class="section platform-section" id="platform">
+  <div class="section-inner">
+    <div style="margin-bottom:20px">
+      <div class="label" style="color:var(--accent)">The Platform</div>
+      <h2 style="color:#fff;font-size:22px">See it in action.<br><span class="grad">No signup required.</span></h2>
+    </div>
+    <div class="dash-mobile-notice reveal">
+      <div class="notice-icon">🖥️</div>
+      <div class="badge-desktop">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+        Best on desktop or tablet
+      </div>
+      <h4>Interactive Dashboard Demo</h4>
+      <p>Explore compliance checks, audit trails, and Annex IV generation with live data.</p>
+      <a href="/readiness-check" class="btn btn-md btn-accent" style="width:100%">Free Readiness Check →</a>
+    </div>
+    <div class="chat-window reveal">
+      <div class="chat-header"><div class="dot"></div><span>Compliance Copilot</span></div>
+      <div class="chat-body">
+        <div class="chat-msg user">Does €150K qualify under KAGB §1(19)?</div>
+        <div class="chat-msg bot"><strong>Not alone.</strong> Under KAGB §1 Abs. 19 Nr. 33, semi-professional investors need at least <code>€200,000</code>. €150K falls short of the minimum.</div>
+        <div class="typing-indicator"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <a href="/api/copilot-demo" class="btn btn-md btn-accent" style="width:100%">Try the Copilot →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4. COMPARISON (LIGHT) ═══ -->
+<section class="section comp-section" id="comparison">
+  <div class="section-inner">
+    <div style="margin-bottom:20px">
+      <div class="label" style="color:var(--accent-sat)">Why Caelith</div>
+      <h2 style="color:var(--text-dark);font-size:22px"><span class="grad">€180K</span> manual.<br>Or <span class="grad">€11,880</span> automated.</h2>
+    </div>
+    <div class="comp-cards">
+      <div class="comp-card reveal"><div><div class="metric">Time to audit</div><div class="old-val">2–4 weeks</div></div><div class="new-val">&lt; 4 min</div></div>
+      <div class="comp-card reveal reveal-d1"><div><div class="metric">Error rate</div><div class="old-val">Human-dependent</div></div><div class="new-val">Zero</div></div>
+      <div class="comp-card reveal"><div><div class="metric">Frameworks</div><div class="old-val">1–2</div></div><div class="new-val">6 · 13 rules</div></div>
+      <div class="comp-card reveal reveal-d1"><div><div class="metric">Audit evidence</div><div class="old-val">Screenshots</div></div><div class="new-val">SHA-256</div></div>
+      <div class="comp-card reveal"><div><div class="metric">Annual cost</div><div class="old-val">~€180,000</div></div><div class="new-val">€11,880</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5. API + OPEN SOURCE (DARK) ═══ -->
+<section class="section dev-section" id="developers">
+  <div class="section-inner">
+    <div class="label" style="color:var(--accent)">For Developers</div>
+    <h2 style="color:#fff;font-size:22px;margin-bottom:10px">API-first. <span class="grad">By design.</span></h2>
+    <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px">Full REST API with OpenAPI docs. Integrate compliance into your stack.</p>
+    <ul class="api-features">
+      <li>Versioned routes (/api/v1/*)</li>
+      <li>API key authentication</li>
+      <li>OpenAPI/Swagger at /api/docs</li>
+      <li>Annex IV generation via API</li>
+      <li>open-annex-iv on npm (Apache 2.0)</li>
+    </ul>
+    <div class="api-code reveal">
+      <div class="api-code-bar"><span>api-example.sh</span><span>bash</span></div>
+      <div class="api-code-body"><span class="cmt"># Evaluate compliance</span>
+<span class="kw">curl</span> -X POST /api/v1/compliance/evaluate \
+  -H <span class="str">"Authorization: Bearer $KEY"</span> \
+  -d <span class="str">'{"fundId":"fund_01H8X..."}'</span>
+
+<span class="cmt"># Response</span>
+{ <span class="str">"status"</span>: <span class="str">"COMPLIANT"</span>,
+  <span class="str">"rules_passed"</span>: <span class="kw">13</span> }</div>
+    </div>
+    <div class="oss-inline reveal">
+      <div class="oss-cmd">npm i open-annex-iv</div>
+      <div class="oss-label"><strong>open-annex-iv</strong> — Apache 2.0</div>
+    </div>
+    <div class="dev-btns">
+      <a href="https://www.caelith.tech/api/docs" class="btn btn-md btn-accent">View API Docs →</a>
+      <a href="https://github.com/julianlaycock" class="btn btn-md btn-outline">GitHub →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 6. PRICING (LIGHT) ═══ -->
+<section class="section pricing-section" id="pricing">
+  <div class="section-inner">
+    <div style="margin-bottom:20px">
+      <div class="label" style="color:var(--accent-sat)">Pricing</div>
+      <h2 style="color:var(--text-dark);font-size:22px">Simple pricing.<br><span class="grad">No surprises.</span></h2>
+      <p style="font-size:12px;color:var(--text-dark2);margin-top:6px">93% cheaper than compliance consulting.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-col reveal">
+        <div class="tier">Essentials</div>
+        <div class="price-row"><div class="amount">€990<span>/mo</span></div><div class="pdesc">Up to 3 funds</div></div>
+        <ul><li>3 funds, 200 investors</li><li>Core rules engine</li><li>Full audit trail</li><li>EMT/EET/EPT templates</li><li>Email support</li></ul>
+        <div class="price-ctas">
+          <a href="mailto:julian.laycock@caelith.tech?subject=Essentials" class="btn btn-md btn-outline-dark">Get started →</a>
+          <a href="https://calendly.com/julian-laycock-caelith/30min" class="btn btn-ghost">Book demo</a>
+        </div>
+      </div>
+      <div class="price-col featured reveal">
+        <div class="price-badge">MOST POPULAR</div>
+        <div class="tier">Professional</div>
+        <div class="price-row"><div class="amount">€1,990<span>/mo</span></div><div class="pdesc">Multiple funds</div></div>
+        <ul><li>15 funds, unlimited investors</li><li>Full rules + scenario modeling</li><li>Annex IV + XSD validation</li><li>Sanctions + LEI screening</li><li>Compliance Copilot AI</li><li>API access</li><li>Priority support</li></ul>
+        <div class="price-ctas">
+          <a href="mailto:julian.laycock@caelith.tech?subject=Professional" class="btn btn-md btn-accent">Get started →</a>
+          <a href="https://calendly.com/julian-laycock-caelith/30min" class="btn btn-ghost">Book demo</a>
+        </div>
+      </div>
+      <div class="price-col reveal">
+        <div class="tier">Enterprise</div>
+        <div class="price-row"><div class="amount">€3,500+<span>/mo</span></div><div class="pdesc">Large AIFMs</div></div>
+        <ul><li>Unlimited funds & investors</li><li>Custom rule development</li><li>On-premise, SSO</li><li>Full API + webhooks</li><li>Dedicated account manager</li></ul>
+        <div class="price-ctas">
+          <a href="mailto:julian.laycock@caelith.tech?subject=Enterprise" class="btn btn-md btn-outline-dark">Contact sales →</a>
+          <a href="https://calendly.com/julian-laycock-caelith/30min" class="btn btn-ghost">Book demo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 7. TRUST + RESOURCES (DARK) ═══ -->
+<section class="section trust-section">
+  <div class="section-inner">
+    <div class="trust-bar">
+      <div class="trust-pill"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg> ESMA XSD</div>
+      <div class="trust-pill"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Campus Founders</div>
+      <div class="trust-pill"><svg viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg> Apache 2.0</div>
+      <div class="trust-pill">🇩🇪 Berlin</div>
+      <div class="trust-pill">🇪🇺 EU-Hosted</div>
+    </div>
+    <h3 style="color:#fff;font-size:16px;font-weight:700;margin-bottom:14px">Guides & <span class="grad">insights.</span></h3>
+    <div class="resources-grid">
+      <a href="/api/blog/aifmd-annex-iv-xml-guide" class="resource-card reveal">
+        <div class="tag">TECHNICAL GUIDE</div>
+        <h3>Annex IV XML: Complete Guide</h3>
+        <p>Schema, field mapping, validation rules for ESMA reporting.</p>
+      </a>
+      <a href="/api/blog/eu-sanctions-screening-guide" class="resource-card reveal reveal-d1">
+        <div class="tag">COMPLIANCE GUIDE</div>
+        <h3>EU Sanctions Screening</h3>
+        <p>Real-time screening against 6,863 EU & UN entities.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 8. CTA + FAQ (DARK) ═══ -->
+<section class="section cta-faq-section" id="faq">
+  <div class="section-inner">
+    <div class="cta-compact">
+      <div class="cta-countdown">
+        <div class="days" id="cdDays">46</div>
+        <div class="ctx-wrap">
+          <div class="ctx">days until</div>
+          <div class="ctx warm">AIFMD II enforcement</div>
+        </div>
+      </div>
+      <h2 style="color:#fff;font-size:22px;margin-bottom:10px">After April 16,<br>non-compliance is a fine.</h2>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6">Try the platform — no signup, no credit card.</p>
+      <div class="cta-btns">
+        <a href="/readiness-check" class="btn btn-lg btn-accent">Free Readiness Check →</a>
+        <a href="/api/copilot-demo" class="btn btn-lg btn-outline">Try the Copilot →</a>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);margin-top:8px">Or email <a href="mailto:julian.laycock@caelith.tech" style="color:var(--text2)">julian.laycock@caelith.tech</a></div>
+    </div>
+    <div class="faq-inner">
+      <h3 style="color:#fff;font-size:16px;font-weight:700;margin-bottom:14px">Common questions.</h3>
+      <div class="faq-item"><div class="faq-q" role="button" tabindex="0" aria-expanded="false"><span>What frameworks does Caelith cover?</span><span class="faq-tog">+</span></div><div class="faq-a"><div class="faq-a-inner">AIFMD II, KAGB (§1(19)), ELTIF 2.0, RAIF, SIF, MiFID II. 13 rules across 6 frameworks. Annex IV validated against ESMA XSD Rev 6.</div></div></div>
+      <div class="faq-item"><div class="faq-q" role="button" tabindex="0" aria-expanded="false"><span>Can I try without signing up?</span><span class="faq-tog">+</span></div><div class="faq-a"><div class="faq-a-inner">Yes. The Readiness Check and Compliance Copilot are available instantly. The full dashboard demo is best on desktop or tablet.</div></div></div>
+      <div class="faq-item"><div class="faq-q" role="button" tabindex="0" aria-expanded="false"><span>Do you have an API?</span><span class="faq-tog">+</span></div><div class="faq-a"><div class="faq-a-inner">Full REST API with OpenAPI/Swagger docs. Versioned routes, API key auth. Available on Professional and Enterprise. Core library is open source on npm.</div></div></div>
+      <div class="faq-item"><div class="faq-q" role="button" tabindex="0" aria-expanded="false"><span>What are EMT/EET/EPT?</span><span class="faq-tog">+</span></div><div class="faq-a"><div class="faq-a-inner">European MiFID Template, ESG Template, and Cost Template — standardized data exchange formats. Caelith auto-generates them with 43+ fields.</div></div></div>
+      <div class="faq-item"><div class="faq-q" role="button" tabindex="0" aria-expanded="false"><span>When does AIFMD II take effect?</span><span class="faq-tog">+</span></div><div class="faq-a"><div class="faq-a-inner">April 16, 2026. Fund managers must be fully compliant by this date.</div></div></div>
+      <div class="faq-item"><div class="faq-q" role="button" tabindex="0" aria-expanded="false"><span>Is my data secure?</span><span class="faq-tog">+</span></div><div class="faq-a"><div class="faq-a-inner">EU-hosted (Frankfurt), end-to-end encryption, GDPR compliant. Enterprise can opt for on-premise deployment.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 9. FOOTER ═══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">Caelith</div>
+      <p class="brand-p">Compliance platform for European fund managers.</p>
+      <div class="social-links">
+        <a href="https://www.linkedin.com/company/caelithtech" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+        <a href="https://github.com/julianlaycock" aria-label="GitHub"><svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+      </div>
+    </div>
+    <div class="footer-col"><h4>Product</h4><a href="#features">Features</a><a href="#platform">Platform</a><a href="#developers">API</a><a href="#pricing">Pricing</a></div>
+    <div class="footer-col"><h4>Resources</h4><a href="https://www.caelith.tech/api/docs">API Docs</a><a href="https://www.caelith.tech/blog">Blog</a><a href="https://github.com/julianlaycock">GitHub</a></div>
+    <div class="footer-col"><h4>Legal</h4><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="/impressum">Imprint</a></div>
+    <div class="footer-col"><h4>Connect</h4><a href="https://www.linkedin.com/company/caelithtech">LinkedIn</a><a href="mailto:julian.laycock@caelith.tech">Email</a></div>
+  </div>
+  <div class="footer-bottom"><span>Made in Berlin 🇩🇪</span><span>© 2026 Caelith</span></div>
+</footer>
+
+<!-- STICKY BOTTOM CTA -->
+<div class="sticky-cta" id="stickyCta">
+  <a href="/readiness-check" class="btn btn-accent">Readiness Check →</a>
+  <a href="https://calendly.com/julian-laycock-caelith/30min" class="btn btn-outline">Book Demo</a>
+</div>
+
+<!-- Cookie consent -->
+<div class="consent-bar" id="consentBar" style="display:none">
+  We use analytics to improve the experience. <a href="/privacy">Privacy policy</a>
+  <div class="consent-btns">
+    <button class="consent-reject" onclick="document.getElementById('consentBar').style.display='none';localStorage.setItem('caelith_consent','rejected')">Decline</button>
+    <button class="consent-accept" onclick="document.getElementById('consentBar').style.display='none';localStorage.setItem('caelith_consent','accepted')">Accept</button>
+  </div>
+</div>
+
+<script>
+/* Mobile menu + hamburger X morph */
+var menu=document.getElementById('mobileMenu'),hb=document.getElementById('hamburger');
+function toggleMenu(){var open=menu.classList.toggle('open');hb.classList.toggle('active');document.body.style.overflow=open?'hidden':''}
+hb.addEventListener('click',toggleMenu);
+menu.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){menu.classList.remove('open');hb.classList.remove('active');document.body.style.overflow=''})});
+
+/* Nav scroll bg */
+var nav=document.getElementById('navWrap');
+window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>50)},{passive:true});
+
+/* Scroll progress */
+var bar=document.getElementById('scrollProgress');
+window.addEventListener('scroll',function(){var h=document.documentElement.scrollHeight-window.innerHeight;bar.style.width=(h>0?(window.scrollY/h)*100:0)+'%'},{passive:true});
+
+/* Sticky bottom CTA — show after scrolling past hero, hide near footer */
+var sticky=document.getElementById('stickyCta'),consent=document.getElementById('consentBar');
+var heroH=document.getElementById('heroSection').offsetHeight;
+window.addEventListener('scroll',function(){
+  var y=window.scrollY,docH=document.documentElement.scrollHeight,winH=window.innerHeight;
+  var nearBottom=y+winH>docH-300;
+  var show=y>heroH*0.7&&!nearBottom;
+  sticky.classList.toggle('visible',show);
+  // Hide sticky if consent bar is visible
+  if(consent&&consent.style.display==='flex')sticky.classList.remove('visible');
+},{passive:true});
+
+/* FAQ */
+document.querySelectorAll('.faq-q').forEach(function(q){
+  q.addEventListener('click',function(){
+    var item=q.closest('.faq-item'),isOpen=item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function(i){i.classList.remove('open');i.querySelector('.faq-q').setAttribute('aria-expanded','false')});
+    if(!isOpen){item.classList.add('open');q.setAttribute('aria-expanded','true')}
+  });
+  q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();q.click()}});
+});
+
+/* Reveals */
+var els=document.querySelectorAll('.reveal');
+if(!window.matchMedia('(prefers-reduced-motion:reduce)').matches){
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:0.01,rootMargin:'40px 0px -10px 0px'});
+    els.forEach(function(el){obs.observe(el)});
+  })});
+} else {
+  els.forEach(function(el){el.classList.add('visible')});
+}
+
+/* Terminal — short for mobile */
+var termBody=document.getElementById('termBody');
+if(termBody){
+var lines=[
+  {t:'<span class="cmd">$</span> caelith evaluate --fund "Global Credit IV"',d:0},
+  {t:'<span class="ok">✓</span> 4 tranches, 127 investors loaded',d:700},
+  {t:'<span class="ok">✓</span> 13 rules across 6 frameworks',d:1200},
+  {t:'<span class="ok">✓</span> KAGB §1(19) — all classified',d:1700},
+  {t:'<span class="ok">✓</span> Sanctions — 0/6,863 matches',d:2100},
+  {t:'<span class="ok">✓</span> LEI verified — 127/127',d:2500},
+  {t:'',d:2900},
+  {t:'<span style="color:var(--accent)">All checks passed. Audit-ready.</span>',d:3100}
+];
+function runTerminal(){
+  termBody.innerHTML='';
+  lines.forEach(function(l){
+    setTimeout(function(){
+      var div=document.createElement('div');
+      div.className='term-line';
+      div.innerHTML=l.t||'&nbsp;';
+      termBody.appendChild(div);
+      termBody.scrollTop=termBody.scrollHeight;
+    },l.d);
+  });
+  setTimeout(runTerminal,9000);
+}
+runTerminal();
+}
+
+/* Countdown */
+var target=new Date('2026-04-16T00:00:00+02:00').getTime();
+function updateCD(){var d=Math.max(0,Math.floor((target-Date.now())/864e5));document.getElementById('cdDays').textContent=d;var rd=document.getElementById('readinessDays');if(rd)rd.textContent=d}
+updateCD();setInterval(updateCD,60000);
+
+/* Cookie */
+if(!localStorage.getItem('caelith_consent')){document.getElementById('consentBar').style.display='flex'}
+
+/* Smooth scroll for anchor clicks only (not scroll-behavior on html) */
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}
+  });
+});
+</script>
+</body>
+</html>

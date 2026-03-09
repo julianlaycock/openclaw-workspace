@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Compliance Agent Demo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #1c2128;
+    --border: rgba(255,255,255,0.07);
+    --accent: #C5E0EE;
+    --warm: #E8A87C;
+    --green: #3fb950;
+    --yellow: #e3b341;
+    --red: #f85149;
+    --text: rgba(255,255,255,0.9);
+    --muted: rgba(255,255,255,0.45);
+    --dim: rgba(255,255,255,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── HERO HEADER ─── */
+  .hero {
+    text-align: center;
+    padding: 72px 24px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(197,224,238,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(197,224,238,0.08);
+    border: 1px solid rgba(197,224,238,0.18);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 22px;
+  }
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s ease infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 54px);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 14px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero p {
+    color: var(--muted);
+    font-size: 17px;
+    max-width: 540px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat .num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+    letter-spacing: -0.5px;
+  }
+  .hero-stat .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ─── MAIN LAYOUT ─── */
+  .demo-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ─── SECTION LABEL ─── */
+  .section-label {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .section-label h2 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .section-label p { color: var(--muted); font-size: 14px; }
+
+  /* ─── COMPARISON SPLIT ─── */
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 56px;
+  }
+  @media(max-width: 640px) { .comparison { grid-template-columns: 1fr; } }
+
+  .compare-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .compare-card.before { border-color: rgba(248,81,73,0.2); }
+  .compare-card.after { border-color: rgba(63,185,80,0.25); }
+
+  .compare-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .compare-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .compare-icon.bad { background: rgba(248,81,73,0.12); }
+  .compare-icon.good { background: rgba(63,185,80,0.12); }
+  .compare-title { font-weight: 600; font-size: 15px; }
+  .compare-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  .compare-steps { list-style: none; }
+  .compare-steps li {
+    display: flex;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+    align-items: flex-start;
+  }
+  .compare-steps li:last-child { border-bottom: none; }
+  .compare-steps .step-icon { flex-shrink: 0; margin-top: 1px; }
+  .compare-steps .bad-icon { color: var(--red); }
+  .compare-steps .good-icon { color: var(--green); }
+  .compare-steps .duration {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--dim);
+    white-space: nowrap;
+  }
+
+  /* ─── AGENT TRACE ─── */
+  .agent-panel {
+    background: var(--bg2);
+    border: 1px solid rgba(197,224,238,0.15);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 56px;
+    box-shadow: 0 0 40px rgba(197,224,238,0.04);
+  }
+
+  .agent-topbar {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .dot-row { display: flex; gap: 6px; }
+  .dot-row span {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .dot-row .d1 { background: #ff5f57; }
+  .dot-row .d2 { background: #ffbd2e; }
+  .dot-row .d3 { background: #28ca41; }
+  .agent-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    flex: 1;
+    text-align: center;
+  }
+  .agent-live {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; color: var(--green); font-weight: 600;
+  }
+  .agent-live .live-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 1.5s ease infinite;
+  }
+
+  .agent-body { padding: 24px; }
+
+  .trace-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .trace-header .agent-avatar {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(197,224,238,0.2), rgba(197,224,238,0.05));
+    border: 1px solid rgba(197,224,238,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .trace-header .agent-info { }
+  .trace-header .agent-name { font-size: 13px; font-weight: 600; }
+  .trace-header .agent-task { font-size: 11px; color: var(--muted); }
+
+  .trace-steps { }
+
+  .trace-step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 4px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .trace-step.visible { opacity: 1; transform: translateY(0); }
+
+  .trace-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .trace-circle {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--bg3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    transition: border-color 0.3s, background 0.3s;
+    position: relative;
+    z-index: 1;
+  }
+  .trace-circle.done { border-color: var(--green); background: rgba(63,185,80,0.1); }
+  .trace-circle.active {
+    border-color: var(--accent);
+    background: rgba(197,224,238,0.1);
+    animation: ring 1.5s ease infinite;
+  }
+  .trace-circle.pending { border-color: var(--border); }
+  @keyframes ring {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(197,224,238,0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(197,224,238,0); }
+  }
+
+  .trace-connector {
+    width: 1.5px;
+    flex: 1;
+    min-height: 12px;
+    background: var(--border);
+    margin: 2px 0;
+  }
+  .trace-connector.done { background: rgba(63,185,80,0.3); }
+
+  .trace-content {
+    flex: 1;
+    padding-bottom: 20px;
+  }
+  .trace-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .trace-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .trace-timestamp {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    margin-left: auto;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .trace-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .trace-evidence {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.9;
+  }
+  .trace-evidence .ok { color: var(--green); }
+  .trace-evidence .key { color: var(--accent); }
+  .trace-evidence .val { color: rgba(255,255,255,0.65); }
+  .trace-evidence .warn { color: var(--yellow); }
+  .trace-evidence .err { color: var(--red); }
+
+  .trace-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    margin-right: 5px;
+  }
+  .trace-tag.green { background: rgba(63,185,80,0.12); color: var(--green); }
+  .trace-tag.blue { background: rgba(197,224,238,0.1); color: var(--accent); }
+  .trace-tag.yellow { background: rgba(227,179,65,0.12); color: var(--yellow); }
+
+  /* ─── RESULT CARD ─── */
+  .result-card {
+    background: linear-gradient(135deg, rgba(63,185,80,0.06), rgba(63,185,80,0.02));
+    border: 1px solid rgba(63,185,80,0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 4px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .result-card.visible { opacity: 1; transform: translateY(0); }
+  .result-icon { font-size: 24px; }
+  .result-text .result-title { font-size: 14px; font-weight: 600; color: var(--green); }
+  .result-text .result-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .result-meta {
+    margin-left: auto;
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    line-height: 1.8;
+  }
+
+  /* ─── METRICS ROW ─── */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 56px;
+  }
+  @media(max-width: 640px) { .metrics { grid-template-columns: 1fr 1fr; } }
+
+  .metric-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .metric-num {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .metric-num.green { color: var(--green); }
+  .metric-num.blue { color: var(--accent); }
+  .metric-num.warm { color: var(--warm); }
+  .metric-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ─── AGENT CAPABILITIES ─── */
+  .capabilities {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 56px;
+  }
+  @media(max-width: 640px) { .capabilities { grid-template-columns: 1fr; } }
+
+  .cap-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+  .cap-card:hover { border-color: rgba(197,224,238,0.2); }
+  .cap-icon { font-size: 22px; margin-bottom: 10px; display: block; }
+  .cap-title { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+  .cap-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .cap-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 10px;
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+  .cap-status.live { background: rgba(63,185,80,0.1); color: var(--green); }
+  .cap-status.building { background: rgba(227,179,65,0.1); color: var(--yellow); }
+  .cap-status.soon { background: rgba(197,224,238,0.08); color: var(--accent); }
+  .cap-status .sdot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+  /* ─── CTA ─── */
+  .cta {
+    text-align: center;
+    padding: 48px 24px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+  .cta h2 { font-size: 26px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .cta p { color: var(--muted); font-size: 14px; max-width: 400px; margin: 0 auto 24px; }
+  .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    padding: 11px 24px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: var(--accent); color: #0d1117; }
+  .btn-secondary { background: transparent; border: 1px solid rgba(255,255,255,0.12); color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge"><span class="dot"></span> Agent running now</div>
+  <h1>Compliance that runs<br><span>while you sleep.</span></h1>
+  <p>Caelith agents handle your AIFMD II filings, sanctions screening, and regulatory submissions — autonomously, overnight, with full audit trail.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="num">100%</span><span class="label">autonomous</span></div>
+    <div class="hero-stat"><span class="num">&lt;4 min</span><span class="label">per filing</span></div>
+    <div class="hero-stat"><span class="num">0</span><span class="label">human reviewers</span></div>
+    <div class="hero-stat"><span class="num">93%</span><span class="label">cost reduction</span></div>
+  </div>
+</div>
+
+<div class="demo-container">
+
+  <!-- SECTION: COMPARISON -->
+  <div class="section-label" style="margin-bottom:28px">
+    <h2>Old way vs. agent way</h2>
+    <p>Annex IV filing — Q1 2026</p>
+  </div>
+
+  <div class="comparison">
+    <div class="compare-card before">
+      <div class="compare-header">
+        <div class="compare-icon bad">😮‍💨</div>
+        <div>
+          <div class="compare-title">Manual process</div>
+          <div class="compare-sub">Your team today</div>
+        </div>
+      </div>
+      <ul class="compare-steps">
+        <li><span class="step-icon bad-icon">✗</span> Export fund data from portfolio system<span class="duration">2–3 hrs</span></li>
+        <li><span class="step-icon bad-icon">✗</span> Map fields to ESMA Annex IV template<span class="duration">3–5 hrs</span></li>
+        <li><span class="step-icon bad-icon">✗</span> Format data into XML by hand<span class="duration">4–8 hrs</span></li>
+        <li><span class="step-icon bad-icon">✗</span> Validate against XSD schema (trial/error)<span class="duration">2–4 hrs</span></li>
+        <li><span class="step-icon bad-icon">✗</span> Log into BaFin portal, upload file<span class="duration">30 min</span></li>
+        <li><span class="step-icon bad-icon">✗</span> Chase confirmation, file email receipt<span class="duration">1 hr</span></li>
+        <li><span class="step-icon bad-icon">✗</span> Repeat for each fund<span class="duration">×8 funds</span></li>
+      </ul>
+    </div>
+    <div class="compare-card after">
+      <div class="compare-header">
+        <div class="compare-icon good">🤖</div>
+        <div>
+          <div class="compare-title">Caelith Agent</div>
+          <div class="compare-sub">Runs tonight at 02:00</div>
+        </div>
+      </div>
+      <ul class="compare-steps">
+        <li><span class="step-icon good-icon">✓</span> Reads live fund data from Caelith<span class="duration">2 sec</span></li>
+        <li><span class="step-icon good-icon">✓</span> Maps all Annex IV fields automatically<span class="duration">4 sec</span></li>
+        <li><span class="step-icon good-icon">✓</span> Generates XSD-validated XML<span class="duration">1 sec</span></li>
+        <li><span class="step-icon good-icon">✓</span> Logs into BaFin MVP Portal<span class="duration">8 sec</span></li>
+        <li><span class="step-icon good-icon">✓</span> Submits filing, captures receipt<span class="duration">12 sec</span></li>
+        <li><span class="step-icon good-icon">✓</span> Logs SHA-256 audit chain entry<span class="duration">1 sec</span></li>
+        <li><span class="step-icon good-icon">✓</span> All 8 funds filed<span class="duration">3 min 47 sec</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION: LIVE TRACE -->
+  <div class="section-label">
+    <h2>Watch the agent work</h2>
+    <p>Live trace — BaFin Annex IV filing · Rhein Spezial-AIF Alpha · Q1 2026</p>
+  </div>
+
+  <div class="agent-panel">
+    <div class="agent-topbar">
+      <div class="dot-row">
+        <span class="d1"></span><span class="d2"></span><span class="d3"></span>
+      </div>
+      <div class="agent-title">caelith-agent · bafin-filer-v1 · fund:DE000A3H2XK2</div>
+      <div class="agent-live"><span class="live-dot"></span> running</div>
+    </div>
+
+    <div class="agent-body">
+      <div class="trace-header">
+        <div class="agent-avatar">🤖</div>
+        <div class="agent-info">
+          <div class="agent-name">BaFin Filing Agent</div>
+          <div class="agent-task">Annex IV Q1 2026 — 8 funds queued · initiated 02:00:03 CET</div>
+        </div>
+      </div>
+
+      <div class="trace-steps" id="trace">
+
+        <!-- STEP 1 -->
+        <div class="trace-step" id="s1">
+          <div class="trace-line">
+            <div class="trace-circle done" id="c1">✓</div>
+            <div class="trace-connector done"></div>
+          </div>
+          <div class="trace-content">
+            <div class="trace-row">
+              <div class="trace-label">Reading fund data</div>
+              <div class="trace-timestamp">02:00:03</div>
+            </div>
+            <div class="trace-desc">Fetching portfolio data for Rhein Spezial-AIF Alpha from Caelith data layer.</div>
+            <div class="trace-evidence">
+              <span class="ok">✓</span> fund_id: <span class="key">DE000A3H2XK2</span><br>
+              <span class="ok">✓</span> aum: <span class="val">€ 127,400,000</span><br>
+              <span class="ok">✓</span> investor_count: <span class="val">38</span><br>
+              <span class="ok">✓</span> strategy: <span class="val">Immobilien Spezial-AIF</span><br>
+              <span class="ok">✓</span> lei: <span class="val">529900W18LQJJN6SJ336</span> <span class="trace-tag green">GLEIF verified</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="trace-step" id="s2">
+          <div class="trace-line">
+            <div class="trace-circle done" id="c2">✓</div>
+            <div class="trace-connector done"></div>
+          </div>
+          <div class="trace-content">
+            <div class="trace-row">
+              <div class="trace-label">Mapping Annex IV fields</div>
+              <div class="trace-timestamp">02:00:05</div>
+            </div>
+            <div class="trace-desc">Mapping 147 Annex IV fields to ESMA Rev 6 schema. Applying BaFin-specific validation rules.</div>
+            <div class="trace-evidence">
+              <span class="ok">✓</span> <span class="val">147 / 147</span> fields mapped<br>
+              <span class="ok">✓</span> SubAssetType: <span class="key">RealEstate</span><br>
+              <span class="ok">✓</span> LiquidityProfile: <span class="key">Closed</span><br>
+              <span class="warn">⚠</span> PrincipalMarket: inferred from NAV — <span class="val">DE</span> <span class="trace-tag yellow">flagged for review</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="trace-step" id="s3">
+          <div class="trace-line">
+            <div class="trace-circle done" id="c3">✓</div>
+            <div class="trace-connector done"></div>
+          </div>
+          <div class="trace-content">
+            <div class="trace-row">
+              <div class="trace-label">Generating XSD-validated XML</div>
+              <div class="trace-timestamp">02:00:06</div>
+            </div>
+            <div class="trace-desc">Building Annex IV XML document and validating against ESMA official schema.</div>
+            <div class="trace-evidence">
+              <span class="ok">✓</span> XML generated: <span class="key">annex-iv-DE000A3H2XK2-Q12026.xml</span><br>
+              <span class="ok">✓</span> XSD validation: <span class="val">0 errors · 0 warnings</span><br>
+              <span class="ok">✓</span> Schema version: <span class="val">ESMA Rev 6 (2024-11)</span><br>
+              <span class="ok">✓</span> File size: <span class="val">48.2 KB</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="trace-step" id="s4">
+          <div class="trace-line">
+            <div class="trace-circle done" id="c4">✓</div>
+            <div class="trace-connector done"></div>
+          </div>
+          <div class="trace-content">
+            <div class="trace-row">
+              <div class="trace-label">Logging into BaFin MVP Portal</div>
+              <div class="trace-timestamp">02:00:07</div>
+            </div>
+            <div class="trace-desc">Authenticating with BaFin Meldungen und Veröffentlichungen Portal using stored credentials.</div>
+            <div class="trace-evidence">
+              <span class="ok">✓</span> Portal: <span class="key">portal.bafin.de/mvp</span><br>
+              <span class="ok">✓</span> Auth method: <span class="val">username + OTP</span><br>
+              <span class="ok">✓</span> Session established: <span class="val">token_7f4a9c2e</span><br>
+              <span class="ok">✓</span> Navigated to: <span class="val">Annex IV → Einreichung</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 5 -->
+        <div class="trace-step" id="s5">
+          <div class="trace-line">
+            <div class="trace-circle done" id="c5">✓</div>
+            <div class="trace-connector done"></div>
+          </div>
+          <div class="trace-content">
+            <div class="trace-row">
+              <div class="trace-label">Submitting filing to BaFin</div>
+              <div class="trace-timestamp">02:00:15</div>
+            </div>
+            <div class="trace-desc">Uploading XML, filling portal form fields, confirming submission.</div>
+            <div class="trace-evidence">
+              <span class="ok">✓</span> File uploaded: <span class="val">annex-iv-DE000A3H2XK2-Q12026.xml</span><br>
+              <span class="ok">✓</span> Reporting period: <span class="val">2026-Q1</span><br>
+              <span class="ok">✓</span> AIF identifier confirmed: <span class="key">DE000A3H2XK2</span><br>
+              <span class="ok">✓</span> Submission confirmed
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 6 -->
+        <div class="trace-step" id="s6">
+          <div class="trace-line">
+            <div class="trace-circle done" id="c6">✓</div>
+            <div class="trace-connector done"></div>
+          </div>
+          <div class="trace-content">
+            <div class="trace-row">
+              <div class="trace-label">Capturing receipt &amp; audit log</div>
+              <div class="trace-timestamp">02:00:28</div>
+            </div>
+            <div class="trace-desc">Saving BaFin confirmation reference and writing to cryptographic audit chain.</div>
+            <div class="trace-evidence">
+              <span class="ok">✓</span> BaFin ref: <span class="key">BAFIN-2026-Q1-00847293</span><br>
+              <span class="ok">✓</span> Timestamp: <span class="val">2026-03-04T02:00:28Z</span><br>
+              <span class="ok">✓</span> Audit hash: <span class="val">sha256:a7f3c9...</span> <span class="trace-tag blue">chained</span><br>
+              <span class="ok">✓</span> Status: <span class="val">FILED</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="result-card" id="result">
+        <div class="result-icon">✅</div>
+        <div class="result-text">
+          <div class="result-title">Filing complete — Rhein Spezial-AIF Alpha</div>
+          <div class="result-sub">BAFIN-2026-Q1-00847293 · 1 warning flagged for review · 7 funds remaining in queue</div>
+        </div>
+        <div class="result-meta">
+          Duration<br><strong style="color:var(--green)">25 sec</strong><br>
+          <span style="color:var(--dim)">vs ~8 hrs manual</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics">
+    <div class="metric-card">
+      <span class="metric-num green">25 sec</span>
+      <div class="metric-label">Per fund filing</div>
+    </div>
+    <div class="metric-card">
+      <span class="metric-num blue">100%</span>
+      <div class="metric-label">XSD pass rate</div>
+    </div>
+    <div class="metric-card">
+      <span class="metric-num warm">8 funds</span>
+      <div class="metric-label">Filed overnight</div>
+    </div>
+    <div class="metric-card">
+      <span class="metric-num green">€0</span>
+      <div class="metric-label">Manual review cost</div>
+    </div>
+  </div>
+
+  <!-- CAPABILITIES -->
+  <div class="section-label">
+    <h2>Agent fleet — roadmap</h2>
+    <p>Autonomous compliance agents for every major EU regulator</p>
+  </div>
+
+  <div class="capabilities">
+    <div class="cap-card">
+      <span class="cap-icon">🏛️</span>
+      <div class="cap-title">BaFin Filing Agent</div>
+      <div class="cap-desc">Logs into BaFin MVP Portal, submits Annex IV XML, captures confirmation receipt. Runs at 02:00 AM on filing night.</div>
+      <div class="cap-status building"><span class="sdot"></span> Building · 3 weeks</div>
+    </div>
+    <div class="cap-card">
+      <span class="cap-icon">🇱🇺</span>
+      <div class="cap-title">CSSF Filing Agent</div>
+      <div class="cap-desc">Luxembourg Annex IV via CSSF eDesk. 70% code reuse from BaFin agent. Covers all Lux-domiciled AIFs.</div>
+      <div class="cap-status soon"><span class="sdot"></span> Q2 2026</div>
+    </div>
+    <div class="cap-card">
+      <span class="cap-icon">🔍</span>
+      <div class="cap-title">Investor DD Agent</div>
+      <div class="cap-desc">Runs GLEIF lookup, Transparenzregister, EU/UN sanctions (6,800+ entities), adverse media. Full KYB report in 90 seconds.</div>
+      <div class="cap-status soon"><span class="sdot"></span> Q2 2026</div>
+    </div>
+    <div class="cap-card">
+      <span class="cap-icon">🛡️</span>
+      <div class="cap-title">Sanctions Monitoring Agent</div>
+      <div class="cap-desc">Continuously re-screens your investor roster against live EU + UN sanctions lists. Alerts on new matches within minutes.</div>
+      <div class="cap-status live"><span class="sdot"></span> Live</div>
+    </div>
+    <div class="cap-card">
+      <span class="cap-icon">📋</span>
+      <div class="cap-title">AIFMD II Readiness Agent</div>
+      <div class="cap-desc">Assesses your AIFMD II compliance posture across 8 categories. Flags gaps and generates remediation plan.</div>
+      <div class="cap-status live"><span class="sdot"></span> Live</div>
+    </div>
+    <div class="cap-card">
+      <span class="cap-icon">📡</span>
+      <div class="cap-title">Regulatory Watch Agent</div>
+      <div class="cap-desc">Monitors BaFin, ESMA, CSSF, AMF and 8 other NCAs for rule changes. Pushes alerts before deadlines hit.</div>
+      <div class="cap-status live"><span class="sdot"></span> Live</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <h2>Your filing is 42 days away.</h2>
+    <p>Let the agent handle it. You'll get a confirmation and an audit hash. That's it.</p>
+    <div class="cta-btns">
+      <a href="https://www.caelith.tech" class="btn btn-primary">See it live → caelith.tech</a>
+      <a href="https://www.caelith.tech/readiness-check" class="btn btn-secondary">Check your readiness</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Animate trace steps on load
+  const steps = document.querySelectorAll('.trace-step');
+  const result = document.getElementById('result');
+
+  steps.forEach((step, i) => {
+    setTimeout(() => {
+      step.classList.add('visible');
+    }, 300 + i * 350);
+  });
+
+  setTimeout(() => {
+    result.classList.add('visible');
+  }, 300 + steps.length * 350 + 200);
+</script>
+
+</body>
+</html>

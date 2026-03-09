@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Infrastructure Section v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1f1f;--bg2:#2D3333;--accent:#8EC5E0;--accent-sat:#6BB8D9;--warm:#E8A87C;
+  --text:#f0f0f0;--text2:rgba(255,255,255,0.7);--text3:rgba(255,255,255,0.5);
+  --border:rgba(255,255,255,0.08);
+  --radius:14px;--grad:linear-gradient(135deg,#8EC5E0,#E8A87C);
+  --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.10);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;letter-spacing:-0.03em;line-height:1.15}
+.grad{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.section{padding:100px clamp(40px,8vw,120px)}
+.section-inner{max-width:1200px;margin:0 auto}
+.label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
+/* ═══ INFRASTRUCTURE SECTION ═══ */
+.infra-section{background:var(--bg2);position:relative;overflow:hidden}
+.infra-section::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(142,197,224,0.06),transparent 70%);pointer-events:none}
+
+.infra-layout{display:grid;grid-template-columns:1fr 1.3fr;gap:64px;align-items:start}
+
+/* Left: Layers Stack */
+.infra-left h2{font-size:clamp(28px,3.5vw,42px);color:#fff;margin-bottom:16px}
+.infra-left > p{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:40px;max-width:440px}
+
+/* Stack visualization */
+.stack-vis{position:relative;display:flex;flex-direction:column;gap:0}
+
+.stack-layer{
+  display:grid;grid-template-columns:48px 1fr auto;align-items:center;gap:16px;
+  padding:20px 24px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--glass-border);
+  border-bottom:none;
+  transition:all .35s;
+  cursor:default;
+  position:relative;
+}
+.stack-layer:first-child{border-radius:var(--radius) var(--radius) 0 0}
+.stack-layer:last-child{border-bottom:1px solid var(--glass-border);border-radius:0 0 var(--radius) var(--radius)}
+.stack-layer:hover{background:rgba(255,255,255,0.05)}
+.stack-layer:hover .layer-icon-wrap{border-color:rgba(142,197,224,0.3)}
+
+/* Connector lines between layers */
+.stack-layer:not(:last-child)::after{
+  content:'';position:absolute;bottom:-1px;left:47px;
+  width:1px;height:calc(100% - 10px);
+  background:linear-gradient(to bottom,rgba(142,197,224,0.15),rgba(232,168,124,0.1));
+  z-index:1;display:none;
+}
+
+.layer-icon-wrap{
+  width:48px;height:48px;border-radius:12px;
+  border:1px solid var(--glass-border);
+  background:rgba(255,255,255,0.03);
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color .35s;
+  flex-shrink:0;
+}
+.layer-icon-wrap svg{width:22px;height:22px;stroke:var(--accent);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+.layer-text h4{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px}
+.layer-text p{font-size:12px;color:var(--text3);line-height:1.5;margin:0}
+
+.layer-badge{
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;
+  padding:4px 12px;border-radius:999px;letter-spacing:0.5px;
+  flex-shrink:0;
+}
+.layer-badge.live{background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.15)}
+.layer-badge.beta{background:rgba(232,168,124,0.1);color:var(--warm);border:1px solid rgba(232,168,124,0.15)}
+
+/* Thin connector bar */
+.stack-connector{
+  height:1px;margin:0 24px;
+  background:linear-gradient(90deg,transparent,rgba(142,197,224,0.12) 20%,rgba(142,197,224,0.12) 80%,transparent);
+}
+
+/* CTA row */
+.infra-cta{display:flex;gap:12px;margin-top:32px;flex-wrap:wrap}
+.btn{font-family:'Sora';font-weight:600;border:none;border-radius:var(--radius);cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+.btn-md{font-size:14px;padding:12px 28px}
+.btn-accent{background:var(--grad);color:#fff;font-weight:700}
+.btn-accent:hover{box-shadow:0 0 32px rgba(197,224,238,0.35);transform:translateY(-2px)}
+.btn-outline{background:transparent;border:1px solid var(--glass-border);color:var(--text2)}
+.btn-outline:hover{border-color:var(--accent);color:#fff}
+.arrow{transition:transform .2s}.btn:hover .arrow{transform:translateX(4px)}
+
+/* Right: Agent chat / terminal hybrid */
+.agent-window{
+  background:rgba(0,0,0,0.25);
+  border:1px solid var(--glass-border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:0 32px 80px rgba(0,0,0,0.3),0 0 60px rgba(142,197,224,0.04);
+  position:relative;
+}
+
+.agent-topbar{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 20px;
+  background:rgba(0,0,0,0.35);
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.agent-topbar .dots{display:flex;gap:6px}
+.agent-topbar .dot{width:8px;height:8px;border-radius:50%}
+.agent-topbar .dot.r{background:#FF5F56}.dot.y{background:#FFBD2E}.dot.g{background:#27C93F}
+.agent-topbar .title{flex:1;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.25)}
+.agent-topbar .status-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.agent-topbar .status-text{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(34,197,94,0.7)}
+
+.agent-body{
+  padding:24px 20px;
+  min-height:460px;
+  display:flex;flex-direction:column;gap:0;
+  overflow:hidden;
+}
+
+/* Chat messages */
+.msg{
+  max-width:85%;padding:14px 18px;border-radius:14px;
+  font-size:13px;line-height:1.7;
+  opacity:0;transform:translateY(12px);
+  transition:opacity .4s ease,transform .4s ease;
+  margin-bottom:12px;
+}
+.msg.visible{opacity:1;transform:translateY(0)}
+.msg.user{
+  align-self:flex-end;
+  background:rgba(107,184,217,0.12);
+  border:1px solid rgba(107,184,217,0.18);
+  color:var(--accent);
+}
+.msg.agent{
+  align-self:flex-start;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.07);
+  color:var(--text2);
+}
+.msg.agent strong{color:#fff;font-weight:600}
+.msg.agent code{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  background:rgba(0,0,0,0.3);padding:2px 8px;border-radius:4px;
+  color:var(--warm);
+}
+.msg.agent .check{color:#6ee7b7}
+.msg.agent .hash{color:rgba(255,255,255,0.2);font-family:'JetBrains Mono',monospace;font-size:10px}
+
+/* Typing indicator */
+.typing{
+  display:flex;gap:5px;padding:14px 18px;
+  align-self:flex-start;
+  opacity:0;
+  transition:opacity .3s;
+}
+.typing.visible{opacity:1}
+.typing span{
+  width:6px;height:6px;background:rgba(255,255,255,0.25);
+  border-radius:50%;animation:typeDot 1.4s infinite;
+}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes typeDot{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+
+/* Progress bar in agent messages */
+.progress-bar{
+  height:3px;border-radius:2px;
+  background:rgba(255,255,255,0.06);
+  margin-top:10px;overflow:hidden;
+}
+.progress-bar .fill{
+  height:100%;border-radius:2px;
+  background:var(--grad);
+  width:0%;transition:width 1.2s cubic-bezier(.4,0,.2,1);
+}
+
+/* Inline status chips in agent messages */
+.status-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  padding:3px 10px;border-radius:999px;margin:2px 4px 2px 0;
+}
+.status-chip.pass{background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.12)}
+.status-chip.warn{background:rgba(232,168,124,0.1);color:var(--warm);border:1px solid rgba(232,168,124,0.12)}
+.status-chip.info{background:rgba(142,197,224,0.1);color:var(--accent);border:1px solid rgba(142,197,224,0.12)}
+
+/* NCA bar below terminal */
+.nca-bar{
+  display:flex;align-items:center;justify-content:center;gap:24px;
+  padding:16px 20px;
+  border-top:1px solid rgba(255,255,255,0.04);
+  background:rgba(0,0,0,0.15);
+  font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);
+}
+.nca-bar .nca-item{display:flex;align-items:center;gap:6px}
+.nca-bar .nca-dot{width:5px;height:5px;border-radius:50%}
+.nca-bar .nca-dot.live{background:#4ade80}
+.nca-bar .nca-dot.building{background:var(--warm)}
+.nca-bar .nca-dot.planned{background:rgba(255,255,255,0.2)}
+
+/* Responsive */
+@media(max-width:1024px){
+  .infra-layout{grid-template-columns:1fr;gap:48px}
+}
+@media(max-width:768px){
+  .stack-layer{grid-template-columns:40px 1fr auto;padding:16px 18px;gap:12px}
+  .layer-icon-wrap{width:40px;height:40px;border-radius:10px}
+  .layer-icon-wrap svg{width:18px;height:18px}
+  .nca-bar{flex-wrap:wrap;gap:12px}
+}
+</style>
+</head>
+<body>
+
+<section class="section infra-section">
+  <div class="section-inner">
+    <div class="label" style="color:var(--accent)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Infrastructure</div>
+
+    <div class="infra-layout">
+      <!-- LEFT: Stack Visualization -->
+      <div class="infra-left">
+        <h2>Compliance infrastructure <span class="grad">for Europe.</span></h2>
+        <p>Regulations flow in. Validated filings flow out. Agents orchestrate what happens in between — autonomously, with full audit trail.</p>
+
+        <!-- 4 Layers, stacked as one connected block -->
+        <div class="stack-vis">
+          <div class="stack-layer">
+            <div class="layer-icon-wrap">
+              <svg viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></svg>
+            </div>
+            <div class="layer-text">
+              <h4>Regulatory Feed</h4>
+              <p>ESMA, BaFin, CSSF — live change stream with topic classification</p>
+            </div>
+            <div class="layer-badge live">Live</div>
+          </div>
+
+          <div class="stack-layer">
+            <div class="layer-icon-wrap">
+              <svg viewBox="0 0 24 24"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+            </div>
+            <div class="layer-text">
+              <h4>Filing Pipeline</h4>
+              <p>Validate, generate XML, submit to NCA — one API call</p>
+            </div>
+            <div class="layer-badge live">Live</div>
+          </div>
+
+          <div class="stack-layer">
+            <div class="layer-icon-wrap">
+              <svg viewBox="0 0 24 24"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z"/></svg>
+            </div>
+            <div class="layer-text">
+              <h4>Compliance Agents</h4>
+              <p>BaFin filing agent, CSSF filing agent, due diligence agent</p>
+            </div>
+            <div class="layer-badge beta">Beta</div>
+          </div>
+
+          <div class="stack-layer">
+            <div class="layer-icon-wrap">
+              <svg viewBox="0 0 24 24"><path d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+            </div>
+            <div class="layer-text">
+              <h4>Dashboard & Copilot</h4>
+              <p>Full compliance workspace — built on its own APIs</p>
+            </div>
+            <div class="layer-badge live">Live</div>
+          </div>
+        </div>
+
+        <div class="infra-cta">
+          <a href="/demo-dashboard" class="btn btn-md btn-accent">Try the Demo <span class="arrow">→</span></a>
+          <a href="/api/docs" class="btn btn-md btn-outline">API Docs <span class="arrow">→</span></a>
+        </div>
+      </div>
+
+      <!-- RIGHT: Agent Chat Window (animated) -->
+      <div class="agent-window">
+        <div class="agent-topbar">
+          <div class="dots"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+          <div class="title">caelith filing agent</div>
+          <div class="status-dot"></div>
+          <div class="status-text">Running</div>
+        </div>
+
+        <div class="agent-body" id="agentBody">
+          <!-- Messages injected by JS -->
+        </div>
+
+        <div class="nca-bar">
+          <div class="nca-item"><span class="nca-dot live"></span> BaFin (DE)</div>
+          <div class="nca-item"><span class="nca-dot building"></span> CSSF (LU)</div>
+          <div class="nca-item"><span class="nca-dot planned"></span> FMA (AT)</div>
+          <div class="nca-item"><span class="nca-dot planned"></span> AMF (FR)</div>
+          <div class="nca-item"><span class="nca-dot planned"></span> AFM (NL)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  var body = document.getElementById('agentBody');
+  if (!body) return;
+
+  var conversation = [
+    {
+      type: 'user',
+      delay: 600,
+      html: 'Submit Annex IV filing for Süddeutscher Immobilien-Spezialfonds I to BaFin'
+    },
+    {
+      type: 'typing',
+      delay: 800,
+      duration: 1400
+    },
+    {
+      type: 'agent',
+      delay: 0,
+      html: '<strong>Starting filing pipeline</strong> for Süddeutscher Immobilien-Spezialfonds I<br><br>' +
+            '<span class="check">✓</span> Loading fund structure — 9 investors, DE jurisdiction<br>' +
+            '<span class="check">✓</span> Investor classification: Spezial_AIF<br>' +
+            '<div class="progress-bar"><div class="fill" data-width="35"></div></div>'
+    },
+    {
+      type: 'typing',
+      delay: 2000,
+      duration: 1200
+    },
+    {
+      type: 'agent',
+      delay: 0,
+      html: '<strong>Validation complete</strong><br><br>' +
+            '<span class="status-chip pass">XSD valid</span>' +
+            '<span class="status-chip pass">LEI verified</span>' +
+            '<span class="status-chip pass">0 sanctions matches</span><br><br>' +
+            'ESMA Rev 6 schema — <code>AIFMD_DATAIF_V1.2.xsd</code><br>' +
+            'LEI <code>529900T8BM49AURSDO55</code> confirmed active via GLEIF<br>' +
+            'Screened against 6,863 EU + UN entities<br>' +
+            '<div class="progress-bar"><div class="fill" data-width="70"></div></div>'
+    },
+    {
+      type: 'typing',
+      delay: 2200,
+      duration: 1000
+    },
+    {
+      type: 'agent',
+      delay: 0,
+      html: '<strong>Submitting to BaFin MVP Portal</strong><br><br>' +
+            '<span class="check">✓</span> WS-Security envelope signed<br>' +
+            '<span class="check">✓</span> SOAP request sent to <code>portal.mvp.bafin.de</code><br>' +
+            '<span class="check">✓</span> Response: <strong style="color:var(--warm)">meldungsId: 847291</strong><br>' +
+            '<span class="check">✓</span> X.509 signature verified (GlobalSign RSA)<br>' +
+            '<div class="progress-bar"><div class="fill" data-width="100"></div></div>'
+    },
+    {
+      type: 'typing',
+      delay: 1800,
+      duration: 800
+    },
+    {
+      type: 'agent',
+      delay: 0,
+      html: '<span class="status-chip pass">Filing accepted</span>' +
+            '<span class="status-chip info">Audit logged</span><br><br>' +
+            'Block <strong>#1248</strong> committed to audit chain<br>' +
+            '<span class="hash">hash: a3f7c912e4b1...8b2de44719cf</span><br><br>' +
+            'Annex IV Q1 2026 filed successfully. Next quarterly deadline: <strong>July 15, 2026</strong>'
+    },
+    {
+      // restart after pause
+      type: 'restart',
+      delay: 6000
+    }
+  ];
+
+  function clearBody() {
+    body.innerHTML = '';
+  }
+
+  function addMessage(item) {
+    return new Promise(function(resolve) {
+      if (item.type === 'typing') {
+        var typing = document.createElement('div');
+        typing.className = 'typing';
+        typing.innerHTML = '<span></span><span></span><span></span>';
+        body.appendChild(typing);
+        body.scrollTop = body.scrollHeight;
+        requestAnimationFrame(function() {
+          typing.classList.add('visible');
+        });
+        setTimeout(function() {
+          typing.remove();
+          resolve();
+        }, item.duration);
+        return;
+      }
+
+      if (item.type === 'restart') {
+        setTimeout(function() {
+          // Fade out all messages
+          var msgs = body.querySelectorAll('.msg');
+          msgs.forEach(function(m) { m.style.opacity = '0'; m.style.transform = 'translateY(-8px)'; });
+          setTimeout(function() {
+            clearBody();
+            resolve();
+          }, 500);
+        }, item.delay);
+        return;
+      }
+
+      var el = document.createElement('div');
+      el.className = 'msg ' + item.type;
+      el.innerHTML = item.html;
+      body.appendChild(el);
+      body.scrollTop = body.scrollHeight;
+
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          el.classList.add('visible');
+          // Animate progress bars
+          var bars = el.querySelectorAll('.progress-bar .fill');
+          bars.forEach(function(bar) {
+            var w = bar.getAttribute('data-width');
+            setTimeout(function() { bar.style.width = w + '%'; }, 200);
+          });
+        });
+      });
+
+      setTimeout(resolve, 400);
+    });
+  }
+
+  function runConversation() {
+    var index = 0;
+    function next() {
+      if (index >= conversation.length) {
+        runConversation(); // loop
+        return;
+      }
+      var item = conversation[index];
+      index++;
+
+      if (item.type === 'restart') {
+        addMessage(item).then(next);
+        return;
+      }
+
+      setTimeout(function() {
+        addMessage(item).then(next);
+      }, item.delay);
+    }
+    clearBody();
+    next();
+  }
+
+  // Start when visible
+  var observer = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting) {
+      observer.disconnect();
+      runConversation();
+    }
+  }, { threshold: 0.3 });
+  observer.observe(body);
+})();
+</script>
+
+</body>
+</html>

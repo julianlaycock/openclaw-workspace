@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Regulatory Infrastructure Section — 3 Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1f1f;--bg2:#2D3333;--accent:#8EC5E0;--accent-sat:#6BB8D9;--warm:#E8A87C;
+  --text:#f0f0f0;--text2:rgba(255,255,255,0.7);--text3:rgba(255,255,255,0.5);
+  --text-dark:#1a1f1f;--text-dark2:#5a6666;--text-dark3:#8a9494;
+  --border:rgba(255,255,255,0.08);--border-light:rgba(45,51,51,0.08);
+  --radius:14px;--grad:linear-gradient(135deg,#8EC5E0,#E8A87C);
+  --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.10);
+  --light-bg:#F8F9FA;--light-card:#FFFFFF;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;color:var(--text);background:#111414;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;letter-spacing:-0.03em;line-height:1.15}
+a{text-decoration:none;color:inherit}
+.grad{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.section{padding:80px clamp(40px,8vw,120px)}
+.section-inner{max-width:1200px;margin:0 auto}
+
+/* Option headers */
+.option-header{
+  text-align:center;padding:60px 40px 20px;
+  border-top:3px solid;border-image:var(--grad) 1;
+  margin-top:80px;
+}
+.option-header:first-child{margin-top:20px}
+.option-header h1{font-size:28px;color:#fff;margin-bottom:8px}
+.option-header p{font-size:14px;color:var(--text3);max-width:600px;margin:0 auto}
+.option-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:6px 16px;border-radius:999px;background:rgba(142,197,224,0.1);border:1px solid rgba(142,197,224,0.2);color:var(--accent);margin-bottom:16px}
+
+/* Shared */
+.label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+
+/* ═══════════════════════════════════════════════════ */
+/* OPTION A — "The Pipeline" (Visual flow diagram)    */
+/* ═══════════════════════════════════════════════════ */
+
+.pipeline-section{background:var(--bg)}
+.pipeline-flow{display:flex;align-items:stretch;gap:0;margin:48px 0 32px;position:relative}
+.pipeline-step{flex:1;padding:32px 24px;position:relative;text-align:center;background:rgba(255,255,255,0.02);border:1px solid var(--glass-border);transition:all .35s}
+.pipeline-step:first-child{border-radius:var(--radius) 0 0 var(--radius)}
+.pipeline-step:last-child{border-radius:0 var(--radius) var(--radius) 0}
+.pipeline-step:hover{background:rgba(255,255,255,0.05);border-color:rgba(142,197,224,0.2)}
+.pipeline-step .step-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgba(107,184,217,0.15),rgba(232,168,124,0.1));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:22px}
+.pipeline-step h4{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px}
+.pipeline-step p{font-size:12px;color:var(--text3);line-height:1.6}
+.pipeline-step .step-detail{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);margin-top:10px;opacity:0.7}
+.pipeline-arrow{display:flex;align-items:center;color:var(--accent);font-size:20px;padding:0 4px;opacity:0.4}
+.pipeline-ncas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+.nca-chip{padding:8px 18px;border-radius:999px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);display:flex;align-items:center;gap:8px;transition:border-color .3s}
+.nca-chip:hover{border-color:rgba(142,197,224,0.2)}
+.nca-chip .flag{font-size:14px}
+.nca-chip .status{width:6px;height:6px;border-radius:50%}
+.nca-chip .status.live{background:#22c55e}
+.nca-chip .status.building{background:var(--warm)}
+.nca-chip .status.planned{background:var(--text3)}
+.pipeline-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:32px}
+.pipeline-stat{text-align:center;padding:20px;background:rgba(255,255,255,0.02);border:1px solid var(--glass-border);border-radius:var(--radius)}
+.pipeline-stat .n{font-family:'Sora';font-weight:800;font-size:24px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pipeline-stat .l{font-size:10px;color:var(--text3);margin-top:4px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px}
+
+/* ═══════════════════════════════════════════════════ */
+/* OPTION B — "Three Pillars" (Cards with code)       */
+/* ═══════════════════════════════════════════════════ */
+
+.pillars-section{background:var(--light-bg)}
+.pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+.pillar-card{background:var(--light-card);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;transition:all .35s;position:relative}
+.pillar-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,0.1)}
+.pillar-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad);opacity:0;transition:opacity .35s}
+.pillar-card:hover::before{opacity:1}
+.pillar-top{padding:32px 28px 24px}
+.pillar-icon{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,rgba(107,184,217,0.12),rgba(232,168,124,0.08));display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:20px}
+.pillar-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.pillar-card h3{font-size:18px;font-weight:700;color:var(--text-dark);margin-bottom:8px}
+.pillar-card .desc{font-size:13px;color:var(--text-dark2);line-height:1.7}
+.pillar-features{list-style:none;padding:0 28px 16px;display:flex;flex-direction:column;gap:6px}
+.pillar-features li{font-size:12px;color:var(--text-dark2);padding-left:18px;position:relative;font-family:'JetBrains Mono',monospace}
+.pillar-features li::before{content:'✓';position:absolute;left:0;color:var(--accent-sat)}
+.pillar-code{background:#1e2424;padding:16px 20px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;color:rgba(255,255,255,0.5);border-top:1px solid rgba(255,255,255,0.06);overflow-x:auto}
+.pillar-code .kw{color:var(--accent)}.pillar-code .str{color:var(--warm)}.pillar-code .cmt{color:rgba(255,255,255,0.2)}
+.pillar-endpoint{padding:16px 28px;border-top:1px solid var(--border-light);display:flex;align-items:center;gap:8px}
+.pillar-method{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;background:rgba(107,184,217,0.12);color:var(--accent-sat)}
+.pillar-path{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dark3)}
+
+/* ═══════════════════════════════════════════════════ */
+/* OPTION C — "Live Terminal" (Interactive-feel)       */
+/* ═══════════════════════════════════════════════════ */
+
+.terminal-section{background:var(--bg2)}
+.terminal-layout{display:grid;grid-template-columns:1fr 1.2fr;gap:48px;margin-top:48px;align-items:start}
+.infra-left h3{font-size:24px;font-weight:700;color:#fff;margin-bottom:16px}
+.infra-left p{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:24px}
+.infra-layers{display:flex;flex-direction:column;gap:12px}
+.infra-layer{display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:var(--radius);background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);transition:all .3s;cursor:default}
+.infra-layer:hover{border-color:rgba(142,197,224,0.2);background:rgba(255,255,255,0.05)}
+.infra-layer .layer-icon{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,rgba(107,184,217,0.15),rgba(232,168,124,0.1));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.infra-layer .layer-text h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+.infra-layer .layer-text p{font-size:11px;color:var(--text3);margin:0;line-height:1.5}
+.infra-layer .layer-status{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border-radius:999px;flex-shrink:0}
+.infra-layer .layer-status.live{background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid rgba(34,197,94,0.2)}
+.infra-layer .layer-status.beta{background:rgba(232,168,124,0.15);color:var(--warm);border:1px solid rgba(232,168,124,0.2)}
+
+.infra-terminal{background:rgba(0,0,0,0.3);border:1px solid var(--glass-border);border-radius:var(--radius);overflow:hidden}
+.infra-term-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(0,0,0,0.4);border-bottom:1px solid rgba(255,255,255,0.05)}
+.infra-term-bar .dot{width:8px;height:8px;border-radius:50%}
+.infra-term-bar .dot.r{background:#FF5F56}.infra-term-bar .dot.y{background:#FFBD2E}.infra-term-bar .dot.g{background:#27C93F}
+.infra-term-bar .title{flex:1;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.25)}
+.infra-term-body{padding:20px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;color:rgba(255,255,255,0.45);min-height:380px}
+.infra-term-body .cmd{color:var(--accent);font-weight:500}
+.infra-term-body .ok{color:#6ee7b7}
+.infra-term-body .warn{color:var(--warm)}
+.infra-term-body .hash{color:rgba(255,255,255,0.2)}
+.infra-term-body .dim{color:rgba(255,255,255,0.2)}
+.infra-cta{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.btn{font-family:'Sora';font-weight:600;border:none;border-radius:var(--radius);cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.btn-md{font-size:14px;padding:12px 28px}
+.btn-accent{background:var(--grad);color:#fff;font-weight:700}
+.btn-accent:hover{box-shadow:0 0 32px rgba(197,224,238,0.35);transform:translateY(-2px)}
+.btn-outline{background:transparent;border:1px solid var(--glass-border);color:var(--text2)}
+.btn-outline:hover{border-color:var(--accent);color:#fff}
+.arrow{transition:transform .2s}.btn:hover .arrow{transform:translateX(4px)}
+
+/* Responsive */
+@media(max-width:1024px){
+  .pipeline-flow{flex-direction:column}
+  .pipeline-arrow{transform:rotate(90deg);justify-content:center;padding:8px 0}
+  .pipeline-step:first-child,.pipeline-step:last-child{border-radius:var(--radius)}
+  .pipeline-stats{grid-template-columns:repeat(2,1fr)}
+  .pillars-grid{grid-template-columns:1fr}
+  .terminal-layout{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .pipeline-stats{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- OPTION A: "The Pipeline" — Flow Diagram    -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="option-header">
+  <div class="option-tag">Option A</div>
+  <h1>The Pipeline — Visual Flow</h1>
+  <p>Shows the end-to-end filing pipeline as a horizontal flow: Data In → Validate → Generate → Submit → Track. Best for: communicating the automation story at a glance.</p>
+</div>
+
+<section class="section pipeline-section">
+  <div class="section-inner">
+    <div style="margin-bottom:8px">
+      <div class="label" style="color:var(--accent)">⚡ Regulatory Infrastructure</div>
+      <h2 style="color:#fff;font-size:clamp(28px,3.5vw,42px)">From data to regulator. <span class="grad">Fully automated.</span></h2>
+      <p style="font-size:15px;color:var(--text2);margin-top:12px;max-width:640px;line-height:1.8">One API call. Your fund data goes in, validated XML comes out, and gets submitted to the right NCA portal — BaFin, CSSF, or FMA. No manual uploads. No portal logins.</p>
+    </div>
+
+    <div class="pipeline-flow">
+      <div class="pipeline-step">
+        <div class="step-icon">📥</div>
+        <h4>Ingest</h4>
+        <p>Fund data via API or dashboard. Flat JSON, nested, CSV — we normalize it.</p>
+        <div class="step-detail">POST /api/v1/pipeline/filings</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="step-icon">✅</div>
+        <h4>Validate</h4>
+        <p>ESMA XSD Rev 6, LEI verification via GLEIF, cross-field logic checks.</p>
+        <div class="step-detail">0 errors before submission</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="step-icon">📄</div>
+        <h4>Generate</h4>
+        <p>Annex IV XML output, GZIP compressed, filename-compliant, audit-hashed.</p>
+        <div class="step-detail">AIFMD_DATAIF_V1.2.xsd</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="step-icon">🚀</div>
+        <h4>Submit</h4>
+        <p>Direct portal submission via SOAP (BaFin) or S3 (CSSF). No browser needed.</p>
+        <div class="step-detail">WS-Security · AWS S3 API</div>
+      </div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-step">
+        <div class="step-icon">📊</div>
+        <h4>Track</h4>
+        <p>Filing status via journal query. Receipt ID, timestamps, audit trail.</p>
+        <div class="step-detail">GET /filings/:id/status</div>
+      </div>
+    </div>
+
+    <div class="pipeline-ncas">
+      <div class="nca-chip"><span class="flag">🇩🇪</span> BaFin <span class="status live"></span></div>
+      <div class="nca-chip"><span class="flag">🇱🇺</span> CSSF <span class="status building"></span></div>
+      <div class="nca-chip"><span class="flag">🇦🇹</span> FMA <span class="status planned"></span></div>
+      <div class="nca-chip"><span class="flag">🇫🇷</span> AMF <span class="status planned"></span></div>
+      <div class="nca-chip"><span class="flag">🇳🇱</span> AFM <span class="status planned"></span></div>
+      <div class="nca-chip"><span class="flag">🇪🇺</span> ESMA <span class="status live"></span></div>
+    </div>
+
+    <div class="pipeline-stats">
+      <div class="pipeline-stat"><div class="n">7</div><div class="l">Pipeline Endpoints</div></div>
+      <div class="pipeline-stat"><div class="n">3</div><div class="l">Live Reg Feeds</div></div>
+      <div class="pipeline-stat"><div class="n">&lt;4 min</div><div class="l">Per Filing</div></div>
+      <div class="pipeline-stat"><div class="n">0</div><div class="l">Portal Logins</div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- OPTION B: "Three Pillars" — Product Cards  -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="option-header">
+  <div class="option-tag">Option B</div>
+  <h1>Three Pillars — Product Cards</h1>
+  <p>Showcases the three distinct infrastructure products (Filing API, Regulatory Feed, Dashboard) as equal cards with code snippets and endpoints. Best for: developer/technical audiences who care about integration.</p>
+</div>
+
+<section class="section pillars-section">
+  <div class="section-inner">
+    <div style="margin-bottom:8px">
+      <div class="label" style="color:var(--accent-sat)">Infrastructure</div>
+      <h2 style="color:var(--text-dark);font-size:clamp(28px,3.5vw,42px)">Three products. <span class="grad">One platform.</span></h2>
+      <p style="font-size:15px;color:var(--text-dark2);margin-top:12px;max-width:640px;line-height:1.8">Regulations in. Filings out. Everything in between is what you build.</p>
+    </div>
+
+    <div class="pillars-grid">
+      <!-- Pillar 1: Filing Pipeline -->
+      <div class="pillar-card">
+        <div class="pillar-top">
+          <div class="pillar-icon">🚀</div>
+          <div class="pillar-tag">Filing API</div>
+          <h3>Caelith Filing Pipeline</h3>
+          <p class="desc">Validate, generate, and submit AIFMD filings to NCA portals — programmatically.</p>
+        </div>
+        <ul class="pillar-features">
+          <li>ESMA XSD validation</li>
+          <li>BaFin SOAP submission</li>
+          <li>CSSF S3 submission</li>
+          <li>LEI verification (GLEIF)</li>
+          <li>Audit-hashed output</li>
+        </ul>
+        <div class="pillar-code">
+<span class="cmt"># Submit Annex IV to BaFin</span>
+<span class="kw">curl</span> -X POST /api/v1/pipeline/filings \
+  -d <span class="str">'{"fund":"...","nca":"DE"}'</span>
+
+<span class="cmt"># → meldungsId: 847291</span>
+        </div>
+        <div class="pillar-endpoint">
+          <span class="pillar-method">POST</span>
+          <span class="pillar-path">/api/v1/pipeline/filings</span>
+        </div>
+      </div>
+
+      <!-- Pillar 2: Regulatory Feed -->
+      <div class="pillar-card">
+        <div class="pillar-top">
+          <div class="pillar-icon">📡</div>
+          <div class="pillar-tag">Regulatory Feed</div>
+          <h3>Caelith Reg Feed</h3>
+          <p class="desc">Machine-readable regulatory change stream across EU jurisdictions. Never miss an update.</p>
+        </div>
+        <ul class="pillar-features">
+          <li>ESMA, BaFin, CSSF live</li>
+          <li>Topic classification</li>
+          <li>Severity scoring</li>
+          <li>Entity impact analysis</li>
+          <li>Webhook delivery (soon)</li>
+        </ul>
+        <div class="pillar-code">
+<span class="cmt"># Query AIFMD updates</span>
+<span class="kw">curl</span> /api/v1/feed?topic=AIFMD \
+  &jurisdiction=DE&severity=high
+
+<span class="cmt"># → 12 regulatory changes</span>
+        </div>
+        <div class="pillar-endpoint">
+          <span class="pillar-method">GET</span>
+          <span class="pillar-path">/api/v1/feed?topic=AIFMD</span>
+        </div>
+      </div>
+
+      <!-- Pillar 3: Dashboard -->
+      <div class="pillar-card">
+        <div class="pillar-top">
+          <div class="pillar-icon">📊</div>
+          <div class="pillar-tag">Dashboard</div>
+          <h3>Caelith Dashboard</h3>
+          <p class="desc">Reference implementation that eats its own APIs. Full compliance workspace for teams.</p>
+        </div>
+        <ul class="pillar-features">
+          <li>Fund management</li>
+          <li>Investor onboarding</li>
+          <li>Rules engine (13 rules)</li>
+          <li>Sanctions screening</li>
+          <li>Compliance Copilot AI</li>
+        </ul>
+        <div class="pillar-code">
+<span class="cmt"># Evaluate compliance</span>
+<span class="kw">curl</span> /api/v1/compliance/evaluate \
+  -d <span class="str">'{"fundId":"...","frameworks":
+    ["AIFMD_II","KAGB"]}'</span>
+        </div>
+        <div class="pillar-endpoint">
+          <span class="pillar-method">POST</span>
+          <span class="pillar-path">/api/v1/compliance/evaluate</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- OPTION C: "Live Terminal" — Layers + Terminal   -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="option-header">
+  <div class="option-tag">Option C</div>
+  <h1>Live Terminal — Layers + Demo</h1>
+  <p>Left side shows infrastructure layers (Filing, Feed, Agents, Dashboard) with live/beta status. Right side shows a terminal running the full pipeline. Best for: conveying depth and credibility to VCs/technical evaluators.</p>
+</div>
+
+<section class="section terminal-section">
+  <div class="section-inner">
+    <div style="margin-bottom:8px">
+      <div class="label" style="color:var(--accent)">⚙️ Infrastructure Layer</div>
+      <h2 style="color:#fff;font-size:clamp(28px,3.5vw,42px)">The compliance layer <span class="grad">for Europe.</span></h2>
+      <p style="font-size:15px;color:var(--text2);margin-top:12px;max-width:640px;line-height:1.8">Sphinx raised $7.1M for US fintech compliance agents. We're building the infrastructure those agents need to operate in Europe.</p>
+    </div>
+
+    <div class="terminal-layout">
+      <div class="infra-left">
+        <h3>Four layers. <span class="grad">One stack.</span></h3>
+        <p>Regulatory data flows in through our feed. Your fund data flows through our pipeline. Agents orchestrate it autonomously. The dashboard makes it visible.</p>
+
+        <div class="infra-layers">
+          <div class="infra-layer">
+            <div class="layer-icon">📡</div>
+            <div class="layer-text">
+              <h4>Regulatory Feed</h4>
+              <p>ESMA · BaFin · CSSF — live change stream with topic classification</p>
+            </div>
+            <div class="layer-status live">Live</div>
+          </div>
+          <div class="infra-layer">
+            <div class="layer-icon">🚀</div>
+            <div class="layer-text">
+              <h4>Filing Pipeline</h4>
+              <p>Validate → Generate XML → Submit to NCA — one API call</p>
+            </div>
+            <div class="layer-status live">Live</div>
+          </div>
+          <div class="infra-layer">
+            <div class="layer-icon">🤖</div>
+            <div class="layer-text">
+              <h4>Compliance Agents</h4>
+              <p>BaFin filing agent · CSSF filing agent · Due diligence agent</p>
+            </div>
+            <div class="layer-status beta">Beta</div>
+          </div>
+          <div class="infra-layer">
+            <div class="layer-icon">📊</div>
+            <div class="layer-text">
+              <h4>Dashboard & Copilot</h4>
+              <p>Full compliance workspace — reference implementation eating its own APIs</p>
+            </div>
+            <div class="layer-status live">Live</div>
+          </div>
+        </div>
+
+        <div class="infra-cta">
+          <a href="/demo-dashboard" class="btn btn-md btn-accent">Try the Demo <span class="arrow">→</span></a>
+          <a href="/api/docs" class="btn btn-md btn-outline">API Docs <span class="arrow">→</span></a>
+        </div>
+      </div>
+
+      <div class="infra-terminal">
+        <div class="infra-term-bar">
+          <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+          <div class="title">caelith pipeline — live demo</div>
+        </div>
+        <div class="infra-term-body">
+<span class="cmd">$</span> caelith pipeline submit --fund "Süddeutscher Immobilien-Spezialfonds I"
+<br><br>
+<span class="dim">▸ Normalizing fund data...</span>
+<br><span class="ok">✓</span> 9 investors · DE jurisdiction · Spezial_AIF
+<br><br>
+<span class="dim">▸ Validating against ESMA XSD Rev 6...</span>
+<br><span class="ok">✓</span> XSD validation passed — 0 errors
+<br><span class="ok">✓</span> LEI verified: 529900T8BM49AURSDO55 (GLEIF)
+<br><span class="ok">✓</span> Sanctions clear: 0/6,863 matches
+<br><br>
+<span class="dim">▸ Generating Annex IV XML...</span>
+<br><span class="ok">✓</span> annex-iv-2026-Q1.xml (6,976 bytes)
+<br><span class="ok">✓</span> GZIP compressed → base64 encoded
+<br><span class="ok">✓</span> Audit hash: <span class="hash">a3f7c912...8b2de447</span>
+<br><br>
+<span class="dim">▸ Submitting to BaFin MVP Portal (SOAP)...</span>
+<br><span class="ok">✓</span> WS-Security authenticated
+<br><span class="ok">✓</span> <span class="warn">meldungsId: 847291</span>
+<br><span class="ok">✓</span> Response signed (X.509, GlobalSign RSA)
+<br><br>
+<span class="dim">▸ Querying regulatory feed...</span>
+<br><span class="ok">✓</span> 3 new AIFMD updates (ESMA, BaFin)
+<br><span class="ok">✓</span> Next deadline: April 16, 2026
+<br><br>
+<span style="color:var(--accent)">Pipeline complete. Filing accepted by BaFin.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div style="padding:80px 40px;text-align:center;border-top:1px solid var(--border)">
+  <p style="font-size:14px;color:var(--text3)">Pick one, mix elements, or let me know your direction. All options use the existing Caelith design system.</p>
+</div>
+
+</body>
+</html>

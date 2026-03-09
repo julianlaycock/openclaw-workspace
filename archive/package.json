@@ -1,0 +1,30 @@
+{
+  "dependencies": {
+    "pg": "^8.18.0",
+    "puppeteer": "^24.37.5",
+    "sharp": "^0.34.5",
+    "ws": "^8.19.0"
+  },
+  "name": "openclaw-workspace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build-de-landing.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/julianlaycock/openclaw-workspace.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/julianlaycock/openclaw-workspace/issues"
+  },
+  "homepage": "https://github.com/julianlaycock/openclaw-workspace#readme"
+}

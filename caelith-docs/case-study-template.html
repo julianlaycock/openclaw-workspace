@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Study — [KVG_NAME] | Caelith</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #1a1f1f;
+    color: #F8F9FA;
+    line-height: 1.7;
+    padding: 0;
+  }
+
+  .hero {
+    padding: 80px 24px 60px;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #8EC5E0;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 span { color: #8EC5E0; }
+
+  .hero .subtitle {
+    font-size: 18px;
+    color: #adb5bd;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 40px 24px;
+    max-width: 800px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat .number {
+    font-family: 'Sora', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: #E8A87C;
+    line-height: 1;
+  }
+
+  .stat .desc {
+    font-size: 14px;
+    color: #adb5bd;
+    margin-top: 8px;
+  }
+
+  .content {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 20px 24px 80px;
+  }
+
+  .card {
+    background: #2D3333;
+    border-radius: 12px;
+    padding: 36px 32px;
+    margin-bottom: 24px;
+  }
+
+  .card h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #F8F9FA;
+  }
+
+  .card h2 .icon { margin-right: 10px; }
+
+  .card p, .card li {
+    font-size: 16px;
+    color: #ced4da;
+  }
+
+  .card ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .card ul li {
+    padding: 6px 0;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .card ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #8EC5E0;
+  }
+
+  .quote-card {
+    background: linear-gradient(135deg, #2D3333, #253030);
+    border-left: 4px solid #8EC5E0;
+    border-radius: 12px;
+    padding: 36px 32px;
+    margin-bottom: 24px;
+  }
+
+  .quote-card blockquote {
+    font-size: 20px;
+    font-style: italic;
+    color: #F8F9FA;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .quote-card .attribution {
+    font-size: 14px;
+    color: #8EC5E0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .result-item {
+    background: #1a1f1f;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .result-item .value {
+    font-family: 'Sora', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #8EC5E0;
+  }
+
+  .result-item .label {
+    font-size: 13px;
+    color: #adb5bd;
+    margin-top: 4px;
+  }
+
+  .tech-detail {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: #1a1f1f;
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-top: 16px;
+    color: #8EC5E0;
+  }
+
+  .cta {
+    text-align: center;
+    padding: 60px 24px;
+  }
+
+  .cta h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .cta p {
+    color: #adb5bd;
+    margin-bottom: 24px;
+  }
+
+  .cta a {
+    display: inline-block;
+    background: #8EC5E0;
+    color: #1a1f1f;
+    font-weight: 600;
+    padding: 14px 32px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    transition: opacity 0.2s;
+  }
+
+  .cta a:hover { opacity: 0.85; }
+
+  /* Placeholder styling */
+  .placeholder {
+    color: #E8A87C;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: rgba(232, 168, 124, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 28px; }
+    .stats-row { gap: 24px; }
+    .stat .number { font-size: 32px; }
+    .results-grid { grid-template-columns: 1fr; }
+    .card { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="label">Case Study</div>
+  <h1>How <span class="placeholder">[KVG_NAME]</span> Cut Annex IV Reporting Time by <span><!--RESULT_PERCENTAGE--><span class="placeholder">[X]</span>%</span></h1>
+  <p class="subtitle">
+    <span class="placeholder">[KVG_NAME]</span> manages <span class="placeholder">[AUM, e.g. €2.4B]</span> across
+    <span class="placeholder">[FUND_COUNT, e.g. 12]</span> alternative investment funds.
+    Here's how they transformed Annex IV compliance with Caelith.
+  </p>
+</section>
+
+<!-- ============ KEY STATS ============ -->
+<section class="stats-row">
+  <div class="stat">
+    <div class="number"><span class="placeholder">[X]</span></div>
+    <div class="desc">Funds Reporting</div>
+  </div>
+  <div class="stat">
+    <div class="number"><span class="placeholder">[X]</span>%</div>
+    <div class="desc">Time Saved</div>
+  </div>
+  <div class="stat">
+    <div class="number"><span class="placeholder">[X]</span></div>
+    <div class="desc">Compliance Gaps Found</div>
+  </div>
+  <div class="stat">
+    <div class="number"><span class="placeholder">[X]</span></div>
+    <div class="desc">Hours Per Quarter (Before)</div>
+  </div>
+</section>
+
+<!-- ============ CONTENT CARDS ============ -->
+<section class="content">
+
+  <!-- CHALLENGE -->
+  <div class="card">
+    <h2><span class="icon">⚡</span> The Challenge</h2>
+    <p>
+      <span class="placeholder">[KVG_NAME]</span> was preparing Annex IV reports manually —
+      <span class="placeholder">[describe the old process: e.g., extracting data from portfolio management systems into Excel, manually constructing XML, validating against the ESMA XSD, fixing errors, re-submitting to BaFin]</span>.
+    </p>
+    <ul>
+      <li><span class="placeholder">[Pain point 1: e.g., Each quarterly filing took 3+ days of analyst time per fund]</span></li>
+      <li><span class="placeholder">[Pain point 2: e.g., XML validation errors caused repeated BaFin rejections]</span></li>
+      <li><span class="placeholder">[Pain point 3: e.g., No audit trail — difficult to prove compliance in examinations]</span></li>
+      <li><span class="placeholder">[Pain point 4: e.g., AIFMD II changes threatened to double the workload]</span></li>
+    </ul>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="card">
+    <h2><span class="icon">🔧</span> The Solution</h2>
+    <p>
+      <span class="placeholder">[KVG_NAME]</span> integrated Caelith into their reporting workflow via
+      <span class="placeholder">[method: e.g., API integration with their existing portfolio management system / dashboard upload / both]</span>.
+    </p>
+    <ul>
+      <li><span class="placeholder">[Solution detail 1: e.g., Fund data flows automatically from their PMS to Caelith's API]</span></li>
+      <li><span class="placeholder">[Solution detail 2: e.g., Caelith validates against ESMA Rev 6 v1.2 XSD in real-time]</span></li>
+      <li><span class="placeholder">[Solution detail 3: e.g., Compliance team reviews flagged issues in the dashboard before export]</span></li>
+      <li><span class="placeholder">[Solution detail 4: e.g., XML files are generated and submitted to BaFin in minutes, not days]</span></li>
+    </ul>
+    <div class="tech-detail">
+      Stack: <span class="placeholder">[e.g., REST API → Caelith → XSD-validated XML → BaFin MVP Portal]</span>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="card">
+    <h2><span class="icon">📊</span> The Results</h2>
+    <p>After <span class="placeholder">[timeframe, e.g., one quarter]</span> with Caelith:</p>
+    <div class="results-grid">
+      <div class="result-item">
+        <div class="value"><span class="placeholder">[X]</span>h → <span class="placeholder">[Y]</span>h</div>
+        <div class="label">Reporting time per quarter</div>
+      </div>
+      <div class="result-item">
+        <div class="value"><span class="placeholder">[X]</span></div>
+        <div class="label">Validation errors caught pre-submission</div>
+      </div>
+      <div class="result-item">
+        <div class="value">0</div>
+        <div class="label">BaFin rejections since go-live</div>
+      </div>
+      <div class="result-item">
+        <div class="value">✓</div>
+        <div class="label">AIFMD II ready</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUOTE -->
+  <div class="quote-card">
+    <blockquote>
+      "<span class="placeholder">[Customer quote — e.g., 'Caelith turned Annex IV from our biggest compliance headache into a non-event. What used to take our team days now takes minutes, and we haven't had a single BaFin rejection since switching.']</span>"
+    </blockquote>
+    <div class="attribution">
+      — <span class="placeholder">[NAME]</span>, <span class="placeholder">[TITLE, e.g., Head of Regulatory Reporting]</span> at <span class="placeholder">[KVG_NAME]</span>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta">
+  <h2>Ready to simplify your Annex IV reporting?</h2>
+  <p>See how Caelith can work for your funds.</p>
+  <a href="https://caelith.tech">Get Started →</a>
+</section>
+
+</body>
+</html>

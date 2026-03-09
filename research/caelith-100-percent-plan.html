@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Path to 100% Execution Plan</title>
+<style>
+  :root { --bg: #0a0e1a; --bg2: #111827; --bg3: #1e293b; --text: #e2e8f0; --muted: #94a3b8; --accent: #6366f1; --accent2: #818cf8; --green: #22c55e; --yellow: #eab308; --red: #ef4444; --orange: #f97316; --border: #334155; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; padding: 2rem; max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 2rem; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtitle { color: var(--muted); margin-bottom: 2rem; }
+  h2 { font-size: 1.4rem; color: var(--accent2); margin: 2.5rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+  h3 { font-size: 1.1rem; margin: 1.2rem 0 0.5rem; }
+  .phase { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .phase-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .phase-title { font-size: 1.2rem; font-weight: 700; }
+  .phase-meta { color: var(--muted); font-size: 0.85rem; }
+  .task { background: var(--bg3); border-radius: 8px; padding: 1rem 1.2rem; margin: 0.5rem 0; border-left: 3px solid var(--border); }
+  .task-p0 { border-left-color: var(--red); }
+  .task-p1 { border-left-color: var(--orange); }
+  .task-p2 { border-left-color: var(--yellow); }
+  .task-p3 { border-left-color: var(--accent); }
+  .task-done { border-left-color: var(--green); opacity: 0.7; }
+  .task-title { font-weight: 600; font-size: 0.95rem; }
+  .task-detail { color: var(--muted); font-size: 0.85rem; margin-top: 0.3rem; }
+  .tag { display: inline-block; padding: 0.1rem 0.45rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; margin-left: 0.5rem; }
+  .tag-time { background: #1e3a5f; color: #93c5fd; }
+  .tag-score { background: #14532d; color: #86efac; }
+  .tag-roi { background: #713f12; color: #fde68a; }
+  .tag-blocker { background: #7f1d1d; color: #fca5a5; }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .summary-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
+  .summary-num { font-size: 2rem; font-weight: 800; }
+  .summary-label { color: var(--muted); font-size: 0.8rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { padding: 0.5rem 0.8rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th { color: var(--accent2); font-size: 0.8rem; text-transform: uppercase; }
+  td { color: var(--muted); }
+  .current { color: var(--orange); font-weight: 700; }
+  .target { color: var(--green); font-weight: 700; }
+  .exec { background: linear-gradient(135deg, #1e1b4b, #1e293b); border: 1px solid #4338ca; border-radius: 12px; padding: 1.5rem; margin: 1rem 0; }
+  .exec p { color: var(--text); }
+  ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+  li { margin: 0.25rem 0; color: var(--muted); }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  .crit { color: var(--red); }
+  .warn { color: var(--orange); }
+  .ok { color: var(--yellow); }
+  .good { color: var(--green); }
+  strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<h1>Path to 100% — Execution Plan</h1>
+<p class="subtitle">From 38/100 to production-grade RegTech. Ordered by ROI at current stage (pre-revenue, solo founder, pilot-seeking).</p>
+
+<div class="exec">
+<p><strong>Strategic principle:</strong> Every hour spent must either (a) prevent a deal-killing gap in a pilot conversation, (b) reduce risk of regulatory embarrassment, or (c) directly enable revenue. Everything else waits.</p>
+<p style="margin-top:0.5rem"><strong>Current score: 38/100.</strong> Target after Phase 1: 62/100. Target after Phase 2: 78/100. Target after Phase 3: 90+/100.</p>
+</div>
+
+<div class="summary-grid">
+  <div class="summary-card"><div class="summary-num" style="color:var(--orange)">38</div><div class="summary-label">Current Score</div></div>
+  <div class="summary-card"><div class="summary-num" style="color:var(--yellow)">62</div><div class="summary-label">After Phase 1 (2 weeks)</div></div>
+  <div class="summary-card"><div class="summary-num" style="color:var(--green)">78</div><div class="summary-label">After Phase 2 (6 weeks)</div></div>
+  <div class="summary-card"><div class="summary-num" style="color:var(--green)">92</div><div class="summary-label">After Phase 3 (12 weeks)</div></div>
+</div>
+
+<!-- ═══ SCORE TRAJECTORY ═══ -->
+<h2>Score Trajectory — All 17 Categories</h2>
+<table>
+<thead><tr><th>#</th><th>Category</th><th>Now</th><th>Phase 1</th><th>Phase 2</th><th>Phase 3</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Regulatory Coverage</td><td class="current">52</td><td>60</td><td>75</td><td class="target">90</td></tr>
+<tr><td>2</td><td>Data Quality &amp; Validation</td><td class="current">35</td><td>65</td><td>80</td><td class="target">92</td></tr>
+<tr><td>3</td><td>Reporting Pipeline</td><td class="current">45</td><td>55</td><td>80</td><td class="target">95</td></tr>
+<tr><td>4</td><td>Sanctions &amp; Screening</td><td class="current">40</td><td>70</td><td>85</td><td class="target">95</td></tr>
+<tr><td>5</td><td>Investor Due Diligence</td><td class="current">48</td><td>65</td><td>82</td><td class="target">92</td></tr>
+<tr><td>6</td><td>Multi-NCA Support</td><td class="current">55</td><td>58</td><td>75</td><td class="target">90</td></tr>
+<tr><td>7</td><td>Regulatory Intelligence</td><td class="current">30</td><td>45</td><td>65</td><td class="target">85</td></tr>
+<tr><td>8</td><td>Audit Trail</td><td class="current">55</td><td>65</td><td>80</td><td class="target">92</td></tr>
+<tr><td>9</td><td>Agent Readiness</td><td class="current">15</td><td>20</td><td>50</td><td class="target">80</td></tr>
+<tr><td>10</td><td>Security Posture</td><td class="current">58</td><td>72</td><td>85</td><td class="target">93</td></tr>
+<tr><td>11</td><td>Data Architecture</td><td class="current">50</td><td>60</td><td>75</td><td class="target">88</td></tr>
+<tr><td>12</td><td>API Maturity</td><td class="current">48</td><td>60</td><td>78</td><td class="target">90</td></tr>
+<tr><td>13</td><td>Testing &amp; Quality</td><td class="current">22</td><td>55</td><td>75</td><td class="target">88</td></tr>
+<tr><td>14</td><td>Scalability &amp; Infra</td><td class="current">20</td><td>45</td><td>65</td><td class="target">82</td></tr>
+<tr><td>15</td><td>Product Maturity</td><td class="current">42</td><td>55</td><td>72</td><td class="target">88</td></tr>
+<tr><td>16</td><td>Open Source Strategy</td><td class="current">35</td><td>55</td><td>70</td><td class="target">85</td></tr>
+<tr><td>17</td><td>GTM Readiness</td><td class="current">32</td><td>58</td><td>75</td><td class="target">90</td></tr>
+</tbody>
+</table>
+
+<!-- ═══ PHASE 1 ═══ -->
+<h2>Phase 1: Pilot-Ready (Mar 3–14) — 38 → 62</h2>
+<p style="color:var(--muted);margin-bottom:1rem">Goal: Remove every deal-killing gap. After Phase 1, you can run a pilot with a real KVG without embarrassment.</p>
+
+<div class="phase">
+<div class="phase-header">
+  <span class="phase-title">Week 1 (Mar 3–7): Foundation Fixes</span>
+  <span class="phase-meta">Biggest score jump — low effort, high impact</span>
+</div>
+
+<div class="task task-p0">
+  <div class="task-title">1. Tests in CI <span class="tag tag-blocker">BLOCKER</span> <span class="tag tag-time">4 hrs</span> <span class="tag tag-score">Testing: 22→45</span></div>
+  <div class="task-detail">
+    Add <code>npm test</code> to GitHub Actions CI. Run existing backend unit tests + e2e tests. Add test coverage reporting (istanbul/c8). Block merges on red. The tests already exist — just wire them.
+    <br><strong>Files:</strong> .github/workflows/ci.yml, vitest.config.ts, package.json scripts
+    <br><strong>Why first:</strong> Every subsequent change is safer once tests run in CI. Multiplier for everything below.
+  </div>
+</div>
+
+<div class="task task-p0">
+  <div class="task-title">2. Monitoring + Error Tracking <span class="tag tag-blocker">BLOCKER</span> <span class="tag tag-time">4 hrs</span> <span class="tag tag-score">Infra: 20→40</span></div>
+  <div class="task-detail">
+    (a) Verify Sentry is active on Railway — set SENTRY_DSN env var. (b) Add structured JSON logging (pino or winston). (c) Add /health endpoint for Railway healthchecks. (d) Verify UptimeRobot monitors are active (already set up per MEMORY.md).
+    <br><strong>Files:</strong> src/backend/server.ts, src/backend/middleware/logger.ts (create), railway.toml
+    <br><strong>Why second:</strong> From this point forward, every production error is captured. No more flying blind.
+  </div>
+</div>
+
+<div class="task task-p0">
+  <div class="task-title">3. Mock Screening Guardrails <span class="tag tag-blocker">BLOCKER</span> <span class="tag tag-time">2 hrs</span> <span class="tag tag-score">Sanctions: 40→50</span></div>
+  <div class="task-detail">
+    (a) Add prominent "DEMO DATA — NOT FOR COMPLIANCE USE" banner on all mock screening results in UI. (b) Add <code>dataSource: "mock" | "eu_consolidated" | "opensanctions"</code> field to every screening API response. (c) Log warning on server startup if no real screening provider configured. (d) In production (NODE_ENV=production), refuse to start without OPENSANCTIONS_API_KEY or local sanctions data loaded.
+    <br><strong>Files:</strong> src/backend/services/screening-service.ts, screening UI components
+  </div>
+</div>
+
+<div class="task task-p0">
+  <div class="task-title">4. XSD Validation Fix <span class="tag tag-blocker">BLOCKER</span> <span class="tag tag-time">1 day</span> <span class="tag tag-score">Validation: 35→55</span></div>
+  <div class="task-detail">
+    Replace optional libxmljs2 with a pure-JS/WASM XML schema validator. Options: (a) <code>fast-xml-parser</code> + custom schema checks, (b) <code>xsd-schema-validator</code> (Java-based, cross-platform), (c) port XSD checks to Zod schemas matching ESMA fields. Recommended: Option (c) — Zod schemas for ESMA fields give both runtime validation AND TypeScript types. Keep XSD files for reference but validate via Zod.
+    <br><strong>Files:</strong> packages/open-annex-iv/src/validator.ts, new zod-schemas.ts
+    <br><strong>Why critical:</strong> If generated XML fails NCA validation, everything downstream is worthless.
+  </div>
+</div>
+
+<div class="task task-p1">
+  <div class="task-title">5. OpenSanctions Live Integration <span class="tag tag-time">1 day</span> <span class="tag tag-score">Sanctions: 50→70</span></div>
+  <div class="task-detail">
+    (a) Sign up for OpenSanctions API trial (30-day free with business email). (b) Set OPENSANCTIONS_API_KEY on Railway. (c) Verify sanctions + PEP screening returns real results. (d) Test with known sanctioned entity from seed data.
+    <br><strong>Julian action:</strong> Sign up at opensanctions.org/api with julian@caelith.tech
+    <br><strong>Why now:</strong> DD endpoint already built today — this makes it production-real instead of mock.
+  </div>
+</div>
+</div>
+
+<div class="phase">
+<div class="phase-header">
+  <span class="phase-title">Week 2 (Mar 10–14): Pilot Experience</span>
+  <span class="phase-meta">Make the demo → pilot journey seamless</span>
+</div>
+
+<div class="task task-p1">
+  <div class="task-title">6. Filing Status Workflow <span class="tag tag-time">2 days</span> <span class="tag tag-score">Pipeline: 45→55</span></div>
+  <div class="task-detail">
+    Add filing lifecycle: Draft → Validated → Ready to Submit → Submitted → Acknowledged → Accepted/Rejected. UI shows filing status with timestamps. Even without NCA integration, this models the real workflow and shows compliance officers you understand their process.
+    <br><strong>New migration:</strong> filing_status enum, filing_submissions table
+    <br><strong>Files:</strong> New filing-workflow-service.ts, filing status UI component
+  </div>
+</div>
+
+<div class="task task-p1">
+  <div class="task-title">7. Adverse Media Screening (Basic) <span class="tag tag-time">1 day</span> <span class="tag tag-score">DD: 65→72</span></div>
+  <div class="task-detail">
+    Web search API (Brave) + keyword relevance filter for investor names. Flag articles mentioning fraud, sanctions, money laundering, regulatory action. EN + DE keyword lists. Results feed into DD report with "beta" label.
+    <br><strong>Files:</strong> New adverse-media-service.ts, update due-diligence-service.ts
+  </div>
+</div>
+
+<div class="task task-p1">
+  <div class="task-title">8. Public Demo Environment <span class="tag tag-time">1 day</span> <span class="tag tag-score">GTM: 32→50</span></div>
+  <div class="task-detail">
+    The demo already works on Railway (www.caelith.tech) with demo-guard middleware. Verify: (a) Demo login works on mobile/tablet. (b) Demo data is compelling (not lorem ipsum). (c) Demo tour guides prospects through key features. (d) Copilot demo shows real regulatory answers.
+    <br><strong>Why:</strong> Every prospect who can't self-serve a demo is a lost opportunity. "Go to caelith.tech and try it" should be the end of every email.
+  </div>
+</div>
+
+<div class="task task-p1">
+  <div class="task-title">9. Publish open-annex-iv to npm <span class="tag tag-time">2 hrs</span> <span class="tag tag-score">OSS: 35→50</span></div>
+  <div class="task-detail">
+    Package is ready. <code>npm login</code> → <code>npm publish</code>. Add GitHub repo, README with badges, link from landing page. This creates inbound developer awareness with zero ongoing cost.
+    <br><strong>Julian action:</strong> <code>npm login</code> (needs npmjs.com account)
+  </div>
+</div>
+
+<div class="task task-p1">
+  <div class="task-title">10. Security Quick Wins <span class="tag tag-time">1 day</span> <span class="tag tag-score">Security: 58→72</span></div>
+  <div class="task-detail">
+    (a) Remove unsafe-inline/unsafe-eval from CSP (use nonces). (b) Add session revocation (JWT blacklist in Redis or DB). (c) API key rotation endpoint. (d) CORS lockdown (remove localhost from production).
+    <br><strong>Why now:</strong> Enterprise KVGs will ask "do you have a security page?" in first call.
+  </div>
+</div>
+</div>
+
+<!-- ═══ PHASE 2 ═══ -->
+<h2>Phase 2: First Customer (Mar 17 – Apr 11) — 62 → 78</h2>
+<p style="color:var(--muted);margin-bottom:1rem">Goal: Close first paying pilot. Every task either closes a sale or prevents losing one.</p>
+
+<div class="phase">
+<div class="phase-header">
+  <span class="phase-title">Weeks 3–4 (Mar 17–28): Revenue-Critical Features</span>
+</div>
+
+<div class="task task-p1">
+  <div class="task-title">11. Transparenzregister API Integration <span class="tag tag-time">1-2 weeks</span> <span class="tag tag-score">DD: 72→82</span></div>
+  <div class="task-detail">
+    Once accreditation comes through (submitted today): integrate official API for beneficial ownership lookup. Auto-populate UBO data for German entities. This is the moat piece — nobody else has automated this for fund compliance.
+    <br><strong>Dependency:</strong> Bundesanzeiger Verlag accreditation response
+    <br><strong>Fallback:</strong> If accreditation delayed, build with customer's own TR account delegation
+  </div>
+</div>
+
+<div class="task task-p1">
+  <div class="task-title">12. Continuous Screening Engine <span class="tag tag-time">1 week</span> <span class="tag tag-score">Sanctions: 70→85</span></div>
+  <div class="task-detail">
+    Scheduled re-screening of all investors when sanctions lists update. Alert on new matches. Audit trail for each re-screen cycle. This is the "compliance never sleeps" feature that turns one-time screening into ongoing value.
+    <br><strong>New:</strong> screening_schedule table, screening_runs table, cron job, email/webhook alerts
+  </div>
+</div>
+
+<div class="task task-p2">
+  <div class="task-title">13. DATMAN (AIFM-level) Reporting <span class="tag tag-time">1 week</span> <span class="tag tag-score">Pipeline: 55→70</span></div>
+  <div class="task-detail">
+    Currently only generates AIF-level (DATAIF) XML. Add AIFM-level (DATMAN) reporting — management company data, delegation disclosures, leverage calculations. Required for complete Annex IV submission. Reuse serializer architecture.
+    <br><strong>Files:</strong> New datman-serializer.ts, extend annex-iv-service.ts
+  </div>
+</div>
+
+<div class="task task-p2">
+  <div class="task-title">14. Pricing Page + Trial Flow <span class="tag tag-time">3 days</span> <span class="tag tag-score">GTM: 50→65</span></div>
+  <div class="task-detail">
+    Landing page pricing section with the 3 tiers (&euro;990/&euro;1,990/&euro;3,500+). "Start Free Trial" button → creates demo account with 14-day expiry. Collect email + company name. Stripe integration for payment (or manual invoicing for pilots).
+    <br><strong>Why:</strong> Every prospect needs to know the price. Hidden pricing = friction = lost deals.
+  </div>
+</div>
+
+<div class="task task-p2">
+  <div class="task-title">15. Frontend Component Tests <span class="tag tag-time">1 week</span> <span class="tag tag-score">Testing: 45→60</span></div>
+  <div class="task-detail">
+    Add Vitest + React Testing Library for critical components: investor list, sanctions screening results, DD report, filing wizard, copilot chat. Focus on user-facing flows that would embarrass you if broken during a demo.
+    <br><strong>Target:</strong> 50+ component tests covering the 10 most-used pages
+  </div>
+</div>
+</div>
+
+<div class="phase">
+<div class="phase-header">
+  <span class="phase-title">Weeks 5–6 (Mar 31 – Apr 11): AIFMD II Deadline Sprint</span>
+  <span class="phase-meta">April 16 deadline = maximum urgency for prospects</span>
+</div>
+
+<div class="task task-p1">
+  <div class="task-title">16. BaFin MVP Portal PoC Agent <span class="tag tag-time">2 weeks</span> <span class="tag tag-score">Agent: 20→50, Pipeline: 70→80</span></div>
+  <div class="task-detail">
+    Playwright-based agent: login to BaFin MVP → navigate to AIFMD section → upload GZIP XML → check status → download feedback. Human-in-the-loop confirmation before submit. Full audit trail. Demo video for marketing.
+    <br><strong>Dependency:</strong> BaFin MVP Portal test account (Julian registering)
+    <br><strong>Why now:</strong> April 16 deadline makes this the #1 demo closer
+  </div>
+</div>
+
+<div class="task task-p2">
+  <div class="task-title">17. Regulatory Intelligence Upgrade <span class="tag tag-time">3 days</span> <span class="tag tag-score">RegIntel: 45→65</span></div>
+  <div class="task-detail">
+    (a) Add EUR-Lex SPARQL API for AIFMD legislation tracking. (b) Deadline notification emails (7d, 3d, 1d before filing due). (c) AI-powered impact summary for new regulatory updates (Claude). (d) Dashboard widget showing upcoming deadlines + recent changes.
+    <br><strong>Files:</strong> New eurlex-service.ts, notification-service.ts, update reg-intel-service.ts
+  </div>
+</div>
+
+<div class="task task-p2">
+  <div class="task-title">18. Audit Export for Regulators <span class="tag tag-time">3 days</span> <span class="tag tag-score">Audit: 65→80</span></div>
+  <div class="task-detail">
+    PDF audit report with: integrity hash chain verification, decision timeline, screening evidence, DD report, filing history. Format aligned with BaFin/CSSF inspection expectations. One-click export from dashboard.
+    <br><strong>Why:</strong> "Can you show me your audit trail?" is the first question in every compliance review.
+  </div>
+</div>
+
+<div class="task task-p2">
+  <div class="task-title">19. MFA + Session Management <span class="tag tag-time">3 days</span> <span class="tag tag-score">Security: 72→85</span></div>
+  <div class="task-detail">
+    TOTP-based MFA (speakeasy library). Session table in DB with revocation. "Active sessions" UI. Force MFA for admin role. This is a checkbox requirement for every enterprise procurement questionnaire.
+  </div>
+</div>
+
+<div class="task task-p2">
+  <div class="task-title">20. Database Hardening <span class="tag tag-time">2 days</span> <span class="tag tag-score">Data: 60→75</span></div>
+  <div class="task-detail">
+    (a) Automated daily backups to S3/R2 (cron script). (b) PgBouncer for connection pooling. (c) Verify RLS policies cover all tables. (d) Encrypt sensitive columns (API keys already bcrypt, add for PII fields).
+  </div>
+</div>
+</div>
+
+<!-- ═══ PHASE 3 ═══ -->
+<h2>Phase 3: Scale-Ready (Apr 14 – May 23) — 78 → 92</h2>
+<p style="color:var(--muted);margin-bottom:1rem">Goal: Enterprise-ready. Multiple customers, automated operations, defensible moat.</p>
+
+<div class="phase">
+<div class="phase-header">
+  <span class="phase-title">Weeks 7–12: Enterprise &amp; Scale</span>
+</div>
+
+<div class="task task-p2">
+  <div class="task-title">21. CSSF eDesk Filing Agent <span class="tag tag-time">2 weeks</span> <span class="tag tag-score">Agent: 50→65, NCA: 75→85</span></div>
+  <div class="task-detail">70% reusable from BaFin agent. Luxembourg = #2 market. CSSF eDesk + CISERO modules.</div>
+</div>
+
+<div class="task task-p2">
+  <div class="task-title">22. BORIS Integration (EU-wide Beneficial Ownership) <span class="tag tag-time">1 week</span> <span class="tag tag-score">DD: 82→90</span></div>
+  <div class="task-detail">EU beneficial ownership register interconnection. Technical provisions expected July 2026. Prep integration now, go live when API available. Pan-EU UBO lookup = massive moat.</div>
+</div>
+
+<div class="task task-p2">
+  <div class="task-title">23. AIFMD II Full Compliance Module <span class="tag tag-time">2 weeks</span> <span class="tag tag-score">RegCoverage: 75→90</span></div>
+  <div class="task-detail">Liquidity management tools (new AIFMD II requirement). Delegation disclosure reporting. Loan origination fund reporting. DORA ICT risk assessment module. Full Art. 24 expanded fields.</div>
+</div>
+
+<div class="task task-p3">
+  <div class="task-title">24. Agent Workflow Orchestration <span class="tag tag-time">2 weeks</span> <span class="tag tag-score">Agent: 65→80</span></div>
+  <div class="task-detail">Multi-step agent workflows: generate XML → validate → GZIP → upload to NCA → check status → download receipt → update audit trail. Human-in-the-loop approval gates. Retry logic. Failure notifications.</div>
+</div>
+
+<div class="task task-p3">
+  <div class="task-title">25. Load Testing + Performance Baseline <span class="tag tag-time">3 days</span> <span class="tag tag-score">Infra: 65→75</span></div>
+  <div class="task-detail">k6 load tests for critical paths (screening, DD report, XML generation). Establish performance baseline. Set up alerts for degradation. Horizontal scaling plan for Railway.</div>
+</div>
+
+<div class="task task-p3">
+  <div class="task-title">26. Integration Tests + E2E Suite <span class="tag tag-time">2 weeks</span> <span class="tag tag-score">Testing: 60→80</span></div>
+  <div class="task-detail">Database integration tests (real PostgreSQL in CI). Playwright E2E for critical flows (login → screen investor → generate XML → export). API contract tests. Visual regression tests for landing page.</div>
+</div>
+
+<div class="task task-p3">
+  <div class="task-title">27. Open Source Community Launch <span class="tag tag-time">1 week</span> <span class="tag tag-score">OSS: 55→75</span></div>
+  <div class="task-detail">Separate open-annex-iv into own GitHub repo. Documentation site (Docusaurus). Examples directory. CLA for contributors. Launch on Hacker News, Reddit r/fintech, RegTech community channels.</div>
+</div>
+
+<div class="task task-p3">
+  <div class="task-title">28. Product Polish <span class="tag tag-time">1 week</span> <span class="tag tag-score">Product: 72→88</span></div>
+  <div class="task-detail">Accessibility audit (axe-core). Loading state standardization. Error boundaries on all pages. Mobile responsiveness pass. Light/dark mode both tested. User feedback widget (Canny or custom).</div>
+</div>
+
+<div class="task task-p3">
+  <div class="task-title">29. API Documentation Overhaul <span class="tag tag-time">3 days</span> <span class="tag tag-score">API: 78→90</span></div>
+  <div class="task-detail">Sync OpenAPI spec with actual routes (audit for gaps). Add request/response examples for every endpoint. API changelog. Deprecation policy. Rate limit documentation per tier. SDK regeneration from OpenAPI.</div>
+</div>
+
+<div class="task task-p3">
+  <div class="task-title">30. GTM Machine <span class="tag tag-time">1 week</span> <span class="tag tag-score">GTM: 75→90</span></div>
+  <div class="task-detail">Product demo video (60s). Case study template filled with pilot data. ROI calculator ("save X hours/quarter"). Integration docs for fund admins. Feature comparison matrix vs anevis. Lead capture form on landing page wired to CRM (or simple DB table + email notification).</div>
+</div>
+</div>
+
+<!-- ═══ WHAT 100% LOOKS LIKE ═══ -->
+<h2>What 100/100 Looks Like (and What's Deliberately Left Out)</h2>
+
+<div class="phase">
+<p style="color:var(--text)"><strong>92/100 is the realistic target at 12 weeks.</strong> The remaining 8 points require:</p>
+<ul>
+  <li><strong>SOC 2 Type II certification</strong> — 6-12 month process, $30-50K cost. Start after first revenue.</li>
+  <li><strong>ISO 27001 certification</strong> — Similar timeline. Docs exist in repo but certification needs third-party audit.</li>
+  <li><strong>3+ NCA portal integrations</strong> — BaFin + CSSF gets you to 85. Adding FMA, AMF, CBI = 95. Full coverage = years.</li>
+  <li><strong>Multi-region deployment</strong> — EU data residency with failover. Needed at enterprise scale, not pilot stage.</li>
+  <li><strong>Dedicated security team</strong> — Pen testing, bug bounty, WAF tuning. Hire after Series A.</li>
+</ul>
+<p style="color:var(--muted);margin-top:1rem">These are not Phase 3 items — they're Phase 4 (post-revenue, post-funding). Don't let perfect be the enemy of shipped.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ═══ IMMEDIATE ACTIONS ═══ -->
+<h2>&#x1F3AF; Monday March 3 — First Day Actions</h2>
+
+<div class="exec">
+<p><strong>Julian:</strong></p>
+<ol>
+  <li>Sign up for OpenSanctions API trial at opensanctions.org/api</li>
+  <li>Create Sentry account, get DSN, add to Railway env vars</li>
+  <li>npm login for open-annex-iv publish</li>
+  <li>10:30 CET — Finch Capital call (prep doc ready)</li>
+</ol>
+<p style="margin-top:1rem"><strong>Mate (sub-agents):</strong></p>
+<ol>
+  <li>Wire tests into CI (GitHub Actions)</li>
+  <li>Add /health endpoint + structured logging</li>
+  <li>Mock screening guardrails (UI banner + API field + startup check)</li>
+  <li>XSD validation fix (Zod schemas for ESMA fields)</li>
+</ol>
+<p style="margin-top:1rem"><strong>By end of Monday:</strong> Testing: 22→45, Infra: 20→40, Sanctions: 40→50, Validation: 35→55. Overall: 38→48. Ten points in one day.</p>
+</div>
+
+<p style="text-align:center;color:var(--muted);margin-top:3rem;font-size:0.8rem">Caelith Execution Plan &middot; 28 Feb 2026 &middot; Internal</p>
+</body>
+</html>

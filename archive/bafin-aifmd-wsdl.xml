@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://www.bafin.de/mvp/aifmd/" xmlns:ns0="http://www.bafin.de/mvp/aifmd/" xmlns:wsp200607="http://www.w3.org/2006/07/ws-policy" xmlns:wsp200409="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsp="http://www.w3.org/ns/ws-policy" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soap11="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:types xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:schema>
+<xsd:import schemaLocation="aifmd.xsd1.xsd" namespace="http://www.bafin.de/mvp/aifmd/"/>
+<xsd:import schemaLocation="aifmd.xsd2.xsd" namespace="http://www.bafin.de/mvp/aifmd/"/></xsd:schema></wsdl:types>
+<wsdl:message name="submitAIFMRequest">
+<wsdl:part name="parameters" element="xsns:submitAIFM" xmlns:xsns="http://www.bafin.de/mvp/aifmd/"/></wsdl:message>
+<wsdl:message name="submitAIFMResponse">
+<wsdl:part name="parameters" element="xsns:submitAIFMResponse" xmlns:xsns="http://www.bafin.de/mvp/aifmd/"/></wsdl:message>
+<wsdl:message name="submitAIFRequest">
+<wsdl:part name="parameters" element="xsns:submitAIF" xmlns:xsns="http://www.bafin.de/mvp/aifmd/"/></wsdl:message>
+<wsdl:message name="submitAIFResponse">
+<wsdl:part name="parameters" element="xsns:submitAIFResponse" xmlns:xsns="http://www.bafin.de/mvp/aifmd/"/></wsdl:message>
+<wsdl:portType name="MVP_aifmd">
+<wsdl:operation name="submitAIF">
+<wsdl:input name="submitAIFRequest" message="ns0:submitAIFRequest"/>
+<wsdl:output name="submitAIFResponse" message="ns0:submitAIFResponse"/></wsdl:operation>
+<wsdl:operation name="submitAIFM">
+<wsdl:input name="submitAIFMRequest" message="ns0:submitAIFMRequest"/>
+<wsdl:output name="submitAIFMResponse" message="ns0:submitAIFMResponse"/></wsdl:operation></wsdl:portType>
+<wsdl:binding name="MVP_aifmdSOAP" type="ns0:MVP_aifmd">
+<soap11:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+<wsdl:operation name="submitAIF">
+<soap11:operation soapAction="http://www.bafin.de/mvp/va/submitAIF" style="document"/>
+<wsdl:input name="submitAIFRequest">
+<soap11:body use="literal"/></wsdl:input>
+<wsdl:output name="submitAIFResponse">
+<soap11:body use="literal"/></wsdl:output></wsdl:operation>
+<wsdl:operation name="submitAIFM">
+<soap11:operation soapAction="http://www.bafin.de/mvp/va/submitAIFM" style="document"/>
+<wsdl:input name="submitAIFMRequest">
+<soap11:body use="literal"/></wsdl:input>
+<wsdl:output name="submitAIFMResponse">
+<soap11:body use="literal"/></wsdl:output></wsdl:operation></wsdl:binding>
+<wsdl:service name="MVP_aifmd">
+<wsdl:port name="MVP_aifmdSOAP" binding="ns0:MVP_aifmdSOAP">
+<soap11:address location="https://portal.mvp.bafin.de:444/services/ws/aifmd"/></wsdl:port>
+<wsdl:port name="MVP_aifmdSOAP.1" binding="ns0:MVP_aifmdSOAP">
+<soap11:address location="https://portal.mvp.bafin.de:444/services/ws/aifmd"/></wsdl:port>
+<wsdl:port name="MVP_aifmdSOAP.2" binding="ns0:MVP_aifmdSOAP">
+<soap11:address location="https://portal.mvp.bafin.de:444/services/ws/aifmd"/></wsdl:port></wsdl:service></wsdl:definitions>

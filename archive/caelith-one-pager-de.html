@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — AIFMD II Compliance-Infrastruktur für KVGs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dark: #1a1f1f;
+    --secondary: #2D3333;
+    --blue: #8EC5E0;
+    --orange: #E8A87C;
+    --text: #E8E8E8;
+    --text-muted: #A0A8A8;
+    --card-bg: rgba(45,51,51,0.7);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    font-size: 10.5pt;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    max-height: 297mm;
+    margin: 0;
+    padding: 28mm 24mm 20mm 24mm;
+    background: var(--dark);
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue), var(--orange));
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(142,197,224,0.15);
+  }
+
+  .logo {
+    font-family: 'Sora', sans-serif;
+    font-size: 22pt;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--blue), var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+
+  .logo-sub {
+    font-size: 7.5pt;
+    color: var(--text-muted);
+    font-weight: 400;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .header-right {
+    text-align: right;
+    font-size: 8pt;
+    color: var(--text-muted);
+  }
+
+  .header-right a {
+    color: var(--blue);
+    text-decoration: none;
+  }
+
+  /* Headline */
+  h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 17pt;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 6px;
+  }
+
+  h1 .accent {
+    background: linear-gradient(135deg, var(--blue), var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 9.5pt;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+
+  /* Cost comparison */
+  .cost-compare {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .cost-card {
+    flex: 1;
+    border-radius: 10px;
+    padding: 16px 18px;
+    position: relative;
+  }
+
+  .cost-card.old {
+    background: rgba(200,80,80,0.08);
+    border: 1px solid rgba(200,80,80,0.25);
+  }
+
+  .cost-card.new {
+    background: rgba(142,197,224,0.08);
+    border: 1px solid rgba(142,197,224,0.3);
+  }
+
+  .cost-label {
+    font-size: 7.5pt;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .cost-price {
+    font-family: 'Sora', sans-serif;
+    font-size: 20pt;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .cost-card.old .cost-price {
+    color: #C85050;
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+  }
+
+  .cost-card.new .cost-price {
+    background: linear-gradient(135deg, var(--blue), var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .cost-detail {
+    font-size: 8pt;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .savings-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--blue), var(--orange));
+    color: var(--dark);
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 9pt;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-top: 6px;
+  }
+
+  /* Section titles */
+  h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 11pt;
+    font-weight: 600;
+    color: var(--blue);
+    margin-bottom: 10px;
+    letter-spacing: 0.3px;
+  }
+
+  h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 10pt;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  /* Capabilities grid */
+  .capabilities {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+    margin-bottom: 16px;
+  }
+
+  .cap-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 9pt;
+    line-height: 1.4;
+  }
+
+  .cap-icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: rgba(142,197,224,0.1);
+    border: 1px solid rgba(142,197,224,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    margin-top: 1px;
+  }
+
+  .cap-text strong {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .cap-text span {
+    color: var(--text-muted);
+    font-size: 8pt;
+  }
+
+  /* Page 2 */
+  .api-section {
+    background: var(--card-bg);
+    border: 1px solid rgba(142,197,224,0.12);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+
+  .code-block {
+    background: #141818;
+    border: 1px solid rgba(142,197,224,0.15);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 7.8pt;
+    line-height: 1.55;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .code-comment { color: #5a6868; }
+  .code-method { color: var(--orange); font-weight: 500; }
+  .code-url { color: var(--blue); }
+  .code-key { color: var(--orange); }
+  .code-string { color: #98D4A6; }
+  .code-bracket { color: #7a8888; }
+
+  /* Pricing */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .price-card {
+    border-radius: 10px;
+    padding: 14px 14px;
+    background: var(--card-bg);
+    border: 1px solid rgba(142,197,224,0.12);
+    text-align: center;
+  }
+
+  .price-card.featured {
+    border-color: var(--blue);
+    background: rgba(142,197,224,0.06);
+    position: relative;
+  }
+
+  .price-card.featured::after {
+    content: 'BELIEBT';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--blue), var(--orange));
+    color: var(--dark);
+    font-size: 6pt;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 10px;
+    letter-spacing: 1px;
+  }
+
+  .price-name {
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 9.5pt;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .price-amount {
+    font-family: 'Sora', sans-serif;
+    font-size: 16pt;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--blue), var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+
+  .price-period {
+    font-size: 7.5pt;
+    color: var(--text-muted);
+  }
+
+  /* Trust bar */
+  .trust-bar {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 8pt;
+    color: var(--text-muted);
+  }
+
+  .trust-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+  }
+
+  /* CTA */
+  .cta-box {
+    background: linear-gradient(135deg, rgba(142,197,224,0.1), rgba(232,168,124,0.1));
+    border: 1px solid rgba(142,197,224,0.25);
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: center;
+    margin-top: auto;
+  }
+
+  .cta-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 12pt;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .cta-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10pt;
+    font-weight: 500;
+    background: linear-gradient(135deg, var(--blue), var(--orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .cta-contact {
+    font-size: 8.5pt;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  .cta-contact a {
+    color: var(--blue);
+    text-decoration: none;
+  }
+
+  /* Open source badge */
+  .oss-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(142,197,224,0.08);
+    border: 1px solid rgba(142,197,224,0.2);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 8pt;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  .oss-badge code {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--blue);
+    font-size: 8pt;
+  }
+
+  /* API features list */
+  .api-features {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .api-feat {
+    font-size: 8.5pt;
+    color: var(--text-muted);
+  }
+
+  .api-feat strong {
+    color: #fff;
+    font-weight: 500;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    font-size: 7pt;
+    color: rgba(160,168,168,0.5);
+    margin-top: auto;
+    padding-top: 10px;
+  }
+
+  /* Infra note */
+  .infra-note {
+    font-size: 8.5pt;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    border-left: 2px solid var(--orange);
+    background: rgba(232,168,124,0.04);
+    border-radius: 0 6px 6px 0;
+  }
+
+  .infra-note strong {
+    color: var(--orange);
+  }
+
+  /* Print styles — keep dark theme */
+  @media print {
+    body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+    .page { margin: 0; box-shadow: none; }
+  }
+
+  @page {
+    size: A4;
+    margin: 0 !important;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1 -->
+<div class="page">
+  <div class="header">
+    <div>
+      <div class="logo">Caelith</div>
+      <div class="logo-sub">Compliance Infrastructure</div>
+    </div>
+    <div class="header-right">
+      <a href="https://www.caelith.tech">www.caelith.tech</a><br>
+      julian.laycock@caelith.tech
+    </div>
+  </div>
+
+  <h1>AIFMD II tritt am 16. April 2026 in Kraft.<br><span class="accent">Sind Sie vorbereitet?</span></h1>
+  <p class="subtitle">Caelith ersetzt manuelle Compliance-Prozesse durch eine API-first Infrastruktur — nicht nur ein Dashboard, sondern die Compliance-Schicht für Ihren gesamten Fondsstack.</p>
+
+  <div class="cost-compare">
+    <div class="cost-card old">
+      <div class="cost-label">Manuelle Compliance / Big 4</div>
+      <div class="cost-price">~€180.000</div>
+      <div class="cost-detail">pro Jahr · Berater, FTEs, Excel-basierte Prozesse</div>
+    </div>
+    <div class="cost-card new">
+      <div class="cost-label">Mit Caelith</div>
+      <div class="cost-price">ab €11.880</div>
+      <div class="cost-detail">pro Jahr · Automatisiert, API-gesteuert, auditierbar</div>
+      <div class="savings-badge">93% günstiger</div>
+    </div>
+  </div>
+
+  <h2>Compliance-Infrastruktur auf Enterprise-Niveau</h2>
+
+  <div class="capabilities">
+    <div class="cap-item">
+      <div class="cap-icon">📄</div>
+      <div class="cap-text">
+        <strong>Annex IV XML-Generierung</strong><br>
+        <span>XSD-validiert · ESMA Rev 6 · Sofort einsatzbereit</span>
+      </div>
+    </div>
+    <div class="cap-item">
+      <div class="cap-icon">🛡️</div>
+      <div class="cap-text">
+        <strong>Echtzeit-Sanktionsprüfung</strong><br>
+        <span>6.863 EU- & UN-Entitäten · Automatisches Screening</span>
+      </div>
+    </div>
+    <div class="cap-item">
+      <div class="cap-icon">🔗</div>
+      <div class="cap-text">
+        <strong>LEI-Verifizierung</strong><br>
+        <span>Direkte GLEIF-Integration · Statusvalidierung</span>
+      </div>
+    </div>
+    <div class="cap-item">
+      <div class="cap-icon">🔒</div>
+      <div class="cap-text">
+        <strong>Audit Trail (SHA-256)</strong><br>
+        <span>Hash-verkettet · Manipulationssicher · BaFin-tauglich</span>
+      </div>
+    </div>
+    <div class="cap-item">
+      <div class="cap-icon">⚖️</div>
+      <div class="cap-text">
+        <strong>13 Regeln · 6 Frameworks</strong><br>
+        <span>AIFMD II, KAGB, ELTIF 2.0, RAIF, SIF, MiFID II</span>
+      </div>
+    </div>
+    <div class="cap-item">
+      <div class="cap-icon">📊</div>
+      <div class="cap-text">
+        <strong>EMT/EET/EPT Templates</strong><br>
+        <span>43+ Felder · Automatische Generierung</span>
+      </div>
+    </div>
+    <div class="cap-item">
+      <div class="cap-icon">🤖</div>
+      <div class="cap-text">
+        <strong>KI-Compliance-Copilot</strong><br>
+        <span>Deutsch & Englisch · Kontextbezogene Analyse</span>
+      </div>
+    </div>
+    <div class="cap-item">
+      <div class="cap-icon">⚡</div>
+      <div class="cap-text">
+        <strong>Volle REST API</strong><br>
+        <span>OpenAPI/Swagger-Docs · Für Ihre Systeme gebaut</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="infra-note">
+    <strong>Nicht nur ein Dashboard.</strong> Caelith ist eine Compliance-Infrastruktur-Schicht mit versionierten API-Endpunkten, die sich nahtlos in Ihren bestehenden Fondsstack integriert — von Portfolio-Management-Systemen bis zur BaFin-Meldekette.
+  </div>
+
+  <div class="footer">caelith.tech · AIFMD II Compliance-Infrastruktur für europäische Fondsmanager</div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page">
+  <div class="header">
+    <div>
+      <div class="logo">Caelith</div>
+      <div class="logo-sub">API & Pricing</div>
+    </div>
+    <div class="header-right">
+      API-Docs: <a href="https://www.caelith.tech/api/docs">caelith.tech/api/docs</a>
+    </div>
+  </div>
+
+  <h2>API-first Compliance-Infrastruktur</h2>
+
+  <div class="api-section">
+    <div class="api-features">
+      <div class="api-feat"><strong>Versionierte Routes</strong> · /api/v1/*</div>
+      <div class="api-feat"><strong>API Key Auth</strong> · Bearer Token</div>
+      <div class="api-feat"><strong>OpenAPI 3.0</strong> · Swagger UI</div>
+    </div>
+
+    <div class="code-block">
+      <span class="code-comment">// Compliance-Bewertung eines Fonds via API</span><br>
+      <span class="code-method">POST</span> <span class="code-url">/api/v1/compliance/evaluate</span><br>
+      <span class="code-comment">Authorization: Bearer &lt;API_KEY&gt;</span><br><br>
+      <span class="code-bracket">{</span><br>
+      &nbsp;&nbsp;<span class="code-key">"fundId"</span>: <span class="code-string">"fund_abc123"</span>,<br>
+      &nbsp;&nbsp;<span class="code-key">"frameworks"</span>: [<span class="code-string">"AIFMD_II"</span>, <span class="code-string">"KAGB"</span>],<br>
+      &nbsp;&nbsp;<span class="code-key">"includeAnnexIV"</span>: <span class="code-string">true</span>,<br>
+      &nbsp;&nbsp;<span class="code-key">"sanctions"</span>: <span class="code-bracket">{</span> <span class="code-key">"screen"</span>: <span class="code-string">true</span>, <span class="code-key">"lists"</span>: [<span class="code-string">"EU"</span>, <span class="code-string">"UN"</span>] <span class="code-bracket">}</span><br>
+      <span class="code-bracket">}</span><br><br>
+      <span class="code-comment">// → 13 Regeln geprüft · Annex IV XML generiert · Audit Trail erstellt</span>
+    </div>
+  </div>
+
+  <div class="oss-badge">
+    📦 Open Source: <code>npm install open-annex-iv</code> · Apache 2.0 Lizenz
+  </div>
+
+  <h2>Transparente Preisgestaltung</h2>
+
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-name">Essentials</div>
+      <div class="price-amount">€990</div>
+      <div class="price-period">/ Monat</div>
+    </div>
+    <div class="price-card featured">
+      <div class="price-name">Professional</div>
+      <div class="price-amount">€1.990</div>
+      <div class="price-period">/ Monat</div>
+    </div>
+    <div class="price-card">
+      <div class="price-name">Enterprise</div>
+      <div class="price-amount">ab €3.500</div>
+      <div class="price-period">/ Monat</div>
+    </div>
+  </div>
+
+  <div class="trust-bar">
+    <div class="trust-item"><div class="trust-dot"></div>EU-Hosting (Frankfurt)</div>
+    <div class="trust-item"><div class="trust-dot"></div>DSGVO-konform</div>
+    <div class="trust-item"><div class="trust-dot"></div>BaFin-kompatibel</div>
+    <div class="trust-item"><div class="trust-dot"></div>SOC 2 Ready</div>
+  </div>
+
+  <div class="cta-box">
+    <div class="cta-title">Testen Sie die Live-Demo</div>
+    <div class="cta-link">www.caelith.tech/demo-dashboard</div>
+    <div class="cta-contact">
+      Julian Laycock · CEO · <a href="mailto:julian.laycock@caelith.tech">julian.laycock@caelith.tech</a><br>
+      API-Dokumentation: <a href="https://www.caelith.tech/api/docs">www.caelith.tech/api/docs</a>
+    </div>
+  </div>
+
+  <div class="footer">© 2026 Caelith · caelith.tech · Compliance-Infrastruktur für europäische Fondsmanager</div>
+</div>
+
+</body>
+</html>

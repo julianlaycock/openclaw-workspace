@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Incident Response Playbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f1419;color:#c5cdd9;font-family:'Inter',sans-serif;line-height:1.7;padding:2rem}
+.container{max-width:1000px;margin:0 auto}
+h1{font-size:2rem;color:#e2e8f0;font-weight:700}
+h2{font-size:1.4rem;color:#7dd3fc;margin:2rem 0 .75rem;border-bottom:1px solid #1e293b;padding-bottom:.5rem}
+h3{font-size:1.1rem;color:#a5f3fc;margin:1.2rem 0 .5rem}
+.subtitle{color:#64748b;font-size:.95rem;margin-bottom:2rem}
+.card{background:#1a2028;border-radius:12px;padding:1.5rem;margin-bottom:1.25rem;border:1px solid #1e293b}
+table{width:100%;border-collapse:collapse;margin:1rem 0}
+th{text-align:left;color:#7dd3fc;border-bottom:2px solid #1e293b;padding:8px 12px;font-weight:600;font-size:.85rem}
+td{padding:8px 12px;border-bottom:1px solid #1e293b;font-size:.88rem}
+ul,ol{padding-left:1.5rem}li{margin-bottom:.35rem;font-size:.9rem}
+code{background:#1e293b;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+.sev-p1{color:#ef4444;font-weight:700}.sev-p2{color:#f59e0b;font-weight:700}.sev-p3{color:#eab308;font-weight:700}.sev-p4{color:#22c55e;font-weight:700}
+.template{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;white-space:pre-wrap;margin:1rem 0;border:1px solid #1e293b}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>🚨 Incident Response Playbook</h1>
+<p class="subtitle">Caelith — Severity Classification, Escalation & Runbooks</p>
+
+<h2>Severity Levels</h2>
+<div class="card">
+<table>
+<tr><th>Level</th><th>Description</th><th>Examples</th><th>Response Time</th></tr>
+<tr><td><span class="sev-p1">P1 — Critical</span></td><td>Complete service outage or data breach</td><td>Site down, database corruption, security breach, data leak</td><td>&lt; 15 min</td></tr>
+<tr><td><span class="sev-p2">P2 — High</span></td><td>Major feature broken, significant degradation</td><td>Auth failures, API errors on core endpoints, XML generation broken</td><td>&lt; 1 hour</td></tr>
+<tr><td><span class="sev-p3">P3 — Medium</span></td><td>Non-critical feature broken</td><td>Export failures, analytics not loading, cosmetic UI bugs</td><td>&lt; 4 hours</td></tr>
+<tr><td><span class="sev-p4">P4 — Low</span></td><td>Minor issues, no user impact</td><td>Deprecation warnings, non-user-facing log errors, dev tooling</td><td>Next business day</td></tr>
+</table>
+</div>
+
+<h2>Notification & Escalation</h2>
+<div class="card">
+<table>
+<tr><th>Who</th><th>Role</th><th>Contact</th><th>Notified For</th></tr>
+<tr><td>Julian</td><td>CEO / Solo Operator</td><td>Discord #dev, Email, Phone</td><td>P1, P2, P3</td></tr>
+<tr><td>Mate (AI)</td><td>Dev Copilot</td><td>OpenClaw heartbeat</td><td>All (monitoring)</td></tr>
+</table>
+<h3>Escalation Path</h3>
+<ol>
+<li><strong>0-5 min:</strong> Automated health check detects issue → Discord #dev alert</li>
+<li><strong>5-15 min:</strong> Julian notified via Discord/push notification</li>
+<li><strong>15-60 min:</strong> If P1 unresolved → consider Railway support ticket</li>
+<li><strong>60+ min:</strong> Customer communication if service remains down</li>
+</ol>
+</div>
+
+<h2>Runbook: Site Down</h2>
+<div class="card">
+<ol>
+<li>Check Railway dashboard for service status</li>
+<li>Check <code>https://status.railway.app</code></li>
+<li>Verify DNS: <code>dig www.caelith.tech</code></li>
+<li>Check health endpoint: <code>curl -I https://www.caelith.tech/api/health/ready</code></li>
+<li>If Railway is up but service crashed → check logs: Railway dashboard → Deployments → Logs</li>
+<li>If OOM or crash loop → restart service in Railway</li>
+<li>If deploy broke it → rollback to previous deployment in Railway</li>
+</ol>
+</div>
+
+<h2>Runbook: Database Connection Errors</h2>
+<div class="card">
+<ol>
+<li>Check Railway PostgreSQL service status</li>
+<li>Verify <code>DATABASE_URL</code> env var is correct</li>
+<li>Check connection pool exhaustion in logs (look for "too many connections")</li>
+<li>If pool exhausted → restart API service to release connections</li>
+<li>If database unreachable → Railway PostgreSQL may need restart</li>
+<li>If data corruption suspected → see Disaster Recovery Plan</li>
+</ol>
+</div>
+
+<h2>Runbook: Rate Limit Storm</h2>
+<div class="card">
+<ol>
+<li>Check Sentry for rate limit errors (429 responses)</li>
+<li>Identify source IPs from logs</li>
+<li>If legitimate traffic → temporarily increase rate limits in <code>middleware/security.ts</code></li>
+<li>If malicious → block IPs via Cloudflare WAF (if configured)</li>
+<li>Monitor <code>rate_limit_counters</code> table for patterns</li>
+</ol>
+</div>
+
+<h2>Runbook: Security Breach</h2>
+<div class="card">
+<ol>
+<li><strong>Contain:</strong> Disable public access if possible (Railway service pause)</li>
+<li><strong>Rotate immediately:</strong> JWT_SECRET, DB password, all API keys</li>
+<li><strong>Audit:</strong> Query <code>audit_trail</code> and <code>login_attempts</code> tables for suspicious activity</li>
+<li><strong>Assess scope:</strong> Which data was accessed? Which users affected?</li>
+<li><strong>GDPR:</strong> If personal data compromised → notify DPA within 72 hours</li>
+<li><strong>Fix:</strong> Patch vulnerability, deploy, verify</li>
+<li><strong>Communicate:</strong> Notify affected users</li>
+</ol>
+</div>
+
+<h2>Post-Incident Review Template</h2>
+<div class="card">
+<div class="template">
+## Post-Incident Review — [DATE]
+
+**Incident:** [Brief description]
+**Severity:** P[1-4]
+**Duration:** [Start time] → [Resolution time] ([X] minutes)
+**Impact:** [Number of users affected, features impacted]
+
+### Timeline
+- HH:MM — Issue detected
+- HH:MM — Investigation started
+- HH:MM — Root cause identified
+- HH:MM — Fix deployed
+- HH:MM — Verified resolved
+
+### Root Cause
+[What actually broke and why]
+
+### Resolution
+[What was done to fix it]
+
+### Lessons Learned
+1. [What went well]
+2. [What could be improved]
+
+### Action Items
+- [ ] [Preventive measure 1]
+- [ ] [Preventive measure 2]
+</div>
+</div>
+
+<h2>Customer Communication Templates</h2>
+<div class="card">
+<h3>Outage Notification</h3>
+<div class="template">
+Subject: Caelith Service Disruption — [Date]
+
+We are currently experiencing a service disruption affecting [specific features / all services]. Our team is actively investigating and working to restore full functionality.
+
+Current status: [Investigating / Identified / Fixing]
+Estimated resolution: [Time estimate or "We will provide updates every 30 minutes"]
+
+We apologize for the inconvenience. Your data remains safe and secure.
+
+— The Caelith Team
+</div>
+
+<h3>Resolution Notification</h3>
+<div class="template">
+Subject: Resolved — Caelith Service Disruption [Date]
+
+The service disruption reported earlier today has been resolved as of [time]. All systems are now operating normally.
+
+Duration: [X] minutes
+Root cause: [Brief, non-technical explanation]
+Preventive measures: [What we're doing to prevent recurrence]
+
+Thank you for your patience. If you experience any remaining issues, please contact us.
+
+— The Caelith Team
+</div>
+</div>
+
+<footer style="text-align:center;color:#475569;margin-top:3rem;padding:1rem;border-top:1px solid #1e293b;font-size:.8rem">
+Caelith Incident Response Playbook — v1.0 — 2026-02-28 — Confidential
+</footer>
+</div>
+</body>
+</html>

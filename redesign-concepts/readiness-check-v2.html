@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIFMD II Readiness Check — Caelith</title>
+<meta name="description" content="Free interactive AIFMD II readiness assessment for fund managers. No signup required. Get your personalized scorecard in 3 minutes.">
+<meta property="og:title" content="AIFMD II Readiness Check — How prepared is your KVG?">
+<meta property="og:description" content="Free 3-minute assessment. No signup. Instant results.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#1a1f1f;--bg2:#2D3333;--white:#fff;
+  --accent:#8EC5E0;--warm:#E8A87C;
+  --text:#f0f0f0;--text2:rgba(255,255,255,0.55);--text3:rgba(255,255,255,0.35);
+  --border:rgba(255,255,255,0.08);
+  --radius:12px;--radius-sm:8px;
+  --grad:linear-gradient(135deg,#8EC5E0,#E8A87C);
+  --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.10);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;color:var(--text);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;font-weight:600;line-height:1.2;letter-spacing:-0.03em}
+.mono{font-family:'JetBrains Mono',monospace}
+.grad{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.container{max-width:760px;margin:0 auto;padding:0 24px}
+
+/* Floating pill nav */
+.nav-wrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:1000}
+.nav-pill{padding:10px 28px;display:flex;align-items:center;gap:20px;background:rgba(26,31,31,0.75);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--glass-border);border-radius:999px;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.nav-back{font-size:12px;color:var(--text3);text-decoration:none;transition:color .2s;white-space:nowrap}
+.nav-back:hover{color:#fff}
+.nav-brand{font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:#fff;white-space:nowrap}
+.nav-cd{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);white-space:nowrap}
+
+/* Screens */
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+
+/* Landing */
+.landing{text-align:center;padding:120px 0 80px;position:relative;overflow:hidden}
+.landing-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:0.4}
+.orb.o1{width:500px;height:500px;background:radial-gradient(circle,rgba(142,197,224,0.3),transparent 70%);top:-10%;right:-10%;animation:oF1 12s ease-in-out infinite}
+.orb.o2{width:400px;height:400px;background:radial-gradient(circle,rgba(232,168,124,0.25),transparent 70%);bottom:-10%;left:-10%;animation:oF2 15s ease-in-out infinite}
+.orb.o3{width:250px;height:250px;background:radial-gradient(circle,rgba(142,197,224,0.15),transparent 70%);top:40%;left:30%;animation:oF3 10s ease-in-out infinite}
+@keyframes oF1{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,30px)}}
+@keyframes oF2{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-40px)}}
+@keyframes oF3{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,-20px)}}
+.landing-content{position:relative;z-index:1}
+.landing h1{font-size:clamp(32px,5vw,48px);font-weight:800;margin-bottom:16px;color:#fff}
+.landing .subtitle{font-size:17px;color:var(--text2);max-width:480px;margin:0 auto 40px;line-height:1.7}
+.countdown-row{display:flex;justify-content:center;gap:28px;margin-bottom:48px}
+.countdown-item{text-align:center}
+.countdown-num{font-family:'JetBrains Mono',monospace;font-size:clamp(36px,7vw,56px);font-weight:700;line-height:1;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.countdown-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-top:6px}
+.btn-accent{display:inline-flex;align-items:center;gap:8px;background:var(--grad);color:var(--bg);border:none;padding:16px 40px;border-radius:999px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .25s}
+.btn-accent:hover{transform:scale(1.03);box-shadow:0 0 32px rgba(142,197,224,0.3)}
+.btn-outline{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--glass-border);color:var(--text2);padding:12px 28px;border-radius:999px;font-family:'Sora',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-outline:hover{border-color:var(--accent);color:#fff;box-shadow:0 0 16px rgba(142,197,224,0.1)}
+.landing-features{display:flex;gap:32px;justify-content:center;margin-top:48px;flex-wrap:wrap}
+.landing-feature{font-size:13px;color:var(--text3);display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace}
+
+/* Progress */
+.progress-wrap{background:rgba(26,31,31,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:0;z-index:99}
+.progress-bar-bg{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden}
+.progress-bar-fill{height:100%;background:var(--grad);border-radius:4px;transition:width .4s ease}
+.progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+
+/* Quiz */
+.quiz-section{padding:48px 0 100px}
+.category-header{margin-bottom:32px}
+.category-icon{font-size:32px;margin-bottom:8px}
+.category-title{font-size:24px;color:#fff;margin-bottom:4px}
+.category-subtitle{font-size:13px;color:var(--text3)}
+.question-card{background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--radius);padding:24px;margin-bottom:16px;transition:all .3s}
+.question-card.answered{border-color:rgba(142,197,224,0.25);box-shadow:0 0 20px rgba(142,197,224,0.05)}
+.question-card.skipped{opacity:.3;pointer-events:none}
+.question-text{font-size:15px;font-weight:500;margin-bottom:14px;line-height:1.6;color:var(--text)}
+.question-source{font-size:11px;color:var(--text3);margin-bottom:14px;font-family:'JetBrains Mono',monospace}
+.answer-btns{display:flex;gap:8px;flex-wrap:wrap}
+.answer-btn{padding:9px 22px;border:1px solid var(--glass-border);border-radius:999px;background:transparent;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;color:var(--text2);min-height:44px;display:inline-flex;align-items:center}
+.answer-btn:hover{border-color:rgba(255,255,255,0.25);color:#fff}
+.answer-btn.selected-yes{background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.5);color:#6ee7b7}
+.answer-btn.selected-partial{background:rgba(232,168,124,0.15);border-color:rgba(232,168,124,0.5);color:var(--warm)}
+.answer-btn.selected-no{background:rgba(248,113,113,0.15);border-color:rgba(248,113,113,0.5);color:#f87171}
+.answer-btn.selected-na{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.15);color:var(--text3)}
+.hint-toggle{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--text3);cursor:pointer;margin-top:14px;border:none;background:none;font-family:'JetBrains Mono',monospace;transition:color .15s}
+.hint-toggle:hover{color:var(--accent)}
+.hint-content{display:none;margin-top:12px;padding:14px 16px;background:rgba(142,197,224,0.05);border:1px solid rgba(142,197,224,0.1);border-radius:var(--radius-sm);font-size:13px;color:var(--text2);line-height:1.7}
+.hint-content.open{display:block}
+.nav-btns{display:flex;justify-content:space-between;margin-top:36px;gap:12px}
+
+/* Results */
+.results-section{padding:48px 0 80px}
+.score-hero{text-align:center;padding:56px 0;margin-bottom:48px}
+.score-number{font-family:'JetBrains Mono',monospace;font-size:clamp(72px,14vw,112px);font-weight:700;line-height:1;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.score-label{font-size:15px;color:var(--text3);margin-top:8px;font-family:'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase}
+.risk-badge{display:inline-block;padding:6px 18px;border-radius:999px;font-size:13px;font-weight:600;margin-top:16px;font-family:'Sora',sans-serif}
+.risk-green{background:rgba(34,197,94,0.15);color:#6ee7b7;border:1px solid rgba(34,197,94,0.3)}
+.risk-yellow{background:rgba(232,168,124,0.15);color:var(--warm);border:1px solid rgba(232,168,124,0.3)}
+.risk-red{background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3)}
+.deadline-note{font-size:14px;color:var(--text3);margin-top:16px}
+.deadline-note strong{color:var(--text)}
+
+.breakdown-section{margin-bottom:48px}
+.breakdown-title{font-size:18px;margin-bottom:24px;color:#fff}
+.cat-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.cat-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0}
+.cat-name{font-size:13px;font-weight:500;width:180px;flex-shrink:0;color:var(--text2)}
+.cat-bar-bg{flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden}
+.cat-bar-fill{height:100%;border-radius:8px;transition:width .8s ease}
+.cat-score{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;width:44px;text-align:right;flex-shrink:0;color:var(--text2)}
+
+.detail-section{margin-bottom:48px}
+.detail-title{font-size:18px;margin-bottom:24px;color:#fff}
+.detail-card{background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--radius);padding:22px;margin-bottom:12px}
+.detail-card-q{font-size:14px;font-weight:500;margin-bottom:6px;color:var(--text)}
+.detail-card-status{font-size:12px;font-weight:600;margin-bottom:10px}
+.detail-card-status.st-no{color:#f87171}
+.detail-card-status.st-partial{color:var(--warm)}
+.detail-card-guidance{font-size:13px;color:var(--text2);line-height:1.7}
+.caelith-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--warm);font-weight:500;margin-top:10px;padding:4px 12px;background:rgba(232,168,124,0.1);border:1px solid rgba(232,168,124,0.15);border-radius:999px}
+
+.share-section{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius);padding:32px;text-align:center;margin-bottom:32px}
+.share-section h3{font-size:16px;color:#fff;margin-bottom:8px}
+.share-section p{font-size:13px;color:var(--text3);margin-bottom:16px}
+.share-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border:1px solid var(--glass-border);border-radius:999px;background:transparent;color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;transition:all .2s}
+.share-btn:hover{border-color:var(--accent);color:#fff}
+.share-btn.copied{border-color:rgba(34,197,94,0.5);color:#6ee7b7}
+
+.email-cta{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius);padding:32px;text-align:center;margin-bottom:40px}
+.email-cta h3{font-size:17px;color:#fff;margin-bottom:8px}
+.email-cta p{font-size:13px;color:var(--text3);margin-bottom:20px}
+.email-row{display:flex;gap:8px;max-width:400px;margin:0 auto}
+.email-input{flex:1;padding:11px 18px;border:1px solid var(--glass-border);border-radius:999px;background:rgba(255,255,255,0.05);font-family:'Inter',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .2s}
+.email-input:focus{border-color:var(--accent)}
+.email-input::placeholder{color:var(--text3)}
+.email-note{font-size:11px;color:var(--text3);margin-top:10px}
+
+.final-cta{text-align:center;padding:48px 0;border-top:1px solid var(--border);margin-top:40px}
+.final-cta h3{font-size:20px;color:#fff;margin-bottom:8px}
+.final-cta p{font-size:14px;color:var(--text2);margin-bottom:24px}
+.btn-cta{display:inline-flex;align-items:center;gap:8px;background:var(--grad);color:var(--bg);border:none;padding:14px 36px;border-radius:999px;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .25s;text-decoration:none}
+.btn-cta:hover{transform:scale(1.03);box-shadow:0 0 32px rgba(142,197,224,0.3)}
+
+.disclaimer{font-size:11px;color:var(--text3);text-align:center;max-width:520px;margin:32px auto 0;line-height:1.7}
+
+footer{border-top:1px solid var(--border);padding:24px 0;text-align:center;font-size:12px;color:var(--text3)}
+footer a{color:var(--text3);text-decoration:none;transition:color .2s}
+footer a:hover{color:#fff}
+
+/* Responsive */
+.disclaimer-banner{margin-top:36px;padding:16px 24px;background:rgba(232,168,124,0.08);border:1px solid rgba(232,168,124,0.25);border-radius:12px;display:flex;align-items:flex-start;gap:12px;max-width:520px;margin-left:auto;margin-right:auto;text-align:left}
+.disclaimer-banner p{font-size:13px;color:#d4a88a;line-height:1.5;margin:0}
+.disclaimer-banner strong{color:#E8A87C}
+@media(max-width:1024px){
+  .container{padding:0 20px}
+  .landing h1{font-size:28px}
+  .results-section{padding:0 8px}
+}
+@media(max-width:768px){
+  .nav-pill{padding:8px 18px;gap:12px}
+  .nav-cd{display:none}
+  .countdown-row{gap:16px}
+  .cat-name{width:100px;font-size:12px}
+  .cat-row{gap:8px}
+  .answer-btns{gap:6px}
+  .answer-btn{padding:10px 18px;font-size:13px;flex:1;justify-content:center;min-width:70px}
+  .landing-features{flex-direction:column;align-items:center;gap:10px}
+  .email-row{flex-direction:column}
+  .nav-btns{flex-direction:column}
+  .nav-btns .btn-accent,.nav-btns .btn-outline{width:100%;justify-content:center}
+  .landing{padding:100px 0 60px}
+  .detail-card{padding:18px}
+  .disclaimer-banner{padding:14px 16px;gap:10px;margin-top:28px}
+  .disclaimer-banner p{font-size:12px}
+  .disclaimer-banner svg{width:16px;height:16px;margin-top:1px}
+  .share-section,.email-cta,.final-cta{padding-left:4px;padding-right:4px}
+  h1{font-size:24px!important}
+}
+@media(max-width:480px){
+  .answer-btn{flex:1 1 calc(50% - 4px);min-width:0}
+  .cat-row{flex-wrap:wrap}
+  .cat-name{width:100%;font-size:13px}
+  .cat-bar-bg{min-width:0}
+  .disclaimer-banner{flex-direction:row;padding:12px 14px}
+  .final-cta div[style*="display:flex"]{flex-direction:column;gap:10px!important}
+  .final-cta a{width:100%;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav-wrap">
+<div class="nav-pill">
+  <a href="https://www.caelith.tech" class="nav-back">← Back</a>
+  <span class="nav-brand">Caelith</span>
+  <span class="nav-cd" id="nav-cd"></span>
+</div>
+</div>
+
+<!-- LANDING -->
+<div id="screen-landing" class="screen active">
+<div class="container landing">
+  <div class="landing-bg">
+    <div class="orb o1"></div>
+    <div class="orb o2"></div>
+    <div class="orb o3"></div>
+  </div>
+  <div class="landing-content">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:2px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:8px"><span style="display:inline-block;width:6px;height:6px;background:#22c55e;border-radius:50%;animation:pulse 2s infinite"></span> FREE READINESS ASSESSMENT</div>
+    <h1>How ready are you for <span class="grad">AIFMD II</span>?</h1>
+    <p class="subtitle">Find out in 3 minutes. Free, instant results — no signup required.</p>
+    <div class="countdown-row">
+      <div class="countdown-item">
+        <div class="countdown-num" id="cd-days">—</div>
+        <div class="countdown-label">Days</div>
+      </div>
+      <div class="countdown-item">
+        <div class="countdown-num" id="cd-hours">—</div>
+        <div class="countdown-label">Hours</div>
+      </div>
+      <div class="countdown-item">
+        <div class="countdown-num" id="cd-mins">—</div>
+        <div class="countdown-label">Minutes</div>
+      </div>
+    </div>
+    <button class="btn-accent" onclick="startQuiz()">Start Readiness Check <span style="transition:transform .2s">→</span></button>
+    <div class="landing-features">
+      <div class="landing-feature"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><circle cx="8" cy="8" r="3.5"/><circle cx="8" cy="8" r="0.75" fill="currentColor" stroke="none"/></svg> 24 expert questions</div>
+      <div class="landing-feature"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="8,1 10,6 6,10 8,15"/></svg> Instant scorecard</div>
+      <div class="landing-feature"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7" width="9" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg> No data stored</div>
+    </div>
+    <div class="disclaimer-banner">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#E8A87C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M10 2L1 18h18L10 2z"/><line x1="10" y1="8" x2="10" y2="12"/><circle cx="10" cy="15" r="0.5" fill="#E8A87C"/></svg>
+      <p>This is an <strong>orientation tool</strong> — not legal advice. Results are non-binding and do not replace professional counsel.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- QUIZ -->
+<div id="screen-quiz" class="screen">
+<div class="progress-wrap">
+  <div class="container">
+    <div class="progress-info">
+      <span id="progress-label">Category 1 of 6</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+</div>
+<div class="container quiz-section" id="quiz-body"></div>
+</div>
+
+<!-- RESULTS -->
+<div id="screen-results" class="screen">
+<div class="container results-section" id="results-body"></div>
+</div>
+
+<footer>
+<div class="container">
+  <a href="https://www.caelith.tech">Caelith</a> · Made in Berlin 🇩🇪 · © 2026
+</div>
+</footer>
+
+<style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}</style>
+
+<script>
+const DEADLINE=new Date('2026-04-16T00:00:00+02:00');
+
+const CATEGORIES=[
+  {id:'del',name:'Delegation & Outsourcing',icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="10" r="2.5"/><circle cx="14" cy="10" r="2.5"/><line x1="8.5" y1="10" x2="11.5" y2="10"/><line x1="6" y1="7.5" x2="6" y2="4"/><line x1="14" y1="7.5" x2="14" y2="4"/></svg>'},
+  {id:'lmt',name:'Liquidity Management',icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5 C10 2.5 5 7 5 11a5 5 0 0 0 10 0c0-4-5-8.5-5-8.5z"/></svg>'},
+  {id:'rep',name:'Reporting & Disclosure',icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><line x1="7" y1="14" x2="7" y2="9"/><line x1="10" y1="14" x2="10" y2="6"/><line x1="13" y1="14" x2="13" y2="11"/></svg>'},
+  {id:'dis',name:'Investor Disclosure',icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2.5 L17 7v6.5a3 3 0 0 1-1.5 2.6L10 19l-5.5-2.9A3 3 0 0 1 3 13.5V7z"/></svg>'},
+  {id:'loan',name:'Loan Origination',icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h9l3 3v11a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 3 17V4.5A1.5 1.5 0 0 1 4.5 3z"/><polyline points="13 3 13 6 16 6"/><line x1="7" y1="10" x2="13" y2="10"/><line x1="7" y1="13" x2="11" y2="13"/></svg>'},
+  {id:'gov',name:'Governance & Implementation',icon:'<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="3"/><path d="M10 1.5v2M10 16.5v2M1.5 10h2M16.5 10h2M4 4l1.4 1.4M14.6 14.6L16 16M4 16l1.4-1.4M14.6 5.4L16 4"/></svg>'},
+];
+
+const QUESTIONS=[
+  // Delegation & Outsourcing (Art. 20 AIFMD as amended by AIFMD II)
+  {id:'del_register',cat:0,text:'Do you maintain a complete outsourcing/delegation register?',hint:'All outsourced functions must be documented with provider, scope, duration, and monitoring measures. AIFMD II requires enhanced transparency on what is delegated to whom.',source:'Art. 20(1) AIFMD (as amended); § 36 KAGB',weight:3},
+  {id:'del_due_diligence',cat:0,text:'Do you have due diligence processes defined for outsourcing partners?',hint:'Selection, evaluation, and ongoing monitoring of service providers must follow documented procedures with quality assurance standards.',source:'Art. 20(2) AIFMD (as amended)',weight:2},
+  {id:'del_eu_substance',cat:0,text:'Are at least two senior persons resident in the EU responsible for day-to-day decisions?',hint:'New substance requirement under AIFMD II — applies even when portfolio management is delegated to third countries. PwC confirms: minimum 2 EU-resident senior managers with genuine decision-making authority.',source:'Art. 8(1)(e) AIFMD (as amended)',weight:3},
+  {id:'del_subdelegation',cat:0,text:'Are sub-delegations documented and reportable to supervisory authorities?',hint:'Full sub-delegation chains must be transparent. Supervisory authorities (e.g. BaFin) can request insight at any time. Sub-delegations must be disclosed to investors and NCAs.',source:'Art. 20(4)–(6) AIFMD (as amended)',weight:2},
+  {id:'del_review_cycle',cat:0,text:'Do you have regular review cycles for outsourcing agreements?',hint:'At least annual review recommended; immediately upon material changes. Ongoing monitoring is required, not just initial due diligence.',source:'Art. 20(3) AIFMD (as amended)',weight:2},
+
+  // Liquidity Management (Art. 16 AIFMD as amended by AIFMD II)
+  {id:'lmt_selected',cat:1,text:'Have you selected at least two Liquidity Management Tools (LMTs)?',hint:'Mandatory for open-ended AIFs under AIFMD II. Choose from ESMA\'s list: redemption gates, swing pricing, side pockets, anti-dilution levies, redemption in kind, notice periods, or suspension of redemptions.',source:'Art. 16(2b)–(2d) AIFMD (as amended)',weight:3},
+  {id:'lmt_activation_rules',cat:1,text:'Are activation rules and thresholds defined for your LMTs?',hint:'Documented quantitative and qualitative criteria for when each LMT is activated. Must include governance procedures and board approval mechanisms.',source:'Art. 16(2b) AIFMD (as amended)',weight:3},
+  {id:'lmt_investor_communication',cat:1,text:'Do you have a communication process for LMT activations towards investors and regulators?',hint:'Investors and the competent authority (e.g. BaFin) must be notified when LMTs are activated. Create template notifications in advance.',source:'Art. 16(2c) AIFMD (as amended)',weight:2},
+  {id:'lmt_stress_testing',cat:1,text:'Do you conduct regular liquidity stress tests?',hint:'At least annually; more frequently during market turbulence. Stress scenarios must be documented and results reported to senior management.',source:'Art. 16(1) AIFMD (as amended)',weight:2},
+
+  // Reporting (Art. 24 AIFMD as amended by AIFMD II)
+  {id:'rep_annex_iv',cat:2,text:'Can you generate Annex IV reports on time and in full?',hint:'Periodic reporting to BaFin/NCA. Check: Are all data fields populated, processes defined? AIFMD II expands the scope of reporting data.',source:'Art. 24 AIFMD (as amended)',weight:3},
+  {id:'rep_bafin_annual',cat:2,text:'Is your BaFin annual reporting process documented and scheduled?',hint:'Annual report to investors with audited financials and required AIFMD disclosures. Create a reporting calendar with clear responsibilities and internal deadlines.',source:'Art. 22 AIFMD; § 38 KAGB',weight:2},
+  {id:'rep_data_quality',cat:2,text:'Do you have clear responsibilities for data delivery and quality?',hint:'Who delivers which data, how often, in which format? Who checks quality? AIFMD II emphasises data governance and accountability for submitted information.',source:'Art. 24(5) AIFMD (as amended)',weight:2},
+  {id:'rep_esma_readiness',cat:2,text:'Are you preparing for the new ESMA reporting standards (ITS/RTS)?',hint:'ESMA is developing new Implementing/Regulatory Technical Standards for supervisory reporting, expected to be finalised by April 2027. Early impact assessment is strongly recommended (PwC Step 4).',source:'Art. 24 AIFMD (as amended); ESMA mandates',weight:1},
+
+  // Investor Disclosure (Art. 23 AIFMD as amended by AIFMD II)
+  {id:'dis_cost_transparency',cat:3,text:'Do you disclose all fees, costs, and their recipients in detail?',hint:'Management fees, performance fees, transaction costs, third-party costs — broken down by recipient. AIFMD II significantly enhances cost disclosure requirements in pre-contractual and periodic documents.',source:'Art. 23(1) AIFMD (as amended)',weight:3},
+  {id:'dis_precontractual',cat:3,text:'Are your pre-contractual investor disclosures updated to AIFMD II standards?',hint:'Enhanced disclosure requirements on strategy, risks, costs, delegation arrangements, and available LMTs. Review all fund documentation against the new Art. 23 requirements.',source:'Art. 23(1) AIFMD (as amended)',weight:2},
+  {id:'dis_lmt_info',cat:3,text:'Do you inform investors about available Liquidity Management Tools?',hint:'Investors must be informed which LMTs are available for which funds and under what conditions they may be activated. This is a new AIFMD II requirement.',source:'Art. 23(1) AIFMD (as amended)',weight:2},
+  {id:'dis_fund_structure',cat:3,text:'Is the complete fund structure disclosed (including complex vehicles)?',hint:'Master-feeder, fund-of-funds, SPVs — full structural transparency. Investors and NCAs must be able to understand the entire fund architecture.',source:'Art. 23(1) AIFMD (as amended)',weight:2},
+
+  // Loan Origination (NEW Art. 15–15e inserted by AIFMD II)
+  {id:'loan_applicable',cat:4,text:'Do your AIFs directly originate loans?',hint:'If no, select N/A — the remaining questions in this category will be automatically skipped. Loan origination is newly regulated under AIFMD II (Directive 2024/927) with specific rules on retention, concentration, and leverage.',source:'Art. 15–15e AIFMD (inserted by AIFMD II)',weight:1},
+  {id:'loan_retention',cat:4,text:'Do you retain 5% of loan volume in the fund (skin in the game)?',hint:'5% retention requirement prevents originate-to-distribute models. The AIFM must retain a net economic interest of not less than 5% of the notional value of each loan originated.',source:'Art. 15b(1) AIFMD (inserted by AIFMD II)',weight:2,depends:'loan_applicable'},
+  {id:'loan_concentration',cat:4,text:'Is lending to individual borrowers limited to 20% of fund assets?',hint:'Single-borrower concentration limit of 20% of the AIF\'s capital. Designed to ensure diversification in loan-originating funds.',source:'Art. 15d AIFMD (inserted by AIFMD II)',weight:2,depends:'loan_applicable'},
+
+  // Governance & Implementation
+  {id:'gov_gap_analysis',cat:5,text:'Have you conducted a systematic AIFMD II gap analysis?',hint:'PwC recommends as Step 1: comprehensive gap analysis covering all AIFMD II changes against current processes. This assessment helps, but does not replace a full legal and operational review.',source:'Best Practice (PwC Step 1)',weight:3},
+  {id:'gov_project_team',cat:5,text:'Is there a project team with clear roles and a binding timeline for implementation?',hint:'PwC Step 2: establish a cross-functional project team with milestones, board reporting, and clear accountability. German implementation via FoMaStG (Fondsmarktstärkungsgesetz).',source:'Best Practice (PwC Step 2); BaFin MaRisk AT 8.2',weight:2},
+  {id:'gov_regulatory_monitoring',cat:5,text:'Do you continuously monitor regulatory developments (RTS, FoMaStG, ESMA)?',hint:'PwC Step 4: track BaFin, ESMA, and EU legislative developments systematically. New RTS/ITS expected by April 2027. German transposition via FoMaStG Referentenentwurf.',source:'Best Practice (PwC Step 4); BaFin MaRisk AT 4.3.2',weight:2},
+  {id:'gov_kyc_current',cat:5,text:'Are all investor KYC documents current?',hint:'Expired or pending KYC documents represent an immediate compliance risk. Ensure ongoing monitoring processes and automated renewal reminders are in place.',source:'Art. 12(1)(e) AIFMD; § 10 GwG',weight:3},
+];
+
+const CAELITH_TAGS={
+  del_register:'Caelith tracks all delegations with third-country flags',
+  lmt_selected:'Caelith monitors LMT activation thresholds',
+  rep_annex_iv:'Caelith generates XSD-validated Annex IV XML',
+  rep_data_quality:'Caelith validates data against GLEIF + sanctions lists',
+  dis_cost_transparency:'Caelith auto-generates EMT/EET/EPT templates',
+  gov_gap_analysis:'You just completed one with this tool',
+  gov_kyc_current:'Caelith tracks KYC expiry and renewal status',
+  gov_regulatory_monitoring:'Caelith Compliance Calendar tracks all deadlines',
+};
+
+const GUIDANCE={
+  del_register:'Document all outsourced functions with provider details, scope, duration, and monitoring KPIs.',
+  del_due_diligence:'Establish a formal selection and evaluation framework for all service providers.',
+  del_eu_substance:'Ensure at least two EU-resident senior managers have genuine decision-making authority.',
+  del_subdelegation:'Map your full sub-delegation chain and set up a reporting mechanism to your NCA.',
+  del_review_cycle:'Schedule annual reviews of all outsourcing agreements; add triggers for ad-hoc reviews.',
+  lmt_selected:'Select and formally approve at least two LMTs from the ESMA list for each open-ended AIF.',
+  lmt_activation_rules:'Define quantitative thresholds and governance procedures for activating each LMT.',
+  lmt_investor_communication:'Create notification templates for investors and your competent authority.',
+  lmt_stress_testing:'Implement at least annual liquidity stress testing with documented scenarios.',
+  rep_annex_iv:'Map all required Annex IV fields to internal data sources; automate where possible.',
+  rep_bafin_annual:'Create a reporting calendar with responsibilities and internal deadlines.',
+  rep_data_quality:'Assign data ownership per field; implement validation checks before submission.',
+  rep_esma_readiness:'Monitor ESMA consultations on new ITS/RTS and begin impact assessment early.',
+  dis_cost_transparency:'Break down all fee components by recipient in pre-contractual and periodic documents.',
+  dis_precontractual:'Review and update all pre-contractual disclosures against the new Art. 23 requirements.',
+  dis_lmt_info:'Add LMT descriptions to fund documentation and investor communications.',
+  dis_fund_structure:'Provide full structural diagrams for complex fund arrangements.',
+  loan_applicable:'Determine which funds engage in direct loan origination.',
+  loan_retention:'Implement 5% retention policy and monitoring for loan-originating funds.',
+  loan_concentration:'Set up concentration limits and pre-trade checks for borrower exposure.',
+  gov_gap_analysis:'Conduct a comprehensive legal and operational gap analysis against AIFMD II.',
+  gov_project_team:'Establish a cross-functional project team with milestones and board reporting.',
+  gov_regulatory_monitoring:'Set up a systematic process to track BaFin, ESMA, and EU legislative developments.',
+  gov_kyc_current:'Review all investor KYC files; renew expired documents and set automated reminders.',
+};
+
+let answers={},currentCat=0;
+
+// Countdown
+function updateCountdown(){
+  const diff=DEADLINE-new Date();
+  if(diff<=0){document.getElementById('cd-days').textContent='0';document.getElementById('cd-hours').textContent='0';document.getElementById('cd-mins').textContent='0';return}
+  const d=Math.floor(diff/864e5),h=Math.floor((diff%864e5)/36e5),m=Math.floor((diff%36e5)/6e4);
+  document.getElementById('cd-days').textContent=d;
+  document.getElementById('cd-hours').textContent=h;
+  document.getElementById('cd-mins').textContent=m;
+  const nc=document.getElementById('nav-cd');
+  if(nc)nc.textContent=d+'d '+String(h).padStart(2,'0')+'h to deadline';
+}
+updateCountdown();setInterval(updateCountdown,60000);
+
+function daysUntilDeadline(){return Math.max(0,Math.ceil((DEADLINE-new Date())/864e5))}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+function startQuiz(){currentCat=0;answers={};showScreen('quiz');renderCategory()}
+
+function questionsForCat(ci){return QUESTIONS.filter(q=>q.cat===ci)}
+
+function isSkipped(q){
+  if(q.depends==='loan_applicable'){const v=answers.loan_applicable;return v==='no'||v==='na'}
+  return false;
+}
+
+function renderCategory(){
+  const cat=CATEGORIES[currentCat];
+  const qs=questionsForCat(currentCat);
+  const pct=Math.round((currentCat/CATEGORIES.length)*100);
+  document.getElementById('progress-label').textContent=cat.icon+' '+cat.name+' — '+( currentCat+1)+' of '+CATEGORIES.length;
+  document.getElementById('progress-pct').textContent=pct+'%';
+  document.getElementById('progress-fill').style.width=pct+'%';
+
+  let html='<div class="category-header"><div class="category-icon">'+cat.icon+'</div><h2 class="category-title">'+cat.name+'</h2></div>';
+
+  qs.forEach(q=>{
+    const skip=isSkipped(q);
+    const ans=answers[q.id]||'';
+    html+='<div class="question-card'+(ans?' answered':'')+(skip?' skipped':'')+'" id="card-'+q.id+'">';
+    html+='<div class="question-text">'+q.text+'</div>';
+    html+='<div class="question-source">'+q.source+'</div>';
+    html+='<div class="answer-btns">';
+    ['yes','partial','no','na'].forEach(v=>{
+      const labels={yes:'Yes',partial:'Partial',no:'No',na:'N/A'};
+      const sel=ans===v?'selected-'+v:'';
+      html+='<button class="answer-btn '+sel+'" onclick="answer(\''+q.id+'\',\''+v+'\')">'+labels[v]+'</button>';
+    });
+    html+='</div>';
+    if(q.hint)html+='<button class="hint-toggle" onclick="toggleHint(\''+q.id+'\')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><line x1="8" y1="7" x2="8" y2="11.5"/><circle cx="8" cy="4.75" r="0.5" fill="currentColor" stroke="none"/></svg> Why this matters</button><div class="hint-content" id="hint-'+q.id+'">'+q.hint+'</div>';
+    html+='</div>';
+  });
+
+  html+='<div class="nav-btns">';
+  if(currentCat>0)html+='<button class="btn-outline" onclick="prevCat()">← Back</button>';
+  else html+='<div></div>';
+  if(currentCat<CATEGORIES.length-1)html+='<button class="btn-accent" onclick="nextCat()">Next →</button>';
+  else html+='<button class="btn-accent" onclick="showResults()">See Results →</button>';
+  html+='</div>';
+
+  document.getElementById('quiz-body').innerHTML=html;
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+function answer(qid,val){answers[qid]=val;renderCategory()}
+function toggleHint(qid){document.getElementById('hint-'+qid).classList.toggle('open')}
+function prevCat(){currentCat--;renderCategory()}
+function nextCat(){currentCat++;renderCategory()}
+
+function showResults(){
+  showScreen('results');
+
+  let totalPoints=0,maxPoints=0;
+  const catScores=CATEGORIES.map(()=>({pts:0,max:0}));
+  const issues=[];
+
+  QUESTIONS.forEach(q=>{
+    if(isSkipped(q))return;
+    const ans=answers[q.id];
+    if(ans==='na')return;
+    const max=q.weight*100;
+    let pts=0;
+    if(ans==='yes')pts=max;
+    else if(ans==='partial')pts=q.weight*50;
+    if(ans){catScores[q.cat].max+=max;catScores[q.cat].pts+=pts;maxPoints+=max;totalPoints+=pts}
+    if(ans==='no'||ans==='partial')issues.push({q,ans});
+    if(!ans){catScores[q.cat].max+=max;maxPoints+=max;issues.push({q,ans:'no'})}
+  });
+
+  const score=maxPoints>0?Math.round((totalPoints/maxPoints)*100):0;
+  const days=daysUntilDeadline();
+  const riskClass=score>=70?'risk-green':score>=40?'risk-yellow':'risk-red';
+  const riskLabel=score>=70?'On Track':score>=40?'Needs Attention':'At Risk';
+
+  let html='<div class="score-hero">';
+  html+='<div class="score-number">'+score+'%</div>';
+  html+='<div class="score-label">AIFMD II Readiness Score</div>';
+  html+='<div class="risk-badge '+riskClass+'">'+riskLabel+'</div>';
+  html+='<div class="deadline-note"><strong>'+days+' days</strong> until the April 16, 2026 deadline</div>';
+  html+='</div>';
+
+  html+='<div class="breakdown-section"><h3 class="breakdown-title">Category Breakdown</h3>';
+  CATEGORIES.forEach((cat,i)=>{
+    const cs=catScores[i];
+    const cpct=cs.max>0?Math.round((cs.pts/cs.max)*100):0;
+    const color=cpct>=70?'#6ee7b7':cpct>=40?'#E8A87C':'#f87171';
+    html+='<div class="cat-row"><div class="cat-icon">'+cat.icon+'</div><div class="cat-name">'+cat.name+'</div><div class="cat-bar-bg"><div class="cat-bar-fill" style="width:'+cpct+'%;background:'+color+'"></div></div><div class="cat-score mono">'+cpct+'%</div></div>';
+  });
+  html+='</div>';
+
+  if(issues.length){
+    html+='<div class="detail-section"><h3 class="detail-title">Areas for Improvement</h3>';
+    issues.forEach(({q,ans})=>{
+      const stClass=ans==='no'?'st-no':'st-partial';
+      const stLabel=ans==='no'?'⬤ Not in place':'◐ Partially in place';
+      const tag=CAELITH_TAGS[q.id];
+      html+='<div class="detail-card"><div class="detail-card-q">'+q.text+'</div><div class="detail-card-status '+stClass+'">'+stLabel+'</div><div class="detail-card-guidance">'+(GUIDANCE[q.id]||'')+'</div>'+(tag?'<div class="caelith-tag">✦ '+tag+'</div>':'')+'</div>';
+    });
+    html+='</div>';
+  }
+
+  html+='<div class="share-section"><h3>Share your results</h3><p>Copy a link to retake this assessment</p><button class="share-btn" onclick="copyLink(this)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="5.5" width="8" height="9" rx="1.5"/><path d="M3.5 10.5h-1a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v1"/></svg> Copy link</button></div>';
+
+  html+='<div class="email-cta"><h3>Get your personalized readiness report</h3><p>Receive a detailed PDF with your scores, gap analysis, and prioritized action items — directly in your inbox.</p><div class="email-row"><input type="email" class="email-input" placeholder="your@email.com" id="email-input"><button class="btn-accent" style="padding:11px 24px;font-size:13px" onclick="submitEmail()">Send Report →</button></div><div class="email-note">We\'ll only use your email to send the report. No spam, ever.</div></div>';
+
+  html+='<div class="final-cta" style="border-top:1px solid var(--border);padding-top:48px">';
+  html+='<h3 style="font-size:22px">Need help closing your AIFMD II gaps?</h3>';
+  html+='<p style="font-size:15px;color:var(--text2);margin-bottom:12px;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.7">Caelith automates Annex IV reporting, sanctions screening, LEI verification, and investor compliance — so you can focus on managing funds, not chasing deadlines.</p>';
+  html+='<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:32px">';
+  html+='<a href="https://www.caelith.tech" class="btn-cta" target="_blank">Try the Live Demo →</a>';
+  html+='<a href="mailto:julian.laycock@caelith.tech?subject=AIFMD%20II%20Readiness%20—%20Consultation%20Request" class="btn-outline" style="padding:14px 28px;font-size:14px;text-decoration:none;border-radius:999px">Book a Free Consultation →</a>';
+  html+='</div>';
+  html+='<div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--text3)">';
+  html+='<span>✓ No signup required</span>';
+  html+='<span>✓ Full platform access</span>';
+  html+='<span>✓ Reply within 4 hours</span>';
+  html+='</div>';
+  html+='<div style="margin-top:32px;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius);max-width:480px;margin-left:auto;margin-right:auto">';
+  html+='<p style="font-size:13px;color:var(--text2);margin-bottom:8px">Or reach out directly:</p>';
+  html+='<p style="font-size:14px;color:var(--text)"><a href="mailto:julian.laycock@caelith.tech" style="color:var(--accent);text-decoration:underline;text-underline-offset:3px">julian.laycock@caelith.tech</a></p>';
+  html+='<p style="font-size:12px;color:var(--text3);margin-top:4px">Julian Laycock · CEO, Caelith · Berlin</p>';
+  html+='</div>';
+  html+='</div>';
+
+  html+='<div class="disclaimer" style="margin-top:48px;padding:20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:var(--radius);max-width:600px"><p style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">⚠ Important Disclaimer</p><p style="font-size:11px">This assessment is an orientation tool and does not constitute legal advice. Results are non-binding and based solely on your self-assessment. Directive 2024/927 (AIFMD II) amends Directive 2011/61/EU. Member states must transpose by 16 April 2026, with certain provisions extended to 16 April 2027. National implementations (e.g., Germany\'s FoMaStG) may vary. Always consult qualified legal counsel for your specific regulatory obligations.</p></div>';
+
+  html+='<div style="text-align:center;margin-top:24px"><button class="btn-outline" onclick="startQuiz()">↻ Retake Assessment</button></div>';
+
+  document.getElementById('results-body').innerHTML=html;
+}
+
+function copyLink(btn){
+  navigator.clipboard.writeText(window.location.href).then(()=>{
+    btn.textContent='✓ Copied!';btn.classList.add('copied');
+    setTimeout(()=>{btn.innerHTML='<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="5.5" width="8" height="9" rx="1.5"/><path d="M3.5 10.5h-1a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v1"/></svg> Copy link';btn.classList.remove('copied')},2000);
+  });
+}
+
+function submitEmail(){
+  const email=document.getElementById('email-input').value;
+  if(!email||!email.includes('@')){alert('Please enter a valid email address.');return}
+  document.querySelector('.email-cta').innerHTML='<h3>✓ Report requested</h3><p style="color:var(--text2);margin-top:8px">We\'ll send your detailed analysis to <strong>'+email+'</strong> shortly.</p>';
+}
+</script>
+</body>
+</html>

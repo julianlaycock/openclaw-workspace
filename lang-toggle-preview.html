@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lang Toggle Preview — Caelith Mobile</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1f1f;--bg2:#2D3333;--accent:#8EC5E0;--accent-sat:#6BB8D9;--warm:#E8A87C;
+  --text:#f0f0f0;--text2:rgba(255,255,255,0.7);--text3:rgba(255,255,255,0.5);
+  --border:rgba(255,255,255,0.08);
+  --grad:linear-gradient(135deg,#8EC5E0,#E8A87C);
+  --radius:12px;
+}
+body{font-family:'Inter',sans-serif;background:#111;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:40px;padding:40px 20px;}
+
+h2{font-family:'Sora',sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;text-align:center;}
+
+/* ─── PHONE FRAME ─────────────────────────────────────── */
+.phone{
+  width:375px;
+  background:var(--bg2);
+  border-radius:32px;
+  overflow:hidden;
+  box-shadow:0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+  position:relative;
+}
+
+/* ─── NAV ─────────────────────────────────────────────── */
+.nav-wrap{
+  background:rgba(26,31,31,0.96);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  box-shadow:0 1px 0 rgba(255,255,255,0.06);
+}
+nav{
+  padding:12px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:48px;
+}
+.nav-logo{font-family:'Sora';font-weight:800;font-size:17px;color:#fff;text-decoration:none;}
+
+/* ─── OPTION A: Pill toggle in nav bar ───────────────── */
+.lang-pill{
+  display:flex;
+  align-items:center;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:999px;
+  padding:2px;
+  gap:0;
+}
+.lang-pill a{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:0.5px;
+  color:rgba(255,255,255,0.4);
+  padding:4px 10px;
+  border-radius:999px;
+  text-decoration:none;
+  transition:all .2s;
+  min-height:26px;
+  display:flex;
+  align-items:center;
+}
+.lang-pill a.active{
+  background:rgba(255,255,255,0.12);
+  color:#fff;
+}
+.hamburger-icon{
+  display:flex;flex-direction:column;gap:4px;cursor:pointer;padding:4px;
+}
+.hamburger-icon span{display:block;width:18px;height:1.5px;background:rgba(255,255,255,0.7);border-radius:1px;}
+
+/* ─── OPTION B: Icon + text in nav ────────────────────── */
+.lang-globe{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:rgba(255,255,255,0.45);
+  padding:6px 8px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.08);
+  text-decoration:none;
+  transition:all .2s;
+}
+.lang-globe svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5;flex-shrink:0;}
+.lang-globe:hover{color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.15);}
+
+/* ─── OPTION C: Flag pill in nav (compact) ─────────────── */
+.lang-flag{
+  font-size:13px;
+  padding:4px 8px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.04);
+  color:rgba(255,255,255,0.6);
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  text-decoration:none;
+  transition:all .2s;
+}
+
+/* ─── HERO SNIPPET ───────────────────────────────────────── */
+.hero-snippet{
+  background:linear-gradient(180deg,#2D3333 0%,#1a1f1f 100%);
+  padding:28px 20px 24px;
+  border-top:1px solid rgba(255,255,255,0.04);
+}
+.hero-label-txt{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;
+  color:rgba(255,255,255,0.3);
+  letter-spacing:2px;
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.pulse{width:5px;height:5px;background:#22c55e;border-radius:50%;}
+.hero-h1{font-family:'Sora';font-weight:800;font-size:28px;line-height:1.1;letter-spacing:-0.04em;color:#fff;margin-bottom:10px;}
+.grad{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6;}
+
+/* ─── DIVIDER ─────────────────────────────────────────── */
+.option-label{
+  position:absolute;
+  top:-14px;left:50%;transform:translateX(-50%);
+  background:#111;
+  padding:2px 12px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:rgba(255,255,255,0.4);
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.08);
+  white-space:nowrap;
+}
+.option-wrap{position:relative;margin-top:28px;}
+
+/* ─── RECOMMENDED BADGE ──────────────────────────────── */
+.badge-rec{
+  display:inline-flex;align-items:center;gap:5px;
+  background:linear-gradient(135deg,rgba(142,197,224,0.15),rgba(232,168,124,0.10));
+  border:1px solid rgba(142,197,224,0.25);
+  border-radius:999px;
+  padding:3px 10px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;
+  color:var(--accent);
+  letter-spacing:0.5px;
+  margin-top:10px;
+  display:block;
+  width:fit-content;
+  margin:10px auto 0;
+}
+</style>
+</head>
+<body>
+
+<h2>🌐 Language Toggle — Mobile Options</h2>
+
+<!-- ═══ OPTION A — Plain text "DE" next to hamburger (desktop-matched) ═══ -->
+<div class="option-wrap">
+  <span class="option-label">Exactly like desktop — plain text next to hamburger ✦</span>
+  <div class="phone">
+    <div class="nav-wrap">
+      <nav>
+        <a class="nav-logo" href="#">Caelith</a>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <a href="#" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.4);text-decoration:none;letter-spacing:0.5px;padding:6px 2px;">DE</a>
+          <div class="hamburger-icon">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </nav>
+    </div>
+    <div class="hero-snippet">
+      <div class="hero-label-txt"><span class="pulse"></span> AIFMD II COMPLIANCE PLATFORM</div>
+      <div class="hero-h1">Fund compliance,<br><span class="grad">automated.</span></div>
+      <p class="hero-sub">Every decision logged, verified, and cryptographically proven — before your regulator asks.</p>
+    </div>
+  </div>
+  <span class="badge-rec">✦ 1:1 with desktop · zero visual noise · 6-line code change</span>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Caelith Story — Record Mode</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1280px;height:720px;overflow:hidden;background:#0d0f12;font-family:'Sora',sans-serif;position:relative}
+
+/* ─── RECORD UI ─── */
+#record-ui{position:fixed;inset:0;background:#0d0f12;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;gap:24px}
+#record-ui h1{font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.03em}
+#record-ui p{font-size:14px;color:rgba(255,255,255,0.4);max-width:400px;text-align:center;line-height:1.7}
+#record-btn{background:linear-gradient(135deg,#C5E0EE,#E8A87C);border:none;border-radius:12px;padding:16px 40px;font-family:'Sora',sans-serif;font-size:16px;font-weight:700;color:#0d0f12;cursor:pointer;letter-spacing:-0.01em;transition:transform .2s}
+#record-btn:hover{transform:scale(1.03)}
+#record-btn:disabled{opacity:0.4;cursor:default}
+.rec-note{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.2);text-align:center}
+
+/* ─── PROGRESS BAR ─── */
+#progress-wrap{position:fixed;bottom:0;left:0;right:0;height:4px;background:rgba(255,255,255,0.05);z-index:500;display:none}
+#progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#C5E0EE,#E8A87C);transition:width .1s linear}
+#rec-indicator{position:fixed;top:16px;right:20px;display:none;align-items:center;gap:8px;z-index:500}
+#rec-dot{width:8px;height:8px;border-radius:50%;background:#f87171;animation:rec-pulse 1s ease-in-out infinite}
+@keyframes rec-pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+#rec-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px}
+
+/* ─── SCENE BASE ─── */
+.scene{position:absolute;inset:0;display:none;overflow:hidden}
+.scene.active{display:block}
+
+/* ─── GRID BG ─── */
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:40px 40px}
+
+/* ─── CAPTION ─── */
+.caption{position:absolute;bottom:56px;left:50%;transform:translateX(-50%);font-size:14px;color:rgba(255,255,255,0.5);font-family:'JetBrains Mono',monospace;letter-spacing:1px;white-space:nowrap;text-align:center}
+.caption-big{position:absolute;bottom:48px;left:60px;right:60px;text-align:left}
+.caption-big .line1{font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:6px}
+.caption-big .line2{font-size:22px;font-weight:700;color:#fff;line-height:1.3}
+
+/* ─── SCENE 1: NIGHT OFFICE ─── */
+#s1{background:radial-gradient(ellipse 60% 70% at 35% 50%,rgba(232,168,124,0.07) 0%,transparent 60%),#0b0804}
+.s1-date{position:absolute;top:48px;left:60px;font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(232,168,124,0.6);letter-spacing:2px}
+.s1-headline{position:absolute;top:80px;left:60px;font-size:48px;font-weight:800;color:#fff;line-height:1.1;letter-spacing:-0.03em}
+.s1-headline em{color:#E8A87C;font-style:normal}
+.s1-sub{position:absolute;top:220px;left:60px;font-size:15px;color:rgba(255,255,255,0.35);max-width:380px;line-height:1.7}
+
+/* DESK ILLUSTRATION */
+.desk-wrap{position:absolute;right:80px;top:50%;transform:translateY(-50%)}
+/* Monitor */
+.monitor-body{width:280px;height:180px;background:#111;border:3px solid #2a2a2a;border-radius:8px;position:relative;overflow:hidden}
+.monitor-screen{position:absolute;inset:8px;background:#0a0a0a;border-radius:4px;overflow:hidden}
+.excel-row{display:flex;border-bottom:1px solid #1a1a1a}
+.excel-row.header .ec{background:#1e1e1e;color:rgba(255,255,255,0.4);font-weight:600}
+.ec{flex:1;height:18px;font-family:'JetBrains Mono',monospace;font-size:7px;color:rgba(255,255,255,0.25);padding:0 4px;display:flex;align-items:center;border-right:1px solid #151515;overflow:hidden}
+.ec.err{color:#f87171;background:rgba(248,113,113,0.08)}
+.ec.ok{color:#34d399}
+.monitor-stand{width:40px;height:12px;background:#2a2a2a;border-radius:0 0 4px 4px;margin:0 auto}
+.monitor-base{width:80px;height:6px;background:#2a2a2a;border-radius:3px;margin:0 auto}
+
+/* Person at desk */
+.person{position:absolute;bottom:8px;right:-10px}
+.p-head{width:32px;height:32px;background:#E8A87C;border-radius:50%;margin:0 auto 0 20px;position:relative}
+.p-head::after{content:'😩';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px}
+.p-body{width:50px;height:40px;background:#334;border-radius:8px 8px 0 0;margin:0 auto}
+.p-arm{width:30px;height:8px;background:#334;border-radius:4px;position:absolute;bottom:20px;right:-5px;transform:rotate(-15deg);animation:type-arm .5s ease-in-out infinite alternate}
+@keyframes type-arm{from{transform:rotate(-15deg)}to{transform:rotate(-5deg)}}
+
+/* Desk surface */
+.desk-surface{width:360px;height:12px;background:#1a1204;border-radius:2px;margin-top:2px}
+.coffee{position:absolute;bottom:20px;left:10px;font-size:18px;animation:steam 2s ease-in-out infinite}
+@keyframes steam{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.sticky-note{position:absolute;top:-20px;left:20px;background:rgba(255,235,59,0.12);border:1px solid rgba(255,235,59,0.2);border-radius:3px;padding:5px 8px;font-family:'JetBrains Mono',monospace;font-size:7px;color:rgba(255,235,59,0.5);line-height:1.6;transform:rotate(-3deg)}
+
+.error-popup{position:absolute;top:40px;right:10px;background:#1a0808;border:1px solid rgba(248,113,113,0.3);border-radius:6px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:8px;color:#f87171;animation:popup-shake 0.5s ease 1s 2 alternate}
+@keyframes popup-shake{from{transform:translateX(0)}to{transform:translateX(-4px)}}
+
+/* ─── SCENE 2: THE SETUP ─── */
+#s2{background:radial-gradient(ellipse 50% 60% at 50% 50%,rgba(197,224,238,0.05) 0%,transparent 60%),#060c0a}
+.s2-layout{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:80px}
+
+/* Phone mockup */
+.phone{width:200px;height:380px;background:#111;border:3px solid #222;border-radius:32px;padding:20px 16px;position:relative;flex-shrink:0}
+.phone-notch{width:50px;height:5px;background:#1a1a1a;border-radius:3px;margin:0 auto 16px}
+.app-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.app-icon-phone{width:28px;height:28px;background:linear-gradient(135deg,#C5E0EE,#E8A87C);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.app-title{font-size:11px;font-weight:700;color:#fff}
+.app-version{font-family:'JetBrains Mono',monospace;font-size:7px;color:rgba(255,255,255,0.3)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.toggle-label{font-size:9px;color:rgba(255,255,255,0.5)}
+.tog{width:24px;height:12px;background:#34d399;border-radius:6px;position:relative}
+.tog::after{content:'';position:absolute;right:2px;top:2px;width:8px;height:8px;background:#fff;border-radius:50%}
+.tog.off{background:#333}
+.tog.off::after{right:auto;left:2px}
+.activate-btn{background:linear-gradient(135deg,#C5E0EE,#E8A87C);border-radius:8px;padding:10px;text-align:center;font-size:10px;font-weight:700;color:#0d0f12;margin-top:12px;animation:btn-pulse 1s ease-in-out 0.5s infinite alternate}
+@keyframes btn-pulse{from{box-shadow:0 0 0 0 rgba(197,224,238,0.3)}to{box-shadow:0 0 0 8px rgba(197,224,238,0)}}
+
+.s2-text{max-width:380px}
+.s2-text .s2-date{font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(197,224,238,0.5);margin-bottom:16px;letter-spacing:1px}
+.s2-text h2{font-size:42px;font-weight:800;color:#fff;line-height:1.1;letter-spacing:-0.03em;margin-bottom:20px}
+.s2-text h2 em{font-style:normal;color:#C5E0EE}
+.s2-text p{font-size:14px;color:rgba(255,255,255,0.4);line-height:1.8}
+
+/* Sleeping person */
+.sleeping{position:absolute;bottom:60px;right:80px;text-align:center}
+.sleep-head{font-size:40px;animation:sleep-bob 2s ease-in-out infinite}
+@keyframes sleep-bob{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.sleep-z{position:absolute;top:-20px;right:-10px;font-size:14px;color:rgba(197,224,238,0.4);animation:float-z 2s ease-in-out infinite}
+.sleep-z:nth-child(2){animation-delay:.5s;top:-35px;right:5px;font-size:10px}
+.sleep-z:nth-child(3){animation-delay:1s;top:-50px;right:-5px;font-size:8px}
+@keyframes float-z{from{transform:translateY(0);opacity:0.5}to{transform:translateY(-8px);opacity:0}}
+
+/* ─── SCENE 3: THE NIGHT ─── */
+#s3{background:#020508}
+.stars-s3{position:absolute;inset:0}
+.star-s3{position:absolute;background:#fff;border-radius:50%;animation:twinkle-s 3s ease-in-out infinite}
+@keyframes twinkle-s{0%,100%{opacity:0.15}50%{opacity:0.7}}
+
+.s3-clock{position:absolute;top:48px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:72px;font-weight:800;color:#fff;letter-spacing:-0.04em;text-align:center}
+.s3-clock .colon{animation:colon-b 1s step-end infinite;color:rgba(255,255,255,0.3)}
+@keyframes colon-b{0%,100%{opacity:1}50%{opacity:0.1}}
+.s3-sub{position:absolute;top:140px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:3px;color:rgba(255,255,255,0.2);white-space:nowrap;text-transform:uppercase}
+
+/* Terminal */
+.s3-terminal{position:absolute;bottom:48px;left:50%;transform:translateX(-50%);width:860px;background:rgba(10,12,14,0.95);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:18px 22px}
+.term-bar{display:flex;gap:6px;margin-bottom:12px}
+.td{width:9px;height:9px;border-radius:50%}
+.s3-log{font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;display:grid;grid-template-columns:60px 20px 1fr;gap:0 10px}
+.l-ts{color:rgba(255,255,255,0.15)}
+.l-ok{color:#34d399}
+.l-agent{color:#E8A87C}
+.l-msg{color:rgba(255,255,255,0.5)}
+.l-bright{color:#fff}
+.log-row{display:contents;opacity:0;transition:opacity .3s}
+.log-row.show{opacity:1}
+
+/* ─── SCENE 4: MORNING ─── */
+#s4{background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(255,200,80,0.1) 0%,transparent 55%),#0f0b02}
+
+.s4-layout{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:80px}
+
+/* Morning phone */
+.m-phone{width:200px;height:380px;background:#111;border:3px solid #222;border-radius:32px;padding:18px 14px;flex-shrink:0}
+.m-notch{width:50px;height:5px;background:#1a1a1a;border-radius:3px;margin:0 auto 14px}
+.m-time{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:800;color:#fff;text-align:center;margin-bottom:4px}
+.m-date{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,0.25);text-align:center;margin-bottom:16px}
+.notif-card{background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:10px;padding:10px 12px;margin-bottom:8px;animation:notif-pop .4s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes notif-pop{from{transform:scale(0.8) translateY(10px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.notif-card:nth-child(1){animation-delay:.3s}
+.notif-card:nth-child(2){animation-delay:.6s}
+.nf-header{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.nf-icon{width:16px;height:16px;background:linear-gradient(135deg,#C5E0EE,#E8A87C);border-radius:4px;font-size:9px;display:flex;align-items:center;justify-content:center}
+.nf-name{font-size:9px;font-weight:700;color:#fff}
+.nf-time{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(255,255,255,0.2);margin-left:auto}
+.nf-msg{font-size:9px;color:rgba(255,255,255,0.6);line-height:1.5}
+.nf-msg strong{color:#34d399}
+.nf-ref{font-family:'JetBrains Mono',monospace;font-size:7px;color:rgba(255,255,255,0.2);margin-top:3px}
+
+.s4-text{max-width:380px}
+.s4-date{font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,200,80,0.5);margin-bottom:16px;letter-spacing:1px}
+.s4-text h2{font-size:42px;font-weight:800;color:#fff;line-height:1.1;letter-spacing:-0.03em;margin-bottom:20px}
+.s4-text h2 em{font-style:normal;color:#34d399}
+.s4-text p{font-size:14px;color:rgba(255,255,255,0.4);line-height:1.8}
+
+/* ─── SCENE 5: FINALE ─── */
+#s5{background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(52,211,153,0.06) 0%,transparent 70%),#0d0f12}
+.s5-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.s5-num{font-size:200px;font-weight:800;letter-spacing:-0.06em;line-height:0.85;background:linear-gradient(135deg,#C5E0EE 20%,#E8A87C);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.s5-unit{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-bottom:28px}
+.s5-line{font-size:26px;font-weight:700;color:#fff;margin-bottom:8px;letter-spacing:-0.02em}
+.s5-sub{font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.2);letter-spacing:2px;margin-bottom:36px}
+.s5-logo{font-size:24px;font-weight:800;color:#fff;letter-spacing:-0.03em}
+.s5-logo span{background:linear-gradient(135deg,#C5E0EE,#E8A87C);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.s5-url{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.2);margin-top:6px;letter-spacing:2px}
+
+/* Fade transitions */
+.scene{opacity:0;transition:opacity 0.8s ease}
+.scene.active{opacity:1}
+
+/* Animate in elements */
+@keyframes fade-up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.anim{opacity:0}
+.scene.active .anim{animation:fade-up .6s ease both}
+.scene.active .anim:nth-child(1){animation-delay:.2s}
+.scene.active .anim:nth-child(2){animation-delay:.5s}
+.scene.active .anim:nth-child(3){animation-delay:.8s}
+.scene.active .anim:nth-child(4){animation-delay:1.1s}
+</style>
+</head>
+<body>
+
+<!-- RECORD UI -->
+<div id="record-ui">
+  <h1>🎬 Caelith Story — Video Generator</h1>
+  <p>Click below, then share your <strong>browser tab</strong> when prompted. The 60-second story plays automatically and downloads as an MP4-compatible video.</p>
+  <button id="record-btn" onclick="startRecording()">▶ Record & Play (60s)</button>
+  <div class="rec-note">
+    Works in Chrome · Share "This Tab" when asked<br>
+    Output: caelith-story.webm (convert to MP4 free at cloudconvert.com)
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div id="progress-wrap"><div id="progress-bar"></div></div>
+<div id="rec-indicator"><div id="rec-dot"></div><span id="rec-label">REC</span></div>
+
+<!-- ═══ SCENE 1 ═══ -->
+<div class="scene" id="s1">
+  <div class="grid-bg"></div>
+  <div class="s1-date anim">📅 April 15, 2026 · 11:47 PM · Frankfurt, Germany</div>
+  <div class="s1-headline anim">Sophie hasn't<br>slept. The deadline<br>is <em>tomorrow.</em></div>
+  <div class="s1-sub anim">As compliance officer at a German KVG, she's been preparing AIFMD II filings for weeks. The consultant hasn't replied. Excel has 47 error flags.</div>
+  <div class="desk-wrap anim">
+    <div style="position:relative">
+      <div class="error-popup">⚠ XML error in row 847<br>Invalid LEI format</div>
+      <div class="monitor-body">
+        <div class="monitor-screen">
+          <div style="padding:6px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:7px;color:rgba(255,255,255,0.2);margin-bottom:4px">Annex_IV_Q1_2026_FINAL_v14.xlsx — 47 errors</div>
+            <div class="excel-row header"><div class="ec">LEI Code</div><div class="ec">Country</div><div class="ec">Strategy</div><div class="ec">NAV (€M)</div><div class="ec">Status</div></div>
+            <div class="excel-row"><div class="ec">549300...</div><div class="ec">DE</div><div class="ec">RE</div><div class="ec">48.2</div><div class="ec ok">✓ OK</div></div>
+            <div class="excel-row"><div class="ec err">???</div><div class="ec err">??</div><div class="ec err">ERR</div><div class="ec err">—</div><div class="ec err">✗ ERR</div></div>
+            <div class="excel-row"><div class="ec">385800...</div><div class="ec">LU</div><div class="ec">PE</div><div class="ec">120.0</div><div class="ec err">#REF!</div></div>
+            <div class="excel-row"><div class="ec err">—</div><div class="ec err">??</div><div class="ec err">—</div><div class="ec err">—</div><div class="ec err">✗ ERR</div></div>
+            <div class="excel-row"><div class="ec">815600...</div><div class="ec">DE</div><div class="ec">HF</div><div class="ec">22.4</div><div class="ec ok">✓ OK</div></div>
+            <div class="excel-row"><div class="ec err">???</div><div class="ec err">??</div><div class="ec err">ERR</div><div class="ec err">—</div><div class="ec err">✗ ERR</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="monitor-stand"></div>
+      <div class="monitor-base"></div>
+      <div class="sticky-note">Call consultant<br>URGENT !!!<br>€8,500 / filing 💸</div>
+      <div class="coffee">☕</div>
+      <div class="person">
+        <div class="p-head"></div>
+        <div class="p-body">
+          <div class="p-arm"></div>
+        </div>
+      </div>
+    </div>
+    <div class="desk-surface"></div>
+  </div>
+  <div class="caption">This is every compliance officer in Europe right now.</div>
+</div>
+
+<!-- ═══ SCENE 2 ═══ -->
+<div class="scene" id="s2">
+  <div class="grid-bg"></div>
+  <div class="s2-layout">
+    <div class="phone anim">
+      <div class="phone-notch"></div>
+      <div class="app-header">
+        <div class="app-icon-phone">⚡</div>
+        <div><div class="app-title">Caelith</div><div class="app-version">v3.1 · EU Compliance</div></div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:8px;color:#34d399;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:4px;padding:3px 8px;display:inline-block;margin-bottom:10px">✓ caelith.tech · Connected</div>
+      <div class="toggle-row"><span class="toggle-label">Auto-classify investors</span><div class="tog"></div></div>
+      <div class="toggle-row"><span class="toggle-label">Sanctions screening</span><div class="tog"></div></div>
+      <div class="toggle-row"><span class="toggle-label">Annex IV XML generation</span><div class="tog"></div></div>
+      <div class="toggle-row"><span class="toggle-label">BaFin auto-filing agent</span><div class="tog"></div></div>
+      <div class="toggle-row"><span class="toggle-label">Overnight autonomous run</span><div class="tog"></div></div>
+      <div class="activate-btn">✓ Activate — Run Tonight</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(255,255,255,0.2);text-align:center;margin-top:10px">Next run: 00:01 AM → BaFin portal</div>
+    </div>
+    <div class="s2-text">
+      <div class="s2-date anim">🌙 11:58 PM · She sets it up.</div>
+      <h2 class="anim">Activates<br>the agents.<br><em>Goes to sleep.</em></h2>
+      <p class="anim">Caelith takes over. Investor classification. Sanctions screening. ESMA-validated XML. BaFin portal filing. All autonomous. All overnight.</p>
+      <div style="margin-top:24px;font-size:22px;animation:sleep-bob 2s ease-in-out infinite" class="anim">😴<span style="font-size:14px;color:rgba(197,224,238,0.4);margin-left:4px">z</span><span style="font-size:10px;color:rgba(197,224,238,0.3)">z</span><span style="font-size:8px;color:rgba(197,224,238,0.2)">z</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCENE 3 ═══ -->
+<div class="scene" id="s3">
+  <div class="stars-s3" id="stars3"></div>
+  <div class="s3-clock anim">02<span class="colon">:</span>14</div>
+  <div class="s3-sub anim">April 16, 2026 · AIFMD II Enforcement Day · While Sophie sleeps</div>
+  <div class="s3-terminal">
+    <div class="term-bar">
+      <div class="td" style="background:#ff5f57"></div>
+      <div class="td" style="background:#febc2e"></div>
+      <div class="td" style="background:#28c840"></div>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,0.2);margin-left:auto">caelith-agent · live activity</span>
+    </div>
+    <div class="s3-log" id="logGrid">
+      <div class="log-row" id="lr1"><span class="l-ts">00:01</span><span>⚙️</span><span class="l-msg">Compliance run started — Q1 2026 Annex IV cycle</span></div>
+      <div class="log-row" id="lr2"><span class="l-ts">00:03</span><span>📋</span><span class="l-msg">247 investor records loaded across 8 fund structures</span></div>
+      <div class="log-row" id="lr3"><span class="l-ts">00:03</span><span>⚡</span><span class="l-ok l-bright">13 legal rules evaluated — all passed ✓</span></div>
+      <div class="log-row" id="lr4"><span class="l-ts">01:15</span><span>🛡️</span><span class="l-msg">EU + UN sanctions lists refreshed — 6,863 entities</span></div>
+      <div class="log-row" id="lr5"><span class="l-ts">01:15</span><span>✓</span><span class="l-ok">0 matches — investor pool clean ✓</span></div>
+      <div class="log-row" id="lr6"><span class="l-ts">02:13</span><span>📊</span><span class="l-msg">Annex IV XML generated — ESMA XSD Rev 6 v1.2 validated</span></div>
+      <div class="log-row" id="lr7"><span class="l-ts">02:14</span><span>🤖</span><span class="l-agent l-bright">BaFin MVP Portal → agent logging in...</span></div>
+      <div class="log-row" id="lr8"><span class="l-ts">02:14</span><span>🤖</span><span class="l-agent l-bright">Uploading XSD-validated Annex IV XML...</span></div>
+      <div class="log-row" id="lr9"><span class="l-ts">02:14</span><span>🏛️</span><span class="l-ok l-bright">BaFin confirmed receipt — ref: BaFin-2026-Q1-00847 ✓</span></div>
+      <div class="log-row" id="lr10"><span class="l-ts">02:14</span><span>🔗</span><span class="l-ok">Audit trail sealed — SHA-256 hash chain verified ✓</span></div>
+      <div class="log-row" id="lr11"><span class="l-ts">02:14</span><span>📱</span><span class="l-msg">Push notification sent → Sophie</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCENE 4 ═══ -->
+<div class="scene" id="s4">
+  <div class="grid-bg"></div>
+  <div class="s4-layout">
+    <div class="s4-text">
+      <div class="s4-date anim">☀️ April 16, 2026 · 09:00 AM</div>
+      <h2 class="anim">Sophie opens<br>her phone.<br><em>It's all done.</em></h2>
+      <p class="anim">Filed. Screened. Sealed. BaFin confirmed receipt at 02:14 AM. Audit trail intact. Not a single button pressed.</p>
+      <p style="margin-top:16px;font-size:13px;color:rgba(255,255,255,0.2);font-style:italic" class="anim">"I set my 3 AM alarm just in case. I cancelled it."</p>
+    </div>
+    <div class="m-phone anim">
+      <div class="m-notch"></div>
+      <div class="m-time">09:00</div>
+      <div class="m-date">Wednesday · April 16, 2026</div>
+      <div class="notif-card">
+        <div class="nf-header">
+          <div class="nf-icon">⚡</div>
+          <div class="nf-name">Caelith</div>
+          <div class="nf-time">02:14 AM</div>
+        </div>
+        <div class="nf-msg"><strong>✓ Annex IV filed to BaFin</strong><br>Q1 2026 complete. 0 errors. 247 investors screened clean.</div>
+        <div class="nf-ref">ref: BaFin-2026-Q1-00847</div>
+      </div>
+      <div class="notif-card" style="border-color:rgba(197,224,238,0.2);background:rgba(197,224,238,0.04)">
+        <div class="nf-header">
+          <div class="nf-icon">🔗</div>
+          <div class="nf-name">Caelith</div>
+          <div class="nf-time">02:14 AM</div>
+        </div>
+        <div class="nf-msg" style="color:rgba(197,224,238,0.6)">Audit trail sealed. SHA-256 integrity verified. Regulator-ready.</div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(255,255,255,0.15);text-align:center;padding:12px 0">No action required. ☕</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCENE 5 ═══ -->
+<div class="scene" id="s5">
+  <div class="grid-bg"></div>
+  <div class="s5-center">
+    <div class="s5-num anim">4</div>
+    <div class="s5-unit anim">minutes on compliance that quarter</div>
+    <div class="s5-line anim">Compliance doesn't sleep. Neither does Caelith.</div>
+    <div class="s5-sub anim">The same way AWS runs your servers — we run your compliance.</div>
+    <div class="s5-logo anim">C<span>aelith</span></div>
+    <div class="s5-url anim">caelith.tech · EU Fund Compliance · Automated</div>
+  </div>
+</div>
+
+<script>
+// ─── STARS ───
+const s3stars = document.getElementById('stars3');
+for(let i=0;i<100;i++){
+  const s=document.createElement('div');
+  s.className='star-s3';
+  const sz=Math.random()*2+0.5;
+  s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*4}s;animation-duration:${2+Math.random()*3}s`;
+  s3stars.appendChild(s);
+}
+
+// ─── SCENE TIMING (ms) ───
+const scenes=[
+  {id:'s1',start:0,    end:12000},
+  {id:'s2',start:12000,end:24000},
+  {id:'s3',start:24000,end:44000},
+  {id:'s4',start:44000,end:55000},
+  {id:'s5',start:55000,end:62000},
+];
+
+const logTiming=[200,600,1000,1800,2200,3000,4200,5000,6000,7000,8200];
+
+function runScenes(){
+  const startTime=Date.now();
+  const totalMs=62000;
+
+  // Progress bar
+  const bar=document.getElementById('progress-bar');
+  const wrap=document.getElementById('progress-wrap');
+  const recInd=document.getElementById('rec-indicator');
+  wrap.style.display='block';
+  recInd.style.display='flex';
+
+  function tick(){
+    const elapsed=Date.now()-startTime;
+    bar.style.width=(Math.min(elapsed/totalMs,1)*100)+'%';
+
+    // Show correct scene
+    scenes.forEach(sc=>{
+      const el=document.getElementById(sc.id);
+      const active=elapsed>=sc.start&&elapsed<sc.end;
+      if(active&&!el.classList.contains('active')){
+        document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));
+        el.classList.add('active');
+        if(sc.id==='s3') revealLogs(startTime+sc.start);
+      }
+    });
+
+    if(elapsed<totalMs) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function revealLogs(sceneStart){
+  logTiming.forEach((delay,i)=>{
+    setTimeout(()=>{
+      const row=document.getElementById('lr'+(i+1));
+      if(row) row.classList.add('show');
+    },delay);
+  });
+}
+
+// ─── RECORDING ───
+async function startRecording(){
+  const btn=document.getElementById('record-btn');
+  btn.disabled=true;
+  btn.textContent='Starting...';
+
+  try{
+    const stream=await navigator.mediaDevices.getDisplayMedia({
+      video:{frameRate:30,width:1280,height:720},
+      audio:false
+    });
+
+    const chunks=[];
+    const mr=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9',videoBitsPerSecond:4000000});
+    mr.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data)};
+    mr.onstop=()=>{
+      const blob=new Blob(chunks,{type:'video/webm'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='caelith-story.webm';
+      a.click();
+      document.getElementById('record-ui').innerHTML='<h1 style="color:#34d399">✓ Video saved!</h1><p style="color:rgba(255,255,255,0.4);max-width:400px;text-align:center">caelith-story.webm downloaded.<br>Convert to MP4 free at <strong style="color:#C5E0EE">cloudconvert.com</strong> · then upload to LinkedIn.</p>';
+      document.getElementById('record-ui').style.display='flex';
+    };
+
+    mr.start();
+    document.getElementById('record-ui').style.display='none';
+    runScenes();
+
+    setTimeout(()=>{
+      mr.stop();
+      stream.getTracks().forEach(t=>t.stop());
+    },62000);
+
+  }catch(err){
+    btn.disabled=false;
+    btn.textContent='▶ Record & Play (60s)';
+    if(err.name!=='NotAllowedError'){
+      alert('Error: '+err.message);
+    }
+  }
+}
+</script>
+</body>
+</html>

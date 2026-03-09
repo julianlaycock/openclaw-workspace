@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a1f1f">
+<title>Caelith — Mobile v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1f1f;--bg2:#2D3333;--accent:#8EC5E0;--accent-sat:#6BB8D9;--warm:#E8A87C;
+  --text:#f0f0f0;--text2:rgba(255,255,255,0.7);--text3:rgba(255,255,255,0.45);
+  --text-dark:#1a1f1f;--text-dark2:#4a5a5a;--text-dark3:#8a9494;
+  --border:rgba(255,255,255,0.08);--border-light:rgba(45,51,51,0.10);
+  --radius:12px;--grad:linear-gradient(135deg,#8EC5E0,#E8A87C);
+  --glass-bg:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.10);
+  --light-bg:#F8F9FA;--light-card:#FFFFFF;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:60px;scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden;overscroll-behavior-y:none}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;letter-spacing:-0.03em;line-height:1.15}
+a{text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent}
+.grad{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+  html{scroll-behavior:auto!important}
+  .reveal{opacity:1!important;transform:none!important}
+}
+
+/* ══ PROGRESS ══ */
+.scroll-progress{position:fixed;top:0;left:0;height:2px;background:var(--grad);z-index:10001;width:0%;pointer-events:none;transition:width .1s linear}
+
+/* ══ NAV ══ */
+.nav-wrap{position:fixed;top:0;left:0;right:0;z-index:1000;padding-top:var(--safe-top);transition:background .3s,box-shadow .3s}
+.nav-wrap.scrolled{background:rgba(26,31,31,0.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 1px 0 rgba(255,255,255,0.06)}
+nav{padding:12px 20px;display:flex;align-items:center;justify-content:space-between;min-height:48px}
+.nav-logo{font-family:'Sora';font-weight:800;font-size:17px;color:#fff}
+.hamburger{display:flex;flex-direction:column;justify-content:center;align-items:center;background:none;border:none;cursor:pointer;width:44px;height:44px;-webkit-tap-highlight-color:transparent;position:relative}
+.hamburger span{display:block;width:20px;height:1.5px;background:#fff;border-radius:1px;position:absolute;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.hamburger span:nth-child(1){transform:translateY(-6px)}
+.hamburger span:nth-child(2){opacity:1}
+.hamburger span:nth-child(3){transform:translateY(6px)}
+.hamburger.active span:nth-child(1){transform:rotate(45deg)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:rotate(-45deg)}
+.mobile-menu{position:fixed;inset:0;z-index:999;background:rgba(26,31,31,0.98);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;opacity:0;pointer-events:none;transition:opacity .3s;overscroll-behavior:contain}
+.mobile-menu.open{opacity:1;pointer-events:auto}
+.mobile-menu a{font-family:'Sora';font-size:22px;font-weight:600;color:var(--text2);padding:14px 0;text-align:center}
+.mobile-menu .menu-divider{width:32px;height:1px;background:var(--border);margin:4px 0}
+.mobile-menu .menu-cta{margin-top:28px;font-size:14px;padding:14px 36px;border-radius:999px;background:var(--grad);color:#fff;font-weight:700}
+.mobile-menu .menu-cta:active{transform:scale(0.96)}
+
+/* ══ BUTTONS ══ */
+.btn{font-family:'Sora';font-weight:600;border:none;border-radius:var(--radius);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:6px;-webkit-tap-highlight-color:transparent;min-height:44px}
+.btn:active{transform:scale(0.97);opacity:0.85}
+.btn-md{font-size:13px;padding:12px 22px}
+.btn-lg{font-size:15px;padding:16px 28px;border-radius:14px;font-weight:700}
+.btn-accent{background:var(--grad);color:#fff;font-weight:700;box-shadow:0 4px 20px rgba(142,197,224,0.25)}
+.btn-ghost{background:transparent;color:var(--text3);font-size:11px;padding:10px 16px;border:1px solid var(--border);min-height:40px;border-radius:var(--radius)}
+.btn-ghost-dark{background:transparent;color:var(--text-dark3);font-size:12px;padding:11px 16px;border:1px solid var(--border-light);min-height:40px;border-radius:var(--radius)}
+.btn-outline{background:transparent;border:1.5px solid rgba(142,197,224,0.3);color:var(--accent);font-size:13px;padding:12px 22px}
+
+/* ══ LAYOUT ══ */
+.section{padding:56px 20px}
+.label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+
+/* ══ SKELETON LOADER ══ */
+.page-skeleton{position:fixed;inset:0;background:var(--bg);z-index:9999;pointer-events:none;opacity:1;transition:opacity .4s ease}
+.page-skeleton.loaded{opacity:0}
+
+/* ══ 1. HERO ══ */
+.hero{position:relative;padding:calc(80px + var(--safe-top)) 20px 40px;background:radial-gradient(ellipse at 20% 0%,rgba(142,197,224,0.18) 0%,transparent 55%),linear-gradient(180deg,#2D3333 0%,#1f2626 100%);min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 100%,rgba(232,168,124,0.07) 0%,transparent 50%);pointer-events:none}
+.hero-content{position:relative;z-index:1}
+.live-badge{display:inline-flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:1.5px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:999px;padding:5px 12px 5px 8px;margin-bottom:16px}
+.live-dot{width:5px;height:5px;background:#22c55e;border-radius:50%;animation:livePulse 2s ease-in-out infinite;flex-shrink:0}
+@keyframes livePulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,0.4)}50%{opacity:.5;box-shadow:0 0 0 4px rgba(34,197,94,0)}}
+.hero h1{font-size:34px;font-weight:800;line-height:1.08;letter-spacing:-0.045em;color:#fff;margin-bottom:10px}
+.hero-subhead{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:6px}
+.hero-subhead strong{color:#fff;font-weight:600}
+.savings-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:999px;padding:5px 14px;margin-bottom:20px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#4ade80;letter-spacing:.5px}
+.savings-pill .cross{text-decoration:line-through;opacity:.5;color:var(--text3);text-decoration-color:rgba(239,68,68,0.6)}
+
+/* STAT BAR */
+.stat-bar{display:flex;border-radius:var(--radius);overflow:hidden;border:1px solid var(--glass-border);background:rgba(255,255,255,0.02);margin-bottom:24px}
+.stat-item{flex:1;padding:12px 8px;text-align:center;position:relative}
+.stat-item+.stat-item::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:1px;background:var(--border)}
+.stat-num{font-family:'Sora';font-weight:800;font-size:18px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:3px}
+.stat-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:1px;line-height:1.3}
+
+/* HERO CTAs */
+.hero-ctas{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.hero-ctas .btn{width:100%}
+.hero-ctas .btn-lg{font-size:14px}
+
+/* TRUST BAR (in hero) */
+.hero-trust{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.hero-trust-item{display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.5px}
+.hero-trust-item .tick{color:#4ade80;font-size:10px}
+
+/* ══ 2. FEATURES (LIGHT) ══ */
+.features-section{background:var(--light-bg)}
+.feat-grid{display:flex;flex-direction:column;gap:10px}
+.feat-card{display:flex;gap:12px;padding:14px;border-radius:10px;background:var(--light-card);border:1px solid var(--border-light);align-items:flex-start;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.feat-icon{width:36px;height:36px;min-width:36px;border-radius:9px;background:linear-gradient(135deg,rgba(107,184,217,0.12),rgba(232,168,124,0.08));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.feat-icon svg{width:16px;height:16px;stroke:var(--accent-sat);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.feat-text h3{font-size:13px;font-weight:700;margin-bottom:2px;color:var(--text-dark)}
+.feat-text p{font-size:11px;color:var(--text-dark2);line-height:1.55}
+/* Differentiator badges */
+.feat-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.5px;padding:2px 7px;border-radius:999px;margin-top:4px;background:rgba(107,184,217,0.10);color:var(--accent-sat);border:1px solid rgba(107,184,217,0.15)}
+
+/* ══ 3. PLATFORM (DARK) — merged dashboard + copilot ══ */
+.platform-section{background:var(--bg)}
+.dash-preview{border-radius:var(--radius);overflow:hidden;border:1px solid var(--glass-border);background:rgba(255,255,255,0.02);margin-bottom:12px;position:relative}
+.dash-img-placeholder{aspect-ratio:16/9;background:linear-gradient(135deg,rgba(45,51,51,0.8),rgba(26,31,31,0.95));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px}
+.dash-img-placeholder .dash-icon{font-size:32px;opacity:.6}
+.dash-img-placeholder p{font-size:11px;color:var(--text3);text-align:center;line-height:1.6}
+.dash-img-placeholder .dash-link{font-family:'Sora';font-size:12px;font-weight:700;color:var(--accent);margin-top:4px;display:inline-flex;align-items:center;gap:4px}
+.dash-cta-row{display:flex;gap:8px;margin-bottom:20px}
+.dash-cta-row .btn{flex:1;font-size:12px}
+.platform-divider{height:1px;background:var(--border);margin:24px 0}
+.chat-window{background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:var(--radius);overflow:hidden}
+.chat-header{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(0,0,0,0.2);display:flex;align-items:center;gap:8px}
+.chat-header .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:livePulse 2s ease-in-out infinite}
+.chat-header span{font-family:'Sora';font-size:12px;font-weight:600;color:rgba(255,255,255,0.7)}
+.chat-header .chat-badge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--accent);background:rgba(142,197,224,0.08);border:1px solid rgba(142,197,224,0.15);border-radius:999px;padding:2px 8px}
+.chat-body{padding:12px;display:flex;flex-direction:column;gap:8px}
+.chat-msg{max-width:88%;padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.55}
+.chat-msg.user{align-self:flex-end;background:rgba(107,184,217,0.12);border:1px solid rgba(107,184,217,0.15);color:var(--accent);font-size:11px}
+.chat-msg.bot{align-self:flex-start;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:var(--text2);font-size:12px}
+.chat-msg.bot strong{color:#fff;font-weight:600}
+.chat-msg.bot code{font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(0,0,0,0.3);padding:1px 4px;border-radius:3px;color:var(--warm)}
+.typing-indicator{display:flex;gap:3px;padding:8px 12px;align-self:flex-start}
+.typing-indicator span{width:4px;height:4px;background:rgba(255,255,255,0.2);border-radius:50%;animation:typeDot 1.4s infinite}
+.typing-indicator span:nth-child(2){animation-delay:.2s}
+.typing-indicator span:nth-child(3){animation-delay:.4s}
+@keyframes typeDot{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+
+/* ══ 4. PRICING (LIGHT) ══ */
+.pricing-section{background:var(--light-bg)}
+/* VS comparison strip */
+.vs-strip{display:flex;flex-direction:column;gap:6px;margin-bottom:28px;padding:16px;border-radius:var(--radius);background:var(--light-card);border:1px solid var(--border-light);box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.vs-strip-header{display:grid;grid-template-columns:1fr 80px 80px;gap:8px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border-light)}
+.vs-strip-header span{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--text-dark3);text-align:center}
+.vs-strip-header span:first-child{text-align:left}
+.vs-row{display:grid;grid-template-columns:1fr 80px 80px;gap:8px;align-items:center;padding:5px 0}
+.vs-row .metric{font-size:11px;font-weight:600;color:var(--text-dark2)}
+.vs-row .old-side{text-align:center;font-size:10px;color:var(--text-dark3)}
+.vs-row .old-side .ico{font-size:12px;display:block}
+.vs-row .new-side{text-align:center;font-size:10px;font-weight:700;color:#15803d}
+.vs-row .new-side .ico{font-size:12px;display:block}
+.vs-divider{height:1px;background:var(--border-light);margin:2px 0}
+
+/* Pricing cards */
+.pricing-grid{display:flex;flex-direction:column;gap:14px}
+.price-col{padding:20px 16px;border-radius:var(--radius);border:1.5px solid var(--border-light);background:var(--light-card)}
+.price-col.featured{border:none;transform:scale(1.02);box-shadow:0 12px 40px rgba(0,0,0,0.10);position:relative;z-index:1}
+.price-col.featured::before{content:'';position:absolute;inset:-2px;border-radius:calc(var(--radius) + 2px);background:var(--grad);z-index:-1;border-radius:14px}
+.price-col.featured::after{content:'';position:absolute;inset:0;border-radius:var(--radius);background:var(--light-card);z-index:-1;border-radius:12px}
+.price-rec-badge{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700;margin-bottom:4px}
+.price-rec-badge::before{content:'★';font-size:10px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tier{font-size:13px;font-weight:700;color:var(--text-dark);margin-bottom:6px}
+.price-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.amount{font-family:'Sora';font-weight:800;font-size:28px;color:var(--text-dark)}
+.amount span{font-size:12px;font-weight:400;color:var(--text-dark3)}
+.pdesc{font-size:11px;color:var(--text-dark3);margin-top:2px}
+.price-col ul{list-style:none;display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.price-col li{font-size:11px;color:var(--text-dark2);padding-left:16px;position:relative;line-height:1.4}
+.price-col li::before{content:'✓';position:absolute;left:0;color:var(--accent-sat);font-size:10px;font-weight:700}
+.price-ctas{display:flex;gap:8px}
+.price-ctas .btn,.price-ctas .btn-ghost-dark{flex:1;text-align:center;font-size:12px}
+
+/* ══ 5. FAQ (DARK) ══ */
+.faq-section{background:var(--bg)}
+.countdown-band{display:flex;align-items:center;justify-content:center;gap:16px;padding:18px;border-radius:var(--radius);background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);margin-bottom:28px;text-align:center}
+.cd-days{font-family:'Sora';font-weight:800;font-size:42px;line-height:1;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cd-text{text-align:left}
+.cd-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:1px;text-transform:uppercase}
+.cd-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--warm);letter-spacing:1px;margin-top:2px}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:15px 0;cursor:pointer;font-family:'Sora';font-weight:500;font-size:13px;color:var(--text);gap:12px;-webkit-tap-highlight-color:transparent;min-height:44px}
+.faq-tog{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--text3);transition:transform .3s,color .3s;flex-shrink:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.faq-item.open .faq-tog{transform:rotate(45deg);color:var(--accent)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.faq-item.open .faq-a{max-height:280px}
+.faq-a-inner{padding:0 0 14px;font-size:12px;color:var(--text2);line-height:1.65}
+.faq-item:first-child .faq-a{max-height:280px}
+.faq-item:first-child .faq-tog{transform:rotate(45deg);color:var(--accent)}
+/* Final CTA inside FAQ section */
+.final-cta{text-align:center;margin-top:36px;padding:24px;border-radius:var(--radius);background:rgba(142,197,224,0.04);border:1px solid rgba(142,197,224,0.12)}
+.final-cta h3{font-size:20px;color:#fff;margin-bottom:8px}
+.final-cta p{font-size:12px;color:var(--text3);margin-bottom:18px;line-height:1.6}
+.final-cta-btns{display:flex;flex-direction:column;gap:10px}
+.final-cta-btns .btn{width:100%}
+
+/* ══ FOOTER ══ */
+footer{background:var(--bg);border-top:1px solid var(--border);padding:32px 20px calc(90px + var(--safe-bottom))}
+.footer-inner{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.footer-brand{grid-column:1/-1}
+.footer-logo{font-family:'Sora';font-weight:800;font-size:15px;color:#fff}
+footer .brand-p{font-size:11px;color:var(--text3);line-height:1.6;margin-top:4px;max-width:260px}
+.social-links{display:flex;gap:8px;margin-top:10px}
+.social-links a{width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center}
+.social-links a svg{width:13px;height:13px;fill:var(--text3)}
+.footer-col h4{font-size:9px;font-weight:600;color:var(--text3);margin-bottom:8px;letter-spacing:1px;text-transform:uppercase}
+.footer-col a{display:flex;align-items:center;font-size:11px;color:var(--text3);margin-bottom:5px;padding:2px 0;min-height:24px}
+.footer-col a:active{color:#fff}
+.footer-resources{grid-column:1/-1}
+.footer-resources .resource-links{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.footer-resources .resource-links a{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text3);padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid var(--border)}
+.footer-resources .resource-links a:active{background:rgba(255,255,255,0.05)}
+.footer-resources .res-tag{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--accent);background:rgba(142,197,224,0.08);border-radius:4px;padding:1px 5px;white-space:nowrap;flex-shrink:0}
+.footer-bottom{grid-column:1/-1;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:10px;color:var(--text3)}
+
+/* ══ STICKY BOTTOM CTA ══ */
+.sticky-cta{position:fixed;bottom:0;left:0;right:0;z-index:900;background:rgba(26,31,31,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.07);padding:10px 20px calc(10px + var(--safe-bottom));display:flex;gap:8px;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1)}
+.sticky-cta.visible{transform:translateY(0)}
+.sticky-cta .btn{flex:1;font-size:13px;padding:12px 0;min-height:44px}
+
+/* ══ BACK TO TOP FAB ══ */
+.fab-top{position:fixed;right:16px;bottom:calc(80px + var(--safe-bottom));z-index:850;width:42px;height:42px;border-radius:999px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;transform:translateY(8px)}
+.fab-top.visible{opacity:1;pointer-events:auto;transform:translateY(0)}
+.fab-top svg{width:16px;height:16px;stroke:var(--text2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ══ COOKIE ══ */
+.consent-bar{position:fixed;bottom:0;left:0;right:0;background:#2D3333;border-top:1px solid rgba(255,255,255,0.1);padding:14px 20px calc(14px + var(--safe-bottom));z-index:950;font-size:11px;color:rgba(248,249,250,0.6);display:none;flex-direction:column;gap:10px;text-align:center;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.consent-bar a{color:#8EC5E0}
+.consent-btns{display:flex;gap:8px}
+.consent-btns button{flex:1;padding:10px;border-radius:8px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;border:none;min-height:44px}
+.consent-accept{background:linear-gradient(135deg,#8EC5E0,#E8A87C);color:#1a1f1f;font-weight:600}
+.consent-reject{background:rgba(255,255,255,0.08);color:rgba(248,249,250,0.6);border:1px solid rgba(255,255,255,0.1)!important}
+
+/* ══ REVEALS ══ */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.19,1,.22,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.07s}
+.reveal-d2{transition-delay:.14s}
+
+/* ══ PAGE LOAD FADE ══ */
+body{animation:pageIn .3s ease}
+@keyframes pageIn{from{opacity:0}to{opacity:1}}
+
+/* ══ 320px ══ */
+@media(max-width:350px){
+  .hero h1{font-size:28px}
+  .section{padding:48px 16px}
+  .hero{padding-left:16px;padding-right:16px}
+  nav{padding:12px 16px}
+  .stat-num{font-size:15px}
+  .footer-inner{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- NAV -->
+<div class="nav-wrap" id="navWrap">
+<nav>
+  <a class="nav-logo" href="#">Caelith</a>
+  <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+</nav>
+</div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu" role="dialog" aria-label="Navigation">
+  <a href="#features" class="menu-link">Features</a>
+  <div class="menu-divider"></div>
+  <a href="#platform" class="menu-link">Platform</a>
+  <div class="menu-divider"></div>
+  <a href="#pricing" class="menu-link">Pricing</a>
+  <div class="menu-divider"></div>
+  <a href="#faq" class="menu-link">FAQ</a>
+  <a href="https://calendly.com/julian-laycock-caelith/30min" class="menu-cta">Book a Demo →</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     1. HERO
+════════════════════════════════════════════ -->
+<section class="hero" id="heroSection">
+  <div class="hero-content">
+
+    <div class="live-badge"><span class="live-dot"></span>AIFMD II · April 16, 2026</div>
+
+    <h1>Fund compliance,<br><span class="grad">automated.</span></h1>
+
+    <p class="hero-subhead"><strong>€180K/year → €11,880/year.</strong><br>AIFMD II ready in under 4 minutes.</p>
+
+    <div class="savings-pill">
+      <span class="cross">€180,000 manual</span>
+      <span>→ €11,880 with Caelith</span>
+    </div>
+
+    <!-- STAT BAR -->
+    <div class="stat-bar">
+      <div class="stat-item">
+        <div class="stat-num">13</div>
+        <div class="stat-lbl">Rules</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">6</div>
+        <div class="stat-lbl">Frameworks</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">127</div>
+        <div class="stat-lbl">Funds<br>trust us</div>
+      </div>
+    </div>
+
+    <!-- HERO CTAs -->
+    <div class="hero-ctas">
+      <a href="https://calendly.com/julian-laycock-caelith/30min" class="btn btn-lg btn-accent">Book a 15-Min Demo →</a>
+      <a href="/readiness-check" class="btn btn-md btn-ghost">Try Free Readiness Check</a>
+    </div>
+
+    <!-- TRUST SIGNALS -->
+    <div class="hero-trust">
+      <span class="hero-trust-item"><span class="tick">✓</span> Campus Founders Batch 4</span>
+      <span class="hero-trust-item"><span class="tick">✓</span> EU-Hosted</span>
+      <span class="hero-trust-item"><span class="tick">✓</span> ESMA Validated</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     2. FEATURES (light)
+════════════════════════════════════════════ -->
+<section class="section features-section" id="features">
+  <div class="section-inner">
+    <div class="label" style="color:var(--accent-sat)">Capabilities</div>
+    <h2 style="color:var(--text-dark);font-size:22px;margin-bottom:18px">Built for compliance.<br><span class="grad">Engineered for speed.</span></h2>
+
+    <div class="feat-grid">
+
+      <div class="feat-card reveal">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+        </div>
+        <div class="feat-text">
+          <h3>Rules Engine</h3>
+          <p>13 rules across AIFMD II, KAGB, ELTIF 2.0. Real-time investor classification.</p>
+          <span class="feat-badge">13 RULES · 6 FRAMEWORKS</span>
+        </div>
+      </div>
+
+      <div class="feat-card reveal reveal-d1">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <div class="feat-text">
+          <h3>Tamper-Proof Audit Trail</h3>
+          <p>SHA-256 chained evidence. Regulator-ready in seconds, not weeks.</p>
+          <span class="feat-badge">CRYPTOGRAPHICALLY PROVEN</span>
+        </div>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <div class="feat-text">
+          <h3>Annex IV Reporting</h3>
+          <p>XSD-validated XML. One-click export for BaFin, CSSF, FMA.</p>
+          <span class="feat-badge">ESMA XSD REV 6</span>
+        </div>
+      </div>
+
+      <div class="feat-card reveal reveal-d1">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+        <div class="feat-text">
+          <h3>Sanctions Screening</h3>
+          <p>6,863 EU & UN entities. Fuzzy matching, real-time alerts.</p>
+          <span class="feat-badge">ZERO HUMAN ERROR</span>
+        </div>
+      </div>
+
+      <div class="feat-card reveal">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><path d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0"/></svg>
+        </div>
+        <div class="feat-text">
+          <h3>LEI Verification</h3>
+          <p>GLEIF API validation. Auto-verify investor identity in milliseconds.</p>
+          <span class="feat-badge">LIVE GLEIF API</span>
+        </div>
+      </div>
+
+      <div class="feat-card reveal reveal-d1">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
+        </div>
+        <div class="feat-text">
+          <h3>EMT / EET / EPT Templates</h3>
+          <p>MiFID, ESG, Cost templates auto-generated. 43+ fields, zero manual work.</p>
+          <span class="feat-badge">43+ FIELDS AUTO-FILLED</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     3. PLATFORM (dark) — dashboard + copilot merged
+════════════════════════════════════════════ -->
+<section class="section platform-section" id="platform">
+  <div class="section-inner">
+    <div class="label" style="color:var(--accent)">The Platform</div>
+    <h2 style="color:#fff;font-size:22px;margin-bottom:18px">See it in action.<br><span class="grad">No signup required.</span></h2>
+
+    <!-- Dashboard preview (positive framing) -->
+    <div class="dash-preview reveal">
+      <div class="dash-img-placeholder">
+        <div class="dash-icon">📊</div>
+        <p>Full dashboard with live compliance checks, audit trails, and Annex IV generation.</p>
+        <a href="https://www.caelith.tech" class="dash-link">Open full demo on desktop →</a>
+      </div>
+    </div>
+
+    <div class="dash-cta-row">
+      <a href="/readiness-check" class="btn btn-md btn-accent">Free Readiness Check →</a>
+      <a href="https://calendly.com/julian-laycock-caelith/30min" class="btn btn-outline">Book Demo</a>
+    </div>
+
+    <div class="platform-divider"></div>
+
+    <!-- Compliance Copilot -->
+    <h3 style="color:#fff;font-size:15px;font-weight:700;margin-bottom:12px">Compliance Copilot <span style="color:var(--text3);font-weight:400;font-size:12px">— available on mobile</span></h3>
+
+    <div class="chat-window reveal">
+      <div class="chat-header">
+        <div class="dot"></div>
+        <span>Compliance Copilot</span>
+        <div class="chat-badge">LIVE</div>
+      </div>
+      <div class="chat-body">
+        <div class="chat-msg user">Does €150K qualify under KAGB §1(19)?</div>
+        <div class="chat-msg bot"><strong>Not alone.</strong> Under KAGB §1 Abs. 19 Nr. 33, semi-professional investors need at least <code>€200,000</code>. €150K falls short of the threshold.</div>
+        <div class="typing-indicator"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <a href="/api/copilot-demo" class="btn btn-md btn-accent" style="width:100%">Try the Copilot →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     4. PRICING (light) — with visual comparison
+════════════════════════════════════════════ -->
+<section class="section pricing-section" id="pricing">
+  <div class="section-inner">
+    <div class="label" style="color:var(--accent-sat)">Pricing</div>
+    <h2 style="color:var(--text-dark);font-size:22px;margin-bottom:6px">93% cheaper<br><span class="grad">than Big 4 consultants.</span></h2>
+    <p style="font-size:12px;color:var(--text-dark3);margin-bottom:20px">Simple pricing. No surprises. Cancel anytime.</p>
+
+    <!-- VS comparison — visual icon grid -->
+    <div class="vs-strip reveal">
+      <div class="vs-strip-header">
+        <span>What you're comparing</span>
+        <span>Manual</span>
+        <span>Caelith</span>
+      </div>
+      <div class="vs-row">
+        <div class="metric">Time to audit</div>
+        <div class="old-side"><span class="ico">🐌</span>2–4 weeks</div>
+        <div class="new-side"><span class="ico">⚡</span>&lt; 4 min</div>
+      </div>
+      <div class="vs-divider"></div>
+      <div class="vs-row">
+        <div class="metric">Error rate</div>
+        <div class="old-side"><span class="ico">❌</span>Human</div>
+        <div class="new-side"><span class="ico">✅</span>Zero</div>
+      </div>
+      <div class="vs-divider"></div>
+      <div class="vs-row">
+        <div class="metric">Annual cost</div>
+        <div class="old-side"><span class="ico">💸</span>€180K</div>
+        <div class="new-side"><span class="ico">💰</span>€11,880</div>
+      </div>
+      <div class="vs-divider"></div>
+      <div class="vs-row">
+        <div class="metric">Audit evidence</div>
+        <div class="old-side"><span class="ico">📷</span>Screenshots</div>
+        <div class="new-side"><span class="ico">🔐</span>SHA-256</div>
+      </div>
+    </div>
+
+    <!-- Pricing cards -->
+    <div class="pricing-grid">
+
+      <div class="price-col reveal">
+        <div class="tier">Essentials</div>
+        <div class="price-row">
+          <div class="amount">€990<span>/mo</span></div>
+          <div class="pdesc">Up to 3 funds</div>
+        </div>
+        <ul>
+          <li>3 funds, 200 investors</li>
+          <li>Core rules engine</li>
+          <li>Full audit trail</li>
+          <li>EMT/EET/EPT templates</li>
+          <li>Email support</li>
+        </ul>
+        <div class="price-ctas">
+          <a href="mailto:julian.laycock@caelith.tech?subject=Essentials" class="btn btn-md btn-ghost-dark">Get started →</a>
+          <a href="https://calendly.com/julian-laycock-caelith/30min" class="btn-ghost-dark btn">Book demo</a>
+        </div>
+      </div>
+
+      <div class="price-col featured reveal">
+        <div class="price-rec-badge">RECOMMENDED</div>
+        <div class="tier">Professional</div>
+        <div class="price-row">
+          <div class="amount">€1,990<span>/mo</span></div>
+          <div class="pdesc">Multiple funds</div>
+        </div>
+        <ul>
+          <li>15 funds, unlimited investors</li>
+          <li>Full rules + scenario modeling</li>
+          <li>Annex IV + XSD validation</li>
+          <li>Sanctions + LEI screening</li>
+          <li>Compliance Copilot AI</li>
+          <li>API access</li>
+          <li>Priority support</li>
+        </ul>
+        <div class="price-ctas">
+          <a href="mailto:julian.laycock@caelith.tech?subject=Professional" class="btn btn-md btn-accent">Get started →</a>
+          <a href="https://calendly.com/julian-laycock-caelith/30min" class="btn-ghost-dark btn">Book demo</a>
+        </div>
+      </div>
+
+      <div class="price-col reveal">
+        <div class="tier">Enterprise</div>
+        <div class="price-row">
+          <div class="amount">€3,500+<span>/mo</span></div>
+          <div class="pdesc">Large AIFMs</div>
+        </div>
+        <ul>
+          <li>Unlimited funds & investors</li>
+          <li>Custom rule development</li>
+          <li>On-premise, SSO</li>
+          <li>Full API + webhooks</li>
+          <li>Dedicated account manager</li>
+        </ul>
+        <div class="price-ctas">
+          <a href="mailto:julian.laycock@caelith.tech?subject=Enterprise" class="btn btn-md btn-ghost-dark">Contact sales →</a>
+          <a href="https://calendly.com/julian-laycock-caelith/30min" class="btn-ghost-dark btn">Book demo</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     5. FAQ + FINAL CTA (dark)
+════════════════════════════════════════════ -->
+<section class="section faq-section" id="faq">
+  <div class="section-inner">
+
+    <!-- Countdown urgency -->
+    <div class="countdown-band reveal">
+      <div class="cd-days" id="cdDays">46</div>
+      <div class="cd-text">
+        <div class="cd-label">days until</div>
+        <div class="cd-sub">AIFMD II enforcement</div>
+      </div>
+    </div>
+
+    <h3 style="color:#fff;font-size:18px;font-weight:700;margin-bottom:16px">Common questions.</h3>
+
+    <!-- 4 questions only on mobile -->
+    <div class="faq-list">
+
+      <div class="faq-item open">
+        <div class="faq-q" role="button" tabindex="0" aria-expanded="true">
+          <span>What frameworks does Caelith cover?</span>
+          <span class="faq-tog">+</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">AIFMD II, KAGB (§1(19)), ELTIF 2.0, RAIF, SIF, MiFID II. 13 rules across 6 frameworks. Annex IV validated against ESMA XSD Rev 6.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" role="button" tabindex="0" aria-expanded="false">
+          <span>Can I try without signing up?</span>
+          <span class="faq-tog">+</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">Yes. The Readiness Check and Compliance Copilot are available instantly — no account needed. The full interactive dashboard is best on desktop or tablet.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" role="button" tabindex="0" aria-expanded="false">
+          <span>How fast is implementation?</span>
+          <span class="faq-tog">+</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">Most fund managers are live in under an hour. Import your fund data, validate your investors, generate your first Annex IV report. No IT team required.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" role="button" tabindex="0" aria-expanded="false">
+          <span>Is my data secure?</span>
+          <span class="faq-tog">+</span>
+        </div>
+        <div class="faq-a">
+          <div class="faq-a-inner">EU-hosted (Frankfurt), end-to-end encryption, GDPR compliant with full Art. 15/17/20 data rights. Enterprise can deploy on-premise.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Final CTA -->
+    <div class="final-cta reveal">
+      <h3>After April 16,<br>non-compliance is a fine.</h3>
+      <p>Get ready now. No credit card required.</p>
+      <div class="final-cta-btns">
+        <a href="https://calendly.com/julian-laycock-caelith/30min" class="btn btn-lg btn-accent">Book a 15-Min Demo →</a>
+        <a href="/readiness-check" class="btn btn-md btn-ghost">Free Readiness Check</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">Caelith</div>
+      <p class="brand-p">Compliance intelligence for European fund managers. AIFMD II. KAGB. ELTIF 2.0.</p>
+      <div class="social-links">
+        <a href="https://www.linkedin.com/company/caelithtech" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        </a>
+        <a href="https://github.com/julianlaycock" aria-label="GitHub">
+          <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#features">Features</a>
+      <a href="#platform">Platform</a>
+      <a href="#pricing">Pricing</a>
+      <a href="https://www.caelith.tech/api/docs">API Docs</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="/impressum">Imprint</a>
+    </div>
+
+    <div class="footer-resources">
+      <h4>Resources</h4>
+      <div class="resource-links">
+        <a href="/api/blog/aifmd-annex-iv-xml-guide">
+          <span class="res-tag">GUIDE</span>
+          Annex IV XML: Complete Guide
+        </a>
+        <a href="/api/blog/eu-sanctions-screening-guide">
+          <span class="res-tag">COMPLIANCE</span>
+          EU Sanctions Screening
+        </a>
+        <a href="https://github.com/julianlaycock">
+          <span class="res-tag">OPEN SOURCE</span>
+          open-annex-iv on GitHub
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>Made in Berlin 🇩🇪</span>
+      <span>© 2026 Caelith</span>
+    </div>
+  </div>
+</footer>
+
+<!-- STICKY BOTTOM CTA -->
+<div class="sticky-cta" id="stickyCta">
+  <a href="/readiness-check" class="btn btn-ghost">Readiness Check</a>
+  <a href="https://calendly.com/julian-laycock-caelith/30min" class="btn btn-accent">Book Demo →</a>
+</div>
+
+<!-- BACK TO TOP FAB -->
+<button class="fab-top" id="fabTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<!-- Cookie -->
+<div class="consent-bar" id="consentBar">
+  We use analytics to improve the experience. <a href="/privacy">Privacy policy</a>
+  <div class="consent-btns">
+    <button class="consent-reject" onclick="document.getElementById('consentBar').style.display='none';localStorage.setItem('caelith_consent','rejected')">Decline</button>
+    <button class="consent-accept" onclick="document.getElementById('consentBar').style.display='none';localStorage.setItem('caelith_consent','accepted')">Accept</button>
+  </div>
+</div>
+
+<script>
+/* ── Mobile menu ── */
+var menu=document.getElementById('mobileMenu'),hb=document.getElementById('hamburger');
+function toggleMenu(){var open=menu.classList.toggle('open');hb.classList.toggle('active');hb.setAttribute('aria-expanded',String(open));document.body.style.overflow=open?'hidden':''}
+hb.addEventListener('click',toggleMenu);
+menu.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){menu.classList.remove('open');hb.classList.remove('active');hb.setAttribute('aria-expanded','false');document.body.style.overflow=''})});
+
+/* ── Nav scroll ── */
+var navWrap=document.getElementById('navWrap');
+window.addEventListener('scroll',function(){navWrap.classList.toggle('scrolled',window.scrollY>50)},{passive:true});
+
+/* ── Scroll progress ── */
+var prog=document.getElementById('scrollProgress');
+function updateProg(){var h=document.documentElement.scrollHeight-window.innerHeight;prog.style.width=(h>0?(window.scrollY/h*100):0)+'%'}
+window.addEventListener('scroll',updateProg,{passive:true});
+
+/* ── Sticky CTA + FAB ── */
+var sticky=document.getElementById('stickyCta');
+var fab=document.getElementById('fabTop');
+var heroEl=document.getElementById('heroSection');
+window.addEventListener('scroll',function(){
+  var y=window.scrollY,docH=document.documentElement.scrollHeight,winH=window.innerHeight;
+  var heroH=heroEl.offsetHeight;
+  var nearBottom=y+winH>docH-260;
+  sticky.classList.toggle('visible',y>heroH*0.7&&!nearBottom);
+  fab.classList.toggle('visible',y/docH>0.5);
+},{passive:true});
+fab.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
+
+/* ── FAQ accordion ── */
+document.querySelectorAll('.faq-q').forEach(function(q){
+  q.addEventListener('click',function(){
+    var item=q.closest('.faq-item'),isOpen=item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function(i){i.classList.remove('open');i.querySelector('.faq-q').setAttribute('aria-expanded','false')});
+    if(!isOpen){item.classList.add('open');q.setAttribute('aria-expanded','true')}
+  });
+  q.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();q.click()}});
+});
+
+/* ── Countdown ── */
+var target=new Date('2026-04-16T00:00:00+02:00').getTime();
+function updateCD(){var d=Math.max(0,Math.floor((target-Date.now())/864e5));document.getElementById('cdDays').textContent=d}
+updateCD();setInterval(updateCD,60000);
+
+/* ── IntersectionObserver reveals ── */
+var revEls=document.querySelectorAll('.reveal');
+if(!window.matchMedia('(prefers-reduced-motion:reduce)').matches){
+  requestAnimationFrame(function(){
+    var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:0.05,rootMargin:'20px 0px -20px 0px'});
+    revEls.forEach(function(el){obs.observe(el)});
+  });
+}else{
+  revEls.forEach(function(el){el.classList.add('visible')});
+}
+
+/* ── Cookie ── */
+if(!localStorage.getItem('caelith_consent')){document.getElementById('consentBar').style.display='flex'}
+
+/* ── Smooth scroll anchors ── */
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}
+  });
+});
+</script>
+</body>
+</html>

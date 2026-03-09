@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Caelith — Key Metrics</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sora',sans-serif;background:#0d1117;color:#c9d1d9;padding:48px;-webkit-font-smoothing:antialiased}
+h1{font-size:22px;font-weight:800;color:#f0f6fc;letter-spacing:-0.02em;margin-bottom:2px}
+.sub{font-size:12px;color:rgba(201,209,217,0.4);margin-bottom:36px}
+h2{font-size:13px;font-weight:600;color:#C5E0EE;margin:32px 0 12px;padding-bottom:6px;border-bottom:1px solid rgba(197,224,238,0.1);text-transform:uppercase;letter-spacing:0.5px}
+table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:11px;margin-bottom:20px}
+th{text-align:left;padding:8px 10px;background:rgba(197,224,238,0.06);font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:rgba(197,224,238,0.5);border-bottom:1px solid rgba(197,224,238,0.1)}
+td{padding:7px 10px;border-bottom:1px solid rgba(197,224,238,0.04);color:#c9d1d9}
+tr:hover td{background:rgba(197,224,238,0.03)}
+.r{text-align:right;font-variant-numeric:tabular-nums}
+.total{font-weight:700;background:rgba(197,224,238,0.06) !important}
+.total td{border-top:2px solid rgba(197,224,238,0.1);border-bottom:2px solid rgba(197,224,238,0.1);color:#f0f6fc}
+.green{color:#3fb950}
+.warm{color:#E8A87C}
+.dim{color:rgba(201,209,217,0.4)}
+.metric-card{background:rgba(197,224,238,0.04);border:1px solid rgba(197,224,238,0.08);border-radius:8px;padding:20px}
+.metric-card .val{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:#f0f6fc;margin-bottom:4px}
+.metric-card .lbl{font-size:11px;color:rgba(201,209,217,0.5)}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.footer{font-size:10px;color:rgba(201,209,217,0.25);font-family:'JetBrains Mono',monospace;margin-top:40px;padding-top:16px;border-top:1px solid rgba(197,224,238,0.06)}
+.projected{font-style:italic;color:rgba(201,209,217,0.35);font-size:9px}
+@media print{
+  @page{margin:0;size:A4 landscape}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:#0d1117 !important;padding:36px}
+}
+</style>
+</head>
+<body>
+
+<h1>Caelith — Key Metrics</h1>
+<div class="sub">Founded February 2026 · Pre-seed · Solo founder</div>
+
+<!-- ── HEADLINE METRICS ── -->
+<div class="grid-4">
+  <div class="metric-card">
+    <div class="val warm">18 days</div>
+    <div class="lbl">Zero to production (solo)</div>
+  </div>
+  <div class="metric-card">
+    <div class="val green">Live</div>
+    <div class="lbl">Product in production</div>
+  </div>
+  <div class="metric-card">
+    <div class="val">1</div>
+    <div class="lbl">Active pilot</div>
+  </div>
+  <div class="metric-card">
+    <div class="val warm">41 days</div>
+    <div class="lbl">To AIFMD II enforcement</div>
+  </div>
+</div>
+
+<!-- ── PRODUCT ── -->
+<h2>Product</h2>
+<table>
+<tr><th>Metric</th><th class="r">Value</th><th>Notes</th></tr>
+<tr><td>Annex IV XSD validation</td><td class="r green">Live</td><td>Full ESMA Rev 6 schema — zero-error XML generation across 200+ fields</td></tr>
+<tr><td>BaFin portal agent</td><td class="r green">Built</td><td>Autonomous browser agent: authenticates, uploads, captures confirmation</td></tr>
+<tr><td>Sanctions screening</td><td class="r">6,863</td><td>EU + UN consolidated list with fuzzy matching</td></tr>
+<tr><td>LEI verification</td><td class="r green">Live</td><td>Real-time GLEIF API — validation + corporate hierarchy mapping</td></tr>
+<tr><td>Compliance Copilot</td><td class="r green">Live</td><td>80+ regulatory terms EN/DE, fund-specific context, ~€0.02/query</td></tr>
+<tr><td>Open-source toolkit</td><td class="r green">Published</td><td>open-annex-iv on npm — 179 tests, CI on Node 18/20/22</td></tr>
+<tr><td>Infrastructure</td><td class="r">—</td><td>Railway EU-West, PostgreSQL, REST API with auth + rate limiting</td></tr>
+</table>
+
+<!-- ── TRACTION ── -->
+<h2>Traction</h2>
+<table>
+<tr><th>Metric</th><th class="r">Value</th><th>Notes</th></tr>
+<tr><td>Active pilot</td><td class="r">1</td><td>VC fund's compliance manager testing full agent workflow</td></tr>
+<tr><td>Qualified prospect list</td><td class="r">100</td><td>BaFin-registered KVGs, filtered by AIF type + size</td></tr>
+<tr><td>Investor conversations</td><td class="r">3</td><td>Including 1 active pilot relationship</td></tr>
+<tr><td>Accelerator applications</td><td class="r">3</td><td>Campus Founders (submitted), 2 in progress</td></tr>
+<tr><td>Grant pipeline</td><td class="r">€100K+</td><td>NGI Zero Commons (€50K submitted), EXIST stipend (in progress)</td></tr>
+</table>
+
+<!-- ── PROJECTIONS ── -->
+<h2>18-Month Projection (Base Case)</h2>
+<table>
+<tr><th>Metric</th><th class="r">M1-3</th><th class="r">M4-6</th><th class="r">M7-9</th><th class="r">M10-12</th><th class="r">M13-15</th><th class="r">M16-18</th></tr>
+<tr><td>Paying customers</td><td class="r">0</td><td class="r">6</td><td class="r">12</td><td class="r">20</td><td class="r">30</td><td class="r">38</td></tr>
+<tr><td>MRR</td><td class="r">€0</td><td class="r">€1.4K</td><td class="r">€3.9K</td><td class="r">€9.6K</td><td class="r">€16.3K</td><td class="r">€22K</td></tr>
+<tr class="total"><td>ARR run rate (M18)</td><td class="r" colspan="5"></td><td class="r green">€264K</td></tr>
+</table>
+
+<!-- ── TWO COLUMN: UNIT ECONOMICS + MARKET ── -->
+<div class="grid-2">
+<div>
+<h2>Target Unit Economics</h2>
+<table>
+<tr><th>Metric</th><th class="r">Value</th></tr>
+<tr><td>Essentials</td><td class="r">€990/mo</td></tr>
+<tr><td>Professional</td><td class="r">€1,990/mo</td></tr>
+<tr><td>Enterprise</td><td class="r">€3,500+/mo</td></tr>
+<tr><td>Blended ACV</td><td class="r">€7,200</td></tr>
+<tr><td>Target CAC</td><td class="r">€2,500</td></tr>
+<tr><td>Gross margin</td><td class="r">85%+</td></tr>
+<tr><td>Expected churn</td><td class="r">&lt;5% annual</td></tr>
+</table>
+<p class="projected">All unit economics are targets based on pricing model and market benchmarks. No actuals yet.</p>
+</div>
+<div>
+<h2>Market</h2>
+<table>
+<tr><th>Segment</th><th class="r">Value</th></tr>
+<tr><td>TAM</td><td class="r">€4.2B</td></tr>
+<tr><td>SAM (AIFMD reporting)</td><td class="r">€680M</td></tr>
+<tr><td>SOM Year 3</td><td class="r">€2.7M</td></tr>
+<tr><td>SOM Year 5</td><td class="r green">€12M+</td></tr>
+</table>
+<p class="projected" style="margin-top:8px;">
+Year 5 includes AMLR (July 2027), DORA, and SFDR — same infrastructure layer, new agent modules. Each regulation adds a new revenue stream to existing customers (expansion) and opens adjacent buyer segments.
+</p>
+</div>
+</div>
+
+<!-- ── TEAM + FUNDRAISE ── -->
+<div class="grid-2" style="margin-top: 8px;">
+<div>
+<h2>Team</h2>
+<table>
+<tr><th>Role</th><th class="r">Status</th><th>Notes</th></tr>
+<tr><td>CEO / Full-stack</td><td class="r green">Active</td><td>Julian Laycock — ex-Capgemini, filed Annex IV for fund clients</td></tr>
+<tr><td>CTO</td><td class="r warm">Planned</td><td>First hire post-raise (Month 2)</td></tr>
+</table>
+</div>
+<div>
+<h2>Fundraise</h2>
+<table>
+<tr><th>Metric</th><th class="r">Value</th></tr>
+<tr><td>Round</td><td class="r">Pre-seed</td></tr>
+<tr><td>Target</td><td class="r">€400K</td></tr>
+<tr><td>Use</td><td class="r">CTO + SOC 2 + sales</td></tr>
+<tr><td>Runway</td><td class="r">18 months</td></tr>
+</table>
+</div>
+</div>
+
+<div class="footer">
+  Caelith · julian.laycock@caelith.tech · caelith.tech
+</div>
+
+</body>
+</html>

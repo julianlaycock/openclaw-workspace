@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Hero + Infrastructure Section Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1a1f1f;--bg2:#2D3333;--bg3:#242929;
+  --accent:#8EC5E0;--accent2:#6BB8D9;--warm:#E8A87C;
+  --text:#f0f0f0;--text2:rgba(255,255,255,0.65);--text3:rgba(255,255,255,0.4);
+  --border:rgba(255,255,255,0.08);
+  --radius:14px;--grad:linear-gradient(135deg,#8EC5E0,#E8A87C);
+  --glass:rgba(255,255,255,0.03);--glass-b:rgba(255,255,255,0.08);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;color:var(--text);background:#111414;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;letter-spacing:-0.03em;line-height:1.1}
+a{text-decoration:none;color:inherit}
+.grad{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* Option dividers */
+.divider{
+  text-align:center;padding:80px 40px 40px;
+  border-top:2px solid rgba(142,197,224,0.15);margin-top:60px;
+}
+.divider:first-child{margin-top:0;border-top:none;padding-top:40px}
+.divider .tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:5px 14px;border-radius:999px;background:rgba(142,197,224,0.08);border:1px solid rgba(142,197,224,0.15);color:var(--accent);margin-bottom:12px}
+.divider h2{font-size:22px;color:#fff;margin-bottom:6px}
+.divider p{font-size:13px;color:var(--text3);max-width:500px;margin:0 auto}
+
+/* Shared components */
+.btn{font-family:'Sora';font-weight:600;border:none;border-radius:999px;cursor:pointer;transition:all .25s;display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+.btn-lg{font-size:15px;padding:16px 36px}
+.btn-md{font-size:14px;padding:13px 28px}
+.btn-sm{font-size:13px;padding:10px 22px}
+.btn-accent{background:var(--grad);color:var(--bg);font-weight:700}
+.btn-accent:hover{box-shadow:0 0 40px rgba(142,197,224,0.25);transform:translateY(-2px)}
+.btn-ghost{background:transparent;border:1px solid var(--glass-b);color:var(--text2)}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.2);color:#fff}
+.arrow{transition:transform .2s}.btn:hover .arrow{transform:translateX(4px)}
+
+/* Labels */
+.label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.label svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*  HERO OPTION 1 — "Where regulation meets automation"       */
+/*  Split: Headline + stats left, Agent window right           */
+/* ═══════════════════════════════════════════════════════════ */
+
+.hero-1{background:var(--bg);padding:140px clamp(32px,6vw,100px) 100px;position:relative;overflow:hidden}
+.hero-1::before{content:'';position:absolute;width:800px;height:800px;top:-300px;right:-200px;background:radial-gradient(circle,rgba(142,197,224,0.05),transparent 65%);pointer-events:none}
+.hero-1::after{content:'';position:absolute;width:500px;height:500px;bottom:-200px;left:-100px;background:radial-gradient(circle,rgba(232,168,124,0.04),transparent 65%);pointer-events:none}
+.hero-1-inner{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:1fr 1.2fr;gap:64px;align-items:center;position:relative;z-index:1}
+.hero-1-left h1{font-size:clamp(38px,4.5vw,56px);font-weight:800;color:#fff;margin-bottom:20px;line-height:1.08}
+.hero-1-left .sub{font-size:16px;color:var(--text2);line-height:1.8;margin-bottom:36px;max-width:460px}
+.hero-1-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px}
+.hero-1-stats{display:flex;gap:32px}
+.hero-1-stat{text-align:left}
+.hero-1-stat .n{font-family:'Sora';font-weight:800;font-size:28px;color:#fff}
+.hero-1-stat .l{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*  HERO OPTION 2 — "Compliance infrastructure for Europe"     */
+/*  Centered hero, agent window below as proof                 */
+/* ═══════════════════════════════════════════════════════════ */
+
+.hero-2{background:var(--bg);padding:160px clamp(32px,6vw,100px) 80px;position:relative;overflow:hidden;text-align:center}
+.hero-2::before{content:'';position:absolute;width:1000px;height:600px;top:-200px;left:50%;transform:translateX(-50%);background:radial-gradient(ellipse,rgba(142,197,224,0.06),transparent 70%);pointer-events:none}
+.hero-2-inner{max-width:1240px;margin:0 auto;position:relative;z-index:1}
+.hero-2 h1{font-size:clamp(42px,5vw,64px);font-weight:800;color:#fff;margin-bottom:20px;max-width:800px;margin-left:auto;margin-right:auto}
+.hero-2 .sub{font-size:17px;color:var(--text2);line-height:1.8;margin-bottom:40px;max-width:560px;margin-left:auto;margin-right:auto}
+.hero-2-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.hero-2-proof{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);margin-bottom:60px}
+.hero-2-agent{max-width:860px;margin:0 auto}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*  HERO OPTION 3 — "The compliance engine"                    */
+/*  Asymmetric: narrow left text, wide right agent window      */
+/*  + floating stat pills                                      */
+/* ═══════════════════════════════════════════════════════════ */
+
+.hero-3{background:var(--bg2);padding:120px clamp(32px,6vw,100px) 100px;position:relative;overflow:hidden}
+.hero-3::before{content:'';position:absolute;inset:0;background:linear-gradient(170deg,rgba(142,197,224,0.03) 0%,transparent 40%,rgba(232,168,124,0.02) 100%);pointer-events:none}
+.hero-3-inner{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:.85fr 1.15fr;gap:48px;align-items:start;position:relative;z-index:1}
+.hero-3-left{padding-top:20px}
+.hero-3-left .label{color:var(--accent);margin-bottom:20px}
+.hero-3-left h1{font-size:clamp(36px,4vw,50px);font-weight:800;color:#fff;margin-bottom:20px}
+.hero-3-left .sub{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:32px;max-width:420px}
+.hero-3-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:40px}
+
+/* Floating stat pills */
+.stat-pills{display:flex;flex-wrap:wrap;gap:8px}
+.stat-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-b);font-size:12px;color:var(--text3);transition:border-color .3s}
+.stat-pill:hover{border-color:rgba(142,197,224,0.2)}
+.stat-pill strong{color:#fff;font-weight:600}
+.stat-pill .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.stat-pill .dot.green{background:#4ade80}
+.stat-pill .dot.blue{background:var(--accent)}
+.stat-pill .dot.warm{background:var(--warm)}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*  SHARED: Agent Chat Window                                  */
+/* ═══════════════════════════════════════════════════════════ */
+
+.agent-window{
+  background:rgba(0,0,0,0.25);border:1px solid var(--glass-b);
+  border-radius:var(--radius);overflow:hidden;
+  box-shadow:0 40px 100px rgba(0,0,0,0.35),0 0 80px rgba(142,197,224,0.03);
+}
+.agent-bar{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 18px;background:rgba(0,0,0,0.3);
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.agent-bar .dots{display:flex;gap:5px}
+.agent-bar .d{width:7px;height:7px;border-radius:50%}
+.agent-bar .d.r{background:#FF5F56}.agent-bar .d.y{background:#FFBD2E}.agent-bar .d.g{background:#27C93F}
+.agent-bar .t{flex:1;text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.2)}
+.agent-bar .live{display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(34,197,94,0.6)}
+.agent-bar .live::before{content:'';width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.agent-body{padding:20px 18px;min-height:420px;display:flex;flex-direction:column;gap:0;overflow:hidden}
+
+/* Messages */
+.m{max-width:82%;padding:12px 16px;border-radius:12px;font-size:12.5px;line-height:1.7;opacity:0;transform:translateY(10px);transition:opacity .35s,transform .35s;margin-bottom:10px}
+.m.v{opacity:1;transform:translateY(0)}
+.m.co{align-self:flex-end;background:rgba(107,184,217,0.1);border:1px solid rgba(107,184,217,0.14);color:var(--accent)}
+.m.ag{align-self:flex-start;background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.06);color:var(--text2)}
+.m.ag b{color:#fff;font-weight:600}
+.m.ag code{font-family:'JetBrains Mono',monospace;font-size:10px;background:rgba(0,0,0,0.3);padding:1px 7px;border-radius:3px;color:var(--warm)}
+.m.ag .ok{color:#6ee7b7}
+.m.ag .hash{color:rgba(255,255,255,0.15);font-family:'JetBrains Mono',monospace;font-size:9px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:999px;margin:2px 3px 2px 0}
+.chip.ok{background:rgba(34,197,94,0.08);color:#4ade80;border:1px solid rgba(34,197,94,0.1)}
+.chip.info{background:rgba(142,197,224,0.08);color:var(--accent);border:1px solid rgba(142,197,224,0.1)}
+.chip.warn{background:rgba(232,168,124,0.08);color:var(--warm);border:1px solid rgba(232,168,124,0.1)}
+.pbar{height:2px;border-radius:1px;background:rgba(255,255,255,0.05);margin-top:8px;overflow:hidden}
+.pbar .f{height:100%;border-radius:1px;background:var(--grad);width:0%;transition:width 1s cubic-bezier(.4,0,.2,1)}
+
+/* Typing dots */
+.typ{display:flex;gap:4px;padding:12px 16px;align-self:flex-start;opacity:0;transition:opacity .25s}
+.typ.v{opacity:1}
+.typ i{width:5px;height:5px;background:rgba(255,255,255,0.2);border-radius:50%;animation:td 1.4s infinite;display:block}
+.typ i:nth-child(2){animation-delay:.2s}
+.typ i:nth-child(3){animation-delay:.4s}
+@keyframes td{0%,60%,100%{opacity:.2;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+
+/* NCA footer */
+.nca-foot{display:flex;align-items:center;justify-content:center;gap:20px;padding:12px 18px;border-top:1px solid rgba(255,255,255,0.03);background:rgba(0,0,0,0.12);font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3)}
+.nca-foot span{display:flex;align-items:center;gap:5px}
+.nca-foot .nd{width:4px;height:4px;border-radius:50%}
+.nca-foot .nd.on{background:#4ade80}.nca-foot .nd.wip{background:var(--warm)}.nca-foot .nd.off{background:rgba(255,255,255,0.15)}
+
+/* Responsive */
+@media(max-width:1024px){
+  .hero-1-inner,.hero-3-inner{grid-template-columns:1fr}
+  .hero-1-stats{gap:24px}
+}
+@media(max-width:768px){
+  .hero-1-stats{flex-wrap:wrap;gap:16px}
+  .stat-pills{gap:6px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════ -->
+<!--  HERO OPTION 1 — Split layout      -->
+<!-- ═══════════════════════════════════ -->
+<div class="divider">
+  <div class="tag">Hero Option 1</div>
+  <h2>Where regulation meets automation.</h2>
+  <p>Split: headline + stats left, agent window right. Enterprise positioning, data-forward.</p>
+</div>
+
+<section class="hero-1">
+  <div class="hero-1-inner">
+    <div class="hero-1-left">
+      <div class="label" style="color:var(--accent);margin-bottom:16px">
+        <svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Regulatory infrastructure
+      </div>
+      <h1>Where regulation<br>meets <span class="grad">automation.</span></h1>
+      <p class="sub">Fund compliance, filing pipelines, and regulatory intelligence — built for European AIFMs. One platform from Annex IV to audit trail.</p>
+      <div class="hero-1-ctas">
+        <a href="/demo-dashboard" class="btn btn-lg btn-accent">Try the live demo <span class="arrow">→</span></a>
+        <a href="/api/docs" class="btn btn-lg btn-ghost">API Documentation <span class="arrow">→</span></a>
+      </div>
+      <div class="hero-1-stats">
+        <div class="hero-1-stat"><div class="n">60+</div><div class="l">API endpoints</div></div>
+        <div class="hero-1-stat"><div class="n">6</div><div class="l">Frameworks</div></div>
+        <div class="hero-1-stat"><div class="n">39d</div><div class="l">To AIFMD II</div></div>
+      </div>
+    </div>
+
+    <div class="agent-window" id="aw1">
+      <div class="agent-bar">
+        <div class="dots"><div class="d r"></div><div class="d y"></div><div class="d g"></div></div>
+        <div class="t">caelith filing agent</div>
+        <div class="live">Active</div>
+      </div>
+      <div class="agent-body" data-chat="chat1"></div>
+      <div class="nca-foot">
+        <span><span class="nd on"></span>BaFin</span>
+        <span><span class="nd wip"></span>CSSF</span>
+        <span><span class="nd off"></span>FMA</span>
+        <span><span class="nd off"></span>AMF</span>
+        <span><span class="nd off"></span>AFM</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════ -->
+<!--  HERO OPTION 2 — Centered           -->
+<!-- ═══════════════════════════════════ -->
+<div class="divider">
+  <div class="tag">Hero Option 2</div>
+  <h2>Compliance infrastructure for Europe.</h2>
+  <p>Centered hero, agent window below as proof. Bold, confident. Lets the product speak.</p>
+</div>
+
+<section class="hero-2">
+  <div class="hero-2-inner">
+    <div class="label" style="color:var(--accent);justify-content:center;margin-bottom:20px">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      Where regulation meets automation
+    </div>
+    <h1>Compliance<br>infrastructure <span class="grad">for&nbsp;Europe.</span></h1>
+    <p class="sub">Filing pipelines, regulatory intelligence, and autonomous agents — built for the funds that manage European capital.</p>
+    <div class="hero-2-ctas">
+      <a href="/demo-dashboard" class="btn btn-lg btn-accent">Try the live demo <span class="arrow">→</span></a>
+      <a href="https://calendly.com/julian-laycock-caelith/30min" class="btn btn-lg btn-ghost">Book a demo <span class="arrow">→</span></a>
+    </div>
+    <div class="hero-2-proof">No signup required · EU-hosted · GDPR compliant · 60+ API endpoints</div>
+
+    <div class="hero-2-agent">
+      <div class="agent-window" id="aw2">
+        <div class="agent-bar">
+          <div class="dots"><div class="d r"></div><div class="d y"></div><div class="d g"></div></div>
+          <div class="t">caelith filing agent</div>
+          <div class="live">Active</div>
+        </div>
+        <div class="agent-body" data-chat="chat2"></div>
+        <div class="nca-foot">
+          <span><span class="nd on"></span>BaFin</span>
+          <span><span class="nd wip"></span>CSSF</span>
+          <span><span class="nd off"></span>FMA</span>
+          <span><span class="nd off"></span>AMF</span>
+          <span><span class="nd off"></span>AFM</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════ -->
+<!--  HERO OPTION 3 — Asymmetric + pills -->
+<!-- ═══════════════════════════════════ -->
+<div class="divider">
+  <div class="tag">Hero Option 3</div>
+  <h2>The compliance engine for European fund managers.</h2>
+  <p>Asymmetric: narrow left with floating stat pills, wide right with agent. Shows breadth and technical depth.</p>
+</div>
+
+<section class="hero-3">
+  <div class="hero-3-inner">
+    <div class="hero-3-left">
+      <div class="label">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>
+        Built for European AIFMs
+      </div>
+      <h1>Fund compliance,<br><span class="grad">fully automated.</span></h1>
+      <p class="sub">From regulatory filings to investor screening — Caelith handles the compliance stack so your team can focus on managing capital.</p>
+      <div class="hero-3-ctas">
+        <a href="/demo-dashboard" class="btn btn-md btn-accent">Try the demo <span class="arrow">→</span></a>
+        <a href="/api/docs" class="btn btn-md btn-ghost">Explore the API <span class="arrow">→</span></a>
+      </div>
+      <div class="stat-pills">
+        <div class="stat-pill"><span class="dot green"></span> <strong>6</strong> frameworks</div>
+        <div class="stat-pill"><span class="dot blue"></span> <strong>13</strong> compliance rules</div>
+        <div class="stat-pill"><span class="dot warm"></span> <strong>39</strong> days to AIFMD II</div>
+        <div class="stat-pill"><span class="dot green"></span> <strong>60+</strong> API endpoints</div>
+        <div class="stat-pill"><span class="dot green"></span> <strong>XSD</strong> validated</div>
+        <div class="stat-pill"><span class="dot blue"></span> <strong>GLEIF</strong> LEI verified</div>
+      </div>
+    </div>
+
+    <div class="agent-window" id="aw3">
+      <div class="agent-bar">
+        <div class="dots"><div class="d r"></div><div class="d y"></div><div class="d g"></div></div>
+        <div class="t">caelith filing agent</div>
+        <div class="live">Active</div>
+      </div>
+      <div class="agent-body" data-chat="chat3"></div>
+      <div class="nca-foot">
+        <span><span class="nd on"></span>BaFin</span>
+        <span><span class="nd wip"></span>CSSF</span>
+        <span><span class="nd off"></span>FMA</span>
+        <span><span class="nd off"></span>AMF</span>
+        <span><span class="nd off"></span>AFM</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<div style="height:120px"></div>
+
+<script>
+(function() {
+  // CO-Agent conversation: realistic back-and-forth
+  var conversation = [
+    { type:'co', delay:500,
+      html:'Are we ready for the April 16 deadline? Run the readiness check.' },
+    { type:'typ', delay:600, dur:1200 },
+    { type:'ag', delay:0,
+      html:'<b>Running AIFMD II readiness assessment</b> across 6 funds...<br><br>' +
+           '<span class="ok">✓</span> Delegation & Outsourcing — <span class="chip ok">5/5 passed</span><br>' +
+           '<span class="ok">✓</span> Liquidity Management — <span class="chip warn">3/4 · 1 open</span><br>' +
+           '<span class="ok">✓</span> Reporting & Disclosure — <span class="chip warn">2/5 · 3 open</span><br>' +
+           '<span class="ok">✓</span> Investor Classification — <span class="chip ok">Complete</span><br>' +
+           '<div class="pbar"><div class="f" data-w="33"></div></div>' },
+    { type:'co', delay:2400,
+      html:'Submit the Annex IV for Süddeutscher Immobilien-Spezialfonds to BaFin.' },
+    { type:'typ', delay:600, dur:1400 },
+    { type:'ag', delay:0,
+      html:'<b>Validating filing data</b><br><br>' +
+           '<span class="chip ok">XSD valid</span><span class="chip ok">LEI verified</span><span class="chip ok">0 sanctions hits</span><br><br>' +
+           'ESMA Rev 6 — <code>AIFMD_DATAIF_V1.2.xsd</code><br>' +
+           'LEI <code>529900T8BM49AURSDO55</code> active (GLEIF)<br>' +
+           '9 investors screened against 6,863 entities' +
+           '<div class="pbar"><div class="f" data-w="65"></div></div>' },
+    { type:'typ', delay:2000, dur:1000 },
+    { type:'ag', delay:0,
+      html:'<b>Filed to BaFin MVP Portal</b><br><br>' +
+           '<span class="ok">✓</span> SOAP signed (WS-Security) → <code>portal.mvp.bafin.de</code><br>' +
+           '<span class="ok">✓</span> Response: <b style="color:var(--warm)">meldungsId: 847291</b><br>' +
+           '<span class="ok">✓</span> X.509 signature verified<br>' +
+           '<span class="chip ok">Filing accepted</span><span class="chip info">Audit logged · Block #1248</span>' +
+           '<div class="pbar"><div class="f" data-w="100"></div></div>' },
+    { type:'co', delay:2400,
+      html:'Any new regulatory updates I should flag for the board?' },
+    { type:'typ', delay:600, dur:900 },
+    { type:'ag', delay:0,
+      html:'<b>3 updates from the last 48 hours:</b><br><br>' +
+           '<span class="chip info">ESMA</span> Updated Q&A on AIFMD II leverage reporting — clarifies gross/commitment methods<br><br>' +
+           '<span class="chip warn">BaFin</span> FoMaStG draft revised — new §1(19) classifications for Immobilien-Spezialfonds<br><br>' +
+           '<span class="chip info">CSSF</span> eDesk S3 API maintenance scheduled March 15, 02:00–06:00 CET' },
+    { type:'restart', delay:5000 }
+  ];
+
+  // Animate all chat windows
+  document.querySelectorAll('[data-chat]').forEach(function(body) {
+    function clear() { body.innerHTML = ''; }
+
+    function addMsg(item) {
+      return new Promise(function(resolve) {
+        if (item.type === 'typ') {
+          var t = document.createElement('div');
+          t.className = 'typ';
+          t.innerHTML = '<i></i><i></i><i></i>';
+          body.appendChild(t);
+          body.scrollTop = body.scrollHeight;
+          requestAnimationFrame(function() { t.classList.add('v'); });
+          setTimeout(function() { t.remove(); resolve(); }, item.dur);
+          return;
+        }
+        if (item.type === 'restart') {
+          setTimeout(function() {
+            var ms = body.querySelectorAll('.m');
+            ms.forEach(function(m) { m.style.opacity = '0'; m.style.transform = 'translateY(-6px)'; });
+            setTimeout(function() { clear(); resolve(); }, 400);
+          }, item.delay);
+          return;
+        }
+        var el = document.createElement('div');
+        el.className = 'm ' + (item.type === 'co' ? 'co' : 'ag');
+        el.innerHTML = item.html;
+        body.appendChild(el);
+        body.scrollTop = body.scrollHeight;
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            el.classList.add('v');
+            el.querySelectorAll('.pbar .f').forEach(function(b) {
+              var w = b.getAttribute('data-w');
+              setTimeout(function() { b.style.width = w + '%'; }, 150);
+            });
+          });
+        });
+        setTimeout(resolve, 300);
+      });
+    }
+
+    function run() {
+      var i = 0;
+      function next() {
+        if (i >= conversation.length) { run(); return; }
+        var item = conversation[i]; i++;
+        if (item.type === 'restart') { addMsg(item).then(next); return; }
+        setTimeout(function() { addMsg(item).then(next); }, item.delay);
+      }
+      clear(); next();
+    }
+
+    var obs = new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting) { obs.disconnect(); run(); }
+    }, { threshold: 0.2 });
+    obs.observe(body);
+  });
+})();
+</script>
+
+</body>
+</html>

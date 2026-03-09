@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.bafin.de/mvp/aifmd/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.bafin.de/mvp/aifmd/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+			
+<xsd:include schemaLocation="aifmd.xsd2.xsd"/>
+			
+			
+<xsd:element name="submitAIF">
+				
+<xsd:complexType>
+					
+<xsd:sequence>
+						
+<xsd:element name="inAif" type="tns:aifmdAifInType"/>
+						
+<xsd:element name="kundenreferenz" type="tns:kundenreferenzType" minOccurs="0"/>
+						
+<xsd:element name="datei" type="xsd:base64Binary"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			
+<xsd:element name="submitAIFResponse">
+				
+<xsd:complexType>
+					
+<xsd:sequence>
+						
+<xsd:element name="out" type="tns:aifmdOutType"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			
+			
+<xsd:element name="submitAIFM">
+				
+<xsd:complexType>
+					
+<xsd:sequence>
+						
+<xsd:element name="inAifm" type="tns:aifmdAifmInType"/>
+						
+<xsd:element name="kundenreferenz" type="tns:kundenreferenzType" minOccurs="0"/>
+						
+<xsd:element name="datei" type="xsd:base64Binary"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			
+<xsd:element name="submitAIFMResponse">
+				
+<xsd:complexType>
+					
+<xsd:sequence>
+						
+<xsd:element name="out" type="tns:aifmdOutType"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			
+	    </xsd:schema>

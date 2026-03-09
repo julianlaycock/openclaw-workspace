@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finch Capital — Investor Call Prep</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root {
+    --bg:#0f1419;--bg-card:#1a2028;--border:rgba(255,255,255,0.06);
+    --text:rgba(255,255,255,0.88);--text-muted:rgba(255,255,255,0.5);--text-dim:rgba(255,255,255,0.3);
+    --accent:#00a3ff;--green:#34d399;--yellow:#fbbf24;--red:#f87171;--orange:#fb923c;
+    --radius:12px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;padding:40px 20px}
+  .container{max-width:860px;margin:0 auto}
+
+  /* HEADER */
+  .header{text-align:center;padding:44px 0 32px;border-bottom:1px solid var(--border);margin-bottom:36px}
+  .badge{display:inline-block;background:rgba(0,163,255,0.12);color:var(--accent);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;border:1px solid rgba(0,163,255,0.2);margin-bottom:14px}
+  .header h1{font-size:30px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px}
+  .header .sub{color:var(--text-muted);font-size:14px}
+  .header .meta{color:var(--accent);font-size:13px;font-weight:500;margin-top:10px}
+
+  /* SECTIONS */
+  .section{margin-bottom:36px}
+  .section-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  .section h2{font-size:20px;font-weight:600;margin-bottom:18px}
+
+  /* CARDS */
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:10px}
+  .card h3{font-size:14px;font-weight:600;margin-bottom:8px}
+  .card p{color:var(--text-muted);font-size:13px;margin-bottom:6px}
+  .card p:last-child{margin-bottom:0}
+  .card strong{color:var(--text)}
+
+  /* GRID */
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:640px){.grid-2{grid-template-columns:1fr}}
+
+  /* CALLOUT */
+  .callout{background:rgba(0,163,255,0.07);border:1px solid rgba(0,163,255,0.18);border-radius:8px;padding:18px 20px;margin:14px 0}
+  .callout p{font-size:13px;color:var(--text)}
+  .callout .mono{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.8}
+
+  /* WARN */
+  .warn{background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.18);border-radius:8px;padding:16px 20px;margin:14px 0}
+  .warn p{color:rgba(255,255,255,0.7);font-size:13px}
+
+  /* TAGS */
+  .tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:0.5px;margin-right:5px}
+  .tag.green{background:rgba(52,211,153,0.12);color:var(--green)}
+  .tag.yellow{background:rgba(251,191,36,0.12);color:var(--yellow)}
+  .tag.red{background:rgba(248,113,113,0.12);color:var(--red)}
+  .tag.blue{background:rgba(0,163,255,0.12);color:var(--accent)}
+
+  /* TABLE */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;padding:9px 12px;color:var(--text-dim);font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
+  td{padding:11px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)}
+  td strong{color:var(--text)}
+  tr:last-child td{border-bottom:none}
+
+  /* Q&A */
+  .qa{margin-bottom:18px}
+  .qa .q{font-weight:600;font-size:13px;color:var(--red);margin-bottom:6px}
+  .qa .a{color:var(--text-muted);font-size:13px;padding-left:14px;border-left:2px solid rgba(0,163,255,0.4);line-height:1.8}
+
+  /* NAIL LIST */
+  .nail{counter-reset:nail}
+  .nail-item{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border)}
+  .nail-item:last-child{border-bottom:none}
+  .nail-num{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:rgba(0,163,255,0.35);flex-shrink:0;line-height:1.2;width:28px}
+  .nail-body{}
+  .nail-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+  .nail-desc{font-size:12px;color:var(--text-muted)}
+
+  /* CHECKLIST */
+  .checklist{list-style:none}
+  .checklist li{padding:7px 0;font-size:13px;color:var(--text-muted);display:flex;align-items:flex-start;gap:10px}
+  .checklist li::before{content:"○";color:var(--text-dim);flex-shrink:0}
+  .checklist li.done::before{content:"●";color:var(--green)}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="badge">Investor Call</div>
+  <h1>Finch Capital — Call Prep</h1>
+  <div class="sub">Intro call · Eugenie Colonna-Distria · Amsterdam</div>
+  <div class="meta">📅 Wednesday March 4, 2026 · 10:30 CET &nbsp;·&nbsp; ⚠️ Stage mismatch: Series A/B fund. Primary goal = warm intro to seed funds.</div>
+</div>
+
+<!-- ═══ VISION: FUTURE OF WORK ═══ -->
+<div class="section" style="border:1px solid rgba(197,224,238,0.12);border-radius:14px;padding:28px;background:linear-gradient(135deg,rgba(197,224,238,0.03),rgba(232,168,124,0.02));margin-bottom:36px">
+  <div class="section-label" style="color:#C5E0EE">Vision · The Future of Compliance Work</div>
+  <h2 style="font-size:22px;margin-bottom:8px">Compliance becomes invisible infrastructure.</h2>
+  <p style="color:rgba(255,255,255,0.5);font-size:13px;max-width:700px;line-height:1.8;margin-bottom:24px">The same way AWS runs your servers while you sleep — Caelith runs your compliance. Use this framing with Eugénie. It's the most powerful analogy in the deck.</p>
+
+  <div class="grid-2" style="margin-bottom:20px">
+    <div class="card" style="border-color:rgba(197,224,238,0.15)">
+      <h3 style="color:#C5E0EE">From: The Compliance Officer Today</h3>
+      <p>Copies data from fund systems into Excel. Emails consultants. Waits 3 weeks. Manually checks sanctions PDFs. Misses schema changes. Files at 11:58 PM. Bills €8,500 to the fund.</p>
+      <p style="margin-top:8px;font-size:11px;color:rgba(248,113,113,0.6)">→ 100% human process. Expensive. Error-prone. Not scalable.</p>
+    </div>
+    <div class="card" style="border-color:rgba(52,211,153,0.2)">
+      <h3 style="color:#34d399">To: The Caelith World</h3>
+      <p>Fund manager activates Caelith on Monday. By Tuesday 2 AM, the agent has generated, validated, and filed Annex IV to BaFin. Screened 247 investors against 6,863 sanctions entities. Sealed the audit trail. Sent confirmation.</p>
+      <p style="margin-top:8px;font-size:11px;color:rgba(52,211,153,0.6)">→ 0 human interventions. €0 incremental cost. Scales to every filing cycle, every jurisdiction, overnight.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:12px;border-color:rgba(232,168,124,0.2)">
+    <h3 style="color:#E8A87C;margin-bottom:12px">The Future of Work Thesis — 3 Shifts</h3>
+    <table>
+      <tr>
+        <th style="width:180px">Old World</th>
+        <th>New World (Caelith)</th>
+        <th style="width:200px">The Unlock</th>
+      </tr>
+      <tr>
+        <td>Compliance officer = data entry clerk</td>
+        <td><strong>Compliance officer = regulatory strategist</strong></td>
+        <td>Agents handle process. Humans handle judgment.</td>
+      </tr>
+      <tr>
+        <td>Filing = 3-week project, €8,500 consultant</td>
+        <td><strong>Filing = automated overnight job, €0 marginal cost</strong></td>
+        <td>Economics flip. First filing costs €990/mo. 1,000th filing costs the same.</td>
+      </tr>
+      <tr>
+        <td>Compliance is a cost centre, managed by outsourcing</td>
+        <td><strong>Compliance is a competitive advantage</strong></td>
+        <td>Funds on Caelith launch new strategies faster, enter new jurisdictions faster, onboard new investors faster.</td>
+      </tr>
+      <tr>
+        <td>Regulatory change = expensive scope creep</td>
+        <td><strong>Regulatory change = automatic platform update</strong></td>
+        <td>When ESMA updates the XSD schema, all 704 KVGs on Caelith get it instantly. Not €50K/fund to update spreadsheets.</td>
+      </tr>
+      <tr>
+        <td>Fund admin bundles compliance = vendor lock-in</td>
+        <td><strong>Caelith = open infrastructure any admin can plug into</strong></td>
+        <td>We sell TO fund admins as their compliance engine. 50 admins × 20 funds = same reach as 1,000 direct sales.</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="callout" style="border-color:rgba(197,224,238,0.2)">
+    <p><strong>How to use this with Eugénie:</strong></p>
+    <div class="mono">"The way I think about it — every knowledge worker has been partially replaced by SaaS. Salespeople got Salesforce. Finance got Xero. HR got Workday. Compliance never got its software moment because the regulatory complexity was too high. AIFMD II just raised the bar past the point where humans alone can scale. That's the forcing function. We're building the compliance OS for European fund managers — not a tool, infrastructure."</div>
+  </div>
+
+  <div class="callout" style="border-color:rgba(232,168,124,0.2)">
+    <p><strong>The AWS analogy (memorise this):</strong></p>
+    <div class="mono">"Before AWS, every company ran its own servers — expensive, unreliable, required specialists. AWS didn't make servers better. It made them invisible. Caelith does the same for compliance. You don't hire a team to maintain your servers anymore. Soon, you won't hire a team to file your Annex IV either."</div>
+  </div>
+
+  <div class="card" style="border-color:rgba(167,139,250,0.2)">
+    <h3 style="color:#a78bfa;margin-bottom:10px">Why Agents Are the Moat — Not the Feature</h3>
+    <p>The dashboard is replicable in 10 weeks (we proved it). The agent layer is not. Agents require: deep regulatory domain knowledge to handle edge cases; integration with multiple NCA portals (each with different auth, formats, error handling); XSD validation logic that changes with every ESMA schema release; a cryptographic audit trail that satisfies DORA; and machine learning to handle portal UI drift without breaking. This is 12–18 months of regulatory-domain engineering that you can't outsource to a generic AI vendor.</p>
+    <p style="margin-top:8px;font-size:12px;color:rgba(255,255,255,0.25)">Sphinx raised $7.1M. Kobalt raised $12.7M. Both US-only. Neither has ESMA XSD, BaFin portal automation, or EU fund manager domain knowledge. The agent layer is where vertical depth beats horizontal scale.</p>
+  </div>
+</div>
+
+<!-- ═══ TOP 5 THINGS TO NAIL ═══ -->
+<div class="section">
+  <div class="section-label">Mission Critical</div>
+  <h2>5 Things You Must Nail</h2>
+  <div class="card">
+    <div class="nail">
+      <div class="nail-item">
+        <div class="nail-num">1</div>
+        <div class="nail-body">
+          <div class="nail-title">The urgency is TODAY, not someday</div>
+          <div class="nail-desc">The AIFMD II filing window opened March 2 — yesterday. Fund managers received their obligations. This is not a "next year" problem. April 16 is 44 days away. Open with this every time.</div>
+        </div>
+      </div>
+      <div class="nail-item">
+        <div class="nail-num">2</div>
+        <div class="nail-body">
+          <div class="nail-title">Finch's check won't fit — ask for intros, not investment</div>
+          <div class="nail-desc">Finch writes €5-30M Series A/B. You're raising €400K pre-seed. The real win is a warm intro to seed funds in their network. Say it explicitly: <em>"I know our stage may be early for Finch — if you know seed investors focused on European RegTech, that intro would be invaluable."</em></div>
+        </div>
+      </div>
+      <div class="nail-item">
+        <div class="nail-num">3</div>
+        <div class="nail-body">
+          <div class="nail-title">Sphinx + Kobalt = thesis validated, you're the EU play</div>
+          <div class="nail-desc">Two recent raises validate autonomous compliance agents. Both are US-only. You are the only team doing this for EU fund managers with a live product. Don't skip this — it reframes you from "niche startup" to "European version of a funded thesis."</div>
+        </div>
+      </div>
+      <div class="nail-item">
+        <div class="nail-num">4</div>
+        <div class="nail-body">
+          <div class="nail-title">The fund admin pivot answer</div>
+          <div class="nail-desc">When they say "most KVGs outsource compliance to their admin for free" — your answer is: <em>"Then we don't sell to 3,500 KVGs, we sell to 50 fund admins. One deal = €50-200K ARR. That makes us more capital-efficient, not less."</em> This is the single best answer in your arsenal. Don't fumble it.</div>
+        </div>
+      </div>
+      <div class="nail-item">
+        <div class="nail-num">5</div>
+        <div class="nail-body">
+          <div class="nail-title">Don't pitch — have a conversation</div>
+          <div class="nail-desc">Ask what she's seeing in RegTech. Ask what Finch looks for before a company is investment-ready. The best VC meetings feel like two founders talking. You're not performing — you're testing fit.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONTEXT ═══ -->
+<div class="section">
+  <div class="section-label">Know Your Audience</div>
+  <h2>Finch Capital + Eugenie</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Finch Capital</h3>
+      <p><span class="tag blue">Growth Equity</span><span class="tag blue">Series A/B</span></p>
+      <p style="margin-top:10px">Founded 2013, Amsterdam. 50+ portfolio companies. Focus: Financial Technology, RegTech, Payments, Enterprise SaaS. Check size: €5-30M. <strong>Portfolio RegTech: Fourthline (KYC/AML, €50M) + eflow Global (trade surveillance, £7M).</strong></p>
+      <p>Your angle: <em>"Fourthline + eflow + Caelith = full RegTech stack. Same thesis, zero overlap."</em></p>
+    </div>
+    <div class="card">
+      <h3>Eugenie Colonna d'Istria — Senior Associate</h3>
+      <p><strong>Role clarity:</strong> Senior Associate, not GP or Partner. She sources deals, builds conviction, and <em>champions</em> companies internally — but Partners make the investment decision. Your goal is not to convince her to write a check. It's to make her excited enough to walk this into the Monday partner meeting.</p>
+      <p style="margin-top:8px">Focus: FinTech, RegTech, Enterprise SaaS (Series B primary). Evaluating: market size, team quality, PMF signal, ability to retell the story simply to partners.</p>
+      <p style="margin-top:8px"><strong>Strategic implication:</strong> Give her one clean, repeatable narrative she can own — not 12 impressive details she'll forget. The best outcome is she says "this is the EU Sphinx, let me bring it to [Partner name]." Secondary outcome: seed intros from Finch's network.</p>
+      <p style="margin-top:8px"><strong>Watch for:</strong> Technical questions → treat her as a peer. Market size focus → fund admin pivot. "What do you need?" → warm intro to seed funds, access to Fourthline or eflow for customer intros.</p>
+    </div>
+  </div>
+  <div class="warn">
+    <p>⚠️ <strong>Stage mismatch is real.</strong> Don't spend 25 minutes pitching investment to someone who can't write the check. Acknowledge it early, pivot to relationship + intros. That's the win.</p>
+  </div>
+</div>
+
+<!-- ═══ MARKET CONTEXT ═══ -->
+<div class="section">
+  <div class="section-label">Why Now</div>
+  <h2>Market Context — Use These</h2>
+  <div class="grid-2">
+    <div class="card" style="border-color:rgba(52,211,153,0.25)">
+      <h3>🗓 Filing Window Opened March 2</h3>
+      <p>AIFMD II Annex IV filing obligations went live yesterday. Fund managers received their filings. April 16 is 44 days away. <strong>The urgency is live, not projected.</strong></p>
+      <p style="margin-top:6px"><span class="tag green">Opening line</span></p>
+    </div>
+    <div class="card" style="border-color:rgba(0,163,255,0.25)">
+      <h3>🔵 Sphinx $7.1M — Your Primary Comparator</h3>
+      <p>Sphinx (Cherry Ventures + YC, Feb 17): browser-native AI agents for AML/KYC/KYB at US banks and fintechs. Same thesis — autonomous compliance agents — zero geographic overlap. <strong>We are the EU fund manager version of a funded thesis.</strong></p>
+      <p style="margin-top:6px">Kobalt Labs ($12.7M, Feb 27) is a secondary signal only — they do third-party <em>vendor diligence</em> for US fintechs, not regulatory filing. Don't lead with Kobalt as "same thesis." If it comes up: <em>"Both signal that compliance automation is getting funded — Sphinx is the closest parallel to what we're building."</em></p>
+      <p style="margin-top:6px"><span class="tag blue">Thesis validator</span></p>
+    </div>
+    <div class="card" style="border-color:rgba(248,113,113,0.2)">
+      <h3>🔴 CUBE acquires Kodex AI (Berlin)</h3>
+      <p>CUBE (Hg-backed) acquired 4CRisk.ai and Kodex AI. Consolidating into a horizontal global compliance platform. <strong>Answer: CUBE is horizontal for banks. We're vertical for EU fund managers. Zero overlap.</strong></p>
+    </div>
+    <div class="card">
+      <h3>🏢 Norway XML-only from June 2026</h3>
+      <p>More NCAs mandating machine-readable submissions. The regulatory tailwind is multi-year. Germany first, then Luxembourg, then Norway.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p><strong>Opening line:</strong></p>
+    <div class="mono">"The AIFMD II filing window opened yesterday. Our target customers received their filing obligations on March 2nd — they're scrambling right now. That's the urgency behind this call."</div>
+  </div>
+  <div class="callout">
+    <p><strong>VC validation line (use Sphinx only as primary):</strong></p>
+    <div class="mono">"Two weeks ago, Sphinx raised $7.1M from Cherry Ventures and YC — browser-native agents automating AML/KYC for US banks. Same thesis: autonomous compliance agents. They went after US fintech. We're doing EU fund managers. The regulatory complexity here is higher, the market is underserved, and we have a live product. I'm not pitching a future vision — I'm pitching the EU version of a funded category."</div>
+  </div>
+</div>
+
+<!-- ═══ NARRATIVE ═══ -->
+<div class="section">
+  <div class="section-label">Your Story</div>
+  <h2>The Narrative (2 Minutes Total)</h2>
+  <div class="card">
+    <h3>Problem — 30 sec</h3>
+    <p>3,500+ EU alternative investment fund managers must file Annex IV XML to national regulators. Most do it manually — consultants charge €5-15K per cycle, 2-4 weeks per filing. AIFMD II enforcement is April 16. The filing window opened yesterday.</p>
+  </div>
+  <div class="card">
+    <h3>Solution — 30 sec</h3>
+    <p>Caelith is the compliance infrastructure layer for European fund managers. We generate ESMA XSD-validated Annex IV XML in seconds, screen investors against 6,800+ EU/UN sanctions entities, and are building autonomous agents that file directly to BaFin and CSSF portals.</p>
+  </div>
+  <div class="card">
+    <h3>Traction — 20 sec</h3>
+    <p>Live at caelith.tech. 18+ qualified prospects in outreach. Egor Tarakanov (Montold) active conversation. €110K+ non-dilutive pipeline: NGI Zero €50K submitted (code 2026-04-087), Campus Founders €25K submitted, EXIST in progress. ~€50/mo burn.</p>
+  </div>
+  <div class="card">
+    <h3>Ask — 20 sec</h3>
+    <p>Raising <strong>€400K pre-seed</strong>: senior backend engineer (€85K), ISO 27001 cert (€50K), legal/GDPR (€25K), sales/events (€30K), founder salary 18mo (€65K), infra + tooling (€30K), buffer (€115K) = 18 months runway → 3+ customers, €36K+ ARR, ISO certified.</p>
+    <p style="margin-top:8px;color:rgba(248,113,113,0.9)"><strong>Then immediately:</strong> "I know this may be early for Finch. If there are pre-seed RegTech investors in your network, that intro would be the most valuable outcome of this call."</p>
+  </div>
+  <div class="card">
+    <h3>3 Differentiators — Hammer These</h3>
+    <p><strong>A. Only self-service platform for EU fund managers.</strong> anevis assigns a human to each client. Big 4 charges €150-200K/year. There is no software a KVG can buy, log in, and generate compliant Annex IV XML. We built that.</p>
+    <p style="margin-top:8px"><strong>B. Cryptographic audit trail.</strong> Every compliance decision is SHA-256 hashed and chained. DORA requires audit trails — we're compliant by architecture.</p>
+    <p style="margin-top:8px"><strong>C. Autonomous agents are the roadmap, not the pitch.</strong> BaFin filing agent (2-3 weeks), CSSF agent (70% code reuse), Investor DD agent (GLEIF + Transparenzregister + sanctions). Sphinx just proved this thesis with $7.1M.</p>
+  </div>
+</div>
+
+<!-- ═══ HARD QUESTIONS ═══ -->
+<div class="section">
+  <div class="section-label">Prepare for This</div>
+  <h2>Hard Questions — Best Answers</h2>
+
+  <div class="qa">
+    <div class="q">Q: "Most KVGs outsource compliance to their fund admin for free. Your real market is tiny."</div>
+    <div class="a"><strong>This is the best objection you'll face. Welcome it.</strong><br><br>
+    "You're right — and that makes the business better. If KVGs outsource to fund admins, we don't need 3,500 sales conversations. We need 50. One fund admin like HANSAINVEST manages hundreds of KVGs. One deal = €50-200K ARR. We sell infrastructure to the fund admin — they use our API for all the funds they manage. The TAM doesn't shrink; the sales cycle gets dramatically more capital-efficient."</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: "You're pre-revenue with no customers. Why should we care?"</div>
+    <div class="a">"The April 16 deadline creates a forcing function that didn't exist 6 months ago. We have a working product with validated XML output — not a slide deck. The filing window opened yesterday. We're not selling a future roadmap; we're selling something compliance managers need right now."</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: "anevis has 100+ clients and a decade of experience. How do you compete?"</div>
+    <div class="a">"We're not competing with anevis — we're replacing the model. anevis is a managed service: €50-80K/year, humans assigned to each client, 3-4 week turnaround. We're self-service: €990/mo, instant, automated, 24/7. What takes anevis a month takes us seconds. And the agentic shift they're not positioned for — Sphinx raised $7.1M for the same thesis in US fintech. anevis can't compete with autonomous agents any more than travel agents could compete with Booking.com."</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: "It's just you. Solo founder, no co-founder. What's the bus factor?"</div>
+    <div class="a">"Valid — and it's why the first hire is the first line item in the budget. But the product runs without me: CI pipeline, 231 automated tests, architecture docs, security audit, ops runbook. Two weeks offline and the product keeps serving customers. What stops is iteration speed — that's exactly what hire #1 fixes. The solo phase was a feature: one vision, 10 weeks, live product."</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: "How big is this market really?"</div>
+    <div class="a">"Germany alone: 704 BaFin-registered KVGs × €24K ACV = €16.8M ceiling. Realistic Y1: 35 customers at 5% capture = €836K ARR. The real scale is fund admins — Germany has roughly 15–25 significant fund admins. The top 5 (Universal Investment, HANSAINVEST, Caceis, DWS, BNP Paribas Securities) each serve 50–150 KVGs. One deal with HANSAINVEST covers their entire client base — that's potentially €100–200K ARR from a single contract. That's the capital efficiency of selling infrastructure, not seats. EU-wide: 3,500+ AIFMs, $18B global RegTech market, Europe is ~35% = ~€6B. Asset management = 15-20% of that = €1-2B SAM. The wedge is Germany. The vision is EU infrastructure."
+    <br><br><span style="color:rgba(255,255,255,0.3);font-size:12px">⚠️ Note: the Annex IV filing unit is the AIF (the fund), not the KVG (the manager). One KVG managing 3 funds = 3 filings = 3× the billable volume. Germany's real addressable volume is ~1,500–2,000 annual filings, not 704.</span></div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: "There are existing tools for this — Funds-Axis, SSCTech, DataTracks. What do you do that they don't?"</div>
+    <div class="a"><strong>Acknowledge they exist — it actually validates the market.</strong><br><br>
+    "Yes — and their existence proves this is a real problem that people pay for. The distinction: Funds-Axis and SSCTech are enterprise platforms built for fund administrators and large custodians — minimum contracts, implementation projects, UK/Ireland-centric, no self-service. A German KVG with 2 funds and a 2-person compliance team can't buy Funds-Axis. They're left with Excel and consultants.<br><br>
+    We're the self-service layer that doesn't exist: log in, upload your data, get XSD-validated XML in minutes, €990/month. And beyond that — these platforms have zero agent layer. No BaFin portal automation, no overnight autonomous filing. That's the 2-3 year moat they can't replicate without rebuilding their architecture."</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: "Why wouldn't Bloomberg or Big 4 just build this?"</div>
+    <div class="a">"Big 4 won't — it would cannibalize advisory revenue. Bloomberg builds horizontal tools. AIFMD Annex IV requires deep understanding of 8+ national regulators, different filing portals, languages, and requirements — plus ongoing schema changes. We're vertical and obsessed with one problem. That's our advantage over any horizontal player."</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: "Open-core — why give anything away for free?"</div>
+    <div class="a">"We open-source the XML serializer — the plumbing. We keep the intelligence, automation, and infrastructure proprietary. The library is a developer acquisition channel: fund admin engineers integrate it, discover Caelith, and realize they need the 95% of value above it. Same model as Elastic ($2B+ revenue), HashiCorp ($6B acquisition), MongoDB ($30B+ market cap). Open the interface layer, monetize the managed service."</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: "Your €400K breakdown has €115K buffer. That's 29%."</div>
+    <div class="a">"Deliberate. We're in regulated financial services — unexpected costs are the rule. ISO 27001 scope can vary by €20K. Legal for DORA compliance isn't predictable. A fund admin integration might need a custom sprint. I'd rather tell you upfront than come back in 12 months saying we ran out. Capital efficiency matters, but not dying mid-execution matters more."</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: "March 2027 — €400K spent, zero customers. What happens?"</div>
+    <div class="a">"We have kill criteria at every stage. If &lt;3 of 10 discovery calls show interest by Week 4 → pivot channel to fund admins. If zero pilots convert by Month 6 → pivot to standalone API product — the regulatory data engine has value beyond AIFMD. If zero revenue after 12 months and 50+ conversations → shut down and return remaining capital. I'd rather kill a thesis early than drag it on hope."</div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q: "Have you actually tested filing to BaFin's portal?"</div>
+    <div class="a">"I've mapped the full BaFin MVP Portal workflow — standard form, no CAPTCHA, no complex auth, XML upload. Our XML validates against ESMA's official XSD schema — that's the hard part. Portal automation is 2-3 weeks of engineering. I won't claim a live submission I haven't done. What I can show is the XML that would be submitted — and it passes schema validation."</div>
+  </div>
+</div>
+
+<!-- ═══ NUMBERS COLD ═══ -->
+<div class="section">
+  <div class="section-label">Know Cold</div>
+  <h2>Key Numbers — Don't Fumble These</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Product</h3>
+      <table>
+        <tr><td><strong>80,000</strong></td><td>Lines of TypeScript</td></tr>
+        <tr><td><strong>72</strong></td><td>API endpoints</td></tr>
+        <tr><td><strong>231</strong></td><td>Passing tests</td></tr>
+        <tr><td><strong>6,863</strong></td><td>Sanctions entities (EU + UN)</td></tr>
+        <tr><td><strong>&lt;23ms</strong></td><td>Compliance eval time</td></tr>
+        <tr><td><strong>10 weeks</strong></td><td>Build time, solo</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Market</h3>
+      <table>
+        <tr><td><strong>3,500+</strong></td><td>Registered AIFMs in the EU</td></tr>
+        <tr><td><strong>704</strong></td><td>KVGs registered with BaFin</td></tr>
+        <tr><td><strong>~€6T</strong></td><td>AUM under EU AIFs</td></tr>
+        <tr><td><strong>~€52M</strong></td><td>SAM bottom-up: 3,500 AIFMs × €15K ACV (filing module)</td></tr>
+        <tr><td><strong>€1-2B</strong></td><td>SAM top-down: ~15% of €6B EU RegTech market (use cautiously)</td></tr>
+        <tr><td><strong>€16.8M</strong></td><td>SOM · Germany direct (704 KVGs × €24K ACV)</td></tr>
+        <tr><td><strong>15–25</strong></td><td>Significant German fund admins (top 5 serve 50–150 KVGs each)</td></tr>
+        <tr><td><strong>~1,500–2,000</strong></td><td>Annual Annex IV filings in Germany (AIFs, not KVGs — 1 KVG = 2–3 funds)</td></tr>
+        <tr><td><strong>€100–200K</strong></td><td>ARR per fund admin deal (e.g. HANSAINVEST covers entire client base)</td></tr>
+        <tr><td><strong>44 days</strong></td><td>Until AIFMD II enforcement</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Business</h3>
+      <table>
+        <tr><td><strong>€990 / €1,990 / €3,500+</strong></td><td>Monthly tiers</td></tr>
+        <tr><td><strong>€0</strong></td><td>Revenue (pre-revenue, NOT pre-product)</td></tr>
+        <tr><td><strong>~€50/mo</strong></td><td>Current burn (Railway infra only)</td></tr>
+        <tr><td><strong>€400K</strong></td><td>Pre-seed ask · 18mo runway</td></tr>
+        <tr><td><strong>93%</strong></td><td>Cheaper than Big 4 consultants</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Competitors / Validation</h3>
+      <table>
+        <tr><td><strong>$7.1M</strong></td><td>Sphinx seed (Cherry + YC) — Feb 17</td></tr>
+        <tr><td><strong>$12.7M</strong></td><td>Kobalt Labs Series A — Feb 27</td></tr>
+        <tr><td><strong>100+</strong></td><td>anevis clients (managed service)</td></tr>
+        <tr><td><strong>€50M</strong></td><td>Fourthline raise (Finch portfolio)</td></tr>
+        <tr><td><strong>£7M</strong></td><td>eflow Global raise (Finch portfolio)</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CALL STRUCTURE ═══ -->
+<div class="section">
+  <div class="section-label">30-Minute Playbook</div>
+  <h2>Call Structure</h2>
+  <div class="card">
+    <table>
+      <tr><td style="color:var(--accent);font-weight:600;white-space:nowrap;width:90px">0–2 min</td><td><strong>Rapport.</strong> Thank them. One personal connection.</td></tr>
+      <tr><td style="color:var(--accent);font-weight:600;white-space:nowrap">2–5 min</td><td><strong>Their context first.</strong> "What drew you to this call?" / "What's Finch's current thesis on RegTech infrastructure?"</td></tr>
+      <tr><td style="color:var(--accent);font-weight:600;white-space:nowrap">5–12 min</td><td><strong>Problem + Solution + Why Now.</strong> Open with filing window, walk the narrative. Keep to 7 minutes max.</td></tr>
+      <tr><td style="color:var(--accent);font-weight:600;white-space:nowrap">12–22 min</td><td><strong>Their questions.</strong> Market size, competition, team, traction. Have the fund admin pivot ready.</td></tr>
+      <tr><td style="color:var(--accent);font-weight:600;white-space:nowrap">22–25 min</td><td><strong>Portfolio angle.</strong> Fourthline + eflow + Caelith = full RegTech stack. Zero overlap. Complementary.</td></tr>
+      <tr><td style="color:var(--accent);font-weight:600;white-space:nowrap">25–28 min</td><td><strong>The ask.</strong> €400K pre-seed. Then: "I know this may be early for Finch — who in your network focuses on European RegTech seed?"</td></tr>
+      <tr><td style="color:var(--accent);font-weight:600;white-space:nowrap">28–30 min</td><td><strong>Next steps.</strong> "Can I send the one-pager? When would a follow-up make sense?"</td></tr>
+    </table>
+  </div>
+  <div class="warn">
+    <p>⚠️ Don't demo unless asked. If they ask: 3 minutes max — XML generation → sanctions screening → copilot. Don't go into settings or admin.</p>
+  </div>
+</div>
+
+<!-- ═══ QUESTIONS TO ASK ═══ -->
+<div class="section">
+  <div class="section-label">Your Turn</div>
+  <h2>Questions to Ask Eugenie</h2>
+
+  <div class="warn" style="margin-bottom:16px">
+    <p>⚠️ <strong>Don't ask all four.</strong> Pick two max — one early (Q2 or Q3, as openers), one late (Q1 or Q4, as a closer). Goal is dialogue, not interrogation.</p>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q1 — Compliance as competitive moat (use as closer)</div>
+    <div class="a">
+      <strong>"Fourthline built KYC into a competitive advantage for fintechs that adopted it early — not just compliance, but faster onboarding than competitors. Do you see a similar dynamic emerging in fund compliance? Where the first KVGs on automated Annex IV filing start using speed-to-market as an LP pitch — 'we can launch a new fund structure and be fully compliant in weeks, not months'?"</strong>
+      <br><br>
+      <span style="color:rgba(255,255,255,0.35);font-size:11px">Why it works: Studies her portfolio. Reframes compliance from cost centre to competitive weapon — a thesis shift that makes her think. Invites her to extend or disagree, which is what good VC conversations feel like.</span>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q2 — AMLR sequencing (use early — shows you're looking around the corner)</div>
+    <div class="a">
+      <strong>"Fourthline exists because fintechs hit a KYC wall they weren't built for. AMLR 2027 extends full AML obligations to fund managers for the first time — obligations banks have had for decades. Do you see the same infrastructure deficit forming? Because Caelith sits exactly at that intersection: Annex IV is the wedge, AMLR is the wave behind it."</strong>
+      <br><br>
+      <span style="color:rgba(255,255,255,0.35);font-size:11px">Why it works: Shows you've looked past the current pitch to the next one. Most pre-seed founders pitch the problem in front of them — you're pitching the sequence. That's how a Series A story gets built. This gets you into the tracker.</span>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q3 — EU regulatory fragmentation as moat or ceiling (use early — genuinely open-ended)</div>
+    <div class="a">
+      <strong>"Here's something I go back and forth on and I'd genuinely love your take: EU regulatory fragmentation — BaFin doing things differently from CSSF from AMF — is usually pitched as a problem. I think of it as a 3-5 year defensibility window before any harmonisation happens. A US player can't just enter Germany with a generic compliance tool. Has that fragmentation dynamic played out as a moat in any of your portfolio companies, or does it eventually become a ceiling?"</strong>
+      <br><br>
+      <span style="color:rgba(255,255,255,0.35);font-size:11px">Why it works: Genuinely open — you don't know her answer. Positions you as someone who wrestles with hard strategic questions. Forces her to think about Caelith's defensibility specifically. Rare for a pre-seed founder to bring this level of nuance.</span>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="q">Q4 — Fund admin buy vs. build inflection (use as closer — pre-empts their obvious pushback)</div>
+    <div class="a">
+      <strong>"The obvious path is selling directly to 3,500 KVGs. The capital-efficient path is selling to 50 fund admins who each manage 20-30 funds. I keep coming back to one question: fund admins build when it's core product, they buy when it's overhead. Annex IV is overhead for them. Have you seen that buy-vs-build inflection tip in any of your portfolio companies — what unlocked it?"</strong>
+      <br><br>
+      <span style="color:rgba(255,255,255,0.35);font-size:11px">Why it works: Shows you've already stress-tested the pivot she or her partners might suggest. You're not defending one go-to-market — you're thinking out loud. Signals intellectual honesty and strategic maturity. Puts her in the role of advisor, which people enjoy.</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ EXISTENTIAL RISK ═══ -->
+<div class="section">
+  <div class="section-label">Biggest Risk</div>
+  <h2>The One Thing That Could Kill This</h2>
+  <div class="warn">
+    <p>⚠️ <strong>The risk is not competition. It's demand validation.</strong> Many small KVGs outsource Annex IV to their fund admin — bundled in the admin fee. They pay €0 incremental. You might be competing against free.</p>
+  </div>
+  <div class="callout">
+    <p><strong>If this comes up:</strong></p>
+    <div class="mono">"That's exactly why we're building autonomous agents, not just a dashboard. An agent that files to BaFin at 2 AM with zero human intervention — no fund admin offers that. We're automating the fund admin's workflow, which means we can also sell TO fund admins as infrastructure. One fund admin deal = €50-200K ARR. The business is better, not worse."</div>
+  </div>
+</div>
+
+<!-- ═══ FOLLOW-UP ═══ -->
+<div class="section">
+  <div class="section-label">After the Call</div>
+  <h2>Follow-Up Email (Send within 2 hours)</h2>
+  <div class="card" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-muted);line-height:2">
+    Subject: Caelith — great connecting today<br><br>
+    Hi Eugenie,<br><br>
+    Great speaking with you. As discussed, Caelith is building the compliance infrastructure layer for EU alternative fund managers — starting with AIFMD Annex IV automation, expanding into autonomous filing agents for BaFin and CSSF.<br><br>
+    Attached: one-pager with key metrics and roadmap.<br><br>
+    [If interest shown]<br>
+    I'd love to continue the conversation — would [date] work for a deeper dive?<br><br>
+    [If stage mismatch / intro request]<br>
+    If there are seed-stage investors in your network focused on European RegTech infrastructure, an introduction would be incredibly valuable. Happy to share any materials that help.<br><br>
+    Best,<br>
+    Julian Laycock · CEO, Caelith<br>
+    julian.laycock@caelith.tech · caelith.tech
+  </div>
+</div>
+
+<!-- ═══ PRE-CALL CHECKLIST ═══ -->
+<div class="section">
+  <div class="section-label">Pre-Call</div>
+  <h2>Checklist</h2>
+  <div class="card">
+    <ul class="checklist">
+      <li class="done">Primary goal: warm intro to seed funds — not investment from Finch</li>
+      <li class="done">Finch portfolio research done (Fourthline, eflow angle prepared)</li>
+      <li class="done">Sphinx + Kobalt competitive angles ready</li>
+      <li class="done">Hard questions anticipated and practiced</li>
+      <li class="done">Demo at caelith.tech live — health check: all 200</li>
+      <li class="done">Demo credentials: demo@caelith.tech / Demo1234</li>
+      <li>One-pager PDF ready (pitch-deck/caelith-one-pager.pdf)</li>
+      <li>Test screen share before call</li>
+      <li>Clear all browser tabs — only Caelith demo + this doc open</li>
+      <li>Check Railway dashboard 30 min before — confirm backend uptime</li>
+      <li>Confirm who exactly from Finch is on the call</li>
+      <li>Have Calendly link ready for follow-up booking</li>
+      <li>Run readiness check once before call — confirm email gate works</li>
+      <li>Backup: local dev server running if Railway goes down</li>
+    </ul>
+  </div>
+</div>
+
+<div style="text-align:center;padding:28px 0;color:var(--text-dim);font-size:11px;border-top:1px solid var(--border);margin-top:20px">
+  Caelith · Finch Capital Prep · March 3, 2026 · Confidential
+</div>
+
+</div>
+</body>
+</html>

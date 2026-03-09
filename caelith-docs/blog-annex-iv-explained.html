@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The AIFMD II Annex IV XML Schema, Explained for Humans — Caelith</title>
+  <meta name="description" content="A plain-language walkthrough of ESMA's Annex IV XML schema for AIFMD II. 200+ fields, conditional logic, NCA quirks — decoded for compliance officers.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a1f1f;
+      color: #F8F9FA;
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 17px;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 80px 24px 120px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: #8a9a9a;
+      margin-bottom: 12px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    h1 {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 2.4rem;
+      line-height: 1.2;
+      margin-bottom: 24px;
+      color: #F8F9FA;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: #a0b0b0;
+      margin-bottom: 48px;
+      line-height: 1.6;
+    }
+
+    h2 {
+      font-family: 'Sora', sans-serif;
+      font-weight: 600;
+      font-size: 1.5rem;
+      margin-top: 56px;
+      margin-bottom: 20px;
+      color: #F8F9FA;
+    }
+
+    h3 {
+      font-family: 'Sora', sans-serif;
+      font-weight: 600;
+      font-size: 1.15rem;
+      margin-top: 36px;
+      margin-bottom: 12px;
+      color: #e0e8e8;
+    }
+
+    p { margin-bottom: 18px; color: #d0d8d8; }
+
+    a { color: #5eead4; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { color: #F8F9FA; font-weight: 600; }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88em;
+      background: #252d2d;
+      padding: 2px 7px;
+      border-radius: 4px;
+      color: #5eead4;
+    }
+
+    pre {
+      background: #151a1a;
+      border: 1px solid #2a3535;
+      border-radius: 8px;
+      padding: 20px 24px;
+      overflow-x: auto;
+      margin: 20px 0 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: #c8d8d8;
+    }
+
+    pre .tag { color: #5eead4; }
+    pre .attr { color: #fbbf24; }
+    pre .val { color: #a78bfa; }
+    pre .comment { color: #6b7b7b; font-style: italic; }
+
+    .callout {
+      background: #1e2828;
+      border-left: 3px solid #5eead4;
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 24px 0;
+      font-size: 0.95rem;
+    }
+
+    .callout strong { color: #5eead4; }
+
+    ul, ol {
+      margin: 12px 0 20px 24px;
+      color: #d0d8d8;
+    }
+
+    li { margin-bottom: 8px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0 28px;
+      font-size: 0.92rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      background: #202828;
+      color: #8a9a9a;
+      font-weight: 500;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #2a3535;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #222c2c;
+      color: #d0d8d8;
+    }
+
+    tr:hover td { background: #1e2626; }
+
+    .highlight-row td { color: #5eead4; font-weight: 500; }
+
+    hr {
+      border: none;
+      border-top: 1px solid #2a3535;
+      margin: 48px 0;
+    }
+
+    .cta {
+      background: linear-gradient(135deg, #1e2828, #202d2d);
+      border: 1px solid #2a3a3a;
+      border-radius: 12px;
+      padding: 32px;
+      margin-top: 48px;
+      text-align: center;
+    }
+
+    .cta p { color: #a0b0b0; margin-bottom: 16px; }
+
+    .cta a.btn {
+      display: inline-block;
+      background: #5eead4;
+      color: #1a1f1f;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+    }
+
+    .cta a.btn:hover { opacity: 0.9; text-decoration: none; }
+
+    .tldr {
+      background: #202828;
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin: 40px 0;
+    }
+
+    .tldr h3 { margin-top: 0; color: #5eead4; }
+    .tldr ul { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+  <article class="container">
+    <p class="meta">February 2026 · Caelith Engineering</p>
+
+    <h1>The AIFMD II Annex IV XML Schema, Explained for Humans</h1>
+
+    <p class="subtitle">200+ fields. Conditional logic. NCA-specific quirks. Here's what the schema actually says — in language you can forward to your team.</p>
+
+    <!-- Section 1 -->
+    <h2>What Is Annex IV and Why Should You Care</h2>
+
+    <p>Annex IV is the standardized reporting template that every AIFM in the EU must file with its National Competent Authority under the Alternative Investment Fund Managers Directive. AIFMD II — the revised directive entering force on <strong>April 16, 2026</strong> — significantly expands what you need to report: more granular exposure data, new leverage breakdowns, additional risk metrics, and tighter validation rules. The filing format is XML, validated against ESMA's XSD schema (currently Rev 6, version 1.2).</p>
+
+    <p>If you're a compliance officer at a German KVG, this is not optional reading. Your first filing under the new regime could be due as early as Q2 2026, and the XML schema has over 200 fields with conditional logic that will reject your submission if you get a single enumeration wrong. The good news: once you understand the structure, it's not magic — it's just bureaucracy with angle brackets.</p>
+
+    <!-- Section 2 -->
+    <h2>The XML Schema in Plain Language</h2>
+
+    <p>The Annex IV XML file is a nested tree. Think of it as a form with sections. Here's the hierarchy that actually matters:</p>
+
+    <h3>1. AIFMReportingInfo — the wrapper</h3>
+    <p>The root element. Contains metadata about who's filing and when.</p>
+
+<pre><span class="tag">&lt;AIFMReportingInfo</span>
+  <span class="attr">CreationDateAndTime</span>=<span class="val">"2026-06-30T12:00:00"</span>
+  <span class="attr">Version</span>=<span class="val">"1.2"</span>
+  <span class="attr">ReportingMemberState</span>=<span class="val">"DE"</span><span class="tag">&gt;</span></pre>
+
+    <p>This tells ESMA: "This report was created on this date, uses schema version 1.2, and is filed in Germany."</p>
+
+    <h3>2. AIFMRecordInfo — about the manager</h3>
+    <p>One per AIFM. This section identifies your firm:</p>
+
+<pre><span class="tag">&lt;AIFMRecordInfo&gt;</span>
+  <span class="tag">&lt;FilingType&gt;</span>INIT<span class="tag">&lt;/FilingType&gt;</span>
+  <span class="tag">&lt;AIFMContentType&gt;</span>1<span class="tag">&lt;/AIFMContentType&gt;</span>
+  <span class="tag">&lt;ReportingPeriodStartDate&gt;</span>2026-01-01<span class="tag">&lt;/ReportingPeriodStartDate&gt;</span>
+  <span class="tag">&lt;ReportingPeriodEndDate&gt;</span>2026-03-31<span class="tag">&lt;/ReportingPeriodEndDate&gt;</span>
+  <span class="tag">&lt;ReportingPeriodType&gt;</span>Q1<span class="tag">&lt;/ReportingPeriodType&gt;</span>
+  <span class="tag">&lt;AIFMJurisdiction&gt;</span>DE<span class="tag">&lt;/AIFMJurisdiction&gt;</span>
+  <span class="tag">&lt;AIFMNationalCode&gt;</span>K-FR-XXXX-XXXX-X<span class="tag">&lt;/AIFMNationalCode&gt;</span>
+  <span class="tag">&lt;AIFMName&gt;</span>Muster KVG mbH<span class="tag">&lt;/AIFMName&gt;</span>
+  <span class="tag">&lt;AIFMEEAFlag&gt;</span>true<span class="tag">&lt;/AIFMEEAFlag&gt;</span>
+  <span class="comment">&lt;!-- ... --&gt;</span>
+<span class="tag">&lt;/AIFMRecordInfo&gt;</span></pre>
+
+    <p>Key fields: <code>FilingType</code> (<code>INIT</code> for first filing, <code>AMND</code> for amendments), <code>AIFMContentType</code> (<code>1</code> = full report with AIF data, <code>2</code> = AIFM-only), and the <code>ReportingPeriod</code> block that defines which quarter you're filing.</p>
+
+    <h3>3. AIFRecordInfo — about each fund</h3>
+    <p>One per AIF managed. This is where most of the complexity lives:</p>
+
+<pre><span class="tag">&lt;AIFRecordInfo&gt;</span>
+  <span class="tag">&lt;AIFNationalCode&gt;</span>DE000EXAMPLE01<span class="tag">&lt;/AIFNationalCode&gt;</span>
+  <span class="tag">&lt;AIFName&gt;</span>Muster Immobilienfonds I<span class="tag">&lt;/AIFName&gt;</span>
+  <span class="tag">&lt;AIFDescription&gt;</span>
+    <span class="tag">&lt;PredominantAIFType&gt;</span>PEQF<span class="tag">&lt;/PredominantAIFType&gt;</span>
+    <span class="tag">&lt;AIFBaseCurrency&gt;</span>EUR<span class="tag">&lt;/AIFBaseCurrency&gt;</span>
+    <span class="tag">&lt;AIFNetAssetValue&gt;</span>250000000<span class="tag">&lt;/AIFNetAssetValue&gt;</span>
+  <span class="tag">&lt;/AIFDescription&gt;</span>
+  <span class="tag">&lt;AIFIndividualInfo&gt;</span>
+    <span class="comment">&lt;!-- Exposures, leverage, risk — the deep stuff --&gt;</span>
+  <span class="tag">&lt;/AIFIndividualInfo&gt;</span>
+<span class="tag">&lt;/AIFRecordInfo&gt;</span></pre>
+
+    <p>Inside <code>AIFIndividualInfo</code>, you'll find blocks for <strong>MainInstrumentsTraded</strong> (top 5 instruments by value), <strong>IndividualExposure</strong> (macro and geographical breakdowns), <strong>RiskProfile</strong> (market, counterparty, liquidity), <strong>LeverageInfo</strong> (Gross and Commitment methods), <strong>StressTests</strong> (new in AIFMD II), and <strong>LiquidityManagement</strong> tools (also new).</p>
+
+    <h3>4. The exposure &amp; risk blocks</h3>
+    <p>These are tables encoded as XML. Each row is an element with coded values:</p>
+
+<pre><span class="tag">&lt;MainInstrumentTraded&gt;</span>
+  <span class="tag">&lt;Ranking&gt;</span>1<span class="tag">&lt;/Ranking&gt;</span>
+  <span class="tag">&lt;SubAssetType&gt;</span>DER_FEX_FORW<span class="tag">&lt;/SubAssetType&gt;</span>
+  <span class="tag">&lt;InstrumentCodeType&gt;</span>ISIN<span class="tag">&lt;/InstrumentCodeType&gt;</span>
+  <span class="tag">&lt;InstrumentValue&gt;</span>45000000<span class="tag">&lt;/InstrumentValue&gt;</span>
+<span class="tag">&lt;/MainInstrumentTraded&gt;</span></pre>
+
+    <p>The sub-asset type codes (<code>DER_FEX_FORW</code> = derivative, foreign exchange, forward) are enumerated in the XSD. There are roughly 80 of them. Get one character wrong and validation fails — sometimes silently on certain NCA portals.</p>
+
+    <!-- Section 3 -->
+    <h2>5 Fields That Trip Everyone Up</h2>
+
+    <h3>1. LEI Validation</h3>
+    <p>The <code>AIFMLEICode</code> and <code>AIFLEICode</code> fields must contain a valid, <strong>active</strong> 20-character LEI. Not "applied for." Not expired. Not the old pre-LEI code from 2019. ESMA's validator cross-checks against the GLEIF database. If your LEI lapsed and you didn't renew it, your <em>entire filing</em> gets rejected — not just the field.</p>
+
+    <div class="callout">
+      <strong>Fix:</strong> Check your LEI status at <a href="https://search.gleif.org">search.gleif.org</a> before filing season. Renewal takes 1–3 business days. Don't leave this for filing week.
+    </div>
+
+    <h3>2. ReportingMemberState</h3>
+    <p>This isn't where your fund is domiciled. It's where the <strong>AIFM is authorized</strong>. German KVG managing a Luxembourg fund? <code>ReportingMemberState</code> is <code>DE</code>, not <code>LU</code>. Mixing this up means your file goes to the wrong NCA — or gets rejected by the right one.</p>
+
+    <h3>3. NAVFrequency</h3>
+    <p>ESMA expects specific codes: <code>D</code> (daily), <code>W</code> (weekly), <code>M</code> (monthly), <code>Q</code> (quarterly), <code>HY</code> (half-yearly), <code>Y</code> (yearly). Common mistake: using <code>A</code> for annual (it's <code>Y</code>) or <code>S</code> for semi-annual (it's <code>HY</code>). These are enumerated in the XSD — there's no freetext fallback.</p>
+
+    <h3>4. PredominantAIFType</h3>
+    <p>You must classify each fund: <code>HFND</code> (hedge fund), <code>PEQF</code> (private equity), <code>REST</code> (real estate), <code>FOFS</code> (fund of funds), <code>OTHR</code> (other). The gotcha: this drives <strong>which subsequent fields are required</strong>. Classify a real estate fund as <code>OTHR</code> and you'll skip required property-type breakdowns. Classify it correctly as <code>REST</code> and 15 more fields appear. There's no shortcut — pick the right type from the start.</p>
+
+    <h3>5. Leverage: Gross vs. Commitment Method</h3>
+    <p>AIFMD II requires leverage reported under <strong>both</strong> methods. These are not the same number:</p>
+
+<pre><span class="tag">&lt;LeverageAIF&gt;</span>
+  <span class="tag">&lt;GrossMethodRate&gt;</span>2.35<span class="tag">&lt;/GrossMethodRate&gt;</span>
+  <span class="tag">&lt;CommitmentMethodRate&gt;</span>1.80<span class="tag">&lt;/CommitmentMethodRate&gt;</span>
+<span class="tag">&lt;/LeverageAIF&gt;</span></pre>
+
+    <p>A ratio of 1.0 means no leverage. If your Gross is <em>lower</em> than your Commitment, something is wrong with your calculation. Common error: submitting percentages (235%) instead of ratios (2.35).</p>
+
+    <!-- Section 4 -->
+    <h2>NCA Differences That Matter</h2>
+
+    <p>The XSD is European. The filing portals are national. Each NCA adds its own flavor.</p>
+
+    <h3>BaFin (Germany)</h3>
+    <ul>
+      <li><strong>Portal:</strong> MVP Portal (Meldewesen-Plattform)</li>
+      <li><strong>National code format:</strong> BaFin uses its own WM-Nummer / registration code. Must match their records exactly.</li>
+      <li><strong>Extra validation:</strong> BaFin runs plausibility checks beyond XSD. A schema-valid file can still be rejected if NAV figures are inconsistent across sections.</li>
+      <li><strong>Frequency quirk:</strong> Sub-threshold AIFMs file annually, but the reporting period must align to calendar quarters — you file once, for Q4.</li>
+    </ul>
+
+    <h3>CSSF (Luxembourg)</h3>
+    <ul>
+      <li><strong>Portal:</strong> eDesk (SOFiE module)</li>
+      <li><strong>LEI mandatory since 2024</strong> — no grace period. Placeholder LEIs are hard-rejected under AIFMD II.</li>
+      <li><strong>Passporting fields:</strong> German KVG with a Lux-domiciled AIF? CSSF expects <code>AIFMemberState</code> = <code>LU</code> and <code>ReportingMemberState</code> = <code>DE</code>. Getting these crossed is the #1 support ticket at CSSF.</li>
+    </ul>
+
+    <h3>AMF (France)</h3>
+    <ul>
+      <li><strong>Portal:</strong> GECO / ROSA</li>
+      <li><strong>Stricter on stress tests</strong> — AMF expects populated stress test fields even in transitional periods where other NCAs accept blanks.</li>
+      <li><strong>Heads up:</strong> Error messages are in French. Plan accordingly.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Universal truth:</strong> No two NCA portals give the same error messages for the same problem. BaFin gives you a plausibility code. CSSF gives you a line number. AMF gives you a French sentence. Build your validation locally before uploading anywhere.
+    </div>
+
+    <!-- Section 5 -->
+    <h2>How to Validate Your XML</h2>
+
+    <h3>Layer 1: XSD Validation</h3>
+    <p>The minimum. Validate against ESMA's official XSD (Rev 6 v1.2). This catches missing required elements, wrong enumeration values, invalid data types, and structural nesting errors. Any XML editor or CLI tool (<code>xmllint</code>, Python's <code>lxml</code>) handles this.</p>
+
+    <h3>Layer 2: Business Logic Checks</h3>
+    <p>XSD won't catch:</p>
+    <ul>
+      <li>NAV values that don't add up across sections</li>
+      <li>Leverage ratios below 1.0 (mathematically impossible)</li>
+      <li>Exposure percentages that don't sum to ~100%</li>
+      <li>Missing sections conditionally required by <code>PredominantAIFType</code></li>
+    </ul>
+    <p>This is where most rejections happen. Technically valid XML, logically broken.</p>
+
+    <h3>Layer 3: NCA-Specific Pre-Checks</h3>
+    <p>Each NCA has quirks beyond the standard. Ideally, validate against your specific NCA's known rules before uploading to their portal.</p>
+
+    <div class="callout">
+      <strong>Caelith handles all three layers.</strong> Our Annex IV generator outputs schema-valid, business-logic-checked, NCA-aware XML. We also offer a free validator that checks your existing files against the XSD and flags common business logic errors.
+    </div>
+
+    <!-- Section 6 -->
+    <h2>The Deadline Math</h2>
+
+    <p>April 16, 2026 is when AIFMD II applies. Here's your timeline, working backwards:</p>
+
+    <table>
+      <thead>
+        <tr><th>Date</th><th>What Needs to Happen</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Apr 16, 2026</td><td>AIFMD II enforcement. New reporting obligations active.</td></tr>
+        <tr><td>Mar 2026</td><td>First filing window opens for Q1 2026 reporters (30–45 day window depending on NCA).</td></tr>
+        <tr class="highlight-row"><td>Feb 2026</td><td>XML generator, data pipeline, and validation tested end-to-end. ← You are here.</td></tr>
+        <tr><td>Jan 2026</td><td>Internal UAT. Map fund data to new schema fields. Identify gaps.</td></tr>
+        <tr><td>Q4 2025</td><td>Choose tooling. Build or buy. Start integration.</td></tr>
+        <tr><td>Q3 2025</td><td>If you haven't started, you're behind.</td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>If you're reading this in February 2026:</strong> You have 7 weeks. That's tight but doable if you (1) have your fund data accessible, (2) pick a tool that handles XSD + NCA quirks, (3) do a dry run against your NCA portal, and (4) do not try to hand-edit XML.</p>
+
+    <div class="callout">
+      <strong>The real risk isn't the deadline — it's the first rejection.</strong> NCA portals don't give instant feedback. BaFin's processing can take 24–48 hours. If your first submission bounces on Day 1 of the filing window, you've lost two days. Submit early. Submit a test file. Don't wait.
+    </div>
+
+    <!-- TL;DR -->
+    <div class="tldr">
+      <h3>TL;DR</h3>
+      <ul>
+        <li>Annex IV is a structured XML report filed by every EU AIFM — expanded under AIFMD II</li>
+        <li>200+ fields with conditional logic based on fund type and NCA-specific validation</li>
+        <li>Top 5 gotchas: LEI validation, ReportingMemberState, NAVFrequency codes, PredominantAIFType conditionals, leverage ratio formatting</li>
+        <li>BaFin, CSSF, and AMF all have different portal behaviors and rules</li>
+        <li>Validate at three levels (XSD → business logic → NCA-specific) before uploading</li>
+        <li>April 16, 2026 is the hard deadline — start your test filing now</li>
+      </ul>
+    </div>
+
+    <hr>
+
+    <!-- CTA -->
+    <div class="cta">
+      <p><strong>Caelith</strong> builds compliance infrastructure for European fund managers.<br>Our Annex IV generator validates against ESMA XSD Rev 6 v1.2 with NCA-specific profiles.</p>
+      <a href="https://www.caelith.tech" class="btn">Learn More →</a>
+    </div>
+  </article>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEO Cheat Sheet — Julian Laycock, Caelith</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1f1f;--card:#2D3333;--card-hover:#343b3b;--accent:#8EC5E0;--warm:#E8A87C;--text:#F8F9FA;--muted:#9CA3AF;--border:#3d4545;--green:#6BCB77;--red:#FF6B6B;--code-bg:#232929}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.65;padding:.75rem;max-width:720px;margin:0 auto;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:'Sora',sans-serif;font-weight:700}
+h1{font-size:1.5rem;color:var(--accent);margin-bottom:.15rem;line-height:1.3}
+.sub{color:var(--warm);font-size:.9rem;font-weight:500;margin-bottom:.5rem}
+h2{font-size:1.15rem;color:var(--warm);margin:2rem 0 .75rem;padding-bottom:.4rem;border-bottom:2px solid var(--border);scroll-margin-top:1rem}
+h3{font-size:1rem;color:var(--accent);margin:1.25rem 0 .5rem}
+p{margin-bottom:.75rem}
+a{color:var(--accent);text-decoration:none}
+.card{background:var(--card);border-radius:10px;padding:1rem 1.15rem;margin-bottom:.75rem;border:1px solid var(--border)}
+.talk{background:var(--accent);color:var(--bg);padding:.5rem .75rem;border-radius:8px;font-size:.88rem;font-style:italic;font-weight:500;margin:.5rem 0;line-height:1.5}
+.warn{background:rgba(255,107,107,.1);border:1px solid var(--red);border-radius:8px;padding:.6rem .85rem;font-size:.88rem;color:var(--red);margin:.5rem 0}
+.stat{display:inline-block;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.35rem .65rem;margin:.2rem .25rem .2rem 0;font-size:.82rem}
+.stat strong{color:var(--accent)}
+table{width:100%;border-collapse:collapse;margin:.75rem 0;font-size:.85rem}
+th{text-align:left;padding:.5rem .6rem;background:var(--card);color:var(--accent);font-family:'Sora',sans-serif;font-weight:600;border-bottom:2px solid var(--accent)}
+td{padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+tr:hover td{background:var(--card)}
+code{font-family:'JetBrains Mono',monospace;background:var(--code-bg);padding:.1rem .35rem;border-radius:4px;font-size:.82rem;color:var(--accent)}
+pre{background:var(--code-bg);border-radius:8px;padding:.85rem;overflow-x:auto;margin:.75rem 0;border:1px solid var(--border)}
+pre code{background:none;padding:0;color:var(--text);font-size:.82rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+@media(max-width:500px){.grid{grid-template-columns:1fr}}
+.grid .card{margin-bottom:0}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:16px;font-size:.72rem;font-weight:600}
+.badge-g{background:rgba(107,203,119,.15);color:var(--green);border:1px solid var(--green)}
+.badge-b{background:rgba(142,197,224,.15);color:var(--accent);border:1px solid var(--accent)}
+.badge-w{background:rgba(232,168,124,.15);color:var(--warm);border:1px solid var(--warm)}
+nav{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1.5rem}
+nav a{background:var(--card);padding:.3rem .65rem;border-radius:6px;font-size:.75rem;border:1px solid var(--border);color:var(--accent);transition:all .2s}
+nav a:hover{background:var(--accent);color:var(--bg)}
+ul{list-style:none;padding:0}
+li{padding:.25rem 0;color:var(--muted);font-size:.9rem}
+li::before{content:'→ ';color:var(--accent)}
+.obj-q{color:var(--warm);font-weight:600;font-size:.9rem;margin-bottom:.15rem}
+.obj-a{color:var(--muted);font-size:.88rem;padding-left:.85rem;border-left:3px solid var(--border);margin-bottom:1rem}
+.qr{text-align:center;margin:2rem 0 1rem;padding:1rem;border:1px dashed var(--border);border-radius:10px}
+.qr p{color:var(--muted);font-size:.82rem;margin-bottom:.25rem}
+footer{text-align:center;color:var(--muted);font-size:.75rem;margin-top:2rem;padding:.75rem;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<h1>🎯 CEO Cheat Sheet</h1>
+<p class="sub">Julian Laycock · Caelith · Pull up before any meeting</p>
+
+<nav>
+<a href="#pitch">Pitch</a>
+<a href="#problem">Problem</a>
+<a href="#product">Product</a>
+<a href="#numbers">Numbers</a>
+<a href="#compete">Competition</a>
+<a href="#pricing">Pricing</a>
+<a href="#traction">Traction</a>
+<a href="#dates">Dates</a>
+<a href="#asks">Asks</a>
+<a href="#objections">Objections</a>
+<a href="#infra">Infra Pivot</a>
+<a href="#links">Links</a>
+</nav>
+
+<!-- ELEVATOR PITCH -->
+<h2 id="pitch">1. Elevator Pitch <span class="badge badge-b">30 sec</span></h2>
+<div class="card">
+<p>Caelith is the compliance infrastructure layer for European alternative investment funds. We turn the manual, error-prone process of AIFMD regulatory reporting — which costs fund managers €150–200K/year — into automated, XSD-validated API calls. With the AIFMD II deadline hitting April 16, 2026, and 47% of fund managers unprepared, we're building the open-core compliance stack that both human teams and AI agents will rely on.</p>
+</div>
+<div class="talk">💬 "We're doing for EU fund compliance what Stripe did for payments — infrastructure that makes the hard stuff a single API call."</div>
+
+<!-- PROBLEM -->
+<h2 id="problem">2. The Problem</h2>
+<div class="card">
+<p><strong>AIFMD II</strong> — EU's updated rulebook for alternative investment funds. Germany's transposition: FRiG (amends KAGB).</p>
+<p><strong>Deadline:</strong> April 16, 2026. Miss it → fines, license risk, lawsuits.</p>
+<p><strong>Today's workflow:</strong> Compliance officers manually fill XML/Excel (15–30 hrs/filing). Consultants charge €3–5K per filing or €150–200K/yr. BaFin rejects errors — no pre-validation exists.</p>
+<p><strong>The gap:</strong> 47% of fund managers unprepared. New regime is 3× more complex.</p>
+</div>
+<div class="talk">💬 "Right now, a compliance officer at a small German KVG spends two days filling in an XML template by hand. One typo and BaFin rejects the filing. We eliminate that entire process."</div>
+
+<!-- PRODUCT -->
+<h2 id="product">3. The Product</h2>
+
+<div class="grid">
+<div class="card"><h3>Rules Engine</h3><p style="font-size:.85rem;color:var(--muted)">13 rules, 6 frameworks (KAGB, AIFMD, MiFID II, SFDR, DORA, AML). Real-time, deterministic, auditable.</p></div>
+<div class="card"><h3>Audit Trail</h3><p style="font-size:.85rem;color:var(--muted)">SHA-256 hash-chained decisions. Tamper-evident. DB trigger enforced. DORA compliant.</p></div>
+<div class="card"><h3>Annex IV XML</h3><p style="font-size:.85rem;color:var(--muted)">ESMA Rev 6 XSD validated. All report types. 29 schema errors found & fixed.</p></div>
+<div class="card"><h3>Sanctions Screening</h3><p style="font-size:.85rem;color:var(--muted)">6,863 EU + UN entities. Fuzzy matching (pg_trgm). Milliseconds.</p></div>
+<div class="card"><h3>LEI Verification</h3><p style="font-size:.85rem;color:var(--muted)">Real-time GLEIF validation. Status, expiry, entity details.</p></div>
+<div class="card"><h3>EMT/EET/EPT</h3><p style="font-size:.85rem;color:var(--muted)">43+ fields auto-generated from fund data. FinDatEx spec compliant.</p></div>
+<div class="card"><h3>Compliance Copilot</h3><p style="font-size:.85rem;color:var(--muted)">Keyword intent detection. 11 intents, bilingual EN/DE. 88/88 tests. <strong>Zero LLM cost.</strong></p></div>
+<div class="card"><h3>Readiness Check</h3><p style="font-size:.85rem;color:var(--muted)">24 questions, 8 categories. Free lead gen. No signup required.</p></div>
+<div class="card"><h3>NCA Profiles</h3><p style="font-size:.85rem;color:var(--muted)">5 NCAs, 14 quirks in DB. Updatable without deploy.</p></div>
+<div class="card"><h3>Filing Calendar</h3><p style="font-size:.85rem;color:var(--muted)">AIFMD Art. 24 frequency calculation. Regulatory deadlines per fund type.</p></div>
+<div class="card"><h3>Reg Intel Feed</h3><p style="font-size:.85rem;color:var(--muted)">Structured events from ESMA, BaFin. Queryable via API.</p></div>
+<div class="card"><h3>Developer API</h3><p style="font-size:.85rem;color:var(--muted)">34 endpoints. OpenAPI docs. API key auth. Webhooks (HMAC-SHA256). Python + TS SDKs.</p></div>
+</div>
+
+<div class="card" style="margin-top:.75rem">
+<h3>Open Source: open-annex-iv</h3>
+<p style="font-size:.85rem;color:var(--muted)">Apache 2.0 on npm. 179 tests, CI pipeline, XSD-validated. Serialization is open; validation engine, filing pipeline & audit trail are paid.</p>
+</div>
+
+<!-- NUMBERS -->
+<h2 id="numbers">4. Market Numbers</h2>
+<div style="margin:.5rem 0">
+<span class="stat"><strong>€1.8T</strong> EU AIF AUM</span>
+<span class="stat"><strong>~200</strong> German KVGs</span>
+<span class="stat"><strong>47%</strong> unprepared</span>
+<span class="stat"><strong>48 days</strong> to deadline</span>
+<span class="stat"><strong>34</strong> API endpoints live</span>
+<span class="stat"><strong>88/88</strong> copilot tests</span>
+<span class="stat"><strong>43/43</strong> integration tests</span>
+<span class="stat"><strong>6</strong> cron monitoring jobs</span>
+</div>
+<div class="card" style="margin-top:.75rem">
+<p style="font-size:.85rem;color:var(--muted)"><strong>TAM:</strong> 200 KVGs × €15K avg = <strong>€3M German</strong> (dashboard) · Top 10 fund admins × €100K = <strong>€1M</strong> (API) · EU-wide = <strong>€50M+</strong></p>
+</div>
+
+<!-- COMPETITION -->
+<h2 id="compete">5. Competitive Positioning</h2>
+<div class="card" style="overflow-x:auto">
+<table>
+<tr><th></th><th>anevis</th><th>Big 4</th><th>Fund Admin</th><th>Excel</th><th style="color:var(--accent)">Caelith</th></tr>
+<tr><td><strong>Model</strong></td><td>Managed</td><td>Advisory</td><td>Bundled</td><td>DIY</td><td style="color:var(--accent)">Self-service + API</td></tr>
+<tr><td><strong>Price</strong></td><td>€15–50K/yr</td><td>€150–200K/yr</td><td>"Free"</td><td>Free</td><td style="color:var(--accent)">€990–3,500/mo</td></tr>
+<tr><td><strong>Self-service</strong></td><td>❌</td><td>❌</td><td>❌</td><td>✅</td><td style="color:var(--green)">✅</td></tr>
+<tr><td><strong>AIFMD II</strong></td><td>No mktg</td><td>Slow</td><td>Eventually</td><td>Never</td><td style="color:var(--green)">✅ Purpose-built</td></tr>
+<tr><td><strong>API</strong></td><td>❌</td><td>❌</td><td>N/A</td><td>❌</td><td style="color:var(--green)">✅</td></tr>
+</table>
+</div>
+<div class="talk">💬 "anevis is Accenture. We're AWS. Different customers, different model."</div>
+
+<!-- PRICING -->
+<h2 id="pricing">6. Pricing</h2>
+<div class="card" style="overflow-x:auto">
+<table>
+<tr><th>Tier</th><th>Price</th><th>For Whom</th></tr>
+<tr><td><strong>Professional</strong></td><td>€990/mo</td><td>Small KVGs (≤3 funds). Dashboard, Annex IV, screening, templates</td></tr>
+<tr><td><strong>Business</strong></td><td>€1,990/mo</td><td>Mid KVGs (≤15 funds). + API access, priority support</td></tr>
+<tr><td><strong>Enterprise</strong></td><td>€3,500+/mo</td><td>Fund admins, large KVGs. Unlimited, custom rules, SSO, SLA</td></tr>
+</table>
+<p style="font-size:.82rem;color:var(--muted);margin-top:.5rem"><strong>API:</strong> Free tier → Pro → Enterprise. <strong>Open-core:</strong> Open schemas + libraries (adoption) → Paid pipeline + APIs + audit (revenue).</p>
+</div>
+<p style="font-size:.88rem;color:var(--warm);font-weight:500">93% cheaper than Big 4 consultants. Works at 3am on filing deadline day.</p>
+
+<!-- TRACTION -->
+<h2 id="traction">7. Traction & Proof Points</h2>
+<div class="card">
+<ul>
+<li><span class="badge badge-g">LIVE</span> Product at <a href="https://www.caelith.tech">www.caelith.tech</a> — 34 endpoints, 12 production features</li>
+<li><span class="badge badge-g">LIVE</span> Compliance Copilot — 11 intents, 88/88 tests, zero LLM cost</li>
+<li><span class="badge badge-g">LIVE</span> Readiness Check — 24 questions, lead gen</li>
+<li><span class="badge badge-g">LIVE</span> Impressum at <a href="https://www.caelith.tech/impressum">/impressum</a></li>
+<li><span class="badge badge-g">LIVE</span> open-annex-iv on npm — 179 tests, Apache 2.0</li>
+<li><span class="badge badge-b">INFRA</span> 6 cron monitoring jobs · Webhooks (HMAC-SHA256) · Python + TS SDKs</li>
+<li><span class="badge badge-b">INFRA</span> 88/88 copilot tests · 43/43 integration tests passing</li>
+<li><span class="badge badge-w">BIZ</span> HWR Berlin Startup Incubator + Lanzadera Accelerator</li>
+<li><span class="badge badge-w">BIZ</span> Outreach pivot: targeting compliance officers via LinkedIn (10 sent today)</li>
+<li><span class="badge badge-w">BIZ</span> LinkedIn company page created</li>
+<li><span class="badge badge-w">BIZ</span> Henrik response validates thesis: KVGs outsource to expensive consultants</li>
+<li><span class="badge badge-b">AUDIT</span> Security grade: A- · GDPR grade: A · Railway EU (Amsterdam)</li>
+</ul>
+</div>
+
+<!-- DATES -->
+<h2 id="dates">8. Key Dates</h2>
+<div class="card" style="overflow-x:auto">
+<table>
+<tr><th>Date</th><th>Event</th><th>Action</th></tr>
+<tr><td style="white-space:nowrap"><strong>Tue Mar 4, 13:00</strong></td><td>🏫 HTW Berlin — EXIST call</td><td>Ask for mentor + enrollment path</td></tr>
+<tr><td style="white-space:nowrap"><strong>Wed Mar 5</strong></td><td>📋 BAfA Gründungszuschuss</td><td>DO NOT register Freiberufler before this</td></tr>
+<tr><td style="white-space:nowrap"><strong>Mon Mar 3, 10:30</strong></td><td>💰 Finch Capital — Eugenie</td><td>Demo + relationship + intros</td></tr>
+<tr><td style="white-space:nowrap"><strong>Apr 16, 2026</strong></td><td>⚖️ AIFMD II enforcement</td><td>FRiG enters force in Germany</td></tr>
+<tr><td style="white-space:nowrap"><strong>H2 2026</strong></td><td>📄 ESMA new Annex IV ITS</td><td>Schema race starting gun</td></tr>
+<tr><td style="white-space:nowrap"><strong>Apr 16, 2027</strong></td><td>📊 New reporting obligations</td><td>Hard deadline for updated filings</td></tr>
+</table>
+</div>
+<p style="font-size:.82rem;color:var(--muted)">HWR Berlin email sent 2 days ago for EXIST. HTW call moved from Feb 27 to Mar 4.</p>
+
+<!-- ASKS -->
+<h2 id="asks">9. The Ask — By Meeting</h2>
+
+<div class="card">
+<h3>🏫 HTW Berlin — EXIST Gründungsstipendium</h3>
+<p style="font-size:.85rem;color:var(--muted)"><strong>EXIST provides:</strong> €1–2.5K/mo stipend × 12 months + €10K materials + €5K coaching</p>
+<p style="font-size:.85rem;color:var(--muted)"><strong>Need from HTW:</strong> Academic mentor, enrollment path for SS2026, letter of support</p>
+<div class="talk">💬 "I have a live product, a validated market, and a clear revenue model. What I need from HTW is academic grounding and the structured support EXIST provides to turn this into a sustainable company."</div>
+</div>
+
+<div class="card">
+<h3>💰 Finch Capital — Eugenie Colonna-Distria</h3>
+<p style="font-size:.85rem;color:var(--muted)"><strong>Goal:</strong> Build relationship. Demonstrate depth. Get feedback + intros. Do NOT ask for money.</p>
+<p style="font-size:.85rem;color:var(--muted)"><strong>Strategy:</strong> Live demo → explain infra pivot (APIs for fund admins) → ask what milestones they'd need → ask for intros</p>
+<div class="talk">💬 "I know we're early for Finch. I'm here because you understand financial infrastructure deeply, and I'd love your honest feedback on our positioning. If you know fund admins or compliance teams who'd benefit, I'd value those introductions."</div>
+</div>
+
+<!-- OBJECTIONS -->
+<h2 id="objections">10. Objection Handling</h2>
+
+<div class="obj-q">"Isn't this just a dashboard?"</div>
+<div class="obj-a">The dashboard is a reference implementation. The core product is API infrastructure — filing pipelines, validation, screening. Fund admins want APIs they embed. That's where scale lives.</div>
+
+<div class="obj-q">"How is this different from anevis?"</div>
+<div class="obj-a">anevis = managed service for enterprises, €15–50K. We're self-service infrastructure at 10× lower cost. They're Accenture, we're AWS.</div>
+
+<div class="obj-q">"Do KVGs even buy software?"</div>
+<div class="obj-a">AIFMD II changes the math: 3× more data points, stricter validation. Excel doesn't scale. Digital reporting makes software inevitable.</div>
+
+<div class="obj-q">"Solo founder risk"</div>
+<div class="obj-a">EXIST for structured support, HWR + HTW for academic backing, open-core = community becomes the team. Plus Lanzadera.</div>
+
+<div class="obj-q">"Too early for us"</div>
+<div class="obj-a">Completely understand. What specific milestones would make us interesting for a future conversation?</div>
+
+<div class="obj-q">"What about risk calculations?"</div>
+<div class="obj-a">anevis does VaR/DV01. AIFMD II's new reqs are delegation disclosures, LMT docs, loan origination reporting. Those are our focus. Risk calc is Phase 2.</div>
+
+<div class="obj-q">"Will ESMA delay the deadline?"</div>
+<div class="obj-a">~30% chance. But current Annex IV is already manual and painful. We solve today's problem AND tomorrow's.</div>
+
+<!-- INFRA PIVOT -->
+<h2 id="infra">11. The Infrastructure Pivot</h2>
+<div class="card">
+<p><strong>Dashboard SaaS → Compliance Infrastructure.</strong> The dashboard is the demo. The API is the business.</p>
+<p style="font-size:.85rem;color:var(--muted)">Fund admins manage 50–200 clients. One API integration serves all. One deal = €50–200K ARR.</p>
+</div>
+
+<pre><code>POST /api/v1/annex-iv/generate    → XSD-validated XML (2 sec vs 2 weeks)
+POST /api/v1/sanctions/screen      → Fuzzy match vs 6,863 entities
+GET  /api/v1/lei/validate/{LEI}   → Real-time GLEIF validation
+POST /api/v1/templates/emt         → Auto-filled EMT/EET/EPT</code></pre>
+
+<div class="talk">💬 "The dashboard proves the engine works. The real business is the API layer. A fund admin integrates once and serves all their clients through us."</div>
+
+<!-- LINKS -->
+<h2 id="links">12. Quick Links</h2>
+<div class="card">
+<ul>
+<li><a href="https://www.caelith.tech">www.caelith.tech</a> — Main site</li>
+<li><a href="https://www.caelith.tech/readiness-check">Readiness Check</a> — Lead gen tool</li>
+<li><a href="https://www.caelith.tech/api/copilot-demo">Copilot Demo</a> — Live compliance copilot</li>
+<li><a href="https://www.caelith.tech/impressum">Impressum</a> — Legal page</li>
+<li><a href="https://calendly.com/julian-laycock-caelith/30min">Calendly</a> — Book a 30-min call</li>
+</ul>
+</div>
+
+<div class="qr">
+<pre style="border:none;margin:0;padding:.5rem"><code>COMPANY:  Caelith — compliance infra for EU fund managers
+PRODUCT:  Open-core: 34 API endpoints + dashboard
+PRICING:  €990 / €1,990 / €3,500+ per month
+MARKET:   €1.8T AUM, 200+ KVGs, 47% unprepared
+MOAT:     XSD pipeline, open-core, API-first
+STAGE:    Pre-revenue, live product
+SUPPORT:  HWR Berlin Incubator + Lanzadera</code></pre>
+</div>
+
+<footer>
+Last updated: Feb 27, 2026 · Designed to be read on your phone before walking into the room.
+</footer>
+
+</body>
+</html>

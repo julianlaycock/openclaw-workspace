@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Research Audit — CRO Report</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #111827;
+    --bg3: #1e293b;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #6366f1;
+    --accent2: #818cf8;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --orange: #f97316;
+    --border: #334155;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+  h1 { font-size: 2.2rem; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; }
+  h2 { font-size: 1.5rem; color: var(--accent2); margin: 2.5rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+  h3 { font-size: 1.15rem; color: var(--text); margin: 1.5rem 0 0.5rem; }
+  p, li { color: var(--muted); }
+  a { color: var(--accent2); }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .executive { background: linear-gradient(135deg, #1e1b4b, #1e293b); border: 1px solid #4338ca; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+  .executive p { color: var(--text); font-size: 1.05rem; }
+  .score-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .score-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.2rem; }
+  .score-item .label { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.4rem; }
+  .score-item .num { font-size: 1.8rem; font-weight: 700; }
+  .bar-wrap { background: var(--bg3); border-radius: 6px; height: 10px; margin-top: 0.4rem; overflow: hidden; }
+  .bar { height: 100%; border-radius: 6px; transition: width 0.4s; }
+  .bar.red { background: var(--red); }
+  .bar.orange { background: var(--orange); }
+  .bar.yellow { background: var(--yellow); }
+  .bar.green { background: var(--green); }
+  .overall { font-size: 3rem; font-weight: 800; text-align: center; padding: 1.5rem; }
+  .overall-wrap { background: var(--bg2); border: 2px solid var(--accent); border-radius: 16px; text-align: center; padding: 2rem; margin: 1.5rem 0; }
+  .overall-label { font-size: 1rem; color: var(--muted); }
+  .evidence { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: #7dd3fc; background: var(--bg); padding: 0.15rem 0.4rem; border-radius: 4px; }
+  .gap { background: #7f1d1d33; border-left: 3px solid var(--red); padding: 0.8rem 1rem; margin: 0.5rem 0; border-radius: 0 8px 8px 0; }
+  .gap p { color: #fca5a5; }
+  .strength { background: #14532d33; border-left: 3px solid var(--green); padding: 0.8rem 1rem; margin: 0.5rem 0; border-radius: 0 8px 8px 0; }
+  .strength p { color: #86efac; }
+  .next-step { background: var(--bg3); padding: 0.8rem 1rem; margin: 0.5rem 0; border-radius: 8px; border-left: 3px solid var(--accent); }
+  .next-step p { color: var(--text); }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+  th, td { padding: 0.6rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th { color: var(--accent2); font-size: 0.85rem; text-transform: uppercase; }
+  td { color: var(--muted); font-size: 0.9rem; }
+  .critical-box { background: linear-gradient(135deg, #450a0a, #1e293b); border: 1px solid #dc2626; border-radius: 12px; padding: 1.5rem; margin: 1rem 0; }
+  .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+  .tag-red { background: #7f1d1d; color: #fca5a5; }
+  .tag-yellow { background: #713f12; color: #fde68a; }
+  .tag-green { background: #14532d; color: #86efac; }
+  .tag-blue { background: #1e3a5f; color: #93c5fd; }
+  ul { padding-left: 1.5rem; margin: 0.5rem 0; }
+  li { margin: 0.3rem 0; }
+</style>
+</head>
+<body>
+
+<h1>Caelith Research Audit Report</h1>
+<p class="meta">Chief Research Officer Assessment · 28 February 2026 · Internal — CEO Eyes Only</p>
+
+<!-- ═══ EXECUTIVE SUMMARY ═══ -->
+<div class="executive">
+<h2 style="border:none;margin-top:0;color:#c4b5fd">Executive Summary</h2>
+<p>Caelith is a surprisingly deep early-stage RegTech platform. For a pre-revenue startup, the regulatory domain modeling is well above what I'd expect — genuine AIFMD expertise baked into code, not bolted on. The Annex IV XML serializer with XSD schemas, the multi-NCA portal database, LEI verification via GLEIF, investor classification engine with KAGB/ELTIF/EuVECA logic, integrity hash chains on decision records, and an AI copilot with PII stripping are real differentiators.</p>
+<p style="margin-top:1rem"><strong>The hard truth:</strong> The platform has strong regulatory depth but lacks production hardening. No CI test runs, no monitoring/observability, no automated deployment pipeline, no real XSD validation (native module optional), mock screening as default, and zero frontend tests. The codebase is a credible MVP — but it's 30% of what a paying KVG would demand.</p>
+<p style="margin-top:1rem"><strong>Biggest risk:</strong> The gap between "impressive demo" and "auditable production system" is 6-9 months of focused engineering. Investors will see the depth; regulators will see the gaps.</p>
+</div>
+
+<!-- ═══ OVERALL SCORE ═══ -->
+<div class="overall-wrap">
+<div class="overall-label">OVERALL AUDIT SCORE</div>
+<div class="overall" style="color: var(--orange);">38 / 100</div>
+<p style="color:var(--muted)">Strong domain knowledge, early-stage implementation. Credible for demo/pilot, not for production regulatory filing.</p>
+</div>
+
+<!-- ═══ SCORE DASHBOARD ═══ -->
+<h2>Score Dashboard</h2>
+<div class="score-grid">
+
+<div class="score-item">
+  <div class="label">1. Regulatory Coverage</div>
+  <div class="num" style="color:var(--yellow)">52</div>
+  <div class="bar-wrap"><div class="bar yellow" style="width:52%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">2. Data Quality & Validation</div>
+  <div class="num" style="color:var(--orange)">35</div>
+  <div class="bar-wrap"><div class="bar orange" style="width:35%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">3. Regulatory Reporting Pipeline</div>
+  <div class="num" style="color:var(--yellow)">45</div>
+  <div class="bar-wrap"><div class="bar yellow" style="width:45%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">4. Sanctions & Screening</div>
+  <div class="num" style="color:var(--orange)">40</div>
+  <div class="bar-wrap"><div class="bar orange" style="width:40%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">5. Investor Due Diligence</div>
+  <div class="num" style="color:var(--yellow)">48</div>
+  <div class="bar-wrap"><div class="bar yellow" style="width:48%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">6. Multi-NCA Support</div>
+  <div class="num" style="color:var(--yellow)">55</div>
+  <div class="bar-wrap"><div class="bar yellow" style="width:55%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">7. Regulatory Intelligence</div>
+  <div class="num" style="color:var(--orange)">30</div>
+  <div class="bar-wrap"><div class="bar orange" style="width:30%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">8. Compliance Audit Trail</div>
+  <div class="num" style="color:var(--yellow)">55</div>
+  <div class="bar-wrap"><div class="bar yellow" style="width:55%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">9. Agent Readiness</div>
+  <div class="num" style="color:var(--red)">15</div>
+  <div class="bar-wrap"><div class="bar red" style="width:15%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">10. Security Posture</div>
+  <div class="num" style="color:var(--yellow)">58</div>
+  <div class="bar-wrap"><div class="bar yellow" style="width:58%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">11. Data Architecture</div>
+  <div class="num" style="color:var(--yellow)">50</div>
+  <div class="bar-wrap"><div class="bar yellow" style="width:50%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">12. API Maturity</div>
+  <div class="num" style="color:var(--yellow)">48</div>
+  <div class="bar-wrap"><div class="bar yellow" style="width:48%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">13. Testing & Quality</div>
+  <div class="num" style="color:var(--red)">22</div>
+  <div class="bar-wrap"><div class="bar red" style="width:22%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">14. Scalability & Infrastructure</div>
+  <div class="num" style="color:var(--red)">20</div>
+  <div class="bar-wrap"><div class="bar red" style="width:20%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">15. Product Maturity</div>
+  <div class="num" style="color:var(--orange)">42</div>
+  <div class="bar-wrap"><div class="bar orange" style="width:42%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">16. Open Source Strategy</div>
+  <div class="num" style="color:var(--orange)">35</div>
+  <div class="bar-wrap"><div class="bar orange" style="width:35%"></div></div>
+</div>
+<div class="score-item">
+  <div class="label">17. Go-to-Market Readiness</div>
+  <div class="num" style="color:var(--orange)">32</div>
+  <div class="bar-wrap"><div class="bar orange" style="width:32%"></div></div>
+</div>
+
+</div>
+
+<!-- ═══ DETAILED FINDINGS ═══ -->
+<h2>Detailed Findings</h2>
+
+<!-- Cat 1 -->
+<div class="card">
+<h3>1. Regulatory Coverage — <span style="color:var(--yellow)">52/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> AIFMD Art. 24 reporting obligations modeled. KAGB semi-professional investor thresholds (§1 Abs. 19 Nr. 33). ELTIF 2.0 (Reg 2023/606), EuVECA, EuSEF eligibility. AIFMD II readiness assessment with 20+ questions referencing specific articles. SFDR classification in DB schema. Reporting frequency calculator per Art. 24 thresholds (€100M/€500M/€1B). Regulations directory with source PDFs (AIFMD, KAGB, CSSF circulars, CBI Q&A).</p></div>
+<div class="gap"><p><strong>Missing:</strong> No UCITS implementation despite fund_type enum supporting it. No MiFID II Annex II professional investor test implementation. No DORA compliance module. No AMLR (new EU AML Regulation) implementation. AIFMD II transition timeline hard-coded (April 2026 deadline) but no dynamic rule adaptation. No regulatory change impact assessment engine.</p></div>
+<p class="evidence">src/backend/services/investor-classification-service.ts · src/backend/services/readiness-service.ts · regulations/</p>
+</div>
+
+<!-- Cat 2 -->
+<div class="card">
+<h3>2. Data Quality & Validation — <span style="color:var(--orange)">35/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> XSD schemas present in <span class="evidence">packages/open-annex-iv/schema/</span> (AIFMD_DATAIF_V1.2.xsd, AIFMD_DATMAN_V1.2.xsd). Pattern-matching XML validation fallback in validator.ts. Zod used for some API validation. Input sanitization middleware (null bytes, prototype pollution, length caps). ISO 17442 LEI checksum validation (offline). ESMA code mappings for fund types, asset types, redemption frequencies.</p></div>
+<div class="gap"><p><strong>Missing:</strong> Real XSD validation requires optional libxmljs2 native module — not installed by default, falls back to pattern heuristics. No field-level validation on most frontend forms. No data completeness scoring. No ESMA technical validation rules (beyond XSD structure). No data quality dashboards. Validator.ts admits "pattern" method is incomplete.</p></div>
+<p class="evidence">packages/open-annex-iv/src/validator.ts · src/backend/validators.ts · src/backend/middleware/validate.ts</p>
+</div>
+
+<!-- Cat 3 -->
+<div class="card">
+<h3>3. Regulatory Reporting Pipeline — <span style="color:var(--yellow)">45/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> Annex IV XML serializer generating XSD-conformant XML (~530 lines). Maps ESMA codes correctly (AIFContentType, reporting frequency, asset types, domicile codes). Evidence bundle service compiling decisions, rules, investors for CSSF inspection packages. Compliance report PDF generation with branded PDFKit output. Filing deadline calculator with NCA-specific grace periods and holiday adjustment. Audit receipt service for filing confirmation.</p></div>
+<div class="gap"><p><strong>Missing:</strong> No actual NCA submission integration (no FIRDS, no BaFin MVP portal upload, no CSSF eReg API). No filing status tracking workflow (draft → submitted → acknowledged → accepted). No AIFM-level reporting (DATMAN) — only AIF-level (DATAIF). No XML digital signature. No filing history/version comparison. No automated pre-filing validation checklist.</p></div>
+<p class="evidence">src/backend/services/annex-iv-xml/serializer.ts · src/backend/services/annex-iv-service.ts · src/backend/routes/annex-iv-routes.ts</p>
+</div>
+
+<!-- Cat 4 -->
+<div class="card">
+<h3>4. Sanctions & Screening — <span style="color:var(--orange)">40/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> OpenSanctions API integration with proper entity schema (Company vs Person). EU consolidated sanctions local fuzzy matching via sanctions-data-service. Bulk screening capability. Deterministic mock mode for demos. Audit logging on every screening result. Match threshold at 50% with confirmed/potential classification. Local sanctions data refresh mechanism.</p></div>
+<div class="gap"><p><strong>Missing:</strong> No UN sanctions list integration (mocked). No PEP database integration (only 'pep' topic tag from OpenSanctions). No adverse media screening. No ongoing monitoring (one-shot screening only). No screening schedule/automation. No false positive management workflow. No case management for matches. No sanctions list freshness indicator in UI. Mock mode is the default — production requires manual API key setup.</p></div>
+<p class="evidence">src/backend/services/screening-service.ts · src/backend/services/sanctions-data-service.ts · src/backend/services/fuzzy-match-service.ts</p>
+</div>
+
+<!-- Cat 5 -->
+<div class="card">
+<h3>5. Investor Due Diligence — <span style="color:var(--yellow)">48/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> Investor classification engine with KAGB semi-professional, professional, institutional tiers. ELTIF 2.0 suitability assessment. LEI verification via GLEIF API with DB caching (7-day TTL). KYC document tracking with expiry dates. Investor document management (upload, classification). Onboarding workflow with status tracking. Beneficial ownership fields in schema. Classification evidence trail (migration 025).</p></div>
+<div class="gap"><p><strong>Missing:</strong> No automated ID verification (no IDnow, Onfido, or similar). No risk-based KYC tiering. No UBO (Ultimate Beneficial Owner) registry lookup. No source-of-wealth verification workflow. No re-KYC automation. No investor self-service portal. No document OCR/auto-extraction. No investor questionnaire builder. LEI validation is verify-only — no auto-enrichment of investor records.</p></div>
+<p class="evidence">src/backend/services/investor-classification-service.ts · src/backend/services/lei-service.ts · src/backend/services/due-diligence-service.ts</p>
+</div>
+
+<!-- Cat 6 -->
+<div class="card">
+<h3>6. Multi-NCA Support — <span style="color:var(--yellow)">55/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> NCA portal service with detailed profiles for BaFin, CSSF, FMA, AMF, CNMV, CBI, AFM, CONSOB, FIN-FSA. Real portal URLs, filing methods, language requirements, API availability flags. NCA comparison service. Filing deadline calculator with NCA-specific grace periods (BaFin 30d, CSSF 45d, etc.). DB migration 070 moves NCA profiles to database. Jurisdiction-specific pages in frontend. Calendar events localized per NCA.</p></div>
+<div class="gap"><p><strong>Missing:</strong> No actual portal integration (all portals are reference-only). No format conversion between NCA requirements. No NCA-specific validation rules. No multi-jurisdiction filing from single report. No NCA response parsing. No portal credential management.</p></div>
+<p class="evidence">src/backend/services/nca-portal-service.ts · src/backend/services/nca-comparison-service.ts · src/backend/services/nca-profiles-service.ts</p>
+</div>
+
+<!-- Cat 7 -->
+<div class="card">
+<h3>7. Regulatory Intelligence — <span style="color:var(--orange)">30/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> RSS feed ingestion from ESMA and EBA. Keyword-based relevance tagging (AIFMD, KAGB, sanctions, ESG, DORA, etc.). DB storage of regulatory updates. Regulatory calendar with static deadlines. Reg intel routes serving updates to frontend.</p></div>
+<div class="gap"><p><strong>Missing:</strong> No BaFin feed (deprecated, not replaced). No AI-powered impact analysis. No regulatory change tracking (diff between versions). No alert system for relevant changes. No deadline notifications (email/webhook). No regulatory horizon scanning. No integration with official EU law databases (EUR-Lex). regulatory-diff-service.ts exists but likely minimal. Feed refresh is not scheduled/automated in production.</p></div>
+<p class="evidence">src/backend/services/reg-intel-service.ts · src/backend/services/regulatory-calendar-service.ts · src/backend/services/regulatory-diff-service.ts</p>
+</div>
+
+<!-- Cat 8 -->
+<div class="card">
+<h3>8. Compliance Audit Trail — <span style="color:var(--yellow)">55/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> Audit trail service logging WHO/WHAT/WHEN for all mutations. PII stripping from audit logs. SHA-256 integrity hash chain on decision records (genesis hash → linked chain). Immutable decision records (migration 029). Evidence bundle export for regulatory inspection. Audit receipt service. Structured audit logger with event types. Request ID tracking. Tenant-scoped audit isolation.</p></div>
+<div class="gap"><p><strong>Missing:</strong> No regulator-specific export format (BaFin, CSSF expect specific formats). No long-term audit storage (same DB as operational data). No audit log search/filter in UI beyond basic list. No tamper-detection alerting (chain verification is manual). No compliance officer sign-off workflow. No PDF audit report generation with chain verification proof. No retention policy enforcement on audit data.</p></div>
+<p class="evidence">src/backend/services/audit-trail-service.ts · src/backend/services/integrity-service.ts · src/backend/services/audit-receipt-service.ts</p>
+</div>
+
+<!-- Cat 9 -->
+<div class="card">
+<h3>9. Agent Readiness — <span style="color:var(--red)">15/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> MCP (Model Context Protocol) server in src/mcp/. Anthropic Claude integration for copilot with tool-use architecture. RAG service with regulatory embeddings (migration 018). NL rule compiler (natural language → rule). PII stripping before sending data to AI. Copilot knowledge base with platform context.</p></div>
+<div class="gap"><p><strong>Missing:</strong> No browser automation infrastructure (no Playwright filing agent). No autonomous filing capability. No agent workflow orchestration. No human-in-the-loop approval workflow for agent actions. No agent audit trail (separate from regular audit). No scheduled agent tasks. MCP server exists but is not integrated into any autonomous workflow. The copilot is conversational only — it cannot execute actions.</p></div>
+<p class="evidence">src/mcp/server.ts · src/backend/services/copilot-service.ts · src/backend/services/rag-service.ts</p>
+</div>
+
+<!-- Cat 10 -->
+<div class="card">
+<h3>10. Security Posture — <span style="color:var(--yellow)">58/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> JWT auth with httpOnly cookie + Bearer token fallback. RBAC with admin/compliance_officer/viewer roles + authorizeWrite middleware. Comprehensive security headers (HSTS, CSP, X-Frame-Options, Permissions-Policy, COOP). Rate limiting with DB-backed store in production. CSRF protection via Origin/Referer validation. Input sanitization (null bytes, prototype pollution, length caps). bcrypt password hashing. JWT_SECRET length validation (≥32 bytes). Tenant ID required in tokens (pentest fix). API key auth system. SSRF guard on webhooks. DB-level RLS policies (migrations 019, 020, 030). Login attempt tracking (migration 051). GDPR consent tracking (migration 054).</p></div>
+<div class="gap"><p><strong>Missing:</strong> No MFA/2FA. No password rotation policy. No session management (JWT-only, no revocation). CSP allows unsafe-inline and unsafe-eval in production (noted as TODO). No WAF. No penetration test report on file. No encryption at rest configuration. No secrets management (env vars only). No API key rotation mechanism. CORS origins configured via env var with localhost defaults.</p></div>
+<p class="evidence">src/backend/middleware/auth.ts · src/backend/middleware/security.ts · src/backend/config/security-config.ts</p>
+</div>
+
+<!-- Cat 11 -->
+<div class="card">
+<h3>11. Data Architecture — <span style="color:var(--yellow)">50/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> PostgreSQL with 71 migrations (comprehensive schema evolution). Multi-tenancy via tenant_id column + RLS policies. Tenant-scoped query helpers (queryWithTenant, executeWithTenant). Session variable app.tenant_id for RLS enforcement. Pool configuration (max connections, idle timeout, connection timeout). SSL configuration with CA cert support. Backup script exists (scripts/backup-db.ts). Demo tenant isolation (migration 061).</p></div>
+<div class="gap"><p><strong>Missing:</strong> No automated backup schedule. No point-in-time recovery config. No read replicas. No connection pooler (PgBouncer). No data migration tooling between tenants. No data export/import for tenant offboarding. No schema documentation (DATA_MODEL.md exists but may be stale). No database monitoring. RLS relaxed in migration 031 (suggests ongoing trust boundary issues). No encryption at rest.</p></div>
+<p class="evidence">src/backend/db.ts · migrations/ (71 files) · scripts/backup-db.ts</p>
+</div>
+
+<!-- Cat 12 -->
+<div class="card">
+<h3>12. API Maturity — <span style="color:var(--yellow)">48/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> OpenAPI 3.0.3 spec (openapi.yml). Swagger UI served at /api-docs. Public API router (v1/) with API key auth. Rate limiting per endpoint category (auth, export, general). Structured error responses (error code + message). Python and TypeScript SDKs in sdks/. ~90 route files covering comprehensive domain. API envelope middleware. Usage tracking middleware.</p></div>
+<div class="gap"><p><strong>Missing:</strong> No API versioning strategy (v1 exists but no deprecation policy). OpenAPI spec likely incomplete vs actual routes. No API changelog. No webhook retry logic. No idempotency keys. No pagination standardization (some endpoints may lack it). No rate limit per API key (only per IP). SDKs are minimal/stubs. No API sandbox environment.</p></div>
+<p class="evidence">openapi.yml · src/backend/routes/public/ · src/backend/routes/v1/ · sdks/</p>
+</div>
+
+<!-- Cat 13 -->
+<div class="card">
+<h3>13. Testing & Quality — <span style="color:var(--red)">22/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> Vitest configured with unit, e2e, and combined configs. 10 e2e test files (happy-path, multi-tenant-security, GDPR endpoints, audit-trail, eligibility, etc.). 19 unit test files in src/backend. 1 unit test in tests/unit. Test fixtures with helper utilities. Playwright config for frontend e2e (but only 1 spec file). open-annex-iv package has serializer + XSD validation tests.</p></div>
+<div class="gap"><p><strong>Missing:</strong> CI only runs typecheck — no test execution in pipeline. No test coverage reporting. No frontend unit/component tests (zero). No integration tests against real database. No load/performance tests (LOAD-TEST.md exists as doc only). No visual regression tests. No accessibility tests. No contract tests for API. Tests exist but are likely not regularly run — backend crashes won't be caught pre-deploy.</p></div>
+<p class="evidence">vitest.config.ts · tests/ · .github/workflows/ci.yml (only typecheck) · src/frontend/e2e/demo-flow.spec.ts</p>
+</div>
+
+<!-- Cat 14 -->
+<div class="card">
+<h3>14. Scalability & Infrastructure — <span style="color:var(--red)">20/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> Dockerfile for containerized deployment. docker-compose.yml for local development. Railway deployment config (railway.toml). Deploy script (deploy-railway.ps1). Pool-based PostgreSQL connections (configurable max). In-memory cache utility with TTL.</p></div>
+<div class="gap"><p><strong>Missing:</strong> No monitoring/observability (no Prometheus, no Grafana, no Datadog). SENTRY-SETUP.md exists but unclear if actually configured. No health check endpoint for load balancers. No horizontal scaling support (rate limiter uses in-memory store locally). No CDN configuration. No auto-scaling. No blue-green or canary deployment. No infrastructure-as-code. No log aggregation. No alerting. No uptime monitoring. No performance benchmarking baseline. Railway is single-instance deployment.</p></div>
+<p class="evidence">Dockerfile · railway.toml · docker-compose.yml · MONITORING.md (doc only)</p>
+</div>
+
+<!-- Cat 15 -->
+<div class="card">
+<h3>15. Product Maturity — <span style="color:var(--orange)">42/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> Full i18n system (de/en) with 3500+ translation keys. Dark theme UI with Tailwind CSS. Sidebar navigation. 30+ frontend pages covering dashboard, investors, funds, rules, screening, calendar, reports, etc. Copilot chat interface. Demo tour component. Onboarding wizard. Cookie consent. Command palette. CSV upload wizard. Rule builder UI. Blog section with SEO pages (deadlines, glossary, NCA comparison).</p></div>
+<div class="gap"><p><strong>Missing:</strong> No error boundary testing. No loading state standardization (some pages have skeletons, others don't). No accessibility audit (no ARIA labels visible in component list). No mobile responsiveness verification. No user feedback mechanism. No feature flags in production (lib/feature-flags.ts exists). No user analytics (Plausible configured in CSP but unclear if active). No onboarding email flow. Light mode likely undertested per USER.md notes.</p></div>
+<p class="evidence">src/frontend/src/lib/i18n.tsx · src/frontend/src/components/ · src/frontend/src/app/</p>
+</div>
+
+<!-- Cat 16 -->
+<div class="card">
+<h3>16. Open Source Strategy — <span style="color:var(--orange)">35/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> open-annex-iv package with MIT license. Clean separation in packages/ directory. Own README, package.json, tsconfig. XSD schemas bundled. Serializer tests. Published build artifacts (dist/). CONTRIBUTING.md at root level.</p></div>
+<div class="gap"><p><strong>Missing:</strong> No npm publish (not on npmjs.com yet based on package structure). No GitHub repo for open-annex-iv (it's embedded in monorepo). No community engagement (no issues, discussions, or external contributors). No documentation site. No examples directory. No changelog for the package. Main repo is UNLICENSED. No open source roadmap. No CLA (Contributor License Agreement).</p></div>
+<p class="evidence">packages/open-annex-iv/ · CONTRIBUTING.md · package.json ("license": "UNLICENSED")</p>
+</div>
+
+<!-- Cat 17 -->
+<div class="card">
+<h3>17. Go-to-Market Readiness — <span style="color:var(--orange)">32/100</span></h3>
+<div class="strength"><p><strong>Exists:</strong> Landing page (de/en) with build scripts. Blog content (4 SEO-optimized articles). Comparison page (vs Anevis). Demo dashboard with demo-guard middleware. Demo seed scripts (multiple variants). API documentation via Swagger. Marketing strategy doc. Pitch deck notes. GTM docs directory. CEO cheatsheet. Demo scripts for investor presentations. DPA (Data Processing Agreement) page. Impressum and privacy pages (GDPR compliance).</p></div>
+<div class="gap"><p><strong>Missing:</strong> No pricing page/implementation. No trial signup flow. No self-service onboarding (requires manual setup). No demo environment on public URL (localhost only). No product video/screencast. No case studies (template exists but empty). No testimonials. No integration documentation for prospects. No competitive feature matrix. No ROI calculator. Leads table exists (migration 071) but no lead capture form visible.</p></div>
+<p class="evidence">src/frontend/src/app/api/landing/ · docs/gtm/ · docs/marketing-strategy.html · scripts/seed-demo*.ts</p>
+</div>
+
+<!-- ═══ CRITICAL GAPS ═══ -->
+<h2>🚨 Critical Gaps — Top 5</h2>
+
+<div class="critical-box">
+<h3>1. No Tests in CI <span class="tag tag-red">BLOCKER</span></h3>
+<p>CI only runs typecheck. 30+ test files exist but are never executed in the pipeline. Any regression, broken migration, or API contract violation ships to production undetected. For a RegTech product where bugs = compliance failures = regulatory fines, this is existential.</p>
+<p style="margin-top:0.5rem"><strong>Fix:</strong> Add <code>npm test</code> and <code>npm run test:e2e</code> to CI. Target: 1 day. Block all merges on green tests.</p>
+</div>
+
+<div class="critical-box">
+<h3>2. No Monitoring or Observability <span class="tag tag-red">BLOCKER</span></h3>
+<p>Zero monitoring in production. No error tracking confirmed active, no uptime checks, no performance metrics. If the Railway instance goes down at 2 AM before a filing deadline, nobody knows until a KVG calls.</p>
+<p style="margin-top:0.5rem"><strong>Fix:</strong> Sentry for errors (config exists, verify active). UptimeRobot for availability. Structured JSON logs to Railway's log drain. Target: 2 days.</p>
+</div>
+
+<div class="critical-box">
+<h3>3. Mock Screening as Default <span class="tag tag-red">HIGH</span></h3>
+<p>Without an OpenSanctions API key OR local sanctions data, the system returns mock results. A compliance officer relying on "clear" results from mock mode is a regulatory disaster. There's no UI indicator distinguishing mock from real screening.</p>
+<p style="margin-top:0.5rem"><strong>Fix:</strong> Add prominent "DEMO DATA" badge on mock results. Block production deployment without API key or local data. Target: 1 day.</p>
+</div>
+
+<div class="critical-box">
+<h3>4. No Actual NCA Filing Integration <span class="tag tag-yellow">HIGH</span></h3>
+<p>The system generates Annex IV XML but has zero integration with any NCA portal. The value proposition stops at "generate and download." For a product claiming to automate regulatory reporting, this is the biggest functional gap.</p>
+<p style="margin-top:0.5rem"><strong>Fix:</strong> BaFin MVP portal API integration first (largest German market). Then CSSF eReg. Target: 3-6 months for first NCA.</p>
+</div>
+
+<div class="critical-box">
+<h3>5. No XSD Validation in Default Install <span class="tag tag-yellow">HIGH</span></h3>
+<p>Real XSD validation requires libxmljs2 (native C++ addon) which isn't a default dependency. The fallback "pattern" validator is incomplete by its own admission. Generated XML may not pass NCA validation.</p>
+<p style="margin-top:0.5rem"><strong>Fix:</strong> Use a WASM-based or pure-JS XML schema validator. Or make libxmljs2 a required dependency with build instructions. Target: 1 week.</p>
+</div>
+
+<!-- ═══ STRATEGIC ROADMAP ═══ -->
+<h2>📋 Strategic Roadmap</h2>
+
+<table>
+<thead>
+<tr><th>Priority</th><th>Initiative</th><th>Impact</th><th>Effort</th><th>ROI</th></tr>
+</thead>
+<tbody>
+<tr><td><span class="tag tag-red">P0</span></td><td>Tests in CI + monitoring</td><td>Prevents production regressions, builds customer trust</td><td>2-3 days</td><td>🔥🔥🔥🔥🔥</td></tr>
+<tr><td><span class="tag tag-red">P0</span></td><td>Mock screening guardrails</td><td>Prevents compliance liability from demo data in production</td><td>1 day</td><td>🔥🔥🔥🔥🔥</td></tr>
+<tr><td><span class="tag tag-yellow">P1</span></td><td>Public demo environment (caelith.tech)</td><td>Enables self-service demo for prospects</td><td>1 week</td><td>🔥🔥🔥🔥</td></tr>
+<tr><td><span class="tag tag-yellow">P1</span></td><td>XSD validation fix (pure-JS or WASM)</td><td>Ensures generated XML passes NCA validation</td><td>1 week</td><td>🔥🔥🔥🔥</td></tr>
+<tr><td><span class="tag tag-yellow">P1</span></td><td>Filing status workflow (draft → submitted → accepted)</td><td>Core UX for compliance officers, even before NCA integration</td><td>2 weeks</td><td>🔥🔥🔥</td></tr>
+<tr><td><span class="tag tag-blue">P2</span></td><td>BaFin MVP portal integration</td><td>First real NCA integration, unlocks German market</td><td>2-3 months</td><td>🔥🔥🔥🔥</td></tr>
+<tr><td><span class="tag tag-blue">P2</span></td><td>Publish open-annex-iv to npm</td><td>Community adoption, developer awareness, inbound leads</td><td>2 days</td><td>🔥🔥🔥</td></tr>
+<tr><td><span class="tag tag-blue">P2</span></td><td>Frontend component tests</td><td>Prevents UI regressions on 30+ pages</td><td>2 weeks</td><td>🔥🔥🔥</td></tr>
+<tr><td><span class="tag tag-blue">P2</span></td><td>MFA / session management</td><td>Required for enterprise pilots, ISO 27001</td><td>1-2 weeks</td><td>🔥🔥🔥</td></tr>
+<tr><td><span class="tag tag-green">P3</span></td><td>Browser automation filing agent (Playwright)</td><td>Autonomous filing differentiator</td><td>2-3 months</td><td>🔥🔥</td></tr>
+<tr><td><span class="tag tag-green">P3</span></td><td>Ongoing sanctions monitoring</td><td>Continuous screening vs one-shot</td><td>3-4 weeks</td><td>🔥🔥</td></tr>
+<tr><td><span class="tag tag-green">P3</span></td><td>Pricing page + self-service trial</td><td>Converts demo interest to pipeline</td><td>2 weeks</td><td>🔥🔥🔥</td></tr>
+</tbody>
+</table>
+
+<!-- ═══ COMPETITIVE POSITION ═══ -->
+<h2>🏆 Competitive Position Assessment</h2>
+
+<div class="card">
+<h3>Strengths vs Incumbents (Anevis, FundApps, Kneip)</h3>
+<ul>
+<li><strong>Regulatory domain depth at code level</strong> — investor classification with KAGB/ELTIF/EuVECA legal citations, ESMA code mappings, NCA-specific grace periods. This isn't just a database with checkboxes; it's compliance logic expressed in code.</li>
+<li><strong>AI-native architecture</strong> — Copilot with tool-use (Claude reads DB schema, writes read-only queries), PII stripping, RAG with regulatory embeddings. Incumbents are bolting AI onto legacy.</li>
+<li><strong>Open source component</strong> — open-annex-iv could become the community standard for Annex IV XML generation. No open source alternative exists today.</li>
+<li><strong>Modern tech stack</strong> — Next.js 15, React 19, TypeScript, PostgreSQL with RLS. Vs incumbents on Java/.NET monoliths.</li>
+<li><strong>Full-stack bilingual</strong> — German/English throughout, including regulatory terminology. Critical for DACH market.</li>
+</ul>
+
+<h3 style="margin-top:1.5rem">Weaknesses vs Incumbents</h3>
+<ul>
+<li><strong>No production deployments</strong> — Zero customers, zero regulatory filings processed. Incumbents have years of NCA relationship and filing history.</li>
+<li><strong>No NCA portal integration</strong> — The "last mile" of regulatory reporting doesn't exist. Generating XML is 40% of the value; submitting it is 60%.</li>
+<li><strong>No SOC 2 / ISO 27001</strong> — Enterprise KVGs won't sign without compliance certifications. Docs exist (docs/iso27001/) but certification is years away.</li>
+<li><strong>Solo founder risk</strong> — One person building the entire platform. No dedicated security engineer, no compliance domain expert on payroll, no QA.</li>
+<li><strong>Testing/observability gap</strong> — A RegTech product without reliable tests and monitoring is a liability, not an asset.</li>
+</ul>
+
+<h3 style="margin-top:1.5rem">Verdict</h3>
+<p style="color:var(--text)">Caelith has <strong>better regulatory domain modeling than most Series A RegTech companies I've seen</strong>. The investor classification engine alone — with its multi-regime eligibility assessment, legal citation chains, and jurisdiction-aware thresholds — would take a new competitor 6+ months to replicate. The Annex IV serializer with proper ESMA code mappings is production-grade logic wrapped in MVP infrastructure.</p>
+<p style="color:var(--text);margin-top:0.5rem">The gap is not knowledge or architecture — it's <strong>production hardening and the last mile</strong>. Fix testing, monitoring, and mock data guardrails (2 weeks). Then focus every resource on BaFin portal integration and getting the first paying pilot. The regulatory depth is the moat; the infrastructure gaps are the walls that need building around it.</p>
+<p style="color:var(--accent2);margin-top:0.5rem;font-weight:700">Rating: Credible for pilot conversations today. 3-6 months from first production filing. 12-18 months from enterprise-ready.</p>
+</div>
+
+<p style="text-align:center;color:var(--muted);margin-top:3rem;font-size:0.8rem">Generated 28 Feb 2026 · Caelith CRO Audit · Confidential</p>
+
+</body>
+</html>

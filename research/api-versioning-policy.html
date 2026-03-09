@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — API Versioning & Deprecation Policy</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f1419;color:#c5cdd9;font-family:'Inter',sans-serif;line-height:1.7;padding:2rem}
+.container{max-width:900px;margin:0 auto}
+h1{font-size:2rem;color:#e2e8f0;font-weight:700}
+h2{font-size:1.4rem;color:#7dd3fc;margin:2rem 0 .75rem;border-bottom:1px solid #1e293b;padding-bottom:.5rem}
+h3{font-size:1.1rem;color:#a5f3fc;margin:1.2rem 0 .5rem}
+.subtitle{color:#64748b;font-size:.95rem;margin-bottom:2rem}
+.card{background:#1a2028;border-radius:12px;padding:1.5rem;margin-bottom:1.25rem;border:1px solid #1e293b}
+table{width:100%;border-collapse:collapse;margin:1rem 0}
+th{text-align:left;color:#7dd3fc;border-bottom:2px solid #1e293b;padding:8px 12px;font-weight:600;font-size:.85rem}
+td{padding:8px 12px;border-bottom:1px solid #1e293b;font-size:.88rem}
+ul{padding-left:1.5rem}li{margin-bottom:.35rem;font-size:.9rem}
+code{background:#1e293b;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.85rem}
+.flow{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:.75rem 0}
+.flow-step{background:#1e293b;padding:6px 14px;border-radius:8px;font-size:.82rem;color:#e2e8f0}
+.flow-arrow{color:#475569;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>📋 API Versioning & Deprecation Policy</h1>
+<p class="subtitle">Caelith — Guidelines for API Evolution</p>
+
+<h2>Current Version</h2>
+<div class="card">
+<table>
+<tr><th>Version</th><th>Base Path</th><th>Status</th><th>Since</th></tr>
+<tr><td><strong>v1</strong></td><td><code>/api/v1/</code></td><td>✅ Active (Current)</td><td>2025</td></tr>
+</table>
+</div>
+
+<h2>Versioning Strategy</h2>
+<div class="card">
+<ul>
+<li><strong>URL-based versioning:</strong> <code>/api/v1/</code>, <code>/api/v2/</code>, etc.</li>
+<li>Major version increments only for breaking changes</li>
+<li>Multiple versions may be supported simultaneously during transition periods</li>
+<li>Public API endpoints (<code>/api/v1/public/</code>) follow the same versioning</li>
+</ul>
+</div>
+
+<h2>Breaking vs Non-Breaking Changes</h2>
+<div class="card">
+<table>
+<tr><th>Change Type</th><th>Breaking?</th><th>Version Bump?</th></tr>
+<tr><td>Adding a new endpoint</td><td>No</td><td>No</td></tr>
+<tr><td>Adding optional fields to response</td><td>No</td><td>No</td></tr>
+<tr><td>Adding optional query parameters</td><td>No</td><td>No</td></tr>
+<tr><td>Removing an endpoint</td><td><strong>Yes</strong></td><td><strong>Yes</strong></td></tr>
+<tr><td>Removing a response field</td><td><strong>Yes</strong></td><td><strong>Yes</strong></td></tr>
+<tr><td>Changing field type or format</td><td><strong>Yes</strong></td><td><strong>Yes</strong></td></tr>
+<tr><td>Making optional param required</td><td><strong>Yes</strong></td><td><strong>Yes</strong></td></tr>
+<tr><td>Changing authentication scheme</td><td><strong>Yes</strong></td><td><strong>Yes</strong></td></tr>
+<tr><td>Changing error response format</td><td><strong>Yes</strong></td><td><strong>Yes</strong></td></tr>
+</table>
+</div>
+
+<h2>Deprecation Procedure</h2>
+<div class="card">
+<p><strong>Minimum notice period: 6 months</strong></p>
+<div class="flow">
+<span class="flow-step">1. Announce Deprecation</span><span class="flow-arrow">→</span>
+<span class="flow-step">2. Add Deprecation Header</span><span class="flow-arrow">→</span>
+<span class="flow-step">3. Update Documentation</span><span class="flow-arrow">→</span>
+<span class="flow-step">4. Migration Guide</span><span class="flow-arrow">→</span>
+<span class="flow-step">5. Sunset (6+ months)</span>
+</div>
+
+<h3>Step 1: Announce</h3>
+<ul><li>Notify API consumers via email and changelog</li><li>Publish deprecation notice in API docs</li></ul>
+
+<h3>Step 2: Deprecation Header</h3>
+<ul><li>Add <code>Deprecation: true</code> header to deprecated endpoints</li><li>Add <code>Sunset: [date]</code> header with planned removal date</li><li>Add <code>Link: &lt;migration-guide-url&gt;; rel="deprecation"</code> header</li></ul>
+
+<h3>Step 3: Documentation</h3>
+<ul><li>Mark deprecated endpoints in OpenAPI spec with <code>deprecated: true</code></li><li>Document replacement endpoints</li></ul>
+
+<h3>Step 4: Migration Guide</h3>
+<ul><li>Provide endpoint mapping (old → new)</li><li>Code examples for migration</li><li>Breaking change details</li></ul>
+
+<h3>Step 5: Sunset</h3>
+<ul><li>Remove deprecated endpoints after sunset date</li><li>Return <code>410 Gone</code> for removed endpoints with migration pointer</li></ul>
+</div>
+
+<h2>Version Lifecycle</h2>
+<div class="card">
+<table>
+<tr><th>Phase</th><th>Duration</th><th>Description</th></tr>
+<tr><td>Active</td><td>Indefinite</td><td>Fully supported, receives bug fixes and features</td></tr>
+<tr><td>Deprecated</td><td>6+ months</td><td>Supported, bug fixes only, deprecation headers active</td></tr>
+<tr><td>Sunset</td><td>—</td><td>Removed, returns 410 Gone</td></tr>
+</table>
+</div>
+
+<footer style="text-align:center;color:#475569;margin-top:3rem;padding:1rem;border-top:1px solid #1e293b;font-size:.8rem">
+Caelith API Versioning Policy — v1.0 — 2026-02-28
+</footer>
+</div>
+</body>
+</html>

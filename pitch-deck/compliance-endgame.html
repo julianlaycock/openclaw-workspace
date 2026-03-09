@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Compliance Endgame — Caelith</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:system-ui}
+canvas{display:block;max-width:100%;border:1px solid #1a1a1a}
+#ui{margin-top:16px;display:flex;gap:12px;align-items:center}
+#btn{background:linear-gradient(135deg,#C5E0EE,#E8A87C);border:none;border-radius:8px;padding:12px 28px;font-size:14px;font-weight:700;color:#0a0a0a;cursor:pointer}
+#btn:disabled{opacity:.4;cursor:default}
+#st{font-family:monospace;font-size:11px;color:rgba(255,255,255,.3)}
+#hint{font-size:11px;color:rgba(255,255,255,.15);margin-top:6px;text-align:center}
+</style>
+</head>
+<body>
+<canvas id="c" width="1280" height="720"></canvas>
+<div id="ui">
+  <button id="btn" onclick="go()">▶ Record Video (75s)</button>
+  <span id="st">Ready</span>
+</div>
+<p id="hint">Direct canvas capture · No screen sharing · Downloads as caelith-endgame.webm · Convert to MP4 at cloudconvert.com</p>
+
+<script>
+const C=document.getElementById('c'),ctx=C.getContext('2d');
+let rc_=null; // no roughjs needed for this style
+
+// ─── PALETTE ───
+const BG='#080a0c',WHITE='rgba(255,255,255,0.92)',DIM='rgba(255,255,255,0.28)',DIMMER='rgba(255,255,255,0.12)';
+const ACCENT='#C5E0EE',WARM='#E8A87C',GREEN='#34d399',RED='#f87171',YELLOW='#fbbf24',PURPLE='#a78bfa';
+
+// ─── MATH ───
+function lerp(a,b,t){return a+(b-a)*t}
+function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
+function easeOut(t){return 1-Math.pow(1-t,3)}
+function easeInOut(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+function sp(e,s,en){return clamp((e-s)/(en-s),0,1)}
+
+// ─── FONTS ───
+function sora(sz,w='400'){ctx.font=`${w} ${sz}px 'Sora',sans-serif`}
+function mono(sz){ctx.font=`500 ${sz}px 'JetBrains Mono','Courier New',monospace`}
+
+// ─── DRAW UTILS ───
+function text(str,x,y,col=WHITE,align='left'){ctx.fillStyle=col;ctx.textAlign=align;ctx.fillText(str,x,y)}
+function alpha(a){ctx.globalAlpha=a}
+function resetAlpha(){ctx.globalAlpha=1}
+
+function pill(x,y,w,h,col,fillCol='none'){
+  ctx.beginPath();ctx.roundRect(x,y,w,h,h/2);
+  if(fillCol!=='none'){ctx.fillStyle=fillCol;ctx.fill()}
+  ctx.strokeStyle=col;ctx.lineWidth=1;ctx.stroke();
+}
+function rect(x,y,w,h,col,fill='none'){
+  ctx.beginPath();ctx.rect(x,y,w,h);
+  if(fill!=='none'){ctx.fillStyle=fill;ctx.fill()}
+  ctx.strokeStyle=col;ctx.lineWidth=1;ctx.stroke();
+}
+function line(x1,y1,x2,y2,col,w=1){
+  ctx.strokeStyle=col;ctx.lineWidth=w;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+}
+function dot(x,y,r,col){ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
+
+// ─── ANIMATED BAR ───
+function hbar(x,y,w,h,progress,col,bg='rgba(255,255,255,0.04)'){
+  ctx.fillStyle=bg;ctx.beginPath();ctx.roundRect(x,y,w,h,2);ctx.fill();
+  ctx.fillStyle=col;ctx.beginPath();ctx.roundRect(x,y,w*progress,h,2);ctx.fill();
+}
+
+// ─── SCENES ───
+// Total: 75s
+// Scene 0: 0-8   Title card
+// Scene 1: 8-22  "Where we are today"
+// Scene 2: 22-40 "The 3 scenarios" matrix
+// Scene 3: 40-58 "The agent shift" — scenario 3 deep dive
+// Scene 4: 58-70 "The Caelith position"
+// Scene 5: 70-75 Logo close
+
+// ══════════════════════════════
+// SCENE 0: TITLE (0-8s)
+// ══════════════════════════════
+function scene0(t,p){
+  // Solid dark bg
+  ctx.fillStyle=BG;ctx.fillRect(0,0,1280,720);
+
+  // Subtle horizontal rule
+  alpha(clamp(p*6,0,1)*0.25);
+  line(0,360,1280,360,'rgba(255,255,255,0.06)',1);
+  resetAlpha();
+
+  // Eyebrow
+  const a0=easeOut(sp(t,0.5,2));
+  alpha(a0*0.5);
+  mono(12);text('EU ALTERNATIVE FUND COMPLIANCE · 2026',640,290,ACCENT,'center');
+  resetAlpha();
+
+  // Main title
+  const a1=easeOut(sp(t,1.5,4));
+  alpha(a1);
+  sora(78,'800');
+  ctx.fillStyle=WHITE;ctx.textAlign='center';
+  ctx.fillText('The Compliance',640,390);
+  resetAlpha();
+
+  const a2=easeOut(sp(t,2.5,5));
+  alpha(a2);
+  sora(78,'800');
+  const grad=ctx.createLinearGradient(300,0,980,0);
+  grad.addColorStop(0,ACCENT);grad.addColorStop(1,WARM);
+  ctx.fillStyle=grad;ctx.textAlign='center';
+  ctx.fillText('Endgame.',640,476);
+  resetAlpha();
+
+  // Sub
+  const a3=easeOut(sp(t,4,7));
+  alpha(a3*0.5);
+  sora(16,'300');text('Three scenarios. One winner.',640,536,DIM,'center');
+  resetAlpha();
+
+  // Caelith
+  const a4=easeOut(sp(t,5.5,7.5));
+  alpha(a4*0.4);
+  mono(10);text('CAELITH · caelith.tech',640,700,DIMMER,'center');
+  resetAlpha();
+}
+
+// ══════════════════════════════
+// SCENE 1: TODAY (8-22s)
+// ══════════════════════════════
+function scene1(t,p){
+  ctx.fillStyle=BG;ctx.fillRect(0,0,1280,720);
+  const lt=t-8; // local time
+
+  // Section label
+  alpha(easeOut(sp(lt,0,1.5)));
+  mono(11);text('01 / WHERE COMPLIANCE STANDS TODAY',80,80,ACCENT,'left');
+  resetAlpha();
+
+  // Headline
+  alpha(easeOut(sp(lt,0.5,2.5)));
+  sora(48,'800');ctx.fillStyle=WHITE;ctx.textAlign='left';
+  ctx.fillText('3,500+ fund managers.',80,168);
+  resetAlpha();
+
+  alpha(easeOut(sp(lt,1.2,3)));
+  sora(48,'800');ctx.fillStyle=RED;ctx.textAlign='left';
+  ctx.fillText('Still filing manually.',80,232);
+  resetAlpha();
+
+  // Three pain stats
+  const stats=[
+    {val:'€5–15K',label:'per filing cycle',sub:'Consultant cost, per fund',col:RED,delay:2.5},
+    {val:'3–4 weeks',label:'per submission',sub:'From data export to BaFin receipt',col:YELLOW,delay:3.5},
+    {val:'April 16',label:'AIFMD II enforcement',sub:'Zero grandfathering. No extensions.',col:WARM,delay:4.5},
+  ];
+
+  stats.forEach((s,i)=>{
+    const a=easeOut(sp(lt,s.delay,s.delay+1.5));
+    alpha(a);
+    const x=80+i*380,y=320;
+    // Box
+    ctx.fillStyle='rgba(255,255,255,0.02)';
+    ctx.beginPath();ctx.roundRect(x,y,340,180,10);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;ctx.stroke();
+    // Top accent line
+    ctx.fillStyle=s.col;
+    ctx.beginPath();ctx.roundRect(x,y,340,3,{upperLeft:10,upperRight:10});ctx.fill();
+    // Value
+    sora(42,'800');ctx.fillStyle=s.col;ctx.textAlign='left';
+    ctx.fillText(s.val,x+20,y+68);
+    sora(14,'600');ctx.fillStyle=WHITE;
+    ctx.fillText(s.label,x+20,y+100);
+    sora(12,'300');ctx.fillStyle=DIM;
+    ctx.fillText(s.sub,x+20,y+126);
+    resetAlpha();
+  });
+
+  // Bottom line
+  alpha(easeOut(sp(lt,6,8)));
+  sora(16,'300');ctx.fillStyle=DIM;ctx.textAlign='left';
+  ctx.fillText('The April 16 filing window opened March 2nd. The old model is running out of time.',80,558);
+  resetAlpha();
+
+  // Data footnote
+  alpha(easeOut(sp(lt,7,9))*0.4);
+  mono(9);text('Source: BaFin KVG Register 2024 · ESMA AIFMD Statistics 2024 · Market research',80,680,DIMMER,'left');
+  resetAlpha();
+}
+
+// ══════════════════════════════
+// SCENE 2: THREE SCENARIOS (22-40s)
+// ══════════════════════════════
+function scene2(t,p){
+  ctx.fillStyle=BG;ctx.fillRect(0,0,1280,720);
+  const lt=t-22;
+
+  alpha(easeOut(sp(lt,0,1.5)));
+  mono(11);text('02 / THREE FUTURE SCENARIOS',80,80,ACCENT,'left');
+  resetAlpha();
+
+  alpha(easeOut(sp(lt,0.5,2.5)));
+  sora(42,'800');ctx.fillStyle=WHITE;ctx.textAlign='left';
+  ctx.fillText('The market will split into three paths.',80,150);
+  resetAlpha();
+
+  // Column headers
+  const cols=[
+    {label:'SCENARIO A',title:'Status Quo',col:'rgba(255,255,255,0.2)',x:80},
+    {label:'SCENARIO B',title:'SaaS Layer',col:ACCENT,x:460},
+    {label:'SCENARIO C',title:'Agent Layer',col:GREEN,x:840},
+  ];
+  const tableY=200;
+
+  cols.forEach((c,i)=>{
+    const a=easeOut(sp(lt,1.5+i*0.4,3+i*0.4));
+    alpha(a);
+    mono(9);text(c.label,c.x,tableY,c.col,'left');
+    sora(22,'700');ctx.fillStyle=c.col==='rgba(255,255,255,0.2)'?DIM:c.col;ctx.textAlign='left';
+    ctx.fillText(c.title,c.x,tableY+32);
+    resetAlpha();
+  });
+
+  // Dividers
+  alpha(easeOut(sp(lt,2.5,4)));
+  line(80,tableY+46,1200,tableY+46,'rgba(255,255,255,0.06)',1);
+  resetAlpha();
+
+  // Rows
+  const rows=[
+    {label:'Filing method',vals:['Human + consultant','Dashboard + manual submit','Autonomous agent 🤖']},
+    {label:'Time to file',vals:['3–4 weeks','Same day','< 30 seconds']},
+    {label:'Cost per cycle',vals:['€5,000–15,000','~€1,000/month','€990/month, zero marginal']},
+    {label:'Human touch',vals:['100%','60%','0%']},
+    {label:'Audit trail',vals:['None / Excel','Manual log','SHA-256 · DORA-ready ✓']},
+    {label:'Scale',vals:['1 fund admin / fund','Self-service','Unlimited, overnight']},
+  ];
+
+  const colX=[80,460,840];
+  const rowCols=['rgba(255,255,255,0.25)','rgba(197,224,238,0.7)',GREEN];
+
+  rows.forEach((row,ri)=>{
+    const ry=tableY+70+ri*62;
+    const a=easeOut(sp(lt,3+ri*0.35,4.5+ri*0.35));
+    alpha(a);
+
+    // Row background for C
+    if(ri===0){
+      ctx.fillStyle='rgba(52,211,153,0.03)';
+      ctx.beginPath();ctx.rect(840,ry-14,360,rows.length*62+14);ctx.fill();
+    }
+
+    // Row separator
+    ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(80,ry+46);ctx.lineTo(1200,ry+46);ctx.stroke();
+
+    // Row label
+    mono(10);text(row.label.toUpperCase(),80,ry+16,DIMMER,'left');
+
+    // Values
+    row.vals.forEach((v,vi)=>{
+      sora(13,'400');ctx.fillStyle=rowCols[vi];ctx.textAlign='left';
+      ctx.fillText(v,colX[vi]+0,ry+36);
+    });
+
+    resetAlpha();
+  });
+
+  // Bottom label
+  alpha(easeOut(sp(lt,9,11)));
+  ctx.fillStyle='rgba(52,211,153,0.08)';
+  ctx.beginPath();ctx.roundRect(840,tableY+60,360,rows.length*62,8);ctx.fill();
+  ctx.strokeStyle='rgba(52,211,153,0.2)';ctx.lineWidth=1;ctx.stroke();
+  resetAlpha();
+
+  alpha(easeOut(sp(lt,11,13)));
+  sora(13,'600');ctx.fillStyle=GREEN;ctx.textAlign='center';
+  ctx.fillText('← This is where Caelith lives.',1020,tableY+70+rows.length*62+24);
+  resetAlpha();
+}
+
+// ══════════════════════════════
+// SCENE 3: AGENT SHIFT (40-58s)
+// ══════════════════════════════
+function scene3(t,p){
+  ctx.fillStyle=BG;ctx.fillRect(0,0,1280,720);
+  const lt=t-40;
+
+  alpha(easeOut(sp(lt,0,1.5)));
+  mono(11);text('03 / THE AGENT SHIFT',80,80,ACCENT,'left');
+  resetAlpha();
+
+  alpha(easeOut(sp(lt,0.5,2.5)));
+  sora(42,'800');ctx.fillStyle=WHITE;ctx.textAlign='left';
+  ctx.fillText('What Scenario C looks like',80,150);
+  resetAlpha();
+
+  alpha(easeOut(sp(lt,1.2,3)));
+  sora(42,'800');
+  const g=ctx.createLinearGradient(80,0,700,0);
+  g.addColorStop(0,ACCENT);g.addColorStop(1,WARM);
+  ctx.fillStyle=g;ctx.textAlign='left';
+  ctx.fillText('in a single night.',80,208);
+  resetAlpha();
+
+  // Timeline
+  const events=[
+    {time:'22:00',label:'Fund manager activates Caelith',note:'One toggle. Nothing more.',col:DIM,delay:2},
+    {time:'00:01',label:'Compliance agent starts Q1 run',note:'247 investors, 3 funds, full dataset loaded',col:ACCENT,delay:3},
+    {time:'01:15',label:'Sanctions screening complete',note:'6,863 EU/UN entities checked. 0 matches.',col:GREEN,delay:4},
+    {time:'02:13',label:'Annex IV XML generated & validated',note:'ESMA XSD Rev 6 v1.2 — 0 schema errors',col:GREEN,delay:5},
+    {time:'02:14',label:'BaFin agent files submission',note:'ref: BaFin-2026-Q1-00847 · Confirmed.',col:WARM,delay:6},
+    {time:'02:14',label:'Audit trail sealed',note:'SHA-256 hash chain · DORA-compliant',col:GREEN,delay:7},
+    {time:'09:00',label:'Fund manager opens email',note:'Push notification: "Filed. 0 errors. Done."',col:WHITE,delay:8},
+  ];
+
+  const tlX=80,tlY=270,dotX=190;
+
+  // Vertical line
+  alpha(easeOut(sp(lt,2,3.5)));
+  line(dotX,tlY,dotX,tlY+(events.length-1)*56+10,'rgba(255,255,255,0.07)',1);
+  resetAlpha();
+
+  events.forEach((ev,i)=>{
+    const a=easeOut(sp(lt,ev.delay,ev.delay+1));
+    alpha(a);
+    const y=tlY+i*56;
+
+    // Dot
+    dot(dotX,y+6,5,ev.col);
+
+    // Time
+    mono(10);text(ev.time,dotX-20,y+10,DIMMER,'right');
+
+    // Label
+    sora(14,'600');ctx.fillStyle=ev.col==='rgba(255,255,255,0.28)'?WHITE:ev.col;ctx.textAlign='left';
+    ctx.fillText(ev.label,dotX+18,y+10);
+
+    // Note
+    sora(11,'300');ctx.fillStyle=DIM;
+    ctx.fillText(ev.note,dotX+18,y+28);
+
+    resetAlpha();
+  });
+
+  // Right column: the KPI
+  alpha(easeOut(sp(lt,9.5,12)));
+  ctx.fillStyle='rgba(52,211,153,0.05)';
+  ctx.beginPath();ctx.roundRect(820,240,360,300,12);ctx.fill();
+  ctx.strokeStyle='rgba(52,211,153,0.15)';ctx.lineWidth=1;ctx.stroke();
+
+  sora(11,'600');text('Total human interactions',920,292,DIM,'center');
+
+  const bigGrad=ctx.createLinearGradient(0,310,0,440);
+  bigGrad.addColorStop(0,GREEN);bigGrad.addColorStop(1,ACCENT);
+  sora(120,'800');ctx.fillStyle=bigGrad;ctx.textAlign='center';
+  ctx.fillText('0',1000,430);
+
+  sora(13,'300');text('vs ~40 manual steps',1000,472,DIM,'center');
+  sora(13,'600');text('in the old world',1000,494,DIM,'center');
+
+  resetAlpha();
+
+  alpha(easeOut(sp(lt,11,13)));
+  sora(13,'600');ctx.fillStyle=GREEN;ctx.textAlign='center';
+  ctx.fillText('4 minutes of compliance. That quarter.',1000,558);
+  resetAlpha();
+}
+
+// ══════════════════════════════
+// SCENE 4: CAELITH POSITION (58-70s)
+// ══════════════════════════════
+function scene4(t,p){
+  ctx.fillStyle=BG;ctx.fillRect(0,0,1280,720);
+  const lt=t-58;
+
+  alpha(easeOut(sp(lt,0,1.5)));
+  mono(11);text('04 / THE CAELITH POSITION',80,80,ACCENT,'left');
+  resetAlpha();
+
+  alpha(easeOut(sp(lt,0.5,2.5)));
+  sora(42,'800');ctx.fillStyle=WHITE;ctx.textAlign='left';
+  ctx.fillText('Not a dashboard.',80,150);
+  ctx.fillText('Compliance infrastructure.',80,208);
+  resetAlpha();
+
+  // 4 pillars
+  const pillars=[
+    {title:'Live Today',body:'Rule engine · Sanctions · GLEIF\nXSD-validated Annex IV XML\nCompliance Copilot · Audit trail',col:GREEN,delay:2},
+    {title:'In Development',body:'BaFin MVP Portal Agent\nCSSF eDesk Agent (70% reuse)\nInvestor DD Agent (GLEIF + sanctions)',col:WARM,delay:3.2},
+    {title:'The Moat',body:'ESMA schema expertise\nNCA portal automation per jurisdiction\nCryptographic audit trail (DORA)\nVertical depth no horizontal can replicate',col:ACCENT,delay:4.4},
+    {title:'The Market',body:'704 German KVGs · 3,500+ EU AIFMs\n15–25 fund admins (50–150 KVGs each)\nOne admin deal = €100–200K ARR\n$18B global RegTech · EU = ~€6B',col:PURPLE,delay:5.6},
+  ];
+
+  pillars.forEach((p_,i)=>{
+    const x=80+i*300,y=280;
+    const a=easeOut(sp(lt,p_.delay,p_.delay+1.5));
+    alpha(a);
+    ctx.fillStyle='rgba(255,255,255,0.02)';
+    ctx.beginPath();ctx.roundRect(x,y,270,280,10);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle=p_.col;ctx.beginPath();ctx.roundRect(x,y,270,3,{upperLeft:10,upperRight:10});ctx.fill();
+
+    sora(14,'700');ctx.fillStyle=p_.col;ctx.textAlign='left';
+    ctx.fillText(p_.title,x+16,y+36);
+
+    sora(11,'300');ctx.fillStyle=DIM;
+    p_.body.split('\n').forEach((line_,li)=>{
+      ctx.fillText(line_,x+16,y+64+li*22);
+    });
+    resetAlpha();
+  });
+
+  // Validation line
+  alpha(easeOut(sp(lt,7.5,10)));
+  sora(14,'300');ctx.fillStyle=DIM;ctx.textAlign='left';
+  ctx.fillText('Thesis validated: Sphinx $7.1M (Cherry+YC, Feb 17) · Kobalt Labs $12.7M (Feb 27) · Pluvo $5M (Mar 2) — all US-only.',80,610);
+  ctx.fillText('We are the only team building this for European fund managers. With a live product.',80,634);
+  resetAlpha();
+
+  alpha(easeOut(sp(lt,9,11)));
+  const g2=ctx.createLinearGradient(80,660,500,660);
+  g2.addColorStop(0,ACCENT);g2.addColorStop(1,WARM);
+  sora(16,'700');ctx.fillStyle=g2;ctx.textAlign='left';
+  ctx.fillText('The EU play. No competitors. Live.',80,672);
+  resetAlpha();
+}
+
+// ══════════════════════════════
+// SCENE 5: CLOSE (70-75s)
+// ══════════════════════════════
+function scene5(t,p){
+  ctx.fillStyle=BG;ctx.fillRect(0,0,1280,720);
+  const lt=t-70;
+
+  // Center logo treatment
+  const a1=easeOut(sp(lt,0.5,2.5));
+  alpha(a1);
+  sora(72,'800');
+  const g=ctx.createLinearGradient(400,0,880,0);
+  g.addColorStop(0,ACCENT);g.addColorStop(1,WARM);
+  ctx.fillStyle=g;ctx.textAlign='center';
+  ctx.fillText('Caelith.',640,340);
+  resetAlpha();
+
+  const a2=easeOut(sp(lt,1.5,3.5));
+  alpha(a2*0.5);
+  sora(18,'300');text('Compliance infrastructure for European fund managers.',640,400,DIM,'center');
+  resetAlpha();
+
+  const a3=easeOut(sp(lt,2.5,4.5));
+  alpha(a3*0.35);
+  mono(12);text('caelith.tech',640,460,DIMMER,'center');
+  resetAlpha();
+
+  // Fade out
+  if(lt>3){
+    const fadeOut=sp(lt,3,5);
+    alpha(fadeOut);
+    ctx.fillStyle=BG;ctx.fillRect(0,0,1280,720);
+    resetAlpha();
+  }
+}
+
+// ─── SCENE DIRECTOR ───
+const SCENES=[
+  {fn:scene0,s:0, e:8},
+  {fn:scene1,s:8, e:22},
+  {fn:scene2,s:22,e:40},
+  {fn:scene3,s:40,e:58},
+  {fn:scene4,s:58,e:70},
+  {fn:scene5,s:70,e:75},
+];
+const TOTAL=75;
+
+let elapsed=0,lastTs=null,running=false;
+
+function frame(ts){
+  if(!running)return;
+  if(!lastTs)lastTs=ts;
+  const dt=(ts-lastTs)/1000;lastTs=ts;
+  elapsed=Math.min(elapsed+dt,TOTAL);
+
+  ctx.clearRect(0,0,1280,720);
+  ctx.fillStyle=BG;ctx.fillRect(0,0,1280,720);
+
+  // Cross-fade between scenes
+  SCENES.forEach(sc=>{
+    const fadeLen=1.0;
+    if(elapsed>=sc.s-fadeLen && elapsed<sc.e+fadeLen){
+      let a=1;
+      if(elapsed<sc.s)a=clamp((elapsed-(sc.s-fadeLen))/fadeLen,0,1);
+      else if(elapsed>sc.e)a=clamp(1-(elapsed-sc.e)/fadeLen,0,1);
+      ctx.globalAlpha=a;
+      sc.fn(elapsed,clamp((elapsed-sc.s)/(sc.e-sc.s),0,1));
+      ctx.globalAlpha=1;
+    }
+  });
+
+  if(elapsed>=TOTAL){running=false;stopRec();return;}
+  requestAnimationFrame(frame);
+}
+
+// ─── RECORDING ───
+let mr=null,chunks=[];
+function startRec(){
+  chunks=[];
+  const stream=C.captureStream(30);
+  mr=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9',videoBitsPerSecond:6000000});
+  mr.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data)};
+  mr.onstop=()=>{
+    const blob=new Blob(chunks,{type:'video/webm'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='caelith-endgame.webm';a.click();
+    document.getElementById('st').textContent='✓ Downloaded — convert at cloudconvert.com';
+    document.getElementById('btn').disabled=false;
+    document.getElementById('btn').textContent='▶ Record Again';
+  };
+  mr.start();
+}
+function stopRec(){if(mr)mr.stop();}
+
+async function go(){
+  await document.fonts.ready;
+  elapsed=0;lastTs=null;running=true;
+  document.getElementById('btn').disabled=true;
+  document.getElementById('btn').textContent='⏺ Recording 75s...';
+  document.getElementById('st').textContent='Recording...';
+  startRec();
+  requestAnimationFrame(frame);
+}
+
+// ─── PREVIEW ───
+window.addEventListener('load',async()=>{
+  await document.fonts.ready;
+  ctx.fillStyle=BG;ctx.fillRect(0,0,1280,720);
+  // Show scene 0 still
+  scene0(3,0.5);
+});
+</script>
+</body>
+</html>

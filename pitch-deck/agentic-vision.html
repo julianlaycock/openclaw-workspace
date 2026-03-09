@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — The Future of Compliance</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --dark:#0d1117;--dark2:#161b22;--accent:#C5E0EE;--warm:#E8A87C;
+  --green:#34d399;--red:#f87171;--yellow:#fbbf24;--purple:#a78bfa;
+  --blue:#60a5fa;
+}
+html,body{width:100%;min-height:100vh;background:var(--dark);font-family:'Sora',sans-serif;overflow-x:hidden}
+
+/* ── GRID BG ── */
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(197,224,238,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(197,224,238,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+
+.page{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:60px 40px}
+
+/* ── HEADER ── */
+.header{text-align:center;margin-bottom:72px}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(197,224,238,0.4);margin-bottom:20px}
+.headline{font-size:clamp(36px,5vw,64px);font-weight:800;line-height:1.1;letter-spacing:-0.03em;color:#fff;margin-bottom:16px}
+.headline .grad{background:linear-gradient(135deg,#C5E0EE,#E8A87C);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.subline{font-size:16px;color:rgba(255,255,255,0.4);max-width:560px;margin:0 auto;line-height:1.7}
+
+/* ── CONTRAST SECTION ── */
+.contrast{display:grid;grid-template-columns:1fr 64px 1fr;gap:0;margin-bottom:80px;align-items:center}
+
+.side{border-radius:16px;padding:32px;height:100%}
+.side-before{background:rgba(248,113,113,0.04);border:1px solid rgba(248,113,113,0.12)}
+.side-after{background:rgba(52,211,153,0.04);border:1px solid rgba(52,211,153,0.12)}
+
+.side-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+.side-before .side-title{color:rgba(248,113,113,0.6)}
+.side-after .side-title{color:rgba(52,211,153,0.6)}
+
+.pain-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;font-size:13px;color:rgba(255,255,255,0.45);line-height:1.5}
+.pain-item::before{content:'✗';color:rgba(248,113,113,0.5);flex-shrink:0;font-weight:700;margin-top:1px}
+.good-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;font-size:13px;color:rgba(255,255,255,0.7);line-height:1.5}
+.good-item::before{content:'✓';color:var(--green);flex-shrink:0;font-weight:700;margin-top:1px}
+.good-item strong{color:#fff}
+
+.divider-arrow{display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(255,255,255,0.15)}
+
+/* ── MISSION CONTROL ── */
+.mc-section{margin-bottom:80px}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-bottom:8px}
+.section-heading{font-size:22px;font-weight:700;color:#fff;margin-bottom:32px}
+
+.mc-grid{display:grid;grid-template-columns:1fr 200px 1fr;gap:24px;align-items:center}
+
+/* Agent cards */
+.agents-left,.agents-right{display:flex;flex-direction:column;gap:12px}
+
+.agent-card{background:var(--dark2);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px 20px;position:relative;overflow:hidden;transition:border-color .3s}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0}
+.agent-card.green::before{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.agent-card.blue::before{background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.agent-card.warm::before{background:linear-gradient(90deg,transparent,var(--warm),transparent)}
+.agent-card.purple::before{background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+
+.ac-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.ac-name{font-size:13px;font-weight:600;color:#fff}
+.ac-status{display:flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:9px}
+.status-dot{width:6px;height:6px;border-radius:50%}
+.status-live{background:var(--green);box-shadow:0 0 6px var(--green)}
+.status-building{background:var(--warm);box-shadow:0 0 6px var(--warm)}
+.status-dot.pulse{animation:pulse-dot 1.5s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+
+.ac-log{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.3);line-height:1.6}
+.ac-log .time{color:rgba(255,255,255,0.15)}
+.ac-log .ok{color:var(--green)}
+.ac-log .pending{color:var(--warm)}
+
+/* Core */
+.mc-core{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.core-ring{width:160px;height:160px;border-radius:50%;border:1px solid rgba(197,224,238,0.15);display:flex;align-items:center;justify-content:center;position:relative;margin:0 auto 16px}
+.core-ring::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(197,224,238,0.06);animation:ring-pulse 3s ease-in-out infinite}
+.core-ring::after{content:'';position:absolute;inset:-16px;border-radius:50%;border:1px solid rgba(197,224,238,0.03);animation:ring-pulse 3s ease-in-out infinite .5s}
+@keyframes ring-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.04);opacity:0.5}}
+.core-inner{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(197,224,238,0.1) 0%,rgba(197,224,238,0.03) 70%,transparent 100%);border:1px solid rgba(197,224,238,0.2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.core-icon{font-size:28px}
+.core-name{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--accent)}
+.core-uptime{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(255,255,255,0.2);margin-top:12px}
+.core-uptime span{color:var(--green)}
+
+/* Connector lines */
+.connector{position:relative;display:flex;align-items:center}
+.connector-line{flex:1;height:1px;background:rgba(197,224,238,0.1)}
+
+/* ── NIGHT LOG ── */
+.night-log{background:var(--dark2);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:28px 32px;margin-bottom:80px}
+.log-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.log-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3)}
+.log-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.15)}
+
+.log-entry{display:grid;grid-template-columns:80px 1fr auto;gap:24px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.log-entry:last-child{border-bottom:none}
+.log-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.2)}
+.log-msg{font-size:13px;color:rgba(255,255,255,0.65)}
+.log-msg strong{color:#fff}
+.log-badge{font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 10px;border-radius:4px;white-space:nowrap}
+.badge-ok{background:rgba(52,211,153,0.1);color:var(--green);border:1px solid rgba(52,211,153,0.2)}
+.badge-agent{background:rgba(232,168,124,0.1);color:var(--warm);border:1px solid rgba(232,168,124,0.2)}
+.badge-info{background:rgba(197,224,238,0.06);color:rgba(197,224,238,0.5);border:1px solid rgba(197,224,238,0.1)}
+
+.log-morning{background:rgba(232,168,124,0.04);border:1px solid rgba(232,168,124,0.1);border-radius:10px;padding:16px 20px;margin-top:16px;display:flex;align-items:center;gap:16px}
+.log-morning-icon{font-size:24px}
+.log-morning-text{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.6}
+.log-morning-text strong{color:var(--warm)}
+
+/* ── BOTTOM STATEMENT ── */
+.statement{text-align:center;padding:48px 0 24px;border-top:1px solid rgba(255,255,255,0.04)}
+.statement-text{font-size:clamp(18px,2.5vw,28px);font-weight:600;color:#fff;line-height:1.5;max-width:700px;margin:0 auto 16px}
+.statement-text .grad{background:linear-gradient(135deg,#C5E0EE,#E8A87C);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.statement-sub{font-size:14px;color:rgba(255,255,255,0.3)}
+
+/* ── ANIMATED LOG TYPING ── */
+@keyframes fade-in-up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.log-entry{animation:fade-in-up .4s ease both}
+.log-entry:nth-child(1){animation-delay:.1s}
+.log-entry:nth-child(2){animation-delay:.3s}
+.log-entry:nth-child(3){animation-delay:.5s}
+.log-entry:nth-child(4){animation-delay:.7s}
+.log-entry:nth-child(5){animation-delay:.9s}
+.log-entry:nth-child(6){animation-delay:1.1s}
+.log-entry:nth-child(7){animation-delay:1.3s}
+.log-morning{animation:fade-in-up .4s ease 1.5s both}
+
+/* ── CURSOR BLINK ── */
+.blink{animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="eyebrow">Caelith · Vision</div>
+    <h1 class="headline">Compliance that runs itself.<br><span class="grad">You focus on the fund.</span></h1>
+    <p class="subline">Autonomous agents handle filing, screening, and reporting — continuously, overnight, without human intervention.</p>
+  </div>
+
+  <!-- BEFORE / AFTER -->
+  <div class="contrast">
+    <div class="side side-before">
+      <div class="side-title">Without Caelith — Today</div>
+      <div class="pain-item">Compliance officer manually exports fund data every quarter</div>
+      <div class="pain-item">Consultant formats XML, takes 2–4 weeks per filing cycle</div>
+      <div class="pain-item">Investor screening done manually, one-by-one against PDFs</div>
+      <div class="pain-item">€150–200K/year. No audit trail. No proof.</div>
+      <div class="pain-item">AIFMD II deadline missed. BaFin sends a warning.</div>
+    </div>
+
+    <div class="divider-arrow">→</div>
+
+    <div class="side side-after">
+      <div class="side-title">With Caelith — The Future</div>
+      <div class="good-item"><strong>Agents file to BaFin at 2 AM.</strong> No one pressed a button.</div>
+      <div class="good-item"><strong>6,863 investors screened</strong> against EU/UN sanctions every morning.</div>
+      <div class="good-item"><strong>Annex IV XML generated and validated</strong> against ESMA schema in seconds.</div>
+      <div class="good-item"><strong>Every decision hash-chained.</strong> Audit trail sealed. Regulator-ready.</div>
+      <div class="good-item"><strong>Fund manager opens email at 9 AM.</strong> Everything is done.</div>
+    </div>
+  </div>
+
+  <!-- MISSION CONTROL -->
+  <div class="mc-section">
+    <div class="section-label">Always-on infrastructure</div>
+    <div class="section-heading">Agents operating right now</div>
+
+    <div class="mc-grid">
+
+      <!-- LEFT AGENTS -->
+      <div class="agents-left">
+        <div class="agent-card green">
+          <div class="ac-header">
+            <div class="ac-name">⚙️ Rule Engine</div>
+            <div class="ac-status"><div class="status-dot status-live pulse"></div><span style="color:var(--green)">Live</span></div>
+          </div>
+          <div class="ac-log">
+            <div><span class="time">06:31:02</span> — Investor batch evaluated</div>
+            <div><span class="time">06:31:02</span> — 13 rules · <span class="ok">all passed ✓</span></div>
+          </div>
+        </div>
+        <div class="agent-card blue">
+          <div class="ac-header">
+            <div class="ac-name">🛡️ Sanctions Monitor</div>
+            <div class="ac-status"><div class="status-dot status-live pulse"></div><span style="color:var(--green)">Live</span></div>
+          </div>
+          <div class="ac-log">
+            <div><span class="time">06:30:17</span> — EU + UN list refreshed</div>
+            <div><span class="time">06:30:18</span> — 6,863 entities · <span class="ok">0 matches ✓</span></div>
+          </div>
+        </div>
+        <div class="agent-card green">
+          <div class="ac-header">
+            <div class="ac-name">🔗 Audit Trail</div>
+            <div class="ac-status"><div class="status-dot status-live pulse"></div><span style="color:var(--green)">Live</span></div>
+          </div>
+          <div class="ac-log">
+            <div><span class="time">02:14:09</span> — Hash chain sealed</div>
+            <div><span class="time">02:14:09</span> — <span class="ok">SHA-256 integrity verified ✓</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CORE -->
+      <div class="mc-core">
+        <div class="core-ring">
+          <div class="core-inner">
+            <div class="core-icon">⚡</div>
+            <div class="core-name">Caelith</div>
+          </div>
+        </div>
+        <div class="core-uptime">uptime <span>99.9%</span> · EU-hosted</div>
+      </div>
+
+      <!-- RIGHT AGENTS -->
+      <div class="agents-right">
+        <div class="agent-card warm">
+          <div class="ac-header">
+            <div class="ac-name">🤖 BaFin Filing Agent</div>
+            <div class="ac-status"><div class="status-dot status-building pulse"></div><span style="color:var(--warm)">Building</span></div>
+          </div>
+          <div class="ac-log">
+            <div><span class="time">02:13:58</span> — Annex IV XML validated</div>
+            <div><span class="time">02:14:03</span> — MVP Portal login <span class="pending">→ filing...</span></div>
+            <div><span class="time">02:14:09</span> — <span class="ok">BaFin confirmed receipt ✓</span></div>
+          </div>
+        </div>
+        <div class="agent-card warm">
+          <div class="ac-header">
+            <div class="ac-name">🤖 CSSF eDesk Agent</div>
+            <div class="ac-status"><div class="status-dot status-building pulse"></div><span style="color:var(--warm)">Building</span></div>
+          </div>
+          <div class="ac-log">
+            <div><span class="time">02:16:44</span> — Luxembourg entities queued</div>
+            <div><span class="time">02:16:51</span> — <span class="ok">CSSF submission confirmed ✓</span></div>
+          </div>
+        </div>
+        <div class="agent-card purple">
+          <div class="ac-header">
+            <div class="ac-name">🔍 Investor DD Agent</div>
+            <div class="ac-status"><div class="status-dot" style="background:var(--purple);box-shadow:0 0 6px var(--purple)"></div><span style="color:var(--purple)">Roadmap</span></div>
+          </div>
+          <div class="ac-log">
+            <div><span class="time">03:45:12</span> — GLEIF · Transparenzreg</div>
+            <div><span class="time">03:45:18</span> — Adverse media scan · <span class="ok">clean ✓</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- OVERNIGHT LOG -->
+  <div class="night-log">
+    <div class="log-header">
+      <div class="log-title">🌙 Overnight activity log — while your team slept</div>
+      <div class="log-date">Wed, 16 Apr 2026 · AIFMD II enforcement day</div>
+    </div>
+
+    <div class="log-entry">
+      <div class="log-time">00:01 AM</div>
+      <div class="log-msg">Scheduled compliance run triggered for <strong>Q1 2026 Annex IV cycle</strong></div>
+      <div class="log-badge badge-info">Scheduled</div>
+    </div>
+    <div class="log-entry">
+      <div class="log-time">00:03 AM</div>
+      <div class="log-msg">Investor dataset validated — <strong>247 records</strong> across 8 fund structures</div>
+      <div class="log-badge badge-ok">✓ Validated</div>
+    </div>
+    <div class="log-entry">
+      <div class="log-time">01:15 AM</div>
+      <div class="log-msg">EU/UN sanctions screening complete — <strong>0 matches</strong>, 6,863 entities checked</div>
+      <div class="log-badge badge-ok">✓ Clean</div>
+    </div>
+    <div class="log-entry">
+      <div class="log-time">02:13 AM</div>
+      <div class="log-msg">Annex IV XML generated — <strong>ESMA XSD Rev 6 v1.2 validation passed</strong></div>
+      <div class="log-badge badge-ok">✓ Schema valid</div>
+    </div>
+    <div class="log-entry">
+      <div class="log-time">02:14 AM</div>
+      <div class="log-msg">BaFin MVP Portal agent filed Annex IV — <strong>confirmation ref: BaFin-2026-Q1-00847</strong></div>
+      <div class="log-badge badge-agent">🤖 Agent filed</div>
+    </div>
+    <div class="log-entry">
+      <div class="log-time">02:14 AM</div>
+      <div class="log-msg">Audit trail sealed — <strong>hash chain integrity verified</strong>, tamper-proof record stored</div>
+      <div class="log-badge badge-ok">✓ Sealed</div>
+    </div>
+    <div class="log-entry">
+      <div class="log-time">03:45 AM</div>
+      <div class="log-msg">Investor due diligence cycle complete — <strong>GLEIF + Transparenzregister + adverse media</strong></div>
+      <div class="log-badge badge-ok">✓ Done</div>
+    </div>
+
+    <div class="log-morning">
+      <div class="log-morning-icon">☀️</div>
+      <div class="log-morning-text">
+        <strong>09:00 AM — You arrive at the office.</strong> Your Annex IV is filed. Your investors are screened. Your audit trail is sealed and regulator-ready. BaFin has confirmed receipt. You didn't press a single button.<span class="blink">_</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLOSING STATEMENT -->
+  <div class="statement">
+    <p class="statement-text">This is not automation.<br>This is <span class="grad">compliance as infrastructure.</span></p>
+    <p class="statement-sub">The same way AWS runs your servers while you sleep — Caelith runs your compliance.</p>
+  </div>
+
+</div>
+</body>
+</html>

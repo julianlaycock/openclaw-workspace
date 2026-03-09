@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1584px; height: 396px; overflow: hidden; }
+  .banner {
+    width: 1584px;
+    height: 396px;
+    background: #1a1f1f;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Subtle grid pattern */
+  .banner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+      linear-gradient(rgba(142,197,224,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(142,197,224,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  
+  /* Gradient accent line at top */
+  .banner::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #8EC5E0, #E8A87C, #8EC5E0);
+  }
+  
+  /* Glowing orb left */
+  .orb-1 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(142,197,224,0.08) 0%, transparent 70%);
+    top: -80px;
+    left: -50px;
+  }
+  
+  /* Glowing orb right */
+  .orb-2 {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,168,124,0.06) 0%, transparent 70%);
+    bottom: -60px;
+    right: 100px;
+  }
+  
+  .left {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .logo-mark {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #8EC5E0, #E8A87C);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #1a1f1f;
+  }
+  
+  .logo-text {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 42px;
+    color: #F8F9FA;
+    letter-spacing: -0.5px;
+  }
+  
+  .tagline {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 22px;
+    color: rgba(248,249,250,0.7);
+    max-width: 600px;
+    line-height: 1.4;
+  }
+  
+  .tagline span {
+    color: #C5E0EE;
+    font-weight: 500;
+  }
+  
+  .right {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  
+  .code-block {
+    background: #2D3333;
+    border: 1px solid rgba(142,197,224,0.15);
+    border-radius: 12px;
+    padding: 20px 28px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #C5E0EE;
+    line-height: 1.8;
+  }
+  
+  .code-block .comment { color: rgba(248,249,250,0.3); }
+  .code-block .method { color: #E8A87C; }
+  .code-block .string { color: #8EC5E0; }
+  .code-block .key { color: #F8F9FA; }
+  
+  .location {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: rgba(248,249,250,0.35);
+    letter-spacing: 0.5px;
+  }
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="orb-1"></div>
+  <div class="orb-2"></div>
+  
+  <div class="left">
+    <div class="logo-area">
+      <div class="logo-mark">C</div>
+      <div class="logo-text">Caelith</div>
+    </div>
+    <div class="tagline">
+      The <span>compliance infrastructure</span> layer<br>for European fund managers
+    </div>
+  </div>
+  
+  <div class="right">
+    <div class="code-block">
+      <span class="comment">// one API call replaces months of manual work</span><br>
+      <span class="method">POST</span> <span class="string">/api/v1/sanctions/screen</span><br>
+      <span class="method">POST</span> <span class="string">/api/v1/annex-iv/generate</span><br>
+      <span class="method">GET</span>&nbsp; <span class="string">/api/v1/calendar/obligations</span>
+    </div>
+    <div class="location">Berlin · caelith.tech</div>
+  </div>
+</div>
+</body>
+</html>

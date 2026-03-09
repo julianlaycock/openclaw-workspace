@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Agentic Compliance Vision</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e1212;
+    --card: #161c1c;
+    --card2: #1c2424;
+    --border: rgba(197,224,238,0.1);
+    --accent: #C5E0EE;
+    --warm: #E8A87C;
+    --green: #4ade80;
+    --red: #f87171;
+    --text: #F8F9FA;
+    --t2: rgba(248,249,250,0.65);
+    --t3: rgba(248,249,250,0.35);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    padding: 56px 80px 48px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -300px; right: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(197,224,238,0.05) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .logo-svg { height: 32px; }
+
+  .doc-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--warm);
+    background: rgba(232,168,124,0.1);
+    border: 1px solid rgba(232,168,124,0.25);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  .hero-title {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(28px, 4vw, 46px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .hero-title em { color: var(--accent); font-style: normal; }
+
+  .hero-sub {
+    font-size: 17px;
+    color: var(--t2);
+    max-width: 680px;
+    line-height: 1.75;
+    margin-bottom: 40px;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+
+  .stat-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .stat-lbl {
+    font-size: 12px;
+    color: var(--t3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 3px;
+  }
+
+  /* ── LAYOUT ── */
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 80px;
+  }
+
+  section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+
+  .sec-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .sec-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    line-height: 1.25;
+  }
+
+  .sec-sub {
+    font-size: 14px;
+    color: var(--t2);
+    max-width: 620px;
+    line-height: 1.75;
+    margin-bottom: 36px;
+  }
+
+  /* ── THE PROBLEM ── */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .problem-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+
+  .problem-card .icon { font-size: 24px; margin-bottom: 12px; }
+  .problem-card h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  .problem-card p { font-size: 13px; color: var(--t2); line-height: 1.7; }
+
+  .problem-card .cost {
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--red);
+    background: rgba(248,113,113,0.08);
+    border: 1px solid rgba(248,113,113,0.2);
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+
+  /* ── THE THESIS ── */
+  .thesis-box {
+    background: rgba(197,224,238,0.04);
+    border: 1px solid rgba(197,224,238,0.2);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 32px;
+  }
+
+  .thesis-box p {
+    font-size: 16px;
+    color: var(--text);
+    line-height: 1.8;
+  }
+
+  .thesis-box strong { color: var(--accent); }
+
+  /* ── AGENT PIPELINE ── */
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .pipe-row {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .pipe-num {
+    width: 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pipe-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .pipe-dot.l1 { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+  .pipe-dot.l2 { background: rgba(232,168,124,0.1); color: var(--warm); border: 1px solid rgba(232,168,124,0.25); }
+  .pipe-dot.l3 { background: rgba(197,224,238,0.1); color: var(--accent); border: 1px solid rgba(197,224,238,0.25); }
+  .pipe-dot.l4 { background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
+
+  .pipe-card {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .pipe-card-main { flex: 1; }
+
+  .pipe-card h4 {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .pipe-card p { font-size: 13px; color: var(--t2); line-height: 1.65; }
+
+  .pipe-card .tag-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+  .mini-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .mini-tag.green { background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
+  .mini-tag.blue { background: rgba(197,224,238,0.1); color: var(--accent); border: 1px solid rgba(197,224,238,0.2); }
+  .mini-tag.warm { background: rgba(232,168,124,0.1); color: var(--warm); border: 1px solid rgba(232,168,124,0.2); }
+
+  /* ── DEMO SCENARIO ── */
+  .demo-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .demo-context {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+  }
+
+  .demo-context h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .demo-detail { display: flex; flex-direction: column; gap: 12px; }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(197,224,238,0.06);
+    font-size: 13px;
+  }
+
+  .detail-row:last-child { border-bottom: none; }
+  .detail-label { color: var(--t3); }
+  .detail-value { color: var(--text); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .detail-value.warn { color: var(--warm); }
+  .detail-value.ok { color: var(--green); }
+
+  .convo {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .convo-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(197,224,238,0.02);
+  }
+
+  .convo-icon {
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    background: rgba(197,224,238,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  .convo-header h4 { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700; }
+  .convo-header p { font-size: 11px; color: var(--t3); }
+  .dot-live { width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-left: auto; }
+
+  .convo-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+  .msg { display: flex; gap: 9px; }
+  .msg.user { flex-direction: row-reverse; }
+
+  .msg-av {
+    width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    background: rgba(197,224,238,0.08);
+    border: 1px solid rgba(197,224,238,0.12);
+  }
+
+  .msg.user .msg-av {
+    background: rgba(232,168,124,0.1);
+    border-color: rgba(232,168,124,0.2);
+  }
+
+  .msg-bub {
+    max-width: 86%;
+    font-size: 12.5px;
+    line-height: 1.65;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(197,224,238,0.04);
+    border: 1px solid rgba(197,224,238,0.08);
+    color: var(--t2);
+  }
+
+  .msg.user .msg-bub {
+    background: rgba(232,168,124,0.08);
+    border-color: rgba(232,168,124,0.15);
+    color: var(--text);
+  }
+
+  .msg-bub strong { color: var(--text); }
+  .ok-tag { color: var(--green); font-weight: 700; }
+  .warn-tag { color: var(--warm); }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--t3); }
+
+  .action-pill {
+    display: block;
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--green);
+    background: rgba(74,222,128,0.1);
+    border: 1px solid rgba(74,222,128,0.25);
+    padding: 6px 14px;
+    border-radius: 7px;
+    text-align: center;
+  }
+
+  /* ── AGENTS GRID ── */
+  .agents-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .agent-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+  }
+
+  .agent-card .icon { font-size: 26px; margin-bottom: 10px; }
+  .agent-card h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .agent-card p { font-size: 13px; color: var(--t2); line-height: 1.65; margin-bottom: 12px; }
+
+  .agent-steps { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+
+  .agent-steps li {
+    font-size: 12px;
+    color: var(--t2);
+    display: flex;
+    gap: 8px;
+    padding: 6px 10px;
+    background: var(--card2);
+    border-radius: 7px;
+    border: 1px solid rgba(197,224,238,0.06);
+    line-height: 1.5;
+  }
+
+  .agent-steps li .si { font-size: 13px; flex-shrink: 0; }
+
+  /* ── WHY NOW ── */
+  .why-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .why-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+
+  .why-card h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .why-card p { font-size: 13px; color: var(--t2); line-height: 1.7; }
+
+  /* ── MOAT ── */
+  .moat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .moat-card {
+    background: rgba(197,224,238,0.03);
+    border: 1px solid rgba(197,224,238,0.15);
+    border-radius: 14px;
+    padding: 22px;
+  }
+
+  .moat-card .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(197,224,238,0.08);
+    border: 1px solid rgba(197,224,238,0.2);
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+
+  .moat-card h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .moat-card p { font-size: 13px; color: var(--t2); line-height: 1.7; }
+
+  /* ── FOOTER ── */
+  .footer {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 36px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-left { font-size: 13px; color: var(--t3); }
+  .footer-left strong { color: var(--t2); }
+  .footer-right { font-size: 13px; color: var(--t3); }
+  .footer-right a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo-wrap">
+    <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48">
+      <text x="0" y="38" font-family="Sora, sans-serif" font-weight="800" font-size="40" letter-spacing="-2" fill="#F8F9FA">Caelith</text>
+    </svg>
+    <span class="doc-tag">Agentic Vision — Seed Round</span>
+  </div>
+
+  <h1 class="hero-title">
+    EU fund compliance is a<br>
+    <em>300-step manual process.</em><br>
+    We automated it.
+  </h1>
+
+  <p class="hero-sub">
+    European fund managers spend 40–80 hours per fund, per filing cycle on regulatory work that is entirely rule-based. Caelith replaces this with five autonomous agents, two human approval gates, and direct NCA portal submission — reducing weeks of work to minutes.
+  </p>
+
+  <div class="hero-stats">
+    <div>
+      <div class="stat-val">€90K–290K</div>
+      <div class="stat-lbl">Annual compliance cost (small KVG)</div>
+    </div>
+    <div>
+      <div class="stat-val">€12K</div>
+      <div class="stat-lbl">Same scope on Caelith</div>
+    </div>
+    <div>
+      <div class="stat-val">Apr 16</div>
+      <div class="stat-lbl">AIFMD II enforcement date</div>
+    </div>
+    <div>
+      <div class="stat-val">704</div>
+      <div class="stat-lbl">BaFin-licensed KVGs in Germany alone</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ══ THE PROBLEM ══ -->
+<section>
+  <div class="sec-label">The Problem</div>
+  <div class="sec-title">Every EU fund manager faces the same broken process.</div>
+  <p class="sec-sub">AIFMD requires fund managers to file detailed regulatory reports every quarter, semi-annually, or annually — per fund, per NCA, in jurisdiction-specific XML formats. Today this is done manually.</p>
+
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="icon">📋</div>
+      <h3>300+ data fields, mapped manually</h3>
+      <p>Each Annex IV filing requires mapping portfolio positions, leverage metrics, liquidity profiles, and investor records to ESMA's XML schema. Done in Excel. Error-prone. Repeated per fund, per cycle.</p>
+      <span class="cost">40–80h consultant per filing</span>
+    </div>
+    <div class="problem-card">
+      <div class="icon">🌍</div>
+      <h3>8 regulators with diverging rules</h3>
+      <p>BaFin, CSSF, AMF, FMA and 4 others each add their own layer on top of ESMA's framework — different portals, different field interpretations, different deadlines. One mistake means rejection.</p>
+      <span class="cost">Specialist knowledge per NCA</span>
+    </div>
+    <div class="problem-card">
+      <div class="icon">⚖️</div>
+      <h3>Audit trail built after the fact</h3>
+      <p>When BaFin auditors arrive, compliance teams spend weeks reconstructing decision rationales scattered across emails, Word docs, and case notes. Evidence is manually compiled under time pressure.</p>
+      <span class="cost">2–4 weeks exam prep per audit</span>
+    </div>
+    <div class="problem-card">
+      <div class="icon">👤</div>
+      <h3>Investor onboarding is four manual workflows</h3>
+      <p>Each new investor requires: LEI validation, sanctions screening, investor classification under KAGB/AIFMD II, and eligibility decision — all done separately, in different tools, by hand.</p>
+      <span class="cost">€500–2K per investor onboarded</span>
+    </div>
+    <div class="problem-card">
+      <div class="icon">📡</div>
+      <h3>Regulatory changes missed silently</h3>
+      <p>BaFin and ESMA publish circulars and guidance updates continuously. Without active monitoring, compliance teams learn about changes too late — when a filing is rejected or an audit flags the gap.</p>
+      <span class="cost">€5K–20K/year for monitoring tools</span>
+    </div>
+    <div class="problem-card">
+      <div class="icon">🔁</div>
+      <h3>Fund admins repeat the same process × 15+</h3>
+      <p>A fund administrator managing 20 funds does the same manual process 20 times per cycle. Each filing is treated as a standalone task. No parallelisation. No institutional memory. Total waste.</p>
+      <span class="cost">Scales linearly with mandates</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ THE THESIS ══ -->
+<section>
+  <div class="sec-label">The Insight</div>
+  <div class="sec-title">Compliance isn't a judgment problem. It's an execution problem.</div>
+
+  <div class="thesis-box">
+    <p>
+      Every compliance workflow in EU fund management follows a deterministic policy: ESMA defines the schema, KAGB defines the classification rules, BaFin defines the submission format. <strong>There is no ambiguity in the process — only in executing it across hundreds of fields, across multiple jurisdictions, without making mistakes.</strong> This is exactly the kind of work autonomous agents are built for: rule-based, high-stakes, and currently being done by expensive humans who should be spending their time on the 5% of cases that genuinely require judgment.
+    </p>
+  </div>
+
+  <p class="sec-sub" style="margin-bottom: 0">Caelith's architecture reflects this: agents handle the deterministic execution. Humans approve at two explicit gates. The audit trail writes itself.</p>
+</section>
+
+<!-- ══ HOW THE AGENT WORKS ══ -->
+<section>
+  <div class="sec-label">The Architecture</div>
+  <div class="sec-title">One persistent conversation thread.<br>Five agents working in the background.</div>
+  <p class="sec-sub">The compliance officer never navigates a UI. They open one chat, get a briefing on what needs attention, and approve at key decision points. The rest is autonomous.</p>
+
+  <div class="pipeline">
+
+    <div class="pipe-row">
+      <div class="pipe-num"><div class="pipe-dot l1">1</div></div>
+      <div class="pipe-card">
+        <div class="pipe-card-main">
+          <h4>Intelligence Layer — Always watching, always on</h4>
+          <p>Runs silently in the background. Monitors regulatory calendar deadlines (42d → 14d → 7d), sanctions list updates (rescreens all investors on every EU/UN list change), ESMA and BaFin circulars, LEI status changes, and portfolio threshold triggers. Only surfaces events that actually require attention.</p>
+          <div class="tag-row">
+            <span class="mini-tag green">Continuous</span>
+            <span class="mini-tag blue">Zero-action from CO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipe-row">
+      <div class="pipe-num"><div class="pipe-dot l2">2</div></div>
+      <div class="pipe-card">
+        <div class="pipe-card-main">
+          <h4>Surfacing Layer — Context-loaded briefings, not notifications</h4>
+          <p>When an event matters, the agent surfaces it in chat pre-loaded with all relevant context: fund data, pre-flight score, investor health, last filing status. The compliance officer's first message has everything needed to decide — no back-and-forth to gather context.</p>
+          <div class="tag-row">
+            <span class="mini-tag blue">Priority-ranked</span>
+            <span class="mini-tag blue">Memory-aware</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipe-row">
+      <div class="pipe-num"><div class="pipe-dot l3">3</div></div>
+      <div class="pipe-card">
+        <div class="pipe-card-main">
+          <h4>Conversation Layer — Natural language in, regulatory filings out</h4>
+          <p>The CO types naturally. The agent parses intent, routes to the right execution engine, and asks only for what it cannot find itself — one question at a time. Two explicit approval gates: one to generate the XML filing, one to submit to the NCA portal.</p>
+          <div class="tag-row">
+            <span class="mini-tag blue">Intent classification</span>
+            <span class="mini-tag warm">2 approval gates</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipe-row">
+      <div class="pipe-num"><div class="pipe-dot l4">4</div></div>
+      <div class="pipe-card">
+        <div class="pipe-card-main">
+          <h4>Execution Layer — Deterministic, not probabilistic</h4>
+          <p>Every action is a typed call against a known schema. GLEIF returns a verified LEI fact. XSD validation returns pass/fail against ESMA AIFMD_DATAIF_V1.2.xsd. BaFin portal returns a submission reference number. No hallucination risk — execution is deterministic by design. SHA-256 chained audit trail written automatically at every step.</p>
+          <div class="tag-row">
+            <span class="mini-tag green">XSD-validated XML</span>
+            <span class="mini-tag green">Live GLEIF + sanctions APIs</span>
+            <span class="mini-tag green">Direct NCA portal submission</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ DEMO SCENARIO ══ -->
+<section>
+  <div class="sec-label">In Practice</div>
+  <div class="sec-title">A BaFin Annex IV filing — from alert to submission.</div>
+  <p class="sec-sub">This is what the compliance officer actually sees. The entire back-end — pre-flight checks, XSD validation, portal authentication — is invisible.</p>
+
+  <div class="demo-wrap">
+    <div class="demo-context">
+      <h3>📁 Süddeutscher Immobilien-Spezialfonds I</h3>
+      <div class="demo-detail">
+        <div class="detail-row">
+          <span class="detail-label">Fund type</span>
+          <span class="detail-value">Spezial-AIF (Art. 24(2))</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Regulator</span>
+          <span class="detail-value">BaFin — MVP Portal</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Filing deadline</span>
+          <span class="detail-value warn">42 days</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Investors</span>
+          <span class="detail-value">9 entities</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">LEI status</span>
+          <span class="detail-value warn">8/9 valid · 1 missing</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Sanctions screening</span>
+          <span class="detail-value ok">All clear</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">NAV Q4 2025</span>
+          <span class="detail-value warn">Not confirmed</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Pre-flight score</span>
+          <span class="detail-value warn">87% → 100% after gaps</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Filing time (manual)</span>
+          <span class="detail-value">~60 hours</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Filing time (Caelith)</span>
+          <span class="detail-value ok">&lt;10 minutes</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="convo">
+      <div class="convo-header">
+        <div class="convo-icon">✨</div>
+        <div>
+          <h4>Caelith Agent</h4>
+          <p>BaFin · CSSF · AMF · AIFMD II</p>
+        </div>
+        <div class="dot-live"></div>
+      </div>
+      <div class="convo-body">
+        <div class="msg">
+          <div class="msg-av">✨</div>
+          <div class="msg-bub">
+            <strong>🔔 Action required — Annex IV filing</strong><br><br>
+            <strong>Süddeutscher Immobilien-Spezialfonds I</strong> — BaFin deadline in <span class="warn-tag">42 days</span>.<br><br>
+            Pre-flight ran automatically:<br>
+            <span class="ok-tag">✓</span> 8/9 LEIs valid (GLEIF)<br>
+            <span class="ok-tag">✓</span> Sanctions: all 9 investors clear<br>
+            <span class="warn-tag">⚠</span> 1 missing LEI — Klaus Müller Family Office<br>
+            <span class="warn-tag">⚠</span> NAV Q4 2025 not confirmed<br><br>
+            Two things to resolve. What's the LEI for Klaus Müller FO?
+          </div>
+        </div>
+
+        <div class="msg user">
+          <div class="msg-av">👩‍💼</div>
+          <div class="msg-bub">529900KMFO1234GH56. NAV confirmed at €164.2M.</div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-av">✨</div>
+          <div class="msg-bub">
+            <span class="ok-tag">✓</span> LEI confirmed — ISSUED (GLEIF)<br>
+            <span class="ok-tag">✓</span> All 300+ fields complete<br>
+            <span class="ok-tag">✓</span> Pre-flight: 100%<br><br>
+            Ready to generate XSD-validated Annex IV XML for BaFin MVP Portal. Confirm to proceed.
+            <span class="action-pill">✅  Generate filing</span>
+          </div>
+        </div>
+
+        <div class="msg user">
+          <div class="msg-av">👩‍💼</div>
+          <div class="msg-bub">ok</div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-av">✨</div>
+          <div class="msg-bub">
+            <span class="mono">Generating XML → validating against ESMA AIFMD_DATAIF_V1.2.xsd...</span><br>
+            <span class="ok-tag">✓</span> Validation passed — 0 errors<br><br>
+            <strong>Filing summary:</strong> Süddeutscher Imm. I · Q4 2025 · Art. 24(2) · AUM €164.2M · 9 investors · BaFin MVP Portal<br><br>
+            Ready to submit. Confirm.
+            <span class="action-pill">📤  Submit to BaFin</span>
+          </div>
+        </div>
+
+        <div class="msg user">
+          <div class="msg-av">👩‍💼</div>
+          <div class="msg-bub">ok to submit</div>
+        </div>
+
+        <div class="msg">
+          <div class="msg-av">✨</div>
+          <div class="msg-bub">
+            <span class="ok-tag">✓</span> Submitted to BaFin MVP Portal<br>
+            <span class="ok-tag">✓</span> Reference: <span class="mono">BaFin-2026-Q4-AIF-00847-X</span><br>
+            <span class="ok-tag">✓</span> Audit trail sealed — SHA-256 chained<br>
+            <span class="ok-tag">✓</span> Evidence bundle generated<br><br>
+            Filing complete. Next deadline: CSSF in <strong>67 days</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 5 AGENTS ══ -->
+<section>
+  <div class="sec-label">The Agents</div>
+  <div class="sec-title">Five agents. The entire compliance lifecycle.</div>
+  <p class="sec-sub">Each agent has a single job. No overlap. Together they cover everything a compliance officer at a KVG or fund admin does today — manually.</p>
+
+  <div class="agents-grid">
+    <div class="agent-card">
+      <div class="icon">📋</div>
+      <h3>Filing Agent</h3>
+      <p>Owns Annex IV end-to-end — from deadline detection to BaFin/CSSF/AMF portal submission. The core agent.</p>
+      <ul class="agent-steps">
+        <li><span class="si">📅</span>Monitors filing deadlines per fund per NCA</li>
+        <li><span class="si">🔍</span>Runs pre-flight: LEI, sanctions, field completeness</li>
+        <li><span class="si">📄</span>Generates XSD-validated XML (ESMA Rev 6)</li>
+        <li><span class="si">🌐</span>Submits directly to BaFin MVP / CSSF eDesk</li>
+        <li><span class="si">🔗</span>Seals tamper-evident audit chain</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <div class="icon">👤</div>
+      <h3>Onboarding Agent</h3>
+      <p>Full investor onboarding chain — from intake to classification decision. What used to take 4 hours takes minutes.</p>
+      <ul class="agent-steps">
+        <li><span class="si">🔍</span>LEI lookup and GLEIF verification</li>
+        <li><span class="si">🛡️</span>Sanctions + PEP screening</li>
+        <li><span class="si">📊</span>KAGB/AIFMD II investor classification</li>
+        <li><span class="si">📋</span>Classification memo + eligibility decision</li>
+        <li><span class="si">🔗</span>Decision logged to audit chain</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <div class="icon">📡</div>
+      <h3>Monitoring Agent</h3>
+      <p>Always-on watchdog. Rescreens investors on every sanctions update. Monitors regulatory changes. Silent unless something needs attention.</p>
+      <ul class="agent-steps">
+        <li><span class="si">🔄</span>Rescreens all investors on every EU/UN update</li>
+        <li><span class="si">📰</span>Reads BaFin/ESMA circulars, assesses fund impact</li>
+        <li><span class="si">📊</span>Detects AUM threshold changes (Art. 24(1)→(2))</li>
+        <li><span class="si">🪪</span>Flags GLEIF LEI status changes</li>
+        <li><span class="si">📅</span>KYC renewal tracking (90d + 30d alerts)</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <div class="icon">🔎</div>
+      <h3>Due Diligence Agent</h3>
+      <p>Institutional investor DD — ownership mapping, adverse media, source of funds. Complete DD report in minutes. <span style="color:var(--warm);font-size:12px">Q3 2026</span></p>
+      <ul class="agent-steps">
+        <li><span class="si">🌐</span>EU registry research (Bundesanzeiger, GLEIF)</li>
+        <li><span class="si">🏗️</span>UBO chain mapping + shell flag detection</li>
+        <li><span class="si">🔍</span>Adverse media + PEP scan</li>
+        <li><span class="si">📄</span>Full DD report generated automatically</li>
+      </ul>
+    </div>
+
+    <div class="agent-card">
+      <div class="icon">⚖️</div>
+      <h3>Audit Preparation Agent</h3>
+      <p>When BaFin auditors arrive, this agent assembles the complete evidence package. Weeks of prep → hours. <span style="color:var(--warm);font-size:12px">Q4 2026</span></p>
+      <ul class="agent-steps">
+        <li><span class="si">🔍</span>Retrieves full decision chain for audit scope</li>
+        <li><span class="si">✅</span>Verifies SHA-256 chain integrity</li>
+        <li><span class="si">📄</span>Compiles evidence bundle (filings + screening + classifications)</li>
+        <li><span class="si">💬</span>Drafts defensible answers to regulator questions</li>
+      </ul>
+    </div>
+
+    <div class="agent-card" style="border-color:rgba(197,224,238,0.2);background:rgba(197,224,238,0.03)">
+      <div class="icon">✨</div>
+      <h3>The Persistent Chat</h3>
+      <p>One conversation thread, always open. Every agent surfaces its work here. The CO never navigates a form — they just talk. This IS the product.</p>
+      <ul class="agent-steps">
+        <li><span class="si">🧠</span>Session memory — picks up where you left off</li>
+        <li><span class="si">🗣️</span>Natural language → typed regulatory actions</li>
+        <li><span class="si">✅</span>Explicit approval gates, always logged</li>
+        <li><span class="si">📊</span>Fund-specific answers (not generic LLM)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WHY NOW ══ -->
+<section>
+  <div class="sec-label">Why Now</div>
+  <div class="sec-title">Three forces converging in 2026.</div>
+
+  <div class="why-grid">
+    <div class="why-card">
+      <h3>⏳ AIFMD II deadline: April 16, 2026</h3>
+      <p>AIFMD II transposition is mandatory across all 27 EU member states by April 16. New requirements around sub-delegations, depositary oversight, fees disclosure, and liquidity management tools make the manual process significantly more complex and error-prone. Fund managers who aren't already updating their Annex IV workflows are running out of time.</p>
+    </div>
+    <div class="why-card">
+      <h3>🤖 Agent infrastructure is finally production-ready</h3>
+      <p>Browser automation (Playwright), structured output APIs, and reliable function-calling have reached the maturity needed for deterministic compliance workflows. 12 months ago this would have meant hallucination risk in regulatory outputs. Today it means fast, accurate, auditable execution — with the LLM handling conversation and routing, and typed APIs handling the actual data.</p>
+    </div>
+    <div class="why-card">
+      <h3>🌍 NCA digitisation is accelerating</h3>
+      <p>Norway mandated XML-only Annex IV submissions from June 2026. BaFin's MVP Portal continues modernising. CSSF eDesk launched a new programmatic interface. The portals are becoming automatable — and the compliance teams expected to use them are still manually filling Excel templates. The gap is widening.</p>
+    </div>
+    <div class="why-card">
+      <h3>📈 Scale demand is rising</h3>
+      <p>Fund administrators managing 15–50+ mandates need to file Annex IV for every fund, every cycle. That's 60–200 filings per year from a single firm. Linear headcount scaling doesn't work at this volume. The first platform that batches and automates this workflow owns the fund admin segment — which is a higher-value, higher-retention customer than individual KVGs.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MOAT ══ -->
+<section>
+  <div class="sec-label">Defensibility</div>
+  <div class="sec-title">Three moats that compound over time.</div>
+
+  <div class="moat-grid">
+    <div class="moat-card">
+      <div class="badge">Technical Moat</div>
+      <h3>The XSD validation engine</h3>
+      <p>Our open-source Annex IV filing library (open-annex-iv, live on npm) is validated against the official ESMA AIFMD_DATAIF_V1.2.xsd schema with 179 passing test cases. Building this took weeks of reading technical standards documentation. It is the most complete open implementation of ESMA Annex IV in existence. Every developer who uses it references Caelith.</p>
+    </div>
+    <div class="moat-card">
+      <div class="badge">Knowledge Moat</div>
+      <h3>Cross-NCA regulatory knowledge</h3>
+      <p>BaFin's MVP Portal has specific field interpretations that differ from ESMA's generic schema. CSSF's eDesk has different frequency thresholds. AMF applies leverage calculations differently. This is hard-won operational knowledge that takes months to acquire and requires constant maintenance as NCAs publish new guidance. It cannot be reproduced from public documentation alone.</p>
+    </div>
+    <div class="moat-card">
+      <div class="badge">Data Moat</div>
+      <h3>The tamper-evident audit chain</h3>
+      <p>Every decision Caelith makes — every filing, every screening result, every classification — is SHA-256 hashed and chained. As customers accumulate filing history, they become dependent on Caelith's audit trail for regulatory exams. This is the stickiest data asset in enterprise software: the compliance record that proves every past decision was correct.</p>
+    </div>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-left">
+    <strong>Caelith</strong> — Compliance OS for European Fund Managers<br>
+    Confidential · Seed Round 2026
+  </div>
+  <div class="footer-right">
+    <a href="https://www.caelith.tech">caelith.tech</a> ·
+    <a href="https://github.com/julianlaycock/open-annex-iv">open-annex-iv</a> ·
+    julian.laycock@caelith.tech
+  </div>
+</div>
+
+</body>
+</html>

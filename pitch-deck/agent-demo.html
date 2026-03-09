@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — BaFin Filing Agent Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080b0e;--surface:#0f1419;--surface2:#141b22;--border:rgba(255,255,255,0.06);
+  --accent:#C5E0EE;--warm:#E8A87C;--green:#34d399;--red:#f87171;--yellow:#fbbf24;--purple:#a78bfa;
+  --text:rgba(255,255,255,0.88);--muted:rgba(255,255,255,0.55);--dim:rgba(255,255,255,0.52);
+}
+html,body{width:100%;min-height:100vh;background:var(--bg);font-family:'Sora',sans-serif;color:var(--text)}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(197,224,238,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(197,224,238,.015) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+
+.wrap{max-width:1200px;margin:0 auto;padding:40px 32px;position:relative;z-index:1}
+
+/* ── HEADER ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:48px}
+.logo{font-size:18px;font-weight:800;letter-spacing:-0.03em}
+.logo .grad{background:linear-gradient(135deg,#C5E0EE,#E8A87C);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.live-badge{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);padding:5px 12px;border-radius:20px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse-live 1.5s ease-in-out infinite}
+@keyframes pulse-live{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(52,211,153,0.4)}50%{opacity:0.7;box-shadow:0 0 0 4px rgba(52,211,153,0)}}
+.env-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);border:1px solid rgba(255,255,255,0.06);padding:4px 10px;border-radius:4px}
+
+.page-title{margin-bottom:8px}
+.page-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(232,168,124,0.6);margin-bottom:12px}
+.page-headline{font-size:clamp(28px,3vw,42px);font-weight:800;letter-spacing:-0.03em;color:#fff;margin-bottom:8px}
+.page-headline .warm{color:var(--warm)}
+.page-sub{font-size:14px;color:var(--muted);max-width:600px;line-height:1.7;margin-bottom:36px}
+
+/* ── STEP INDICATOR ── */
+.steps{display:flex;align-items:center;gap:0;margin-bottom:40px}
+.step{display:flex;align-items:center;gap:10px}
+.step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.22);flex-shrink:0;transition:all .4s ease}
+.step-num.active{background:var(--warm);color:#0d0f12;border-color:var(--warm)}
+.step-num.done{background:var(--green);color:#0d0f12;border-color:var(--green)}
+.step-label{font-size:12px;color:rgba(255,255,255,0.28);transition:color .4s}
+.step-label.active{color:#fff}
+.step-label.done{color:var(--green)}
+.step-line{flex:1;height:1px;background:rgba(255,255,255,0.06);margin:0 16px;min-width:40px}
+.step-line.done{background:var(--green)}
+
+/* ── MAIN GRID ── */
+.main-grid{display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:start}
+
+/* ── LEFT: FUND PANEL ── */
+.fund-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.panel-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.panel-icon{width:32px;height:32px;border-radius:8px;background:rgba(197,224,238,0.08);border:1px solid rgba(197,224,238,0.12);display:flex;align-items:center;justify-content:center;font-size:14px}
+.panel-title{font-size:13px;font-weight:600;color:#fff}
+.panel-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);margin-top:1px}
+.panel-body{padding:16px 20px}
+
+.field{margin-bottom:14px}
+.field-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
+.field-value{font-size:13px;color:var(--text);background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:6px;padding:8px 12px;font-family:'JetBrains Mono',monospace}
+.field-value.highlight{border-color:rgba(197,224,238,0.15);color:var(--accent)}
+
+.fund-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.stat-mini{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.stat-mini-val{font-size:16px;font-weight:700;color:#fff;letter-spacing:-0.02em}
+.stat-mini-label{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--dim);margin-top:2px}
+
+.xml-preview{background:#070a0c;border:1px solid rgba(52,211,153,0.1);border-radius:8px;padding:12px;margin-top:14px;overflow:hidden;max-height:120px}
+.xml-line{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,0.3);line-height:1.8}
+.xml-tag{color:rgba(52,211,153,0.6)}
+.xml-attr{color:rgba(197,224,238,0.4)}
+.xml-val{color:rgba(232,168,124,0.5)}
+
+.xml-badge{display:flex;align-items:center;gap:6px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--green)}
+.xml-badge::before{content:'✓';font-size:10px}
+
+/* ── RIGHT: AGENT PANEL ── */
+.agent-panel{display:flex;flex-direction:column;gap:16px}
+
+/* Run button area */
+.run-area{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px}
+.run-title{font-size:14px;font-weight:600;color:#fff;margin-bottom:4px}
+.run-sub{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.run-config{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.config-item{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:10px 14px}
+.config-label{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.config-val{font-size:12px;color:var(--text);font-family:'JetBrains Mono',monospace}
+
+.btn-run{width:100%;background:linear-gradient(135deg,#C5E0EE,#E8A87C);border:none;border-radius:10px;padding:14px;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:#0d0f12;cursor:pointer;letter-spacing:-0.01em;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-run:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 24px rgba(197,224,238,0.15)}
+.btn-run:disabled{opacity:0.4;cursor:default;transform:none}
+
+/* Terminal */
+.terminal-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;flex:1}
+.term-header{background:rgba(255,255,255,0.02);padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.t-dot{width:10px;height:10px;border-radius:50%}
+.term-title{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);margin-left:auto}
+.term-body{padding:16px 20px;min-height:280px;font-family:'JetBrains Mono',monospace;font-size:11px}
+
+.log-row{display:grid;grid-template-columns:56px 18px 1fr auto;gap:10px;align-items:baseline;padding:3px 0;opacity:0;transform:translateY(4px);transition:all .3s ease}
+.log-row.show{opacity:1;transform:translateY(0)}
+.lr-ts{color:rgba(255,255,255,0.4);font-size:10px}
+.lr-msg{color:var(--muted);line-height:1.5}
+.lr-msg.ok{color:var(--green)}
+.lr-msg.agent{color:var(--warm)}
+.lr-msg.bright{color:#fff;font-weight:500}
+.lr-badge{font-size:9px;padding:1px 7px;border-radius:4px;white-space:nowrap}
+.b-ok{background:rgba(52,211,153,0.1);color:var(--green);border:1px solid rgba(52,211,153,0.2)}
+.b-agent{background:rgba(232,168,124,0.1);color:var(--warm);border:1px solid rgba(232,168,124,0.2)}
+.b-info{background:rgba(197,224,238,0.06);color:rgba(197,224,238,0.5);border:1px solid rgba(197,224,238,0.1)}
+.b-warn{background:rgba(251,191,36,0.08);color:var(--yellow);border:1px solid rgba(251,191,36,0.15)}
+
+.cursor-blink{display:inline-block;width:7px;height:12px;background:var(--accent);opacity:0;animation:cursor-b .8s step-end infinite;vertical-align:middle;margin-left:2px}
+.cursor-blink.visible{opacity:0.7}
+@keyframes cursor-b{0%,100%{opacity:0.7}50%{opacity:0}}
+
+/* ── CONFIRMATION CARD ── */
+.confirm-card{background:rgba(52,211,153,0.04);border:1px solid rgba(52,211,153,0.2);border-radius:16px;padding:28px 32px;display:none;animation:card-pop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes card-pop{from{transform:scale(0.95) translateY(8px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.confirm-card.show{display:block}
+.confirm-icon{font-size:32px;margin-bottom:12px}
+.confirm-title{font-size:20px;font-weight:700;color:var(--green);margin-bottom:4px}
+.confirm-sub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.confirm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.confirm-item{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:12px 14px}
+.ci-label{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.ci-val{font-size:12px;color:#fff;font-family:'JetBrains Mono',monospace}
+.ci-val.green{color:var(--green)}
+.ci-val.warm{color:var(--warm)}
+.confirm-ref{background:#070a0c;border:1px solid rgba(52,211,153,0.15);border-radius:8px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.ref-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);margin-bottom:4px}
+.ref-val{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--green);font-weight:500}
+.ref-copy{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);cursor:pointer;padding:4px 8px;border:1px solid var(--border);border-radius:4px}
+.ref-copy:hover{color:var(--text)}
+.hash-display{margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(197,224,238,0.35);word-break:break-all;line-height:1.6;padding:10px 12px;background:rgba(197,224,238,0.03);border-radius:6px;border:1px solid rgba(197,224,238,0.06)}
+
+/* ── BOTTOM ROW ── */
+.bottom-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:20px}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:14px;opacity:0;transform:translateY(8px);transition:all .5s ease}
+.metric-card.show{opacity:1;transform:translateY(0)}
+.mc-icon{font-size:20px}
+.mc-val{font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.03em}
+.mc-label{font-size:11px;color:var(--muted)}
+
+/* ── TIMELINE ── */
+.timeline-section{margin-top:40px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px 28px}
+.timeline-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.tl-title{font-size:14px;font-weight:600;color:#fff}
+.tl-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim)}
+.timeline-row{display:flex;gap:0;align-items:center;margin-bottom:12px}
+.tl-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);width:60px;flex-shrink:0}
+.tl-bar-wrap{flex:1;position:relative;height:6px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden}
+.tl-bar{height:100%;border-radius:3px;width:0%;transition:width 1s ease}
+.tl-label{font-size:12px;color:var(--muted);margin-left:12px;width:200px}
+.tl-badge{margin-left:auto;flex-shrink:0}
+
+/* ── VISION TEASER ── */
+.vision-teaser{background:linear-gradient(135deg,rgba(197,224,238,0.03),rgba(232,168,124,0.03));border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:28px 32px;margin-top:20px;text-align:center}
+.vt-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-bottom:12px}
+.vt-headline{font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.4}
+.vt-sub{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* ── ANIMATIONS ── */
+@keyframes fade-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fade-in .5s ease both}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">C<span class="grad">aelith</span></div>
+    <div class="topbar-right">
+      <div class="live-badge"><div class="live-dot"></div>Agent System · Online</div>
+      <div class="env-tag">DEMO · EU-WEST-1</div>
+    </div>
+  </div>
+
+  <!-- PAGE TITLE -->
+  <div class="page-title">
+    <div class="page-eyebrow">🤖 Autonomous Agent · BaFin Filing</div>
+    <h1 class="page-headline">Watch the agent file to BaFin.<br><span class="warm">Zero human intervention.</span></h1>
+    <p class="page-sub">The Caelith BaFin Filing Agent ingests your ESMA-validated Annex IV XML, authenticates with BaFin's MVP Portal, and submits your filing autonomously — overnight, while your team sleeps.</p>
+  </div>
+
+  <!-- STEP INDICATOR -->
+  <div class="steps">
+    <div class="step">
+      <div class="step-num done" id="sn1">1</div>
+      <div class="step-label done" id="sl1">Fund Data Ready</div>
+    </div>
+    <div class="step-line done" id="line1"></div>
+    <div class="step">
+      <div class="step-num done" id="sn2">2</div>
+      <div class="step-label done" id="sl2">XML Validated</div>
+    </div>
+    <div class="step-line" id="line2"></div>
+    <div class="step">
+      <div class="step-num active" id="sn3">3</div>
+      <div class="step-label active" id="sl3">Agent Filing</div>
+    </div>
+    <div class="step-line" id="line3"></div>
+    <div class="step">
+      <div class="step-num" id="sn4">4</div>
+      <div class="step-label" id="sl4">Confirmed</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- LEFT: FUND DATA -->
+    <div class="fund-panel">
+      <div class="panel-header">
+        <div class="panel-icon">📋</div>
+        <div>
+          <div class="panel-title">Fund Filing Payload</div>
+          <div class="panel-sub">Q1 2026 · Annex IV · BaFin Germany</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="field">
+          <div class="field-label">Fund Manager (AIFM)</div>
+          <div class="field-value highlight">Caelith Demo KVG GmbH</div>
+        </div>
+        <div class="field">
+          <div class="field-label">LEI Code</div>
+          <div class="field-value">5493 0001 DEMO 00847</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Reporting Period</div>
+          <div class="field-value">Q1 2026 (Jan 1 – Mar 31)</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Target Regulator</div>
+          <div class="field-value highlight">BaFin — MVP Portal (Germany)</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Submission Target</div>
+          <div class="field-value" style="color:var(--green)">Ahead of deadline · Q1 2026</div>
+        </div>
+
+        <div class="fund-stats">
+          <div class="stat-mini">
+            <div class="stat-mini-val">3</div>
+            <div class="stat-mini-label">Funds</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-val">247</div>
+            <div class="stat-mini-label">Investors</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-val">€248M</div>
+            <div class="stat-mini-label">Total AUM</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-val" style="color:var(--green)">0</div>
+            <div class="stat-mini-label">Sanctions hits</div>
+          </div>
+        </div>
+
+        <div class="xml-preview">
+          <div class="xml-line"><span class="xml-tag">&lt;AnnexIVReport</span> <span class="xml-attr">version</span>=<span class="xml-val">"2.0"</span> <span class="xml-attr">period</span>=<span class="xml-val">"Q1-2026"</span><span class="xml-tag">&gt;</span></div>
+          <div class="xml-line">&nbsp;&nbsp;<span class="xml-tag">&lt;AIFMInfo&gt;</span></div>
+          <div class="xml-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml-tag">&lt;LEI&gt;</span><span class="xml-val">549300DEMO00847</span><span class="xml-tag">&lt;/LEI&gt;</span></div>
+          <div class="xml-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml-tag">&lt;Name&gt;</span><span class="xml-val">Caelith Demo KVG</span><span class="xml-tag">&lt;/Name&gt;</span></div>
+          <div class="xml-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="xml-tag">&lt;NCA&gt;</span><span class="xml-val">BaFin</span><span class="xml-tag">&lt;/NCA&gt;</span></div>
+          <div class="xml-line">&nbsp;&nbsp;<span class="xml-tag">&lt;/AIFMInfo&gt;</span></div>
+          <div class="xml-line">&nbsp;&nbsp;<span class="xml-tag">&lt;AIFs count</span>=<span class="xml-val">"3"</span><span class="xml-tag">&gt;</span>...</div>
+        </div>
+        <div class="xml-badge">ESMA XSD Rev 6 v1.2 — Schema validated</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: AGENT -->
+    <div class="agent-panel">
+
+      <!-- Run config -->
+      <div class="run-area">
+        <div class="run-title">🤖 BaFin Filing Agent</div>
+        <div class="run-sub">Playwright-based browser agent. Authenticates with BaFin MVP Portal, uploads XSD-validated XML, parses confirmation receipt, seals audit trail. Runs overnight autonomously on Railway worker.</div>
+        <div class="run-config">
+          <div class="config-item">
+            <div class="config-label">Schedule</div>
+            <div class="config-val">Overnight · 00:01 AM</div>
+          </div>
+          <div class="config-item">
+            <div class="config-label">Portal</div>
+            <div class="config-val">BaFin MVP (Prod)</div>
+          </div>
+          <div class="config-item">
+            <div class="config-label">Retry policy</div>
+            <div class="config-val">3× · 5 min backoff</div>
+          </div>
+          <div class="config-item">
+            <div class="config-label">Audit trail</div>
+            <div class="config-val">SHA-256 · Auto-sealed</div>
+          </div>
+        </div>
+        <button class="btn-run" id="run-btn" onclick="runAgent()">
+          <span id="btn-text">▶ Run BaFin Filing Agent</span>
+        </button>
+      </div>
+
+      <!-- Terminal -->
+      <div class="terminal-panel">
+        <div class="term-header">
+          <div class="t-dot" style="background:#ff5f57"></div>
+          <div class="t-dot" style="background:#febc2e"></div>
+          <div class="t-dot" style="background:#28c840"></div>
+          <div class="term-title">caelith-bafin-agent · activity log</div>
+        </div>
+        <div class="term-body" id="terminal">
+          <div class="log-row show">
+            <span class="lr-ts" style="color:rgba(255,255,255,0.3)">——:——</span>
+            <span>💤</span>
+            <span class="lr-msg" style="color:rgba(255,255,255,0.15)">Agent standing by — click Run to start filing</span>
+            <span></span>
+          </div>
+          <span class="cursor-blink visible"></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONFIRMATION CARD -->
+  <div class="confirm-card" id="confirm-card">
+    <div class="confirm-icon">✅</div>
+    <div class="confirm-title">Annex IV Filed — BaFin Confirmed</div>
+    <div class="confirm-sub">The BaFin Filing Agent completed the full submission autonomously. Confirmation receipt received, audit trail sealed, fund manager notified.</div>
+    <div class="confirm-grid">
+      <div class="confirm-item">
+        <div class="ci-label">Filing Reference</div>
+        <div class="ci-val green">BaFin-2026-Q1-00847</div>
+      </div>
+      <div class="confirm-item">
+        <div class="ci-label">Submitted At</div>
+        <div class="ci-val">02:14:09 · March 31, 2026</div>
+      </div>
+      <div class="confirm-item">
+        <div class="ci-label">Errors</div>
+        <div class="ci-val green">0 of 0</div>
+      </div>
+      <div class="confirm-item">
+        <div class="ci-label">Human Interactions</div>
+        <div class="ci-val green" style="font-size:18px;font-weight:800">0</div>
+      </div>
+      <div class="confirm-item">
+        <div class="ci-label">Agent Runtime</div>
+        <div class="ci-val warm">6.1 seconds (demo)</div>
+      </div>
+      <div class="confirm-item">
+        <div class="ci-label">Audit Trail</div>
+        <div class="ci-val green">Sealed · DORA-ready</div>
+      </div>
+    </div>
+    <div class="confirm-ref">
+      <div>
+        <div class="ref-label">BaFin Confirmation Reference</div>
+        <div class="ref-val">BaFin-2026-Q1-00847-KVG-DEMO</div>
+      </div>
+      <div class="ref-copy" onclick="copyRef()">Copy</div>
+    </div>
+    <div class="hash-display" id="hash-display"></div>
+  </div>
+
+  <!-- METRICS ROW -->
+  <div class="bottom-row">
+    <div class="metric-card" id="mc1">
+      <div class="mc-icon">⏱️</div>
+      <div>
+        <div class="mc-val">6.1s</div>
+        <div class="mc-label">Agent runtime · full filing</div>
+      </div>
+    </div>
+    <div class="metric-card" id="mc2">
+      <div class="mc-icon">🛡️</div>
+      <div>
+        <div class="mc-val" style="color:var(--green)">0</div>
+        <div class="mc-label">Human interventions required</div>
+      </div>
+    </div>
+    <div class="metric-card" id="mc3">
+      <div class="mc-icon">💰</div>
+      <div>
+        <div class="mc-val" style="color:var(--warm)">€0</div>
+        <div class="mc-label">vs €8,500 consultant fee</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AGENT ROADMAP TIMELINE -->
+  <div class="timeline-section">
+    <div class="timeline-header">
+      <div>
+        <div class="tl-title">Agent Development Roadmap</div>
+        <div class="tl-sub">Three killer agents · 8 weeks to full EU coverage</div>
+      </div>
+    </div>
+    <div class="timeline-row">
+      <div class="tl-time">Weeks 1–3</div>
+      <div class="tl-bar-wrap"><div class="tl-bar" id="bar1" style="background:var(--warm)"></div></div>
+      <div class="tl-label">🤖 BaFin MVP Portal Filing Agent</div>
+      <div class="tl-badge"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:4px;background:rgba(232,168,124,0.1);color:var(--warm);border:1px solid rgba(232,168,124,0.2)">In Development</span></div>
+    </div>
+    <div class="timeline-row">
+      <div class="tl-time">Weeks 4–5</div>
+      <div class="tl-bar-wrap"><div class="tl-bar" id="bar2" style="background:var(--accent)"></div></div>
+      <div class="tl-label">🤖 CSSF eDesk Agent · Luxembourg</div>
+      <div class="tl-badge"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:4px;background:rgba(197,224,238,0.06);color:rgba(197,224,238,0.5);border:1px solid rgba(197,224,238,0.1)">70% Code Reuse</span></div>
+    </div>
+    <div class="timeline-row">
+      <div class="tl-time">Weeks 6–9</div>
+      <div class="tl-bar-wrap"><div class="tl-bar" id="bar3" style="background:var(--purple)"></div></div>
+      <div class="tl-label">🔍 Investor DD Agent · GLEIF + Sanctions</div>
+      <div class="tl-badge"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:4px;background:rgba(167,139,250,0.08);color:var(--purple);border:1px solid rgba(167,139,250,0.2)">Q2 2026</span></div>
+    </div>
+    <div style="margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.42);line-height:1.8">
+      Infrastructure already live: Rule engine · Sanctions screening · XSD validation · Audit trail · Compliance Copilot<br>
+      Agent layer = browser automation (Playwright) on top of existing validated data pipeline.
+    </div>
+  </div>
+
+  <!-- VISION TEASER -->
+  <div class="vision-teaser">
+    <div class="vt-label">The vision</div>
+    <div class="vt-headline">Compliance becomes invisible infrastructure.</div>
+    <div class="vt-sub">The same way AWS runs your servers while you sleep — Caelith runs your regulatory compliance. Fund managers stop managing process and start managing portfolios. The agent layer is the moat that no horizontal player can replicate.</div>
+  </div>
+
+  <div style="text-align:center;padding:32px 0 8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.1)">
+    Caelith · BaFin Agent Demo · Simulation — Not a live BaFin submission · caelith.tech
+  </div>
+
+</div>
+
+<script>
+const logs=[
+  {delay:200,  ts:'00:00',icon:'🚀',msg:'BaFin Filing Agent initialised',badge:'info',cls:''},
+  {delay:600,  ts:'00:00',icon:'📋',msg:'Loading Annex IV XML payload — 247 investors, 3 funds',badge:'info',cls:''},
+  {delay:1000, ts:'00:00',icon:'✓',msg:'ESMA XSD Rev 6 v1.2 — schema validation passed. 0 errors.',badge:'ok',cls:'ok'},
+  {delay:1600, ts:'00:01',icon:'🛡️',msg:'Investor sanctions check — 247 records × 6,863 entities',badge:'info',cls:''},
+  {delay:2200, ts:'00:01',icon:'✓',msg:'Sanctions screening complete. 0 matches. Pool is clean.',badge:'ok',cls:'ok'},
+  {delay:2800, ts:'00:01',icon:'🌐',msg:'Opening BaFin MVP Portal — mvp-portal.bafin.de',badge:'agent',cls:'agent'},
+  {delay:3200, ts:'00:02',icon:'🔐',msg:'Authenticating with BaFin credentials...',badge:'agent',cls:'agent bright'},
+  {delay:3800, ts:'00:02',icon:'✓',msg:'Portal session established. Session token acquired.',badge:'ok',cls:'ok'},
+  {delay:4200, ts:'00:03',icon:'📂',msg:'Navigating to Annex IV submission form — Q1 2026',badge:'agent',cls:'agent'},
+  {delay:4700, ts:'00:04',icon:'📤',msg:'Uploading XSD-validated Annex IV XML (48.2 KB)...',badge:'agent',cls:'agent bright'},
+  {delay:5200, ts:'00:05',icon:'⏳',msg:'BaFin portal processing submission...',badge:'warn',cls:''},
+  {delay:5700, ts:'00:06',icon:'🏛️',msg:'BaFin confirmed receipt — filing accepted',badge:'ok',cls:'bright'},
+  {delay:6000, ts:'00:06',icon:'📌',msg:'Reference stored: BaFin-2026-Q1-00847-KVG-DEMO',badge:'ok',cls:'ok'},
+  {delay:6200, ts:'00:06',icon:'🔗',msg:'Audit trail sealed — SHA-256 hash chain recorded',badge:'ok',cls:'ok'},
+  {delay:6500, ts:'00:06',icon:'📱',msg:'Push notification sent to fund manager — Sophie',badge:'info',cls:''},
+  {delay:6700, ts:'00:06',icon:'✅',msg:'Agent run complete. Total runtime: 6.1s. Human interventions: 0.',badge:'ok',cls:'ok bright'},
+];
+
+const badgeMap={
+  ok:'<span class="lr-badge b-ok">✓ OK</span>',
+  agent:'<span class="lr-badge b-agent">🤖 Agent</span>',
+  info:'<span class="lr-badge b-info">Info</span>',
+  warn:'<span class="lr-badge b-warn">Processing</span>',
+};
+
+let running=false;
+
+function runAgent(){
+  if(running) return;
+  running=true;
+  const btn=document.getElementById('run-btn');
+  const btnText=document.getElementById('btn-text');
+  btn.disabled=true;
+  btnText.textContent='⏺ Agent running...';
+
+  // Update step indicator
+  document.getElementById('sn3').classList.add('active');
+  document.getElementById('sl3').classList.add('active');
+
+  // Clear terminal
+  const term=document.getElementById('terminal');
+  term.innerHTML='<span class="cursor-blink visible"></span>';
+
+  let cursor=term.querySelector('.cursor-blink');
+
+  logs.forEach((l,i)=>{
+    setTimeout(()=>{
+      // Remove cursor, add log, re-add cursor
+      if(cursor) cursor.remove();
+
+      const row=document.createElement('div');
+      row.className='log-row';
+      row.innerHTML=`<span class="lr-ts">${l.ts}</span><span>${l.icon}</span><span class="lr-msg ${l.cls}">${l.msg}</span>${badgeMap[l.badge]||''}`;
+      term.appendChild(row);
+      // Force reflow then show
+      requestAnimationFrame(()=>requestAnimationFrame(()=>row.classList.add('show')));
+
+      cursor=document.createElement('span');
+      cursor.className='cursor-blink visible';
+      term.appendChild(cursor);
+
+      term.scrollTop=term.scrollHeight;
+
+      // Last log
+      if(i===logs.length-1){
+        setTimeout(()=>showConfirmation(),400);
+      }
+    },l.delay);
+  });
+}
+
+function showConfirmation(){
+  // Step 4 done
+  ['sn3','sl3'].forEach(id=>{
+    document.getElementById(id).classList.remove('active');
+    document.getElementById(id).classList.add('done');
+  });
+  document.getElementById('line3').classList.add('done');
+  document.getElementById('sn4').classList.add('done');
+  document.getElementById('sl4').classList.add('done');
+
+  // Show confirm card
+  const card=document.getElementById('confirm-card');
+  card.classList.add('show');
+
+  // Hash display
+  const hash=document.getElementById('hash-display');
+  hash.textContent='SHA-256: a3f9c2e1b8d047a6f1c4e9b2d3a7f0c8e1b4d9a2c5f8e3b6d1a4c7f0b3e6d9a2\nChain: 0000000000 → a3f9c2e1 → sealed at 02:14:09 UTC · Block #2847162';
+
+  // Metric cards
+  setTimeout(()=>document.getElementById('mc1').classList.add('show'),100);
+  setTimeout(()=>document.getElementById('mc2').classList.add('show'),250);
+  setTimeout(()=>document.getElementById('mc3').classList.add('show'),400);
+
+  // Timeline bars
+  setTimeout(()=>{document.getElementById('bar1').style.width='100%'},200);
+  setTimeout(()=>{document.getElementById('bar2').style.width='60%'},600);
+  setTimeout(()=>{document.getElementById('bar3').style.width='20%'},1000);
+
+  // Scroll to confirm
+  setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'start'}),300);
+
+  // Re-enable button as "Run Again"
+  const btn=document.getElementById('run-btn');
+  const btnText=document.getElementById('btn-text');
+  setTimeout(()=>{
+    btn.disabled=false;
+    btnText.textContent='↺ Run Again';
+    running=false;
+  },1000);
+}
+
+function copyRef(){
+  navigator.clipboard.writeText('BaFin-2026-Q1-00847-KVG-DEMO').then(()=>{
+    event.target.textContent='Copied!';
+    setTimeout(()=>event.target.textContent='Copy',1500);
+  });
+}
+</script>
+</body>
+</html>

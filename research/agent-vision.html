@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Agent — Conversational Compliance Filing</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --bg-card: #161b22;
+    --bg-card2: #1c2128;
+    --border: rgba(197,224,238,0.1);
+    --accent: #C5E0EE;
+    --warm: #E8A87C;
+    --text: #F8F9FA;
+    --text-2: rgba(248,249,250,0.65);
+    --text-3: rgba(248,249,250,0.35);
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --blue: #58a6ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 72px 60px 56px;
+    border-bottom: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -150px; left: -150px;
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(197,224,238,0.05) 0%, transparent 70%);
+  }
+  .hero::after {
+    content: ''; position: absolute; bottom: -100px; right: 5%;
+    width: 400px; height: 400px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,168,124,0.05) 0%, transparent 70%);
+  }
+  .hero-inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 5px 14px; border-radius: 999px; margin-bottom: 24px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+    background: rgba(232,168,124,0.1); border: 1px solid rgba(232,168,124,0.25); color: var(--warm);
+  }
+  .hero h1 { font-family: 'Sora', sans-serif; font-size: clamp(28px,4vw,46px); font-weight: 800; line-height: 1.18; margin-bottom: 18px; }
+  .hero h1 em { color: var(--accent); font-style: normal; }
+  .hero-sub { font-size: 16px; color: var(--text-2); max-width: 620px; line-height: 1.75; margin-bottom: 36px; }
+  .hero-compare {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 680px;
+  }
+  .compare-box {
+    border-radius: 12px; padding: 20px 22px; border: 1px solid var(--border);
+    background: var(--bg-card);
+  }
+  .compare-box.old { border-color: rgba(248,81,73,0.2); }
+  .compare-box.new { border-color: rgba(63,185,80,0.2); background: rgba(63,185,80,0.04); }
+  .compare-box h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 12px; }
+  .compare-box.old h4 { color: var(--red); }
+  .compare-box.new h4 { color: var(--green); }
+  .compare-box ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .compare-box li { font-size: 12.5px; color: var(--text-2); display: flex; gap: 8px; }
+  .compare-box li::before { font-size: 12px; flex-shrink: 0; }
+  .compare-box.old li::before { content: '✗'; color: var(--red); }
+  .compare-box.new li::before { content: '✓'; color: var(--green); }
+
+  /* ── SECTION TITLE ── */
+  .section { max-width: 1100px; margin: 0 auto; padding: 64px 60px; }
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text-3); margin-bottom: 10px;
+  }
+  .section-title { font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 10px; }
+  .section-sub { color: var(--text-2); font-size: 14px; max-width: 600px; margin-bottom: 40px; }
+
+  /* ── TWO APPROVAL GATES ── */
+  .gates { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 0; align-items: start; margin-bottom: 48px; }
+  .gate-arrow {
+    display: flex; align-items: flex-start; padding-top: 28px; color: var(--text-3);
+    font-size: 20px;
+  }
+  .gate-box {
+    border: 1px solid var(--border); border-radius: 14px;
+    background: var(--bg-card); padding: 22px 24px;
+  }
+  .gate-box.approval { border-color: rgba(232,168,124,0.3); background: rgba(232,168,124,0.06); }
+  .gate-icon { font-size: 22px; margin-bottom: 10px; }
+  .gate-box h4 { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .gate-box p { font-size: 12.5px; color: var(--text-2); line-height: 1.6; }
+  .gate-tag {
+    display: inline-block; margin-top: 10px;
+    font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px;
+  }
+  .gate-tag.agent { background: rgba(197,224,238,0.1); color: var(--accent); }
+  .gate-tag.human { background: rgba(232,168,124,0.15); color: var(--warm); }
+
+  /* ── CHAT DEMO ── */
+  .chat-layout {
+    display: grid; grid-template-columns: 1fr 340px; gap: 24px;
+    align-items: start;
+  }
+  .chat-panel {
+    border: 1px solid var(--border); border-radius: 16px;
+    background: var(--bg-card); overflow: hidden;
+  }
+  .chat-header {
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(197,224,238,0.02);
+  }
+  .chat-header-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: rgba(197,224,238,0.1);
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .chat-header h3 { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; }
+  .chat-header p { font-size: 11px; color: var(--text-3); }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-left: auto; flex-shrink: 0; }
+
+  .chat-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+  /* messages */
+  .msg { display: flex; gap: 10px; }
+  .msg.co { flex-direction: row-reverse; }
+  .msg-avatar {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+    background: rgba(197,224,238,0.08); border: 1px solid rgba(197,224,238,0.12);
+  }
+  .msg.co .msg-avatar { background: rgba(232,168,124,0.1); border-color: rgba(232,168,124,0.2); }
+  .msg-bubble {
+    max-width: 82%; border-radius: 14px; padding: 12px 16px;
+    font-size: 13px; line-height: 1.65;
+    border: 1px solid rgba(197,224,238,0.08);
+    background: rgba(197,224,238,0.04);
+    color: var(--text-2);
+  }
+  .msg.co .msg-bubble {
+    background: rgba(232,168,124,0.08);
+    border-color: rgba(232,168,124,0.15);
+    color: var(--text);
+  }
+  .msg-bubble strong { color: var(--text); }
+  .msg-bubble .ok-line {
+    display: inline-block; margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 700; color: var(--green);
+    background: rgba(63,185,80,0.1); border: 1px solid rgba(63,185,80,0.25);
+    padding: 6px 16px; border-radius: 8px; width: 100%; text-align: center;
+  }
+
+  .msg-check { color: var(--green); }
+  .msg-warn  { color: var(--yellow); }
+  .msg-err   { color: var(--red); }
+  .msg-dim   { color: var(--text-3); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .msg-hash  { color: var(--blue); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+  /* status card inside chat */
+  .status-card {
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(197,224,238,0.1);
+    border-radius: 10px; padding: 12px 14px; margin-top: 10px;
+    font-size: 12px;
+  }
+  .status-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid rgba(197,224,238,0.05); }
+  .status-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .status-row .lbl { color: var(--text-3); }
+  .status-row .val { font-weight: 500; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .status-row .val.ok { color: var(--green); }
+  .status-row .val.warn { color: var(--yellow); }
+
+  /* action buttons inside chat */
+  .msg-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .msg-btn {
+    font-size: 11px; font-weight: 600; padding: 5px 12px;
+    border-radius: 6px; border: 1px solid;
+    cursor: default; display: inline-flex; align-items: center; gap: 5px;
+  }
+  .msg-btn.primary { background: rgba(197,224,238,0.1); border-color: rgba(197,224,238,0.25); color: var(--accent); }
+  .msg-btn.success { background: rgba(63,185,80,0.1); border-color: rgba(63,185,80,0.3); color: var(--green); }
+  .msg-btn.ghost { background: transparent; border-color: var(--border); color: var(--text-3); }
+
+  /* divider */
+  .chat-divider {
+    text-align: center; font-size: 10px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--text-3); padding: 4px 0;
+    position: relative;
+  }
+  .chat-divider::before, .chat-divider::after {
+    content: ''; position: absolute; top: 50%; width: 30%; height: 1px;
+    background: var(--border);
+  }
+  .chat-divider::before { left: 0; }
+  .chat-divider::after  { right: 0; }
+
+  /* chat input */
+  .chat-input-bar {
+    padding: 12px 16px; border-top: 1px solid var(--border);
+    display: flex; gap: 10px; align-items: center;
+    background: rgba(197,224,238,0.02);
+  }
+  .chat-input-fake {
+    flex: 1; padding: 9px 14px; border-radius: 10px; font-size: 13px;
+    background: rgba(197,224,238,0.05); border: 1px solid rgba(197,224,238,0.1);
+    color: var(--text-3); font-family: 'Inter', sans-serif;
+  }
+  .chat-send {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: rgba(197,224,238,0.12); border: 1px solid rgba(197,224,238,0.2);
+    color: var(--accent); display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+
+  /* ── ANNOTATION PANEL ── */
+  .annotation-panel { display: flex; flex-direction: column; gap: 14px; }
+  .anno {
+    border: 1px solid var(--border); border-radius: 12px;
+    background: var(--bg-card); overflow: hidden;
+  }
+  .anno-header {
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(197,224,238,0.02);
+  }
+  .anno-step {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    background: rgba(197,224,238,0.1); color: var(--accent);
+    border: 1px solid rgba(197,224,238,0.2);
+  }
+  .anno-title { font-size: 12px; font-weight: 600; color: var(--text); }
+  .anno-tag {
+    margin-left: auto; font-size: 9px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; padding: 2px 7px; border-radius: 4px;
+  }
+  .anno-tag.agent { background: rgba(197,224,238,0.1); color: var(--accent); }
+  .anno-tag.co    { background: rgba(232,168,124,0.1); color: var(--warm); }
+  .anno-tag.auto  { background: rgba(63,185,80,0.1);   color: var(--green); }
+  .anno-body { padding: 12px 14px; }
+  .anno-body p { font-size: 12px; color: var(--text-2); line-height: 1.65; margin-bottom: 8px; }
+  .anno-body p:last-child { margin-bottom: 0; }
+  .anno-api {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    background: rgba(0,0,0,0.4); border: 1px solid rgba(197,224,238,0.06);
+    border-radius: 6px; padding: 8px 10px; color: var(--text-3);
+    margin-top: 8px; line-height: 1.6;
+  }
+  .anno-api .m { color: var(--green); font-weight: 700; }
+  .anno-api .u { color: var(--blue); }
+  .anno-api .v { color: var(--accent); }
+
+  /* ── PRINCIPLE GRID ── */
+  .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .principle-card {
+    border: 1px solid var(--border); border-radius: 14px;
+    background: var(--bg-card); padding: 24px;
+  }
+  .principle-card h4 { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; margin: 12px 0 8px; }
+  .principle-card p { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+  .principle-icon { font-size: 24px; }
+
+  /* ── TECH STACK ── */
+  .tech-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tech-table th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); border-bottom: 1px solid var(--border); }
+  .tech-table td { padding: 11px 12px; border-bottom: 1px solid rgba(197,224,238,0.05); color: var(--text-2); }
+  .tech-table tr:last-child td { border-bottom: none; }
+  .tech-table td:first-child { color: var(--text); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .tech-table .badge { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .tech-table .live { background: rgba(63,185,80,0.12); color: var(--green); }
+  .tech-table .soon { background: rgba(232,168,124,0.12); color: var(--warm); }
+
+  /* ── FOOTER ── */
+  .footer-wrap {
+    border-top: 1px solid var(--border); padding: 40px 60px;
+    max-width: 1100px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--text-3);
+  }
+  .footer-wrap a { color: var(--accent); text-decoration: none; }
+
+  /* divider between sections */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+  /* ── THESIS BOX ── */
+  .thesis-box {
+    background: rgba(197,224,238,0.04);
+    border: 1px solid rgba(197,224,238,0.2);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+  .thesis-box p { font-size: 16px; color: var(--text); line-height: 1.85; }
+  .thesis-box strong { color: var(--accent); }
+
+  /* ── PIPELINE ── */
+  .pipeline { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+  .pipe-row { display: flex; gap: 16px; align-items: stretch; }
+  .pipe-dot {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+    margin-top: 2px;
+  }
+  .pipe-dot.l1 { background: rgba(248,81,73,0.1); color: var(--red); border: 1px solid rgba(248,81,73,0.25); }
+  .pipe-dot.l2 { background: rgba(232,168,124,0.1); color: var(--warm); border: 1px solid rgba(232,168,124,0.25); }
+  .pipe-dot.l3 { background: rgba(197,224,238,0.1); color: var(--accent); border: 1px solid rgba(197,224,238,0.25); }
+  .pipe-dot.l4 { background: rgba(63,185,80,0.1); color: var(--green); border: 1px solid rgba(63,185,80,0.25); }
+  .pipe-card {
+    flex: 1; background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 22px;
+  }
+  .pipe-card h4 { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .pipe-card p { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+  .pipe-card .tag-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .mini-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 4px;
+  }
+  .mini-tag.green { background: rgba(63,185,80,0.1); color: var(--green); border: 1px solid rgba(63,185,80,0.2); }
+  .mini-tag.blue  { background: rgba(197,224,238,0.1); color: var(--accent); border: 1px solid rgba(197,224,238,0.2); }
+  .mini-tag.warm  { background: rgba(232,168,124,0.1); color: var(--warm); border: 1px solid rgba(232,168,124,0.2); }
+
+  /* ── AGENTS GRID ── */
+  .agents-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .agent-card-v2 { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
+  .agent-card-v2 .icon { font-size: 26px; margin-bottom: 10px; }
+  .agent-card-v2 h3 { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .agent-card-v2 p { font-size: 13px; color: var(--text-2); line-height: 1.65; margin-bottom: 12px; }
+  .agent-steps-v2 { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .agent-steps-v2 li {
+    font-size: 12px; color: var(--text-2); display: flex; gap: 8px;
+    padding: 6px 10px; background: var(--bg-card2); border-radius: 7px;
+    border: 1px solid rgba(197,224,238,0.06); line-height: 1.5;
+  }
+  .agent-steps-v2 li .si { font-size: 13px; flex-shrink: 0; }
+
+  /* ── MOAT GRID ── */
+  .moat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .moat-card {
+    background: rgba(197,224,238,0.03); border: 1px solid rgba(197,224,238,0.15);
+    border-radius: 14px; padding: 24px;
+  }
+  .moat-card .badge {
+    display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+    text-transform: uppercase; color: var(--accent);
+    background: rgba(197,224,238,0.08); border: 1px solid rgba(197,224,238,0.2);
+    padding: 3px 10px; border-radius: 20px; margin-bottom: 12px;
+  }
+  .moat-card h3 { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .moat-card p { font-size: 13px; color: var(--text-2); line-height: 1.7; }
+  .sticky-note {
+    background: rgba(232,168,124,0.05); border: 1px solid rgba(232,168,124,0.2);
+    border-left: 4px solid var(--warm); border-radius: 12px;
+    padding: 20px 24px; margin-top: 24px;
+  }
+  .sticky-note p { font-size: 14px; color: var(--text-2); line-height: 1.75; }
+  .sticky-note strong { color: var(--warm); }
+
+  @media (max-width: 900px) {
+    .hero { padding: 48px 24px 40px; }
+    .section { padding: 48px 24px; }
+    .chat-layout { grid-template-columns: 1fr; }
+    .hero-compare { grid-template-columns: 1fr; }
+    .gates { grid-template-columns: 1fr; }
+    .gate-arrow { display: none; }
+    .principles { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">🤖 Product Vision — Agent-Native Compliance</div>
+    <h1>Not a dashboard.<br>A <em>conversation</em>.</h1>
+    <p class="hero-sub">Traditional compliance tools make you click through forms and generate documents manually. Caelith's agent model flips this: the agent runs continuously in the background, surfaces what needs attention, and executes the entire filing workflow through a single chat — with you in control at every critical decision point.</p>
+    <div class="hero-compare">
+      <div class="compare-box old">
+        <h4>❌ Old model — Dashboard-first</h4>
+        <ul>
+          <li>Navigate to Reports → Annex IV → Export</li>
+          <li>Remember to run pre-flight manually</li>
+          <li>Download XML, open BaFin portal in another tab</li>
+          <li>Upload file, copy reference number, paste back</li>
+          <li>No one tells you when a deadline is approaching</li>
+          <li>Audit trail lives in a spreadsheet somewhere</li>
+        </ul>
+      </div>
+      <div class="compare-box new">
+        <h4>✅ New model — Conversation-first</h4>
+        <ul>
+          <li>Agent alerts you when a deadline is 42 days out</li>
+          <li>Ask what's missing — agent checks everything live</li>
+          <li>Fill gaps through conversation, not forms</li>
+          <li>Two approval gates: generate + submit</li>
+          <li>Agent submits directly to BaFin MVP Portal</li>
+          <li>Tamper-evident audit trail, automatic</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TWO GATES ── -->
+<div class="section">
+  <div class="section-label">Architecture</div>
+  <div class="section-title">Two approval gates. Compliance officer stays in control.</div>
+  <p class="section-sub">The agent handles everything mechanical. The CO makes two decisions: approve generation, approve submission. Nothing executes without explicit human approval at each gate.</p>
+
+  <div class="gates">
+    <div class="gate-box">
+      <div class="gate-icon">🤖</div>
+      <h4>Agent runs continuously</h4>
+      <p>Monitors deadlines, reads fund data, tracks investor changes. Surfaces issues before they become problems.</p>
+      <span class="gate-tag agent">Always on</span>
+    </div>
+    <div class="gate-arrow">→</div>
+    <div class="gate-box approval">
+      <div class="gate-icon">👩‍💼</div>
+      <h4>Gate 1 — Approve generation</h4>
+      <p>Agent presents pre-flight results. CO reviews, provides any missing data, says <strong style="color:var(--warm)">"ok"</strong> to generate the XML.</p>
+      <span class="gate-tag human">Human approval</span>
+    </div>
+    <div class="gate-arrow">→</div>
+    <div class="gate-box approval">
+      <div class="gate-icon">✅</div>
+      <h4>Gate 2 — Approve submission</h4>
+      <p>Agent shows XML summary + validation result. CO reviews the filing summary, says <strong style="color:var(--warm)">"ok to submit"</strong>. Agent files directly.</p>
+      <span class="gate-tag human">Human approval</span>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── INSIGHT: EXECUTION PROBLEM ── -->
+<div class="section">
+  <div class="section-label">The Insight</div>
+  <div class="section-title">Compliance isn't a judgment problem.<br>It's an execution problem.</div>
+
+  <div class="thesis-box">
+    <p>
+      Every compliance workflow in EU fund management follows a deterministic policy: ESMA defines the schema, KAGB defines the classification rules, BaFin defines the submission format. <strong>There is no ambiguity in the process — only in executing it across hundreds of fields, across multiple jurisdictions, without making mistakes.</strong> This is exactly the kind of work autonomous agents are built for: rule-based, high-stakes, and currently being done by expensive humans who should be spending their time on the 5% of cases that genuinely require judgment.
+    </p>
+  </div>
+  <p class="section-sub" style="margin-bottom:0">Caelith's architecture reflects this: agents handle the deterministic execution. Humans approve at two explicit gates. The audit trail writes itself.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ── ARCHITECTURE: PIPELINE ── -->
+<div class="section">
+  <div class="section-label">The Architecture</div>
+  <div class="section-title">One persistent conversation thread.<br>Five agents working in the background.</div>
+  <p class="section-sub">The compliance officer never navigates a UI. They open one chat, get a briefing on what needs attention, and approve at key decision points. The rest is autonomous.</p>
+
+  <div class="pipeline">
+    <div class="pipe-row">
+      <div class="pipe-dot l1">1</div>
+      <div class="pipe-card">
+        <h4>Intelligence Layer — Always watching, always on</h4>
+        <p>Runs silently in the background. Monitors regulatory calendar deadlines (42d → 14d → 7d), sanctions list updates — rescreens all investors on every EU/UN list change — ESMA and BaFin circulars, LEI status changes, and portfolio threshold triggers. Only surfaces events that actually require attention.</p>
+        <div class="tag-row">
+          <span class="mini-tag green">Continuous</span>
+          <span class="mini-tag blue">Zero-action from CO</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipe-row">
+      <div class="pipe-dot l2">2</div>
+      <div class="pipe-card">
+        <h4>Surfacing Layer — Context-loaded briefings, not notifications</h4>
+        <p>When an event matters, the agent surfaces it in chat pre-loaded with all relevant context: fund data, pre-flight score, investor health, last filing status. The compliance officer's first message has everything needed to decide — no back-and-forth to gather context.</p>
+        <div class="tag-row">
+          <span class="mini-tag blue">Priority-ranked</span>
+          <span class="mini-tag blue">Memory-aware</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipe-row">
+      <div class="pipe-dot l3">3</div>
+      <div class="pipe-card">
+        <h4>Conversation Layer — Natural language in, regulatory filings out</h4>
+        <p>The CO types naturally. The agent parses intent, routes to the right execution engine, and asks only for what it cannot find itself — one question at a time. Two explicit approval gates: one to generate the XML filing, one to submit to the NCA portal.</p>
+        <div class="tag-row">
+          <span class="mini-tag blue">Intent classification</span>
+          <span class="mini-tag warm">2 approval gates</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pipe-row">
+      <div class="pipe-dot l4">4</div>
+      <div class="pipe-card">
+        <h4>Execution Layer — Deterministic, not probabilistic</h4>
+        <p>Every action is a typed call against a known schema. GLEIF returns a verified LEI fact. XSD validation returns pass/fail against ESMA AIFMD_DATAIF_V1.2.xsd. BaFin portal returns a submission reference number. No hallucination risk — execution is deterministic by design. SHA-256 chained audit trail written automatically at every step.</p>
+        <div class="tag-row">
+          <span class="mini-tag green">XSD-validated XML</span>
+          <span class="mini-tag green">Live GLEIF + sanctions APIs</span>
+          <span class="mini-tag green">Direct NCA portal submission</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── CHAT DEMO ── -->
+<div class="section">
+  <div class="section-label">Live walkthrough</div>
+  <div class="section-title">The full Annex IV workflow — in one conversation</div>
+  <p class="section-sub">Maria Schmidt, compliance officer. 42 days to BaFin deadline. One chat thread, start to finish.</p>
+
+  <div class="chat-layout">
+    <!-- CHAT PANEL -->
+    <div class="chat-panel">
+      <div class="chat-header">
+        <div class="chat-header-icon">✨</div>
+        <div>
+          <h3>Caelith Compliance Agent</h3>
+          <p>AIFMD II · Annex IV · BaFin Filing</p>
+        </div>
+        <div class="live-dot"></div>
+      </div>
+
+      <div class="chat-body">
+
+        <!-- Agent: proactive alert -->
+        <div class="msg">
+          <div class="msg-avatar">✨</div>
+          <div class="msg-bubble">
+            <strong>🔔 BaFin filing due in 42 days</strong><br><br>
+            Süddeutscher Immobilien-Spezialfonds I (Spezial_AIF · DE) has an Annex IV filing obligation under AIFMD Art. 24. The deadline is <strong>April 16, 2026</strong>.<br><br>
+            Reporting period: <strong>01/01/2025 – 31/12/2025</strong> (Annual)<br>
+            Want me to start the pre-flight check?
+          </div>
+        </div>
+
+        <!-- CO -->
+        <div class="msg co">
+          <div class="msg-avatar">👩‍💼</div>
+          <div class="msg-bubble">Yes please. What do we need in order to file successfully?</div>
+        </div>
+
+        <!-- Agent: pre-flight -->
+        <div class="msg">
+          <div class="msg-avatar">✨</div>
+          <div class="msg-bubble">
+            Running pre-flight check now...<br><br>
+            <div class="status-card">
+              <div class="status-row"><span class="lbl">Sanctions screening (9 investors)</span><span class="val ok">✓ All clear</span></div>
+              <div class="status-row"><span class="lbl">LEI validation via GLEIF</span><span class="val warn">⚠ 8/9 valid</span></div>
+              <div class="status-row"><span class="lbl">AUM (Q4 2025)</span><span class="val warn">⚠ Not confirmed</span></div>
+              <div class="status-row"><span class="lbl">Depositary arrangement</span><span class="val ok">✓ Documented</span></div>
+              <div class="status-row"><span class="lbl">Leverage ratios</span><span class="val ok">✓ Present</span></div>
+              <div class="status-row"><span class="lbl">Investor domicile breakdown</span><span class="val ok">✓ Complete</span></div>
+            </div>
+            I need two things before I can generate the report:<br><br>
+            <span class="msg-warn">⚠</span> <strong>1 missing LEI:</strong> Klaus Müller Family Office GmbH — can you provide their LEI code?<br>
+            <span class="msg-warn">⚠</span> <strong>Final NAV:</strong> What is the confirmed net asset value as of 31.12.2025?
+          </div>
+        </div>
+
+        <!-- CO: provides info -->
+        <div class="msg co">
+          <div class="msg-avatar">👩‍💼</div>
+          <div class="msg-bubble">LEI is 529900KMFO1234GH56. NAV is €164.2M as of 31.12.2025.</div>
+        </div>
+
+        <!-- Agent: verifies -->
+        <div class="msg">
+          <div class="msg-avatar">✨</div>
+          <div class="msg-bubble">
+            Verifying LEI via GLEIF... <span class="msg-check">✓ Confirmed:</span> Klaus Müller Family Office GmbH — ISSUED, jurisdiction DE.<br>
+            NAV updated to €164,200,000.<br><br>
+            All pre-flight checks now pass:
+            <div class="status-card">
+              <div class="status-row"><span class="lbl">9/9 investor LEIs</span><span class="val ok">✓ Valid</span></div>
+              <div class="status-row"><span class="lbl">Sanctions screening</span><span class="val ok">✓ All clear</span></div>
+              <div class="status-row"><span class="lbl">200+ Annex IV fields</span><span class="val ok">✓ Complete</span></div>
+              <div class="status-row"><span class="lbl">XSD schema readiness</span><span class="val ok">✓ Ready</span></div>
+            </div>
+            Ready to generate the Annex IV XML against ESMA AIFMD_DATAIF_V1.2.xsd. Say <strong>"ok"</strong> to proceed.
+          </div>
+        </div>
+
+        <!-- CO: Gate 1 approval -->
+        <div class="msg co">
+          <div class="msg-avatar">👩‍💼</div>
+          <div class="msg-bubble"><span class="ok-line">✅  ok</span></div>
+        </div>
+
+        <div class="chat-divider">Gate 1 — Generation approved</div>
+
+        <!-- Agent: generating -->
+        <div class="msg">
+          <div class="msg-avatar">✨</div>
+          <div class="msg-bubble">
+            <span class="msg-dim">Generating XML against AIFMD_DATAIF_V1.2.xsd...</span><br>
+            <span class="msg-check">✓</span> XML generated — 847 elements across 8 sections<br>
+            <span class="msg-check">✓</span> XSD validation: <strong style="color:var(--green)">0 errors, 0 warnings</strong><br><br>
+
+            <strong>Filing summary — please review:</strong>
+            <div class="status-card">
+              <div class="status-row"><span class="lbl">Fund</span><span class="val">Süddeutscher Immob. I</span></div>
+              <div class="status-row"><span class="lbl">Period</span><span class="val">01/01/2025 – 31/12/2025 (Annual)</span></div>
+              <div class="status-row"><span class="lbl">Reporting authority</span><span class="val">BaFin (DE)</span></div>
+              <div class="status-row"><span class="lbl">AUM</span><span class="val">€164,200,000</span></div>
+              <div class="status-row"><span class="lbl">Investors</span><span class="val">9 (7 prof. · 2 semi-prof.)</span></div>
+              <div class="status-row"><span class="lbl">Leverage (Gross)</span><span class="val">1.3×</span></div>
+              <div class="status-row"><span class="lbl">Leverage (Commitment)</span><span class="val">1.1×</span></div>
+              <div class="status-row"><span class="lbl">Schema</span><span class="val ok">ESMA Rev 6 · 0 errors</span></div>
+            </div>
+
+            <div class="msg-actions">
+              <span class="msg-btn primary">📄 Download XML</span>
+              <span class="msg-btn ghost">👁 Preview full XML</span>
+            </div>
+
+            When you're ready, say <strong>"ok to submit"</strong> and I'll file this directly with BaFin.
+          </div>
+        </div>
+
+        <!-- CO reviews -->
+        <div class="msg co">
+          <div class="msg-avatar">👩‍💼</div>
+          <div class="msg-bubble">Looks good. Go ahead.</div>
+        </div>
+
+        <!-- CO: Gate 2 approval -->
+        <div class="msg co">
+          <div class="msg-avatar">👩‍💼</div>
+          <div class="msg-bubble"><span class="ok-line">✅  ok to submit</span></div>
+        </div>
+
+        <div class="chat-divider">Gate 2 — Submission approved</div>
+
+        <!-- Agent: submitting -->
+        <div class="msg">
+          <div class="msg-avatar">✨</div>
+          <div class="msg-bubble">
+            <span class="msg-dim">Opening BaFin MVP Portal...</span><br>
+            <span class="msg-check">✓</span> Portal authenticated<br>
+            <span class="msg-dim">Navigating → AIF-Meldung → Meldung einreichen...</span><br>
+            <span class="msg-check">✓</span> Uploading AIFMD_Annex_IV_Sueddeutscher_2025.xml<br>
+            <span class="msg-dim">Running BaFin server-side XSD validation...</span><br>
+            <span class="msg-check">✓</span> Validation passed<br>
+            <span class="msg-check">✓</span> <strong>Submission confirmed</strong><br><br>
+
+            <div class="status-card">
+              <div class="status-row"><span class="lbl">Reference number</span><span class="val ok">BaFin-AIF-2026-03-04-SUE-00192</span></div>
+              <div class="status-row"><span class="lbl">Submitted at</span><span class="val">2026-03-04 14:32:07 CET</span></div>
+              <div class="status-row"><span class="lbl">Audit record</span><span class="val">Decision #102 — chained</span></div>
+              <div class="status-row"><span class="lbl">SHA-256</span><span class="val msg-hash">a3f7c912...8b2de447</span></div>
+            </div>
+
+            You're done, Maria. I'll remind you when the next filing window opens (H1 2026, due July 2026).
+            <div class="msg-actions">
+              <span class="msg-btn success">✓ Download confirmation</span>
+              <span class="msg-btn ghost">View audit trail</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /chat-body -->
+
+      <div class="chat-input-bar">
+        <div class="chat-input-fake">Ask the agent anything...</div>
+        <div class="chat-send">↑</div>
+      </div>
+    </div><!-- /chat-panel -->
+
+    <!-- ANNOTATION PANEL -->
+    <div class="annotation-panel">
+      <div class="anno">
+        <div class="anno-header">
+          <div class="anno-step">1</div>
+          <div class="anno-title">Proactive deadline alert</div>
+          <span class="anno-tag agent">Agent</span>
+        </div>
+        <div class="anno-body">
+          <p>Agent monitors the regulatory calendar continuously. 42 days before the BaFin AIFMD Art. 24 deadline, it surfaces the alert — not as a notification you might miss, but as the first message in your chat.</p>
+          <div class="anno-api"><span class="m">GET</span> <span class="u">/api/v1/public/calendar/deadlines</span><br>→ filters by fund, jurisdiction, upcoming</div>
+        </div>
+      </div>
+
+      <div class="anno">
+        <div class="anno-header">
+          <div class="anno-step">2</div>
+          <div class="anno-title">Live pre-flight — no button required</div>
+          <span class="anno-tag auto">Automatic</span>
+        </div>
+        <div class="anno-body">
+          <p>On your "yes", the agent immediately runs sanctions screening (GLEIF + EU/UN lists), validates all LEIs, checks field completeness — and returns a structured results card, not a wall of text.</p>
+          <div class="anno-api"><span class="m">POST</span> <span class="u">/api/v1/public/sanctions/screen</span><br><span class="m">GET</span>  <span class="u">/api/v1/public/lei/search</span><br><span class="m">GET</span>  <span class="u">/api/v1/reports/annex-iv/preflight</span></div>
+        </div>
+      </div>
+
+      <div class="anno">
+        <div class="anno-header">
+          <div class="anno-step">3</div>
+          <div class="anno-title">Missing data collected conversationally</div>
+          <span class="anno-tag co">CO input</span>
+        </div>
+        <div class="anno-body">
+          <p>Instead of a form with 200 fields, the agent asks only for what's actually missing. Maria types two pieces of information in plain language. The agent verifies the LEI instantly via GLEIF and parses the NAV from natural language.</p>
+        </div>
+      </div>
+
+      <div class="anno">
+        <div class="anno-header">
+          <div class="anno-step">4</div>
+          <div class="anno-title">Gate 1 — Generation approval</div>
+          <span class="anno-tag co">CO approves</span>
+        </div>
+        <div class="anno-body">
+          <p>The agent won't generate the XML until explicitly told to. "ok" triggers <code style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent)">serializeAnnexIVToXml()</code> — the same function that validates against ESMA Rev 6 XSD in real time.</p>
+          <div class="anno-api"><span class="m">POST</span> <span class="u">/api/v1/reports/annex-iv/:id/xml</span><br>→ libxmljs2 XSD validation inline<br>→ <span class="v">0 errors → ready flag set</span></div>
+        </div>
+      </div>
+
+      <div class="anno">
+        <div class="anno-header">
+          <div class="anno-step">5</div>
+          <div class="anno-title">Gate 2 — Submission approval</div>
+          <span class="anno-tag co">CO approves</span>
+        </div>
+        <div class="anno-body">
+          <p>CO reviews the filing summary card (fund, period, AUM, investor count, leverage). Can download the XML for spot-check. "ok to submit" triggers the BaFin MVP Portal filing agent.</p>
+        </div>
+      </div>
+
+      <div class="anno">
+        <div class="anno-header">
+          <div class="anno-step">6</div>
+          <div class="anno-title">Direct BaFin submission</div>
+          <span class="anno-tag auto">Agent-executed</span>
+        </div>
+        <div class="anno-body">
+          <p>Browser agent opens the BaFin MVP Portal, authenticates, uploads the validated XML, and captures the submission reference. The confirmation + SHA-256 hash are written to the tamper-evident decision chain.</p>
+          <div class="anno-api">→ portal.bafin.de (no CAPTCHA)<br>→ Standard XML upload form<br>→ Reference returned to audit trail<br>→ <span class="v">Decision #102 chained</span></div>
+        </div>
+      </div>
+    </div><!-- /annotation-panel -->
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── FIVE AGENTS ── -->
+<div class="section">
+  <div class="section-label">The Agents</div>
+  <div class="section-title">Five agents. The entire compliance lifecycle.</div>
+  <p class="section-sub">Each agent has a single job. No overlap. Together they cover everything a compliance officer at a KVG or fund admin does today — manually.</p>
+
+  <div class="agents-grid">
+    <div class="agent-card-v2">
+      <div class="icon">📋</div>
+      <h3>Filing Agent</h3>
+      <p>Owns Annex IV end-to-end — from deadline detection to BaFin/CSSF/AMF portal submission. The core agent.</p>
+      <ul class="agent-steps-v2">
+        <li><span class="si">📅</span>Monitors filing deadlines per fund per NCA</li>
+        <li><span class="si">🔍</span>Runs pre-flight: LEI, sanctions, field completeness</li>
+        <li><span class="si">📄</span>Generates XSD-validated XML (ESMA Rev 6)</li>
+        <li><span class="si">🌐</span>Submits directly to BaFin MVP / CSSF eDesk</li>
+        <li><span class="si">🔗</span>Seals tamper-evident audit chain</li>
+      </ul>
+    </div>
+
+    <div class="agent-card-v2">
+      <div class="icon">👤</div>
+      <h3>Onboarding Agent</h3>
+      <p>Full investor onboarding chain — from intake to classification decision. What used to take 4 hours takes minutes.</p>
+      <ul class="agent-steps-v2">
+        <li><span class="si">🔍</span>LEI lookup and GLEIF verification</li>
+        <li><span class="si">🛡️</span>Sanctions + PEP screening</li>
+        <li><span class="si">📊</span>KAGB/AIFMD II investor classification</li>
+        <li><span class="si">📋</span>Classification memo + eligibility decision</li>
+        <li><span class="si">🔗</span>Decision logged to audit chain</li>
+      </ul>
+    </div>
+
+    <div class="agent-card-v2">
+      <div class="icon">📡</div>
+      <h3>Monitoring Agent</h3>
+      <p>Always-on watchdog. Rescreens investors on every sanctions update. Monitors regulatory changes. Silent unless something needs attention.</p>
+      <ul class="agent-steps-v2">
+        <li><span class="si">🔄</span>Rescreens all investors on every EU/UN update</li>
+        <li><span class="si">📰</span>Reads BaFin/ESMA circulars, assesses fund impact</li>
+        <li><span class="si">📊</span>Detects AUM threshold changes (Art. 24(1)→(2))</li>
+        <li><span class="si">🪪</span>Flags GLEIF LEI status changes</li>
+        <li><span class="si">📅</span>KYC renewal tracking (90d + 30d alerts)</li>
+      </ul>
+    </div>
+
+    <div class="agent-card-v2">
+      <div class="icon">🔎</div>
+      <h3>Due Diligence Agent</h3>
+      <p>Institutional investor DD — ownership mapping, adverse media, source of funds. Complete DD report in minutes. <span style="color:var(--warm);font-size:12px">Q3 2026</span></p>
+      <ul class="agent-steps-v2">
+        <li><span class="si">🌐</span>EU registry research (Bundesanzeiger, GLEIF)</li>
+        <li><span class="si">🏗️</span>UBO chain mapping + shell flag detection</li>
+        <li><span class="si">🔍</span>Adverse media + PEP scan</li>
+        <li><span class="si">📄</span>Full DD report generated automatically</li>
+      </ul>
+    </div>
+
+    <div class="agent-card-v2">
+      <div class="icon">⚖️</div>
+      <h3>Audit Preparation Agent</h3>
+      <p>When BaFin auditors arrive, this agent compiles the complete evidence package. Weeks of prep reduced to hours. <span style="color:var(--warm);font-size:12px">Q4 2026</span></p>
+      <ul class="agent-steps-v2">
+        <li><span class="si">🔍</span>Retrieves full decision chain for audit scope</li>
+        <li><span class="si">✅</span>Verifies SHA-256 chain integrity</li>
+        <li><span class="si">📄</span>Compiles evidence bundle (filings + screening + classifications)</li>
+        <li><span class="si">💬</span>Drafts defensible answers to regulator questions</li>
+      </ul>
+    </div>
+
+    <div class="agent-card-v2" style="border-color:rgba(197,224,238,0.2);background:rgba(197,224,238,0.03)">
+      <div class="icon">✨</div>
+      <h3>The Persistent Chat</h3>
+      <p>One conversation thread, always open. Every agent surfaces its work here. The CO never navigates a form — they just talk. This IS the product interface.</p>
+      <ul class="agent-steps-v2">
+        <li><span class="si">🧠</span>Session memory — picks up where you left off</li>
+        <li><span class="si">🗣️</span>Natural language → typed regulatory actions</li>
+        <li><span class="si">✅</span>Explicit approval gates, always logged</li>
+        <li><span class="si">📊</span>Fund-specific answers, not generic LLM</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── THREE MOATS ── -->
+<div class="section">
+  <div class="section-label">Defensibility</div>
+  <div class="section-title">Three moats that compound over time.</div>
+  <p class="section-sub">Each one makes the product stickier, the data richer, and the competitive gap wider — every single month a customer stays.</p>
+
+  <div class="moat-grid">
+    <div class="moat-card">
+      <div class="badge">Technical Moat</div>
+      <h3>The XSD validation engine</h3>
+      <p>Our open-source Annex IV filing library (open-annex-iv, live on npm) is validated against the official ESMA AIFMD_DATAIF_V1.2.xsd schema with 179 passing test cases. Building this required weeks of reading technical standards documentation — it is the most complete open implementation of ESMA Annex IV in existence. Every developer who uses it references Caelith. The standard becomes us.</p>
+    </div>
+    <div class="moat-card">
+      <div class="badge">Knowledge Moat</div>
+      <h3>Cross-NCA regulatory knowledge</h3>
+      <p>BaFin's MVP Portal has specific field interpretations that differ from ESMA's generic schema. CSSF's eDesk has different frequency thresholds. AMF applies leverage calculations differently. This is hard-won operational knowledge that takes months to acquire and requires constant maintenance as NCAs publish new guidance. It cannot be reproduced from public documentation alone — only from running real filings.</p>
+    </div>
+    <div class="moat-card">
+      <div class="badge">Data Moat</div>
+      <h3>The tamper-evident audit chain</h3>
+      <p>Every decision Caelith makes — every filing, every screening result, every investor classification — is SHA-256 hashed and chained. As customers accumulate filing history, they become deeply dependent on Caelith's audit trail for regulatory exams. This is the stickiest data asset in enterprise software: the compliance record that proves every past decision was correct. You cannot migrate this to a competitor.</p>
+    </div>
+  </div>
+
+  <div class="sticky-note">
+    <p>
+      <strong>Why customers don't leave:</strong> After 12 months, a KVG's entire compliance history lives in Caelith's audit chain — every BaFin submission reference, every investor screening record, every classification decision, all cryptographically linked. Switching means losing that trail. In a regulatory exam, that trail is the difference between a two-day preparation and a three-week scramble. The longer a customer stays, the more irreplaceable the platform becomes — not because of lock-in mechanics, but because the audit chain is genuinely valuable and genuinely non-portable.
+    </p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── TECH STACK ── -->
+<div class="section">
+  <div class="section-label">Technical implementation</div>
+  <div class="section-title">What runs behind each message</div>
+  <p class="section-sub">Every agent response is backed by real APIs, validated data, and deterministic execution — not language model hallucinations.</p>
+
+  <table class="tech-table">
+    <thead>
+      <tr>
+        <th>Agent capability</th>
+        <th>Implementation</th>
+        <th>Data source</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Deadline monitoring</td>
+        <td>Regulatory calendar API + cron job, 2× daily check</td>
+        <td>Caelith regulatory DB (27 NCAs, 6 frameworks)</td>
+        <td><span class="badge live">Live</span></td>
+      </tr>
+      <tr>
+        <td>Sanctions screening</td>
+        <td>POST /api/v1/public/sanctions/screen — fuzzy match, threshold 0.3</td>
+        <td>EU Consolidated List + UN Security Council (6,863 entities)</td>
+        <td><span class="badge live">Live</span></td>
+      </tr>
+      <tr>
+        <td>LEI verification</td>
+        <td>GET /api/v1/public/lei/search — debounced GLEIF lookup</td>
+        <td>GLEIF Global LEI database (real-time)</td>
+        <td><span class="badge live">Live</span></td>
+      </tr>
+      <tr>
+        <td>Annex IV XML generation</td>
+        <td>serializeAnnexIVToXml() — 200+ fields, 8 sections</td>
+        <td>ESMA AIFMD_DATAIF_V1.2.xsd (Rev 6, 199KB)</td>
+        <td><span class="badge live">Live</span></td>
+      </tr>
+      <tr>
+        <td>XSD validation</td>
+        <td>libxmljs2 — inline schema validation, XPath error reporting</td>
+        <td>ESMA official XSD schema file</td>
+        <td><span class="badge live">Live</span></td>
+      </tr>
+      <tr>
+        <td>Tamper-evident audit chain</td>
+        <td>SHA-256 decision chaining, PostgreSQL, verified on demand</td>
+        <td>Internal (tenant-isolated, RLS enforced)</td>
+        <td><span class="badge live">Live</span></td>
+      </tr>
+      <tr>
+        <td>Natural language parsing</td>
+        <td>LLM intent classification — routes to deterministic API calls</td>
+        <td>Agent interprets CO input, executes via typed APIs</td>
+        <td><span class="badge live">Live</span></td>
+      </tr>
+      <tr>
+        <td>BaFin MVP Portal filing</td>
+        <td>Browser agent — portal auth, XML upload, reference capture</td>
+        <td>portal.bafin.de (standard web form, no CAPTCHA)</td>
+        <td><span class="badge soon">Q3 2026</span></td>
+      </tr>
+      <tr>
+        <td>CSSF eDesk filing</td>
+        <td>Browser agent — 70% code reuse from BaFin agent</td>
+        <td>edesk.apps.cssf.lu</td>
+        <td><span class="badge soon">Q4 2026</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="footer-wrap">
+  <div>
+    <strong style="color:var(--text-2)">Caelith</strong> — The compliance infrastructure layer for European fund managers.<br>
+    <a href="https://www.caelith.tech">www.caelith.tech</a> · <a href="mailto:julian.laycock@caelith.tech">julian.laycock@caelith.tech</a>
+  </div>
+  <div style="text-align:right;color:var(--text-3)">
+    Product vision — March 2026<br>
+    AIFMD II enforcement: April 16, 2026
+  </div>
+</div>
+
+</body>
+</html>

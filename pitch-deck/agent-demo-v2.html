@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Compliance Agent — Interactive Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#0d1117;--card:#161b22;--border:rgba(197,224,238,0.1);
+--accent:#C5E0EE;--warm:#E8A87C;--green:#3fb950;--red:#f85149;
+--yellow:#d29922;--blue:#58a6ff;--text:#F8F9FA;
+--font-head:'Sora',sans-serif;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent);color:var(--bg)}
+
+/* ── Hero ── */
+.hero{text-align:center;padding:60px 24px 40px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(197,224,238,0.06) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(63,185,80,0.1);border:1px solid rgba(63,185,80,0.3);border-radius:100px;padding:6px 16px;font-size:13px;font-family:var(--font-mono);color:var(--green);margin-bottom:20px}
+.hero-badge .dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(63,185,80,0.4)}50%{opacity:.7;box-shadow:0 0 0 8px rgba(63,185,80,0)}}
+.hero h1{font-family:var(--font-head);font-size:clamp(32px,5vw,56px);font-weight:800;background:linear-gradient(135deg,var(--accent) 0%,#fff 40%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px;letter-spacing:-1px}
+.hero .subtitle{font-size:clamp(15px,2vw,19px);color:rgba(248,249,250,0.6);max-width:680px;margin:0 auto 20px;line-height:1.5}
+.hero .sim-tag{display:inline-block;font-family:var(--font-mono);font-size:11px;color:rgba(248,249,250,0.35);letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(248,249,250,0.1);padding:4px 12px;border-radius:4px}
+
+/* ── Main Layout ── */
+.main-wrap{max-width:1200px;margin:0 auto;padding:0 24px 40px;display:grid;grid-template-columns:1fr;gap:32px}
+@media(min-width:900px){.main-wrap{grid-template-columns:65fr 35fr}}
+
+/* ── Chat Panel ── */
+.chat-panel{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-height:600px}
+.chat-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;font-family:var(--font-head);font-weight:600;font-size:15px}
+.chat-header .icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,rgba(197,224,238,0.15),rgba(197,224,238,0.05));display:flex;align-items:center;justify-content:center;font-size:18px}
+.chat-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:4px;scroll-behavior:smooth}
+.chat-body::-webkit-scrollbar{width:6px}
+.chat-body::-webkit-scrollbar-track{background:transparent}
+.chat-body::-webkit-scrollbar-thumb{background:rgba(248,249,250,0.1);border-radius:3px}
+
+/* Messages */
+.msg{display:flex;flex-direction:column;max-width:88%;opacity:0;transform:translateY(16px);animation:none}
+.msg.visible{animation:msgIn .4s ease forwards}
+@keyframes msgIn{to{opacity:1;transform:translateY(0)}}
+.msg.agent{align-self:flex-start}
+.msg.user{align-self:flex-end}
+.msg-label{font-size:11px;font-family:var(--font-mono);margin-bottom:4px;opacity:.5}
+.msg.agent .msg-label{color:var(--accent)}
+.msg.user .msg-label{text-align:right;color:var(--warm)}
+.msg-bubble{padding:14px 18px;border-radius:14px;font-size:14px;line-height:1.65}
+.msg.agent .msg-bubble{background:rgba(197,224,238,0.07);border:1px solid rgba(197,224,238,0.12);border-bottom-left-radius:4px}
+.msg.user .msg-bubble{background:rgba(232,168,124,0.1);border:1px solid rgba(232,168,124,0.15);border-bottom-right-radius:4px}
+
+/* Typing indicator */
+.typing{display:flex;gap:5px;padding:14px 18px;align-self:flex-start;opacity:0;transition:opacity .2s}
+.typing.show{opacity:1}
+.typing span{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:bounce 1.2s ease-in-out infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+
+/* Status Card */
+.status-card{background:rgba(13,17,23,0.6);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin:10px 0;font-family:var(--font-mono);font-size:12.5px}
+.status-card .sc-title{font-family:var(--font-head);font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent);opacity:.8}
+.status-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(248,249,250,0.04)}
+.status-row:last-child{border-bottom:none}
+.status-row .label{color:rgba(248,249,250,0.7)}
+.status-row .val{font-weight:600}
+.status-row .val.ok{color:var(--green)}
+.status-row .val.warn{color:var(--yellow)}
+.status-row .val.err{color:var(--red)}
+
+/* Terminal block */
+.terminal{background:#0a0e14;border:1px solid rgba(248,249,250,0.08);border-radius:8px;padding:14px 16px;margin:10px 0;font-family:var(--font-mono);font-size:12.5px;line-height:1.8}
+.terminal .t-line{opacity:0;transition:opacity .3s}
+.terminal .t-line.show{opacity:1}
+.t-line .ok{color:var(--green)}
+.t-line .info{color:var(--blue)}
+.t-line .dim{color:rgba(248,249,250,0.4)}
+
+/* Summary / Confirmation cards */
+.summary-card{background:rgba(13,17,23,0.6);border:1px solid var(--border);border-radius:10px;padding:16px;margin:10px 0}
+.summary-card h4{font-family:var(--font-head);font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent)}
+.summary-row{display:flex;justify-content:space-between;padding:4px 0;font-size:12.5px;font-family:var(--font-mono)}
+.summary-row .k{color:rgba(248,249,250,0.5)}
+.summary-row .v{color:var(--text);font-weight:500}
+
+/* Action buttons */
+.action-btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.action-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:12px;font-family:var(--font-mono);font-weight:500;border:1px solid var(--border);background:rgba(248,249,250,0.03);color:var(--text);cursor:default;transition:background .2s}
+.action-btn:hover{background:rgba(248,249,250,0.06)}
+
+/* OK button style msg */
+.ok-btn-msg{display:inline-block;background:rgba(63,185,80,0.15);border:1px solid rgba(63,185,80,0.3);color:var(--green);padding:10px 28px;border-radius:10px;font-size:15px;font-weight:700;font-family:var(--font-head);letter-spacing:.5px}
+
+/* Gate dividers */
+.gate{display:flex;align-items:center;gap:16px;padding:16px 0;opacity:0;transform:scaleX(0)}
+.gate.visible{animation:gateIn .6s ease forwards}
+@keyframes gateIn{to{opacity:1;transform:scaleX(1)}}
+.gate .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.gate .gate-label{font-family:var(--font-mono);font-size:11px;color:var(--accent);white-space:nowrap;letter-spacing:1px;text-transform:uppercase;opacity:.7}
+
+/* ── Annotation Panel ── */
+.anno-panel{display:flex;flex-direction:column;gap:12px}
+.anno-title{font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:4px;color:var(--accent)}
+.anno-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;opacity:0;transform:translateY(12px);transition:all .4s ease}
+.anno-card.visible{opacity:1;transform:translateY(0)}
+.anno-card .step-num{font-family:var(--font-mono);font-size:11px;color:var(--accent);opacity:.6;margin-bottom:4px}
+.anno-card .step-title{font-family:var(--font-head);font-size:14px;font-weight:600;margin-bottom:6px}
+.anno-card .step-tag{display:inline-block;font-family:var(--font-mono);font-size:10px;padding:2px 8px;border-radius:4px;margin-bottom:8px;font-weight:600}
+.tag-agent{background:rgba(197,224,238,0.1);color:var(--accent)}
+.tag-auto{background:rgba(88,166,255,0.1);color:var(--blue)}
+.tag-co{background:rgba(232,168,124,0.1);color:var(--warm)}
+.tag-approve{background:rgba(63,185,80,0.1);color:var(--green)}
+.anno-card .step-desc{font-size:13px;color:rgba(248,249,250,0.55);line-height:1.5}
+
+/* Highlight active annotation */
+.anno-card.active{border-color:rgba(197,224,238,0.3);box-shadow:0 0 20px rgba(197,224,238,0.05)}
+
+/* ── Agent Pills ── */
+.agents-section{max-width:1200px;margin:0 auto;padding:20px 24px 40px}
+.agents-section h2{font-family:var(--font-head);font-size:22px;font-weight:700;text-align:center;margin-bottom:24px}
+.agents-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.agent-pill{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 16px;text-align:center;transition:transform .2s,border-color .2s}
+.agent-pill:hover{transform:translateY(-2px);border-color:rgba(197,224,238,0.2)}
+.agent-pill .pill-name{font-family:var(--font-head);font-size:14px;font-weight:600;margin-bottom:4px}
+.agent-pill .pill-scope{font-family:var(--font-mono);font-size:11px;color:rgba(248,249,250,0.4);margin-bottom:10px}
+.pill-badge{display:inline-block;font-family:var(--font-mono);font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:.5px;text-transform:uppercase}
+.badge-live{background:rgba(63,185,80,0.15);color:var(--green);border:1px solid rgba(63,185,80,0.3)}
+.badge-beta{background:rgba(210,153,34,0.15);color:var(--yellow);border:1px solid rgba(210,153,34,0.3)}
+.badge-soon{background:rgba(232,168,124,0.12);color:var(--warm);border:1px solid rgba(232,168,124,0.25)}
+
+/* ── Metrics ── */
+.metrics-section{max-width:1200px;margin:0 auto;padding:0 24px 60px}
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.metric-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px 20px;text-align:center;opacity:0;transform:translateY(20px);transition:all .5s ease}
+.metric-card.visible{opacity:1;transform:translateY(0)}
+.metric-card .m-icon{font-size:28px;margin-bottom:10px}
+.metric-card .m-value{font-family:var(--font-head);font-size:28px;font-weight:800;margin-bottom:4px}
+.metric-card .m-label{font-size:13px;color:rgba(248,249,250,0.45);font-family:var(--font-mono)}
+.metric-card:nth-child(1) .m-value{color:var(--accent)}
+.metric-card:nth-child(2) .m-value{color:var(--green)}
+.metric-card:nth-child(3) .m-value{color:var(--warm)}
+
+/* ── Footer ── */
+footer{text-align:center;padding:30px 24px 40px;font-size:12px;font-family:var(--font-mono);color:rgba(248,249,250,0.25);border-top:1px solid var(--border)}
+
+/* ── Restart button ── */
+.restart-wrap{text-align:center;padding:20px 0 0}
+.restart-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:10px;font-size:13px;font-family:var(--font-mono);font-weight:600;border:1px solid rgba(197,224,238,0.2);background:rgba(197,224,238,0.05);color:var(--accent);cursor:pointer;transition:all .2s}
+.restart-btn:hover{background:rgba(197,224,238,0.1);border-color:rgba(197,224,238,0.35)}
+
+/* ── Print ── */
+@media print{body{background:var(--bg) !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.msg,.gate,.anno-card,.metric-card{opacity:1 !important;transform:none !important}.typing{display:none !important}}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-badge"><span class="dot"></span> Agent System · Online</div>
+  <h1>Caelith Compliance Agent</h1>
+  <p class="subtitle">Watch the full AIFMD&nbsp;II Annex&nbsp;IV filing workflow — from deadline alert to BaFin confirmation</p>
+  <span class="sim-tag">Simulation · EU-WEST-1</span>
+</section>
+
+<!-- ═══ MAIN GRID ═══ -->
+<div class="main-wrap">
+
+  <!-- Chat Panel -->
+  <div class="chat-panel">
+    <div class="chat-header">
+      <div class="icon">✨</div>
+      <span>BaFin Filing — Süddeutscher Immobilien-Spezialfonds&nbsp;I</span>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <!-- Messages injected by JS -->
+      <div class="typing" id="typing"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <!-- Annotation Panel -->
+  <div class="anno-panel">
+    <div class="anno-title">Workflow Steps</div>
+
+    <div class="anno-card" data-step="1" id="anno1">
+      <div class="step-num">Step 1</div>
+      <div class="step-title">Proactive Deadline Alert</div>
+      <span class="step-tag tag-agent">Agent</span>
+      <div class="step-desc">Agent monitors all filing obligations and alerts the CO 42 days before the BaFin deadline — no calendar entry needed.</div>
+    </div>
+    <div class="anno-card" data-step="2" id="anno2">
+      <div class="step-num">Step 2</div>
+      <div class="step-title">Live Pre-flight Check</div>
+      <span class="step-tag tag-auto">Automatic</span>
+      <div class="step-desc">Sanctions screening, LEI validation, AUM verification and leverage checks run automatically against live data sources.</div>
+    </div>
+    <div class="anno-card" data-step="3" id="anno3">
+      <div class="step-num">Step 3</div>
+      <div class="step-title">Gaps Filled in Conversation</div>
+      <span class="step-tag tag-co">CO Input</span>
+      <div class="step-desc">Missing data points are resolved in natural language — no spreadsheets, no portal logins, no back-and-forth emails.</div>
+    </div>
+    <div class="anno-card" data-step="4" id="anno4">
+      <div class="step-num">Step 4</div>
+      <div class="step-title">Gate 1 — Approve Generation</div>
+      <span class="step-tag tag-approve">CO Approves</span>
+      <div class="step-desc">Human-in-the-loop: the Compliance Officer explicitly approves XML generation before any file is created.</div>
+    </div>
+    <div class="anno-card" data-step="5" id="anno5">
+      <div class="step-num">Step 5</div>
+      <div class="step-title">Gate 2 — Approve Submission</div>
+      <span class="step-tag tag-approve">CO Approves</span>
+      <div class="step-desc">Second explicit approval gate before the agent submits to BaFin. Full audit trail sealed at each decision point.</div>
+    </div>
+    <div class="anno-card" data-step="6" id="anno6">
+      <div class="step-num">Step 6</div>
+      <div class="step-title">Direct BaFin Portal Submission</div>
+      <span class="step-tag tag-agent">Agent-Executed</span>
+      <div class="step-desc">Agent authenticates with BaFin's MVP portal, uploads validated XML, and returns a confirmed reference number.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AGENTS ═══ -->
+<section class="agents-section">
+  <h2>Agent Platform</h2>
+  <div class="agents-grid">
+    <div class="agent-pill">
+      <div class="pill-name">Filing Agent</div>
+      <div class="pill-scope">Annex IV · BaFin · CSSF · AMF</div>
+      <span class="pill-badge badge-live">Live</span>
+    </div>
+    <div class="agent-pill">
+      <div class="pill-name">Onboarding Agent</div>
+      <div class="pill-scope">KYC · Classification · Eligibility</div>
+      <span class="pill-badge badge-beta">Beta</span>
+    </div>
+    <div class="agent-pill">
+      <div class="pill-name">Monitoring Agent</div>
+      <div class="pill-scope">Sanctions · Circulars · LEI Alerts</div>
+      <span class="pill-badge badge-beta">Beta</span>
+    </div>
+    <div class="agent-pill">
+      <div class="pill-name">Due Diligence Agent</div>
+      <div class="pill-scope">UBO · Adverse Media · DD Report</div>
+      <span class="pill-badge badge-soon">Q3 2026</span>
+    </div>
+    <div class="agent-pill">
+      <div class="pill-name">Audit Prep Agent</div>
+      <div class="pill-scope">Evidence Bundle · BaFin Exam Ready</div>
+      <span class="pill-badge badge-soon">Q4 2026</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ METRICS ═══ -->
+<section class="metrics-section">
+  <div class="metrics-grid">
+    <div class="metric-card" id="met1">
+      <div class="m-icon">⏱</div>
+      <div class="m-value">6.1s</div>
+      <div class="m-label">Agent Runtime</div>
+    </div>
+    <div class="metric-card" id="met2">
+      <div class="m-icon">🛡️</div>
+      <div class="m-value">0</div>
+      <div class="m-label">Manual Interventions</div>
+    </div>
+    <div class="metric-card" id="met3">
+      <div class="m-icon">💰</div>
+      <div class="m-value">€0</div>
+      <div class="m-label">vs €8,500 Consultant Fee</div>
+    </div>
+  </div>
+  <div class="restart-wrap">
+    <button class="restart-btn" onclick="restartDemo()">↻ Replay Demo</button>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>Caelith · Agent Demo · Simulation — Not a live BaFin submission · caelith.tech</footer>
+
+<script>
+(function(){
+"use strict";
+
+const chatBody = document.getElementById('chatBody');
+const typingEl = document.getElementById('typing');
+
+/* ── Message definitions ── */
+const MESSAGES = [
+  // 1 — Agent: Deadline alert
+  { role:'agent', anno:1, html:`🔔 <strong>BaFin filing due in 42 days.</strong><br><br>Süddeutscher Immobilien-Spezialfonds I <span style="opacity:.5">(Spezial-AIF · DE)</span> has an Annex IV filing obligation under AIFMD Art.&nbsp;24.<br><br><span style="font-family:var(--font-mono);font-size:12px">Deadline: <strong>April 16, 2026</strong><br>Reporting period: 01/01/2025 – 31/12/2025 (Annual)</span><br><br>Want me to start the pre-flight check?` },
+
+  // 2 — Maria
+  { role:'user', html:`Yes please. What do we need?` },
+
+  // 3 — Agent: Pre-flight card
+  { role:'agent', anno:2, html:`Running pre-flight checks…`,
+    card:'preflight1' },
+
+  // 4 — Maria: LEI + NAV
+  { role:'user', anno:3, html:`LEI is <span style="font-family:var(--font-mono);font-size:13px">529900KMFO1234GH56</span>.<br>NAV is €164.2M as of 31.12.2025.` },
+
+  // 5 — Agent: Verified
+  { role:'agent', anno:3, html:`Verifying LEI via GLEIF…<br><span style="color:var(--green)">✓</span> Confirmed: <strong>Klaus Müller Family Office GmbH</strong> — ISSUED, DE.<br>NAV updated to <strong>€164,200,000</strong>.`,
+    card:'preflight2' },
+
+  // 6 — Maria: OK
+  { role:'user', anno:4, html:`<span class="ok-btn-msg">✅ ok</span>` },
+
+  // GATE 1
+  { role:'gate', label:'Gate 1 · Generation Approved' },
+
+  // 8 — Agent: XML generation
+  { role:'agent', anno:4, html:``,
+    card:'xmlgen' },
+
+  // 9 — Maria: OK to submit
+  { role:'user', anno:5, html:`<span class="ok-btn-msg">✅ ok to submit</span>` },
+
+  // GATE 2
+  { role:'gate', label:'Gate 2 · Submission Approved' },
+
+  // 11 — Agent: BaFin submission
+  { role:'agent', anno:6, html:``,
+    card:'submit' }
+];
+
+/* ── Card renderers ── */
+function renderCard(type, container){
+  if(type==='preflight1'){
+    const rows = [
+      ['Sanctions screening (9 investors)','✓ All clear','ok'],
+      ['LEI validation via GLEIF','⚠ 8/9 valid','warn'],
+      ['AUM (Q4 2025)','⚠ Not confirmed','warn'],
+      ['Depositary arrangement','✓ Documented','ok'],
+      ['Leverage ratios','✓ Present','ok'],
+      ['Investor domicile breakdown','✓ Complete','ok']
+    ];
+    const card = document.createElement('div');
+    card.className='status-card';
+    card.innerHTML=`<div class="sc-title">Pre-flight Status</div>`;
+    rows.forEach(([l,v,c],i)=>{
+      const r=document.createElement('div');
+      r.className='status-row';
+      r.style.opacity='0';
+      r.innerHTML=`<span class="label">${l}</span><span class="val ${c}">${v}</span>`;
+      card.appendChild(r);
+      setTimeout(()=>{r.style.transition='opacity .3s';r.style.opacity='1'},i*180);
+    });
+    container.appendChild(card);
+    const note=document.createElement('div');
+    note.style.cssText='margin-top:10px;font-size:13px';
+    note.innerHTML=`Two things needed:<br><span style="color:var(--yellow)">⚠</span> Missing LEI: <strong>Klaus Müller Family Office GmbH</strong><br><span style="color:var(--yellow)">⚠</span> Final NAV: Confirmed value as of 31.12.2025?`;
+    setTimeout(()=>container.appendChild(note), rows.length*180+200);
+  }
+
+  if(type==='preflight2'){
+    const rows = [
+      ['Sanctions screening (9 investors)','✓ All clear','ok'],
+      ['LEI validation via GLEIF','✓ 9/9 valid','ok'],
+      ['AUM (Q4 2025)','✓ €164,200,000','ok'],
+      ['Depositary arrangement','✓ Documented','ok'],
+      ['Leverage ratios','✓ Present','ok'],
+      ['Investor domicile breakdown','✓ Complete','ok']
+    ];
+    const card = document.createElement('div');
+    card.className='status-card';
+    card.innerHTML=`<div class="sc-title">Pre-flight Status — Updated</div>`;
+    rows.forEach(([l,v,c],i)=>{
+      const r=document.createElement('div');
+      r.className='status-row';
+      r.style.opacity='0';
+      r.innerHTML=`<span class="label">${l}</span><span class="val ${c}">${v}</span>`;
+      card.appendChild(r);
+      setTimeout(()=>{r.style.transition='opacity .3s';r.style.opacity='1'},i*140);
+    });
+    container.appendChild(card);
+    const ready=document.createElement('div');
+    ready.style.cssText='margin-top:10px;font-size:13px;color:var(--green);font-weight:600';
+    ready.textContent='All checks passed. Ready to generate Annex IV XML. Say \'ok\'.';
+    setTimeout(()=>container.appendChild(ready), rows.length*140+200);
+  }
+
+  if(type==='xmlgen'){
+    // Terminal
+    const term=document.createElement('div');
+    term.className='terminal';
+    const lines=[
+      ['Generating XML against ','AIFMD_DATAIF_V1.2.xsd','…','dim','info','dim'],
+      ['✓ ','847 elements',' across 8 sections','ok','','dim'],
+      ['✓ ','XSD validation:',' 0 errors, 0 warnings','ok','','dim']
+    ];
+    lines.forEach((parts,i)=>{
+      const el=document.createElement('div');
+      el.className='t-line';
+      el.innerHTML=parts.map((t,j)=>{
+        const cls=['dim','info','dim','ok'][j%4];
+        return `<span class="${lines[i][3+j]||''}">${t}</span>`;
+      }).join('');
+      // rebuild properly
+      el.innerHTML='';
+      if(i===0) el.innerHTML=`<span class="dim">Generating XML against </span><span class="info">AIFMD_DATAIF_V1.2.xsd</span><span class="dim">…</span>`;
+      if(i===1) el.innerHTML=`<span class="ok">✓</span> 847 elements across 8 sections`;
+      if(i===2) el.innerHTML=`<span class="ok">✓</span> XSD validation: 0 errors, 0 warnings`;
+      term.appendChild(el);
+      setTimeout(()=>el.classList.add('show'), i*600+200);
+    });
+    container.appendChild(term);
+
+    // Summary card
+    setTimeout(()=>{
+      const sc=document.createElement('div');
+      sc.className='summary-card';
+      sc.style.cssText='opacity:0;transform:scale(.95);transition:all .4s ease';
+      sc.innerHTML=`<h4>Filing Summary</h4>
+        <div class="summary-row"><span class="k">Fund</span><span class="v">Süddeutscher Immob. I</span></div>
+        <div class="summary-row"><span class="k">Period</span><span class="v">01/01/2025 – 31/12/2025</span></div>
+        <div class="summary-row"><span class="k">Regulator</span><span class="v">BaFin (DE)</span></div>
+        <div class="summary-row"><span class="k">AUM</span><span class="v">€164,200,000</span></div>
+        <div class="summary-row"><span class="k">Investors</span><span class="v">9 (7 prof. · 2 semi-prof.)</span></div>
+        <div class="summary-row"><span class="k">Leverage (Gross)</span><span class="v">1.3×</span></div>
+        <div class="summary-row"><span class="k">Schema</span><span class="v" style="color:var(--green)">ESMA Rev 6 · 0 errors</span></div>
+        <div class="action-btns">
+          <span class="action-btn">📄 Download XML</span>
+          <span class="action-btn">👁 Preview</span>
+        </div>`;
+      container.appendChild(sc);
+      requestAnimationFrame(()=>{sc.style.opacity='1';sc.style.transform='scale(1)'});
+    }, lines.length*600+400);
+
+    setTimeout(()=>{
+      const p=document.createElement('div');
+      p.style.cssText='margin-top:10px;font-size:13px';
+      p.innerHTML=`Say <strong>'ok to submit'</strong> and I'll file directly with BaFin.`;
+      container.appendChild(p);
+    }, lines.length*600+900);
+  }
+
+  if(type==='submit'){
+    const term=document.createElement('div');
+    term.className='terminal';
+    const tLines=[
+      `<span class="info">Opening BaFin MVP Portal…</span>`,
+      `<span class="ok">✓</span> Portal authenticated`,
+      `<span class="dim">Uploading XML (48.2 KB)…</span>`,
+      `<span class="ok">✓</span> BaFin server-side XSD validation passed`,
+      `<span class="ok">✓</span> <strong>Submission confirmed</strong>`
+    ];
+    tLines.forEach((h,i)=>{
+      const el=document.createElement('div');
+      el.className='t-line';
+      el.innerHTML=h;
+      term.appendChild(el);
+      setTimeout(()=>el.classList.add('show'), i*700+200);
+    });
+    container.appendChild(term);
+
+    setTimeout(()=>{
+      const cc=document.createElement('div');
+      cc.className='summary-card';
+      cc.style.cssText='opacity:0;transform:scale(.95);transition:all .4s ease;border-color:rgba(63,185,80,0.25)';
+      cc.innerHTML=`<h4 style="color:var(--green)">✓ BaFin Confirmation</h4>
+        <div class="summary-row"><span class="k">Reference</span><span class="v">BaFin-AIF-2026-03-04-SUE-00192</span></div>
+        <div class="summary-row"><span class="k">Submitted at</span><span class="v">2026-03-04 14:32:07 CET</span></div>
+        <div class="summary-row"><span class="k">Audit chain</span><span class="v">Decision #102 — sealed</span></div>
+        <div class="summary-row"><span class="k">SHA-256</span><span class="v" style="font-size:11px">a3f7c912…8b2de447</span></div>
+        <div class="action-btns">
+          <span class="action-btn" style="border-color:rgba(63,185,80,0.3);color:var(--green)">✓ Download Confirmation</span>
+          <span class="action-btn">View Audit Trail</span>
+        </div>`;
+      container.appendChild(cc);
+      requestAnimationFrame(()=>{cc.style.opacity='1';cc.style.transform='scale(1)'});
+    }, tLines.length*700+400);
+
+    setTimeout(()=>{
+      const p=document.createElement('div');
+      p.style.cssText='margin-top:10px;font-size:13px';
+      p.innerHTML=`Done, Maria. Next filing: <strong>CSSF in 67 days</strong>.`;
+      container.appendChild(p);
+      // Show metrics
+      setTimeout(showMetrics, 800);
+    }, tLines.length*700+1000);
+  }
+}
+
+/* ── Highlight annotation ── */
+function highlightAnno(step){
+  document.querySelectorAll('.anno-card').forEach(c=>{
+    c.classList.remove('active');
+    if(parseInt(c.dataset.step)<=step){
+      c.classList.add('visible');
+    }
+  });
+  const el=document.getElementById('anno'+step);
+  if(el) el.classList.add('active');
+}
+
+/* ── Show metrics ── */
+function showMetrics(){
+  ['met1','met2','met3'].forEach((id,i)=>{
+    setTimeout(()=>document.getElementById(id).classList.add('visible'), i*200);
+  });
+}
+
+/* ── Play sequence ── */
+let playing=false;
+function playSequence(){
+  if(playing) return;
+  playing=true;
+
+  // Reset
+  chatBody.querySelectorAll('.msg,.gate').forEach(e=>e.remove());
+  document.querySelectorAll('.anno-card').forEach(c=>{c.classList.remove('visible','active')});
+  ['met1','met2','met3'].forEach(id=>document.getElementById(id).classList.remove('visible'));
+  typingEl.classList.remove('show');
+
+  let delay=800;
+
+  MESSAGES.forEach((msg,idx)=>{
+    const isAgent = msg.role==='agent';
+    const isGate = msg.role==='gate';
+
+    // Typing indicator for agent messages
+    if(isAgent){
+      setTimeout(()=>{
+        typingEl.classList.add('show');
+        scrollChat();
+      }, delay);
+      delay+=1200;
+    }
+
+    setTimeout(()=>{
+      typingEl.classList.remove('show');
+
+      if(isGate){
+        const gate=document.createElement('div');
+        gate.className='gate';
+        gate.innerHTML=`<div class="line"></div><div class="gate-label">${msg.label}</div><div class="line"></div>`;
+        chatBody.insertBefore(gate, typingEl);
+        requestAnimationFrame(()=>gate.classList.add('visible'));
+        scrollChat();
+        return;
+      }
+
+      const el=document.createElement('div');
+      el.className=`msg ${msg.role==='user'?'user':'agent'}`;
+      el.innerHTML=`
+        <div class="msg-label">${msg.role==='user'?'👩‍💼 Maria Schmidt':'✨ Caelith Agent'}</div>
+        <div class="msg-bubble">${msg.html}</div>`;
+      chatBody.insertBefore(el, typingEl);
+      requestAnimationFrame(()=>el.classList.add('visible'));
+
+      if(msg.card){
+        const bubble=el.querySelector('.msg-bubble');
+        renderCard(msg.card, bubble);
+      }
+      if(msg.anno) highlightAnno(msg.anno);
+      scrollChat();
+    }, delay);
+
+    // Timing
+    if(isGate) delay+=1200;
+    else if(isAgent){
+      if(msg.card==='preflight1') delay+=3200;
+      else if(msg.card==='preflight2') delay+=2800;
+      else if(msg.card==='xmlgen') delay+=5000;
+      else if(msg.card==='submit') delay+=6000;
+      else delay+=1800;
+    } else {
+      delay+=2000;
+    }
+  });
+
+  setTimeout(()=>{playing=false}, delay+2000);
+}
+
+function scrollChat(){
+  requestAnimationFrame(()=>{chatBody.scrollTop=chatBody.scrollHeight});
+}
+
+window.restartDemo=function(){playSequence()};
+
+// Auto-start
+playSequence();
+})();
+</script>
+</body>
+</html>

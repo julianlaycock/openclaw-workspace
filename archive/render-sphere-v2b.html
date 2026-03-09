@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V2B — Glass Plasma Sphere</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#020210;overflow:hidden;font-family:'Inter',sans-serif;color:#fff}
+canvas{display:block;position:fixed;inset:0}
+.overlay{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.eyebrow{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.2em;color:rgba(255,255,255,0.25);margin-bottom:20px}
+h1{font-family:'Sora';font-size:clamp(36px,6vw,80px);font-weight:800;text-align:center;line-height:1.05;letter-spacing:-0.03em;max-width:700px}
+h1 span{background:linear-gradient(135deg,#4ecdc4 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{font-size:16px;color:rgba(255,255,255,0.3);margin-top:20px;text-align:center;max-width:450px;line-height:1.6}
+.cta{margin-top:36px;display:flex;gap:12px;pointer-events:all}
+.cta a{padding:12px 28px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:all .4s cubic-bezier(.19,1,.22,1)}
+.cta a.primary{background:linear-gradient(135deg,#4ecdc4,#44b3a8);color:#fff}
+.cta a.primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(78,205,196,0.3)}
+.cta a.secondary{border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6)}
+.cta a.secondary:hover{border-color:rgba(255,255,255,0.25);transform:translateY(-2px)}
+.label{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.2);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;z-index:2}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="overlay">
+  <div class="eyebrow">AIFMD II Compliance Platform</div>
+  <h1>Fund compliance,<br><span>automated.</span></h1>
+  <p class="sub">Every decision logged, verified, and cryptographically proven — before your regulator asks.</p>
+  <div class="cta">
+    <a href="#" class="primary">Try Live Demo →</a>
+    <a href="#" class="secondary">View API Docs</a>
+  </div>
+</div>
+<div class="label">V2B — Glass Plasma Sphere · Move your mouse</div>
+
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(0, 0, 5.5);
+
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.0;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+
+const composer=new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene,camera));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),1.4,0.5,0.08));
+
+// Environment for glass refraction
+const pmremGen = new THREE.PMREMGenerator(renderer);
+const envScene = new THREE.Scene();
+envScene.add(new THREE.Mesh(
+  new THREE.SphereGeometry(10, 64, 64),
+  new THREE.ShaderMaterial({
+    side: THREE.BackSide,
+    vertexShader: `varying vec3 vN; void main(){ vN = normalize((modelMatrix*vec4(position,1.0)).xyz); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader: `
+      varying vec3 vN;
+      void main(){
+        vec3 n = normalize(vN);
+        vec3 c = vec3(0.002, 0.001, 0.008);
+        c += vec3(0.3,0.9,0.8) * pow(max(0.0,dot(n,normalize(vec3(-0.5,0.7,0.4)))),6.0) * 3.0;
+        c += vec3(0.7,0.3,0.9) * pow(max(0.0,dot(n,normalize(vec3(0.6,-0.3,-0.5)))),8.0) * 2.5;
+        c += vec3(1.0,0.5,0.3) * pow(max(0.0,dot(n,normalize(vec3(0.3,0.5,0.8)))),10.0) * 2.0;
+        c += vec3(0.2,0.4,1.0) * pow(max(0.0,dot(n,normalize(vec3(-0.4,-0.6,0.3)))),5.0) * 1.5;
+        gl_FragColor = vec4(c,1.0);
+      }`
+  })
+));
+const envRT = pmremGen.fromScene(envScene);
+scene.environment = envRT.texture;
+
+// Lights
+scene.add(new THREE.AmbientLight(0x0a0a20, 0.15));
+const L1 = new THREE.DirectionalLight(0x4ecdc4, 3); L1.position.set(-4, 3, 4); scene.add(L1);
+const L2 = new THREE.DirectionalLight(0xa78bfa, 2); L2.position.set(3, -1, -3); scene.add(L2);
+const L3 = new THREE.PointLight(0xf472b6, 12, 8); L3.position.set(0, -3, 2); scene.add(L3);
+
+// ═══ OUTER GLASS SHELL — transparent with transmission ═══
+const outerGeo = new THREE.IcosahedronGeometry(1.25, 64);
+const outerMat = new THREE.MeshPhysicalMaterial({
+  color: 0xffffff,
+  metalness: 0.0,
+  roughness: 0.0,
+  transmission: 0.92,
+  thickness: 0.5,
+  ior: 1.5,
+  clearcoat: 1.0,
+  clearcoatRoughness: 0.0,
+  envMapIntensity: 2.0,
+  iridescence: 0.6,
+  iridescenceIOR: 1.35,
+  iridescenceThicknessRange: [100, 400],
+  transparent: true,
+  opacity: 0.7,
+  side: THREE.FrontSide,
+  depthWrite: false
+});
+const outerShell = new THREE.Mesh(outerGeo, outerMat);
+scene.add(outerShell);
+
+// ═══ INNER PLASMA CORE — noise displaced, glowing ═══
+const coreVS = `
+  uniform float uTime;
+  uniform vec2 uMouse;
+  varying vec3 vNormal;
+  varying vec3 vPos;
+  varying float vDisp;
+
+  vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x,289.0);}
+  vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+  float snoise(vec3 v){
+    const vec2 C=vec2(1.0/6.0,1.0/3.0);
+    vec3 i=floor(v+dot(v,C.yyy));
+    vec3 x0=v-i+dot(i,C.xxx);
+    vec3 g=step(x0.yzx,x0.xyz);
+    vec3 l=1.0-g;
+    vec3 i1=min(g,l.zxy);
+    vec3 i2=max(g,l.zxy);
+    vec3 x1=x0-i1+C.xxx;
+    vec3 x2=x0-i2+C.yyy;
+    vec3 x3=x0-0.5;
+    i=mod(i,289.0);
+    vec4 p=permute(permute(permute(i.z+vec4(0,i1.z,i2.z,1))+i.y+vec4(0,i1.y,i2.y,1))+i.x+vec4(0,i1.x,i2.x,1));
+    vec3 ns=vec3(1.0/7.0)*vec3(0,2,-6)+vec3(0,-0.71428571,0.142857142857);
+    vec4 j=p-49.0*floor(p*ns.z*ns.z);
+    vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.0*x_);
+    vec4 x4=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;
+    vec4 h=1.0-abs(x4)-abs(y);
+    vec4 b0=vec4(x4.xy,y.xy);vec4 b1=vec4(x4.zw,y.zw);
+    vec4 s0=floor(b0)*2.0+1.0;vec4 s1=floor(b1)*2.0+1.0;
+    vec4 sh=-step(h,vec4(0));
+    vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;
+    vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+    vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);
+    vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+    p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;
+    vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0);
+    m=m*m;return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+  }
+
+  void main(){
+    float n1=snoise(normal*1.0+uTime*0.1)*0.35;
+    float n2=snoise(normal*2.2+uTime*0.15)*0.2;
+    float n3=snoise(normal*4.5+uTime*0.22)*0.1;
+    float n4=snoise(normal*9.0+uTime*0.3)*0.04;
+    float d=n1+n2+n3+n4;
+    d+=smoothstep(1.2,0.0,length(normal.xy-uMouse*0.5))*0.15;
+    vDisp=d;
+    vec3 newPos=position+normal*d;
+    vPos=(modelMatrix*vec4(newPos,1)).xyz;
+    vNormal=normalize(normalMatrix*normal);
+    gl_Position=projectionMatrix*modelViewMatrix*vec4(newPos,1);
+  }
+`;
+
+const coreFS = `
+  uniform float uTime;
+  varying vec3 vNormal;
+  varying vec3 vPos;
+  varying float vDisp;
+
+  void main(){
+    vec3 view=normalize(cameraPosition-vPos);
+    float fresnel=pow(1.0-max(dot(view,vNormal),0.0),3.5);
+    
+    // Plasma color: deep purple → teal → pink based on displacement
+    float t=vDisp*2.5+0.5;
+    vec3 c1=vec3(0.08,0.02,0.2);   // deep purple
+    vec3 c2=vec3(0.15,0.8,0.7);    // teal
+    vec3 c3=vec3(0.95,0.3,0.6);    // hot pink
+    vec3 col=t<0.5?mix(c1,c2,t*2.0):mix(c2,c3,(t-0.5)*2.0);
+    
+    // Internal glow — emissive
+    col *= 1.5;
+    col += vec3(0.3,0.9,0.8)*fresnel*0.8;
+    col += vec3(0.8,0.2,0.6)*pow(fresnel,5.0)*0.5;
+    
+    // Pulsing energy veins
+    float vein = sin(vDisp*20.0+uTime*2.0)*0.5+0.5;
+    vein = pow(vein, 8.0);
+    col += vec3(0.4,1.0,0.9)*vein*0.3;
+    
+    // Hot specular
+    vec3 L=normalize(vec3(-1,1,1));
+    float spec=pow(max(dot(reflect(-L,vNormal),view),0.0),48.0);
+    col+=vec3(1)*spec*0.6;
+    
+    gl_FragColor=vec4(col,0.95);
+  }
+`;
+
+const coreGeo = new THREE.IcosahedronGeometry(0.85, 128);
+const coreMat = new THREE.ShaderMaterial({
+  uniforms: {
+    uTime: { value: 0 },
+    uMouse: { value: new THREE.Vector2(0, 0) }
+  },
+  vertexShader: coreVS,
+  fragmentShader: coreFS,
+  transparent: true,
+  depthWrite: true
+});
+const core = new THREE.Mesh(coreGeo, coreMat);
+scene.add(core);
+
+// Inner glow point light that follows the core
+const coreGlow = new THREE.PointLight(0x4ecdc4, 5, 4);
+scene.add(coreGlow);
+
+// Energy particles between core and shell
+const eCount = 400;
+const eGeo = new THREE.BufferGeometry();
+const ePos = new Float32Array(eCount * 3);
+const ePhase = [];
+for(let i = 0; i < eCount; i++){
+  const theta = Math.random() * Math.PI * 2;
+  const phi = Math.acos(Math.random() * 2 - 1);
+  const r = 0.9 + Math.random() * 0.4;
+  ePos[i*3] = r * Math.sin(phi) * Math.cos(theta);
+  ePos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+  ePos[i*3+2] = r * Math.cos(phi);
+  ePhase.push({ theta, phi, r, speed: 0.3 + Math.random() * 0.5, offset: Math.random() * 6.28 });
+}
+eGeo.setAttribute('position', new THREE.BufferAttribute(ePos, 3));
+const eMat = new THREE.PointsMaterial({
+  color: 0xa78bfa, size: 0.02, transparent: true, opacity: 0.6,
+  blending: THREE.AdditiveBlending, depthWrite: false
+});
+const energyParticles = new THREE.Points(eGeo, eMat);
+scene.add(energyParticles);
+
+// Background dust
+const dCount = 300;
+const dGeo = new THREE.BufferGeometry();
+const dPos = new Float32Array(dCount * 3);
+for(let i = 0; i < dCount; i++){
+  dPos[i*3] = (Math.random() - 0.5) * 16;
+  dPos[i*3+1] = (Math.random() - 0.5) * 10;
+  dPos[i*3+2] = (Math.random() - 0.5) * 8 - 2;
+}
+dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
+scene.add(new THREE.Points(dGeo, new THREE.PointsMaterial({
+  color: 0x4ecdc4, size: 0.006, transparent: true, opacity: 0.12,
+  blending: THREE.AdditiveBlending, depthWrite: false
+})));
+
+let tmx = 0, tmy = 0, mx = 0, my = 0;
+document.addEventListener('mousemove', e => {
+  tmx = (e.clientX / innerWidth - 0.5) * 2;
+  tmy = (e.clientY / innerHeight - 0.5) * 2;
+});
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight);
+});
+
+const clock = new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  mx += (tmx - mx) * 0.025;
+  my += (tmy - my) * 0.025;
+
+  coreMat.uniforms.uTime.value = t;
+  coreMat.uniforms.uMouse.value.set(mx, my);
+
+  // Slow rotation
+  const ry = t * 0.04 + mx * 0.12;
+  const rx = Math.sin(t * 0.06) * 0.08 - my * 0.06;
+  core.rotation.set(rx, ry, 0);
+  outerShell.rotation.set(rx * 0.3, ry * 0.5, t * 0.01);
+
+  // Breathing
+  const breath = 1.0 + Math.sin(t * 0.6) * 0.015;
+  outerShell.scale.setScalar(breath);
+
+  // Core glow pulse
+  coreGlow.intensity = 4 + Math.sin(t * 1.5) * 1.5;
+  coreGlow.color.setHSL(0.48 + Math.sin(t * 0.2) * 0.05, 0.8, 0.5);
+
+  // Animate energy particles
+  const ep = eGeo.attributes.position.array;
+  for(let i = 0; i < eCount; i++){
+    const p = ePhase[i];
+    const tt = t * p.speed + p.offset;
+    const r = p.r + Math.sin(tt * 2) * 0.15;
+    const theta = p.theta + tt * 0.5;
+    const phi = p.phi + Math.sin(tt) * 0.3;
+    ep[i*3] = r * Math.sin(phi) * Math.cos(theta);
+    ep[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+    ep[i*3+2] = r * Math.cos(phi);
+  }
+  eGeo.attributes.position.needsUpdate = true;
+
+  camera.position.x = mx * 0.3;
+  camera.position.y = -my * 0.2;
+  camera.lookAt(0, 0, 0);
+
+  composer.render();
+}
+animate();
+</script>
+</body>
+</html>

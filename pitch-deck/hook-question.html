@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Hook D · The Question</title>
+<style>*{margin:0;padding:0}body{background:#0a0d10;display:flex;justify-content:center;align-items:center;min-height:100vh}iframe{border:none;width:100%;height:100vh}</style>
+</head><body>
+<iframe src="agent-linkedin-video-v2.html" id="f"></iframe>
+<script>
+const f=document.getElementById('f');
+f.onload=()=>{
+  f.contentWindow.selectHook(3);
+  const sel=f.contentDocument.querySelector('.hook-selector');
+  if(sel)sel.style.display='none';
+  const desc=f.contentDocument.getElementById('hookDesc');
+  if(desc)desc.style.display='none';
+};
+</script>
+</body></html>

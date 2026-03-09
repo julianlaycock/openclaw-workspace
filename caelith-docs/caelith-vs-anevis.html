@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith vs anevis — AIFMD Annex IV Reporting Compared | Caelith</title>
+<meta name="description" content="Compare Caelith and anevis for AIFMD Annex IV reporting. Self-service API vs managed enterprise service — find the right fit for your fund size and budget.">
+<meta name="keywords" content="Caelith vs anevis, AIFMD reporting comparison, Annex IV reporting software, anevis alternative, KVG reporting tool">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #1a1f1f;
+    color: #F8F9FA;
+    line-height: 1.7;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 80px 24px 48px;
+  }
+
+  .hero .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #8EC5E0;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 span { color: #8EC5E0; }
+
+  .hero .subtitle {
+    font-size: 18px;
+    color: #adb5bd;
+    max-width: 650px;
+    margin: 0 auto;
+  }
+
+  /* Intro */
+  .intro {
+    padding: 40px 0;
+  }
+
+  .intro p {
+    font-size: 16px;
+    color: #ced4da;
+    margin-bottom: 16px;
+  }
+
+  .intro strong { color: #F8F9FA; }
+
+  /* Comparison Table */
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 40px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+
+  thead th {
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 2px solid #3a4040;
+  }
+
+  thead th:first-child { color: #adb5bd; }
+  thead th:nth-child(2) { color: #8EC5E0; }
+  thead th:nth-child(3) { color: #E8A87C; }
+
+  tbody td {
+    padding: 14px 20px;
+    border-bottom: 1px solid #2D3333;
+    color: #ced4da;
+    vertical-align: top;
+  }
+
+  tbody td:first-child {
+    font-weight: 500;
+    color: #F8F9FA;
+    white-space: nowrap;
+  }
+
+  tbody tr:hover { background: rgba(142, 197, 224, 0.04); }
+
+  .check { color: #8EC5E0; }
+  .cross { color: #adb5bd; }
+
+  /* Section cards */
+  .section {
+    background: #2D3333;
+    border-radius: 12px;
+    padding: 36px 32px;
+    margin-bottom: 24px;
+  }
+
+  .section h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .section p {
+    font-size: 16px;
+    color: #ced4da;
+    margin-bottom: 12px;
+  }
+
+  .section ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .section ul li {
+    padding: 6px 0 6px 20px;
+    position: relative;
+    color: #ced4da;
+  }
+
+  .section ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #8EC5E0;
+  }
+
+  /* Two-column layout */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 40px 0;
+  }
+
+  .col-card {
+    background: #2D3333;
+    border-radius: 12px;
+    padding: 32px 28px;
+  }
+
+  .col-card h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .col-card.caelith h3 { color: #8EC5E0; }
+  .col-card.anevis h3 { color: #E8A87C; }
+
+  .col-card p, .col-card li {
+    font-size: 15px;
+    color: #ced4da;
+  }
+
+  .col-card ul { list-style: none; padding: 0; }
+  .col-card ul li { padding: 4px 0; }
+
+  /* Verdict */
+  .verdict {
+    background: linear-gradient(135deg, #2D3333, #253030);
+    border-left: 4px solid #8EC5E0;
+    border-radius: 12px;
+    padding: 36px 32px;
+    margin: 40px 0;
+  }
+
+  .verdict h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+
+  .verdict p {
+    font-size: 16px;
+    color: #ced4da;
+    margin-bottom: 12px;
+  }
+
+  /* CTA */
+  .cta {
+    text-align: center;
+    padding: 60px 24px 80px;
+  }
+
+  .cta h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .cta p { color: #adb5bd; margin-bottom: 24px; }
+
+  .cta a {
+    display: inline-block;
+    background: #8EC5E0;
+    color: #1a1f1f;
+    font-weight: 600;
+    padding: 14px 32px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    transition: opacity 0.2s;
+  }
+
+  .cta a:hover { opacity: 0.85; }
+
+  @media (max-width: 700px) {
+    .hero h1 { font-size: 28px; }
+    .two-col { grid-template-columns: 1fr; }
+    thead th, tbody td { padding: 10px 12px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="label">Comparison</div>
+  <h1>Caelith vs <span>anevis</span></h1>
+  <p class="subtitle">
+    Two approaches to AIFMD Annex IV reporting. One is a managed enterprise service for the largest asset managers. The other is a self-service platform built for everyone else.
+  </p>
+</section>
+
+<!-- ============ INTRO ============ -->
+<div class="container">
+<section class="intro">
+  <p>
+    If you're evaluating tools for AIFMD Annex IV reporting, you've probably come across <strong>anevis solutions</strong> — a well-established German regulatory reporting provider based in Würzburg. They serve around 100 clients including major names like Allianz Global Investors, Amundi, and Universal Investment.
+  </p>
+  <p>
+    anevis is a strong choice for large enterprise asset managers who need a full-service, managed reporting suite covering factsheets, KIDs, risk calculations, and regulatory filings. But for mid-market KVGs and smaller AIFMs, the enterprise model can be overkill — in both cost and complexity.
+  </p>
+  <p>
+    That's where <strong>Caelith</strong> comes in. We built Caelith as the <strong>self-service, API-first alternative</strong> for firms that want control over their Annex IV reporting without the enterprise overhead.
+  </p>
+</section>
+
+<!-- ============ COMPARISON TABLE ============ -->
+<section class="table-wrapper">
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Caelith</th>
+      <th>anevis</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target Market</td>
+      <td>Mid-market KVGs, boutique AIFMs, emerging managers</td>
+      <td>Large enterprise asset managers (€10B+ AUM)</td>
+    </tr>
+    <tr>
+      <td>Deployment Model</td>
+      <td>Cloud SaaS — sign up and start</td>
+      <td>Managed service — onboarding with dedicated team</td>
+    </tr>
+    <tr>
+      <td>Pricing</td>
+      <td>Transparent, per-fund pricing from €99/fund/month</td>
+      <td>Custom enterprise pricing (typically €10K–50K+/year)</td>
+    </tr>
+    <tr>
+      <td>API Access</td>
+      <td><span class="check">✓</span> Full REST API — generate XML programmatically</td>
+      <td><span class="cross">—</span> Managed workflow, no public API</td>
+    </tr>
+    <tr>
+      <td>Self-Service</td>
+      <td><span class="check">✓</span> Dashboard + API, no vendor dependency</td>
+      <td><span class="cross">—</span> Vendor-managed, changes go through support</td>
+    </tr>
+    <tr>
+      <td>Time to Value</td>
+      <td>Same day — upload data, generate XML</td>
+      <td>Weeks to months (enterprise onboarding)</td>
+    </tr>
+    <tr>
+      <td>Annex IV Reporting</td>
+      <td><span class="check">✓</span> Core product — ESMA Rev 6 v1.2 XSD validated</td>
+      <td><span class="check">✓</span> Part of broader regulatory suite</td>
+    </tr>
+    <tr>
+      <td>AIFMD II Ready</td>
+      <td><span class="check">✓</span> Building for April 2026 deadline</td>
+      <td><span class="check">✓</span> Expected (enterprise roadmap)</td>
+    </tr>
+    <tr>
+      <td>Factsheets &amp; KIDs</td>
+      <td><span class="cross">—</span> Not in scope (Annex IV focused)</td>
+      <td><span class="check">✓</span> Full document generation suite</td>
+    </tr>
+    <tr>
+      <td>Risk Calculations</td>
+      <td><span class="cross">—</span> Not in scope</td>
+      <td><span class="check">✓</span> VaR, stress testing, risk analytics</td>
+    </tr>
+    <tr>
+      <td>Open Source</td>
+      <td>Planned — XSD validation library</td>
+      <td>Proprietary</td>
+    </tr>
+    <tr>
+      <td>Contract</td>
+      <td>Monthly, cancel anytime</td>
+      <td>Annual enterprise contracts</td>
+    </tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ============ WHEN TO CHOOSE ============ -->
+<div class="two-col">
+  <div class="col-card caelith">
+    <h3>Choose Caelith if you…</h3>
+    <ul>
+      <li>→ Manage &lt;50 funds and need Annex IV specifically</li>
+      <li>→ Want API-driven automation in your existing stack</li>
+      <li>→ Prefer self-service over vendor-managed workflows</li>
+      <li>→ Need to be live in days, not months</li>
+      <li>→ Want transparent, predictable pricing</li>
+      <li>→ Have developers who can integrate via REST API</li>
+    </ul>
+  </div>
+  <div class="col-card anevis">
+    <h3>Choose anevis if you…</h3>
+    <ul>
+      <li>→ Are a large enterprise with €10B+ AUM</li>
+      <li>→ Need factsheets, KIDs, and risk calc alongside Annex IV</li>
+      <li>→ Prefer a fully managed, white-glove service</li>
+      <li>→ Have complex multi-jurisdiction requirements</li>
+      <li>→ Want a single vendor for all regulatory reporting</li>
+      <li>→ Have budget for enterprise-tier contracts</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ DETAILED SECTIONS ============ -->
+<div class="section">
+  <h2>Pricing Transparency</h2>
+  <p>
+    anevis operates on custom enterprise pricing, typically ranging from €10,000 to €50,000+ per year depending on the scope of services and number of funds. This reflects their comprehensive service model — you get a dedicated team, managed infrastructure, and a broad product suite.
+  </p>
+  <p>
+    Caelith takes a different approach: <strong>transparent per-fund pricing</strong> starting at €99/fund/month. You pay for what you use, scale up or down freely, and there's no long-term contract. For a KVG with 10 funds, that's roughly €12K/year for a purpose-built Annex IV solution — a fraction of enterprise alternatives.
+  </p>
+</div>
+
+<div class="section">
+  <h2>API-First vs Managed Service</h2>
+  <p>
+    This is the fundamental architectural difference. anevis provides a managed service: your data goes in, their team processes it, reports come out. It works well for firms that want to outsource regulatory reporting entirely.
+  </p>
+  <p>
+    Caelith provides a <strong>platform</strong>: a REST API and dashboard that your team controls directly. You upload fund data (or pipe it from your PMS via API), Caelith validates and generates the XML, and you submit it. No tickets, no waiting, no vendor dependency for routine operations.
+  </p>
+  <p>
+    For firms with in-house tech capability — even a single developer — the API-first model means Annex IV generation can be fully automated as part of your quarterly close process.
+  </p>
+</div>
+
+<div class="section">
+  <h2>Scope &amp; Focus</h2>
+  <p>
+    anevis offers a broad regulatory reporting suite: Annex IV, factsheets, PRIIPs KIDs, risk calculations (VaR, stress testing), and more. If you need all of that from one vendor, anevis delivers.
+  </p>
+  <p>
+    Caelith is <strong>laser-focused on Annex IV</strong>. We don't try to be everything — we aim to be the best tool for AIFMD regulatory reporting specifically. This focus means faster iteration, deeper schema expertise, and a product that's purpose-built rather than one module in a larger suite.
+  </p>
+</div>
+
+<!-- ============ VERDICT ============ -->
+<div class="verdict">
+  <h2>The Bottom Line</h2>
+  <p>
+    anevis has earned its position as a trusted reporting partner for Europe's largest asset managers. If you're managing hundreds of billions in AUM and need a comprehensive, managed regulatory reporting suite, they're a proven choice.
+  </p>
+  <p>
+    But if you're a <strong>mid-market KVG, a growing AIFM, or a boutique fund manager</strong> who needs reliable Annex IV reporting without the enterprise price tag and onboarding timeline — Caelith was built for you.
+  </p>
+  <p>
+    <strong>Self-service. API-first. Transparent pricing. Live in a day, not a quarter.</strong>
+  </p>
+</div>
+</div>
+
+<!-- ============ CTA ============ -->
+<section class="cta">
+  <h2>See Caelith in action</h2>
+  <p>Generate your first XSD-validated Annex IV XML today.</p>
+  <a href="https://caelith.tech">Start Free Trial →</a>
+</section>
+
+</body>
+</html>

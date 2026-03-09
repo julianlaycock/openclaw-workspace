@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In Nav Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#111;padding:48px 24px;display:flex;flex-direction:column;gap:48px}
+.label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:16px}
+.desc{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:20px;line-height:1.7;max-width:600px}
+
+/* ═══ SHARED NAV BASE ═══ */
+.nav-wrap{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)}
+nav{padding:14px 32px;display:flex;align-items:center;gap:24px;background:#2D3333}
+.nav-logo{font-family:'Sora';font-weight:800;font-size:18px;color:#fff;margin-right:auto}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-links a.link{font-size:12px;font-weight:500;color:rgba(255,255,255,0.65);transition:color .2s;text-decoration:none}
+.nav-links a.link:hover{color:#fff}
+.btn-demo{font-family:'Sora';font-weight:700;font-size:11px;padding:8px 22px;border-radius:999px;background:linear-gradient(135deg,#8EC5E0,#E8A87C);color:#fff;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+
+/* ═══ OPTION A: Ghost text link ═══ */
+.signin-ghost{font-family:'Sora';font-weight:600;font-size:12px;color:rgba(255,255,255,0.55);text-decoration:none;transition:color .2s;letter-spacing:0.01em}
+.signin-ghost:hover{color:#fff}
+
+/* ═══ OPTION B: Outlined pill button ═══ */
+.signin-pill{font-family:'Sora';font-weight:600;font-size:11px;padding:7px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.75);text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.signin-pill:hover{border-color:rgba(142,197,224,0.6);color:#fff;background:rgba(142,197,224,0.06)}
+
+/* divider between options */
+.divider{width:100%;height:1px;background:rgba(255,255,255,0.06)}
+
+.badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin-bottom:12px}
+.badge.recommended{background:rgba(142,197,224,0.15);color:#8EC5E0;border:1px solid rgba(142,197,224,0.25)}
+.badge.simple{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1)}
+</style>
+</head>
+<body>
+
+<!-- ═══ OPTION A ═══ -->
+<div>
+  <div class="label">Option A — Ghost Text Link</div>
+  <div class="desc">Subtle plain text link, lowest visual weight. Keeps the focus on "Try Demo" as the primary CTA. Sign In is there but doesn't compete.</div>
+  <div class="badge simple">minimal / secondary</div>
+  <div class="nav-wrap">
+    <nav>
+      <a class="nav-logo" href="#">Caelith</a>
+      <div class="nav-links">
+        <a href="#" class="link">Features</a>
+        <a href="#" class="link">Platform</a>
+        <a href="#" class="link">API</a>
+        <a href="#" class="link">Pricing</a>
+        <a href="#" class="link">FAQ</a>
+        <a href="/login" class="signin-ghost">Sign In</a>
+        <a href="/demo-dashboard" class="btn-demo">Try Demo →</a>
+      </div>
+    </nav>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══ OPTION B ═══ -->
+<div>
+  <div class="label">Option B — Outlined Pill Button</div>
+  <div class="desc">Subtle outlined button, same shape as "Try Demo" but muted. Clear visual hierarchy: outlined = returning user, gradient = new user. Both are clear actions.</div>
+  <div class="badge recommended">recommended</div>
+  <div class="nav-wrap">
+    <nav>
+      <a class="nav-logo" href="#">Caelith</a>
+      <div class="nav-links">
+        <a href="#" class="link">Features</a>
+        <a href="#" class="link">Platform</a>
+        <a href="#" class="link">API</a>
+        <a href="#" class="link">Pricing</a>
+        <a href="#" class="link">FAQ</a>
+        <a href="/login" class="signin-pill">Sign In</a>
+        <a href="/demo-dashboard" class="btn-demo">Try Demo →</a>
+      </div>
+    </nav>
+  </div>
+</div>
+
+</body>
+</html>

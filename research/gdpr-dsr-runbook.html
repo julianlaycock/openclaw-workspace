@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — GDPR Data Subject Request Runbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f1419;color:#c5cdd9;font-family:'Inter',sans-serif;line-height:1.7;padding:2rem}
+.container{max-width:1000px;margin:0 auto}
+h1{font-size:2rem;color:#e2e8f0;font-weight:700}
+h2{font-size:1.4rem;color:#7dd3fc;margin:2rem 0 .75rem;border-bottom:1px solid #1e293b;padding-bottom:.5rem}
+h3{font-size:1.1rem;color:#a5f3fc;margin:1.2rem 0 .5rem}
+.subtitle{color:#64748b;font-size:.95rem;margin-bottom:2rem}
+.card{background:#1a2028;border-radius:12px;padding:1.5rem;margin-bottom:1.25rem;border:1px solid #1e293b}
+table{width:100%;border-collapse:collapse;margin:1rem 0}
+th{text-align:left;color:#7dd3fc;border-bottom:2px solid #1e293b;padding:8px 12px;font-weight:600;font-size:.85rem}
+td{padding:8px 12px;border-bottom:1px solid #1e293b;font-size:.88rem;vertical-align:top}
+ul,ol{padding-left:1.5rem}li{margin-bottom:.35rem;font-size:.9rem}
+code{background:#1e293b;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+pre{background:#0d1117;border-radius:8px;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;overflow-x:auto;margin:1rem 0;border:1px solid #1e293b;white-space:pre-wrap}
+.warn{border-left:4px solid #f59e0b;padding-left:1rem;margin:1rem 0;color:#fbbf24;font-size:.9rem}
+.tag{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.75rem;font-weight:600;margin:1px 3px}
+.tag-pii{background:#450a0a;color:#f87171}
+.tag-sensitive{background:#431407;color:#fb923c}
+.timeline{background:#1e293b;padding:6px 14px;border-radius:6px;display:inline-block;font-weight:600;color:#f59e0b;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>🔐 GDPR Data Subject Request Runbook</h1>
+<p class="subtitle">Caelith — Procedures for Articles 15, 16, 17 & 20 Requests</p>
+
+<div class="card">
+<p><strong>Legal deadline:</strong> <span class="timeline">30 calendar days</span> from receipt of valid request (extendable by 2 months for complex requests with notification to data subject)</p>
+</div>
+
+<h2>Tables Containing PII</h2>
+<div class="card">
+<table>
+<tr><th>Table</th><th>PII Fields</th><th>Type</th></tr>
+<tr><td><code>users</code></td><td>email, name, password_hash</td><td><span class="tag tag-pii">PII</span></td></tr>
+<tr><td><code>investors</code></td><td>name, email, jurisdiction, tax_id, kyc_status, contact details</td><td><span class="tag tag-pii">PII</span></td></tr>
+<tr><td><code>investor_documents</code></td><td>document content, investor_id (linked PII)</td><td><span class="tag tag-pii">PII</span></td></tr>
+<tr><td><code>onboarding_records</code></td><td>investor_id, personal onboarding data</td><td><span class="tag tag-sensitive">Linked</span></td></tr>
+<tr><td><code>decision_records</code></td><td>subject_id (investor ref), decision rationale</td><td><span class="tag tag-sensitive">Linked</span></td></tr>
+<tr><td><code>holdings</code></td><td>investor_id (linked to investor PII)</td><td><span class="tag tag-sensitive">Linked</span></td></tr>
+<tr><td><code>transfers</code></td><td>from_investor_id, to_investor_id</td><td><span class="tag tag-sensitive">Linked</span></td></tr>
+<tr><td><code>events</code></td><td>entity_id when entity_type='investor', event metadata</td><td><span class="tag tag-sensitive">Linked</span></td></tr>
+<tr><td><code>audit_trail</code></td><td>user_id, action details</td><td><span class="tag tag-sensitive">Linked</span></td></tr>
+<tr><td><code>login_attempts</code></td><td>email, ip_address</td><td><span class="tag tag-pii">PII</span></td></tr>
+<tr><td><code>refresh_tokens</code></td><td>user_id</td><td><span class="tag tag-sensitive">Linked</span></td></tr>
+<tr><td><code>password_reset_tokens</code></td><td>user_id, token</td><td><span class="tag tag-sensitive">Linked</span></td></tr>
+<tr><td><code>leads</code></td><td>email, name</td><td><span class="tag tag-pii">PII</span></td></tr>
+<tr><td><code>demo_sessions</code></td><td>session metadata (may contain IP)</td><td><span class="tag tag-sensitive">Linked</span></td></tr>
+<tr><td><code>fund_senior_persons</code></td><td>name, role of fund officers</td><td><span class="tag tag-pii">PII</span></td></tr>
+</table>
+</div>
+
+<h2>Art. 15 — Right of Access</h2>
+<div class="card">
+<h3>Procedure</h3>
+<ol>
+<li>Verify identity of requester (email confirmation or ID check)</li>
+<li>Identify all data linked to the data subject</li>
+<li>Generate data export (JSON format)</li>
+<li>Include: purposes of processing, categories, recipients, retention periods, rights info</li>
+<li>Deliver within 30 days</li>
+</ol>
+<h3>SQL Queries</h3>
+<pre>
+-- For a USER (by email):
+SELECT id, email, name, role, created_at, updated_at FROM users WHERE email = '[EMAIL]';
+SELECT * FROM login_attempts WHERE email = '[EMAIL]';
+SELECT * FROM refresh_tokens WHERE user_id = '[USER_ID]';
+SELECT * FROM audit_trail WHERE user_id = '[USER_ID]';
+
+-- For an INVESTOR (by name/email):
+SELECT * FROM investors WHERE email = '[EMAIL]' OR name ILIKE '%[NAME]%';
+SELECT * FROM investor_documents WHERE investor_id = '[INVESTOR_ID]';
+SELECT * FROM holdings WHERE investor_id = '[INVESTOR_ID]';
+SELECT * FROM onboarding_records WHERE investor_id = '[INVESTOR_ID]';
+SELECT * FROM decision_records WHERE subject_id = '[INVESTOR_ID]';
+SELECT * FROM transfers WHERE from_investor_id = '[INVESTOR_ID]' OR to_investor_id = '[INVESTOR_ID]';
+SELECT * FROM events WHERE entity_type = 'investor' AND entity_id = '[INVESTOR_ID]';
+</pre>
+</div>
+
+<h2>Art. 16 — Right to Rectification</h2>
+<div class="card">
+<h3>Procedure</h3>
+<ol>
+<li>Verify identity and receive correction request</li>
+<li>Identify incorrect data</li>
+<li>Update the record(s)</li>
+<li>Log the change in audit_trail</li>
+<li>Confirm correction to data subject</li>
+</ol>
+<pre>
+-- Update investor details:
+UPDATE investors SET name = '[NEW_NAME]', email = '[NEW_EMAIL]', updated_at = NOW()
+WHERE id = '[INVESTOR_ID]' AND tenant_id = '[TENANT_ID]';
+
+-- Update user details:
+UPDATE users SET name = '[NEW_NAME]', email = '[NEW_EMAIL]', updated_at = NOW()
+WHERE id = '[USER_ID]';
+
+-- Always log the change:
+INSERT INTO audit_trail (entity_type, entity_id, action, user_id, details, tenant_id, created_at)
+VALUES ('investor', '[INVESTOR_ID]', 'gdpr_rectification', '[ADMIN_USER_ID]',
+  '{"reason": "GDPR Art 16 request", "fields_changed": ["name", "email"]}',
+  '[TENANT_ID]', NOW());
+</pre>
+</div>
+
+<h2>Art. 17 — Right to Erasure</h2>
+<div class="card">
+<div class="warn">⚠️ Erasure may conflict with legal retention obligations (AML/KYC records, AIFMD regulatory requirements). Document the legal basis if refusing erasure.</div>
+<h3>Procedure</h3>
+<ol>
+<li>Verify identity</li>
+<li>Check if legal retention obligation applies (AML: 5 years, AIFMD: 5-10 years)</li>
+<li>If retention applies → inform data subject of legal basis for refusal</li>
+<li>If no retention applies → execute erasure in order (child records first)</li>
+<li>Log erasure action in audit_trail</li>
+</ol>
+<pre>
+-- Execute in this order to respect foreign keys:
+DELETE FROM investor_documents WHERE investor_id = '[INVESTOR_ID]';
+DELETE FROM onboarding_records WHERE investor_id = '[INVESTOR_ID]';
+DELETE FROM holdings WHERE investor_id = '[INVESTOR_ID]';
+UPDATE transfers SET from_investor_id = NULL WHERE from_investor_id = '[INVESTOR_ID]';
+UPDATE transfers SET to_investor_id = NULL WHERE to_investor_id = '[INVESTOR_ID]';
+DELETE FROM decision_records WHERE subject_id = '[INVESTOR_ID]';
+UPDATE events SET metadata = '{"gdpr_erased": true}'
+  WHERE entity_type = 'investor' AND entity_id = '[INVESTOR_ID]';
+DELETE FROM investors WHERE id = '[INVESTOR_ID]';
+
+-- For users:
+DELETE FROM refresh_tokens WHERE user_id = '[USER_ID]';
+DELETE FROM password_reset_tokens WHERE user_id = '[USER_ID]';
+DELETE FROM login_attempts WHERE email = '[EMAIL]';
+-- Anonymize audit trail (retain for compliance, remove PII):
+UPDATE audit_trail SET user_id = NULL, details = jsonb_set(details, '{gdpr_erased}', 'true')
+  WHERE user_id = '[USER_ID]';
+DELETE FROM users WHERE id = '[USER_ID]';
+</pre>
+</div>
+
+<h2>Art. 20 — Right to Data Portability</h2>
+<div class="card">
+<h3>Procedure</h3>
+<ol>
+<li>Verify identity</li>
+<li>Export all personal data in machine-readable format (JSON)</li>
+<li>Include only data provided by the data subject (not derived/computed data)</li>
+<li>Deliver within 30 days</li>
+</ol>
+<pre>
+-- Generate JSON export:
+SELECT json_build_object(
+  'personal_data', (SELECT row_to_json(i) FROM investors i WHERE id = '[INVESTOR_ID]'),
+  'documents', (SELECT json_agg(row_to_json(d)) FROM investor_documents d WHERE investor_id = '[INVESTOR_ID]'),
+  'holdings', (SELECT json_agg(row_to_json(h)) FROM holdings h WHERE investor_id = '[INVESTOR_ID]'),
+  'onboarding', (SELECT json_agg(row_to_json(o)) FROM onboarding_records o WHERE investor_id = '[INVESTOR_ID]'),
+  'export_date', NOW(),
+  'format_version', '1.0'
+) AS gdpr_export;
+</pre>
+</div>
+
+<h2>Documentation Requirements</h2>
+<div class="card">
+<ul>
+<li>Log every DSR in a register: date received, type, data subject identity, completion date, outcome</li>
+<li>Retain DSR records for 3 years as evidence of compliance</li>
+<li>If request is refused, document the legal basis</li>
+<li>All actions must be recorded in the <code>audit_trail</code> table with action type <code>gdpr_*</code></li>
+</ul>
+</div>
+
+<footer style="text-align:center;color:#475569;margin-top:3rem;padding:1rem;border-top:1px solid #1e293b;font-size:.8rem">
+Caelith GDPR DSR Runbook — v1.0 — 2026-02-28 — Confidential
+</footer>
+</div>
+</body>
+</html>

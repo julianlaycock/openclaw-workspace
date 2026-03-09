@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direction 1 — Morphing Metaballs</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;overflow:hidden;font-family:'Inter',sans-serif;color:#fff}
+canvas#bg{position:fixed;inset:0;z-index:0}
+.overlay{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.eyebrow{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.2em;color:rgba(255,255,255,0.35);margin-bottom:20px}
+h1{font-family:'Sora';font-size:clamp(36px,6vw,80px);font-weight:800;text-align:center;line-height:1.05;letter-spacing:-0.03em;max-width:700px}
+h1 span{background:linear-gradient(135deg,#4ecdc4,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{font-size:16px;color:rgba(255,255,255,0.4);margin-top:20px;text-align:center;max-width:450px;line-height:1.6}
+.cta{margin-top:36px;display:flex;gap:12px;pointer-events:all}
+.cta a{padding:12px 28px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:transform .3s cubic-bezier(.19,1,.22,1),box-shadow .3s}
+.cta a.primary{background:linear-gradient(135deg,#4ecdc4,#44b3a8);color:#fff}
+.cta a.primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(78,205,196,0.3)}
+.cta a.secondary{border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7)}
+.cta a.secondary:hover{border-color:rgba(255,255,255,0.3);transform:translateY(-2px)}
+.label{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.2);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;z-index:2}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="overlay">
+  <div class="eyebrow">AIFMD II Compliance Platform</div>
+  <h1>Fund compliance,<br><span>automated.</span></h1>
+  <p class="sub">Every decision logged, verified, and cryptographically proven — before your regulator asks.</p>
+  <div class="cta">
+    <a href="#" class="primary">Try Live Demo →</a>
+    <a href="#" class="secondary">View API Docs</a>
+  </div>
+</div>
+<div class="label">Direction 1 — Morphing Metaballs · Move your mouse</div>
+
+<script>
+// Full-screen GLSL metaballs — organic, iridescent, liquid
+const canvas = document.getElementById('bg');
+const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+let W, H, mx = 0.5, my = 0.5, time = 0;
+
+function resize() {
+  W = canvas.width = innerWidth;
+  H = canvas.height = innerHeight;
+  gl.viewport(0, 0, W, H);
+}
+resize();
+window.addEventListener('resize', resize);
+document.addEventListener('mousemove', e => {
+  mx += (e.clientX / W - mx) * 0.05;
+  my += (e.clientY / H - my) * 0.05;
+});
+
+const vs = `attribute vec2 p;void main(){gl_Position=vec4(p,0,1);}`;
+const fs = `
+precision highp float;
+uniform float t;
+uniform vec2 r;
+uniform vec2 m;
+
+float metaball(vec2 p, vec2 c, float rad) {
+  float d = length(p - c);
+  return rad * rad / (d * d + 0.001);
+}
+
+vec3 pal(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
+  return a + b * cos(6.28318 * (c * t + d));
+}
+
+void main() {
+  vec2 uv = (gl_FragCoord.xy - 0.5 * r) / min(r.x, r.y);
+  
+  // 6 metaballs with organic motion
+  float v = 0.0;
+  v += metaball(uv, vec2(sin(t*0.3)*0.6+m.x*0.5-0.25, cos(t*0.4)*0.4+m.y*0.3-0.15), 0.18);
+  v += metaball(uv, vec2(cos(t*0.5)*0.5, sin(t*0.35)*0.5), 0.22);
+  v += metaball(uv, vec2(sin(t*0.25+2.0)*0.7, cos(t*0.45+1.0)*0.3), 0.15);
+  v += metaball(uv, vec2(cos(t*0.4+3.0)*0.4, sin(t*0.3+2.0)*0.6), 0.2);
+  v += metaball(uv, vec2(sin(t*0.35+4.0)*0.5+m.x*0.3-0.15, cos(t*0.5+3.0)*0.4), 0.16);
+  v += metaball(uv, vec2(cos(t*0.28+1.0)*0.3, sin(t*0.42+4.0)*0.5+m.y*0.2-0.1), 0.14);
+  
+  // Threshold for blob shape
+  float blob = smoothstep(0.95, 1.05, v);
+  
+  // Iridescent coloring based on value and position
+  vec3 col = pal(v * 0.3 + t * 0.05,
+    vec3(0.2, 0.2, 0.3),
+    vec3(0.3, 0.5, 0.4),
+    vec3(1.0, 1.0, 1.0),
+    vec3(0.0, 0.15, 0.2)
+  );
+  
+  // Edge glow
+  float edge = smoothstep(0.85, 0.95, v) - blob;
+  col += vec3(0.3, 0.8, 0.7) * edge * 2.0;
+  
+  // Specular-like highlight
+  float spec = pow(max(0.0, dot(normalize(vec2(dFdx(v), dFdy(v))), normalize(vec2(0.5, 0.8)))), 16.0);
+  col += vec3(1.0) * spec * blob * 0.5;
+  
+  // Fresnel rim
+  float rim = 1.0 - smoothstep(0.95, 1.3, v);
+  col = mix(col, vec3(0.3, 0.9, 0.8), rim * blob * 0.3);
+  
+  col *= blob * 0.85;
+  
+  // Subtle background gradient
+  vec3 bg = mix(vec3(0.0, 0.0, 0.02), vec3(0.02, 0.0, 0.04), uv.y * 0.5 + 0.5);
+  col = mix(bg, col, blob * 0.9 + edge * 0.5);
+  
+  // Bloom-like glow around blobs
+  float glow = smoothstep(0.5, 0.9, v);
+  col += vec3(0.15, 0.5, 0.45) * glow * 0.1;
+  
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+function createShader(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+  return s;
+}
+
+const prog = gl.createProgram();
+gl.attachShader(prog, createShader(gl.VERTEX_SHADER, vs));
+gl.attachShader(prog, createShader(gl.FRAGMENT_SHADER, fs));
+gl.linkProgram(prog);
+gl.useProgram(prog);
+
+const buf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+const pLoc = gl.getAttribLocation(prog, 'p');
+gl.enableVertexAttribArray(pLoc);
+gl.vertexAttribPointer(pLoc, 2, gl.FLOAT, false, 0, 0);
+
+const tLoc = gl.getUniformLocation(prog, 't');
+const rLoc = gl.getUniformLocation(prog, 'r');
+const mLoc = gl.getUniformLocation(prog, 'm');
+
+function render() {
+  time += 0.016;
+  gl.uniform1f(tLoc, time);
+  gl.uniform2f(rLoc, W, H);
+  gl.uniform2f(mLoc, mx, my);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  requestAnimationFrame(render);
+}
+render();
+</script>
+</body>
+</html>

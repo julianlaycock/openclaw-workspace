@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V2A — Liquid Chrome Sphere</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#030308;overflow:hidden;font-family:'Inter',sans-serif;color:#fff}
+canvas{display:block;position:fixed;inset:0}
+.overlay{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.eyebrow{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.2em;color:rgba(255,255,255,0.3);margin-bottom:20px}
+h1{font-family:'Sora';font-size:clamp(36px,6vw,80px);font-weight:800;text-align:center;line-height:1.05;letter-spacing:-0.03em;max-width:700px}
+h1 span{background:linear-gradient(135deg,#4ecdc4,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{font-size:16px;color:rgba(255,255,255,0.35);margin-top:20px;text-align:center;max-width:450px;line-height:1.6}
+.cta{margin-top:36px;display:flex;gap:12px;pointer-events:all}
+.cta a{padding:12px 28px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;transition:all .4s cubic-bezier(.19,1,.22,1)}
+.cta a.primary{background:linear-gradient(135deg,#4ecdc4,#44b3a8);color:#fff}
+.cta a.primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(78,205,196,0.3)}
+.cta a.secondary{border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6)}
+.cta a.secondary:hover{border-color:rgba(255,255,255,0.25);transform:translateY(-2px)}
+.label{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.2);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;z-index:2}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="overlay">
+  <div class="eyebrow">AIFMD II Compliance Platform</div>
+  <h1>Fund compliance,<br><span>automated.</span></h1>
+  <p class="sub">Every decision logged, verified, and cryptographically proven — before your regulator asks.</p>
+  <div class="cta">
+    <a href="#" class="primary">Try Live Demo →</a>
+    <a href="#" class="secondary">View API Docs</a>
+  </div>
+</div>
+<div class="label">V2A — Liquid Chrome Sphere · Move your mouse</div>
+
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(0, 0, 5);
+
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true,alpha:false});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.2;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+
+// Post-processing
+const composer=new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene,camera));
+const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),0.3,0.2,0.4);
+composer.addPass(bloom);
+
+// HDR-like environment using gradient cube
+const pmremGen = new THREE.PMREMGenerator(renderer);
+const envScene = new THREE.Scene();
+const envGeo = new THREE.SphereGeometry(10, 64, 64);
+const envMat = new THREE.ShaderMaterial({
+  side: THREE.BackSide,
+  vertexShader: `varying vec3 vWorldPos; void main(){ vWorldPos = (modelMatrix * vec4(position,1.0)).xyz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+  fragmentShader: `
+    varying vec3 vWorldPos;
+    void main(){
+      vec3 n = normalize(vWorldPos);
+      // Rich colorful environment for reflections
+      vec3 col = vec3(0.0);
+      // Warm light from top-right
+      float d1 = pow(max(0.0, dot(n, normalize(vec3(0.5, 0.8, 0.3)))), 8.0);
+      col += vec3(1.0, 0.6, 0.3) * d1 * 4.0;
+      // Cool light from left
+      float d2 = pow(max(0.0, dot(n, normalize(vec3(-0.7, 0.3, 0.5)))), 6.0);
+      col += vec3(0.3, 0.8, 1.0) * d2 * 3.0;
+      // Purple accent from below
+      float d3 = pow(max(0.0, dot(n, normalize(vec3(0.0, -0.6, -0.4)))), 10.0);
+      col += vec3(0.6, 0.2, 0.9) * d3 * 2.5;
+      // Teal key from front
+      float d4 = pow(max(0.0, dot(n, normalize(vec3(0.0, 0.2, 1.0)))), 12.0);
+      col += vec3(0.3, 0.9, 0.8) * d4 * 3.0;
+      // Subtle ambient
+      col += vec3(0.005, 0.003, 0.01);
+      gl_FragColor = vec4(col, 1.0);
+    }`
+});
+envScene.add(new THREE.Mesh(envGeo, envMat));
+const envRT = pmremGen.fromScene(envScene);
+scene.environment = envRT.texture;
+
+// Lights for extra punch
+const keyLight = new THREE.DirectionalLight(0x4ecdc4, 1.2);
+keyLight.position.set(-3, 3, 4);
+scene.add(keyLight);
+const rimLight = new THREE.DirectionalLight(0xa78bfa, 0.8);
+rimLight.position.set(3, 1, -3);
+scene.add(rimLight);
+const bottomLight = new THREE.PointLight(0xf472b6, 4, 6);
+bottomLight.position.set(0, -3, 2);
+scene.add(bottomLight);
+
+// === NOISE SPHERE with ShaderMaterial ===
+const vertexShader = `
+  uniform float uTime;
+  uniform float uNoiseAmp;
+  uniform vec2 uMouse;
+  varying vec3 vNormal;
+  varying vec3 vWorldPos;
+  varying float vDisplacement;
+  varying float vFresnel;
+
+  // Classic 3D simplex noise
+  vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x,289.0);}
+  vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+  float snoise(vec3 v){
+    const vec2 C=vec2(1.0/6.0,1.0/3.0);
+    const vec4 D=vec4(0.0,0.5,1.0,2.0);
+    vec3 i=floor(v+dot(v,C.yyy));
+    vec3 x0=v-i+dot(i,C.xxx);
+    vec3 g=step(x0.yzx,x0.xyz);
+    vec3 l=1.0-g;
+    vec3 i1=min(g.xyz,l.zxy);
+    vec3 i2=max(g.xyz,l.zxy);
+    vec3 x1=x0-i1+C.xxx;
+    vec3 x2=x0-i2+C.yyy;
+    vec3 x3=x0-D.yyy;
+    i=mod(i,289.0);
+    vec4 p=permute(permute(permute(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));
+    float n_=1.0/7.0;
+    vec3 ns=n_*D.wyz-D.xzx;
+    vec4 j=p-49.0*floor(p*ns.z*ns.z);
+    vec4 x_=floor(j*ns.z);
+    vec4 y_=floor(j-7.0*x_);
+    vec4 x4=x_*ns.x+ns.yyyy;
+    vec4 y=y_*ns.x+ns.yyyy;
+    vec4 h=1.0-abs(x4)-abs(y);
+    vec4 b0=vec4(x4.xy,y.xy);
+    vec4 b1=vec4(x4.zw,y.zw);
+    vec4 s0=floor(b0)*2.0+1.0;
+    vec4 s1=floor(b1)*2.0+1.0;
+    vec4 sh=-step(h,vec4(0.0));
+    vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;
+    vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+    vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);
+    vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+    p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;
+    vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0);
+    m=m*m;
+    return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+  }
+
+  void main(){
+    vec3 pos = position;
+    vec3 norm = normal;
+    
+    // Multi-octave noise displacement
+    float n1 = snoise(norm * 1.2 + uTime * 0.12) * 0.4;
+    float n2 = snoise(norm * 2.5 + uTime * 0.18) * 0.2;
+    float n3 = snoise(norm * 5.0 + uTime * 0.25) * 0.08;
+    float n4 = snoise(norm * 10.0 + uTime * 0.35) * 0.03;
+    float displacement = (n1 + n2 + n3 + n4) * uNoiseAmp;
+    
+    // Mouse proximity influence — bulge toward cursor
+    float mouseInfluence = smoothstep(1.5, 0.0, length(norm.xy - uMouse * 0.6)) * 0.2;
+    displacement += mouseInfluence;
+    
+    vDisplacement = displacement;
+    vec3 newPos = pos + norm * displacement;
+    
+    vWorldPos = (modelMatrix * vec4(newPos, 1.0)).xyz;
+    vNormal = normalize(normalMatrix * norm);
+    
+    // Fresnel
+    vec3 worldViewDir = normalize(cameraPosition - vWorldPos);
+    vFresnel = pow(1.0 - max(dot(worldViewDir, vNormal), 0.0), 3.0);
+    
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.0);
+  }
+`;
+
+const fragmentShader = `
+  uniform float uTime;
+  uniform vec3 uColor1;
+  uniform vec3 uColor2;
+  uniform vec3 uColor3;
+  varying vec3 vNormal;
+  varying vec3 vWorldPos;
+  varying float vDisplacement;
+  varying float vFresnel;
+
+  void main(){
+    vec3 viewDir = normalize(cameraPosition - vWorldPos);
+    
+    // Chrome-like reflection color based on normal direction
+    vec3 reflDir = reflect(-viewDir, vNormal);
+    float envMix = reflDir.y * 0.5 + 0.5;
+    
+    // Liquid chrome base
+    vec3 chrome = mix(
+      vec3(0.02, 0.02, 0.03),  // dark
+      vec3(0.95, 0.95, 1.0),   // bright
+      pow(envMix, 1.5)
+    );
+    
+    // Teal-purple-pink color ramp based on displacement
+    float t = vDisplacement * 2.5 + 0.5;
+    vec3 ramp = t < 0.5 
+      ? mix(uColor1, uColor2, t * 2.0) 
+      : mix(uColor2, uColor3, (t - 0.5) * 2.0);
+    
+    // Blend chrome with color
+    vec3 col = mix(chrome, ramp, 0.35 + vFresnel * 0.3);
+    
+    // Specular highlights (multi-light)
+    vec3 L1 = normalize(vec3(-1.0, 1.0, 1.5));
+    vec3 L2 = normalize(vec3(1.0, 0.5, -1.0));
+    vec3 L3 = normalize(vec3(0.0, -1.0, 0.5));
+    
+    float spec1 = pow(max(dot(reflect(-L1, vNormal), viewDir), 0.0), 64.0);
+    float spec2 = pow(max(dot(reflect(-L2, vNormal), viewDir), 0.0), 48.0);
+    float spec3 = pow(max(dot(reflect(-L3, vNormal), viewDir), 0.0), 32.0);
+    
+    col += vec3(1.0, 0.95, 0.9) * spec1 * 0.45;
+    col += vec3(0.6, 0.8, 1.0) * spec2 * 0.2;
+    col += vec3(0.9, 0.5, 0.8) * spec3 * 0.15;
+    
+    // Rim/fresnel — subtle
+    col += uColor1 * vFresnel * 0.2;
+    col += uColor3 * pow(vFresnel, 5.0) * 0.1;
+    
+    // Iridescence: thin-film interference simulation
+    float iri = sin(vDisplacement * 15.0 + vFresnel * 8.0 + uTime * 0.3);
+    vec3 iriColor = 0.5 + 0.5 * cos(6.28 * (iri * vec3(1.0, 0.8, 0.6) + vec3(0.0, 0.15, 0.3)));
+    col = mix(col, iriColor, vFresnel * 0.12);
+    
+    gl_FragColor = vec4(col, 1.0);
+  }
+`;
+
+const sphereGeo = new THREE.IcosahedronGeometry(1.15, 200);
+const sphereMat = new THREE.ShaderMaterial({
+  uniforms: {
+    uTime: { value: 0 },
+    uNoiseAmp: { value: 1.0 },
+    uMouse: { value: new THREE.Vector2(0, 0) },
+    uColor1: { value: new THREE.Color(0x4ecdc4) },
+    uColor2: { value: new THREE.Color(0x6c63ff) },
+    uColor3: { value: new THREE.Color(0xf472b6) }
+  },
+  vertexShader,
+  fragmentShader
+});
+const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+scene.add(sphere);
+
+// Orbital ring particles
+const ringCount = 800;
+const ringGeo = new THREE.BufferGeometry();
+const ringPos = new Float32Array(ringCount * 3);
+const ringVel = new Float32Array(ringCount);
+const ringSizes = new Float32Array(ringCount);
+for(let i = 0; i < ringCount; i++){
+  const a = (i / ringCount) * Math.PI * 2;
+  const r = 1.8 + Math.random() * 0.6;
+  const tilt = (Math.random() - 0.5) * 0.4;
+  ringPos[i*3] = Math.cos(a) * r;
+  ringPos[i*3+1] = tilt + Math.sin(a * 3) * 0.1;
+  ringPos[i*3+2] = Math.sin(a) * r;
+  ringVel[i] = 0.2 + Math.random() * 0.3;
+  ringSizes[i] = 1.0 + Math.random() * 2.0;
+}
+ringGeo.setAttribute('position', new THREE.BufferAttribute(ringPos, 3));
+ringGeo.setAttribute('size', new THREE.BufferAttribute(ringSizes, 1));
+
+const ringMat = new THREE.PointsMaterial({
+  color: 0x4ecdc4, size: 0.012, transparent: true, opacity: 0.25,
+  blending: THREE.AdditiveBlending, depthWrite: false
+});
+const ringParticles = new THREE.Points(ringGeo, ringMat);
+scene.add(ringParticles);
+
+// Dust particles in background
+const dustCount = 500;
+const dustGeo = new THREE.BufferGeometry();
+const dustPos = new Float32Array(dustCount * 3);
+for(let i = 0; i < dustCount; i++){
+  dustPos[i*3] = (Math.random() - 0.5) * 14;
+  dustPos[i*3+1] = (Math.random() - 0.5) * 10;
+  dustPos[i*3+2] = (Math.random() - 0.5) * 8;
+}
+dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+scene.add(new THREE.Points(dustGeo, new THREE.PointsMaterial({
+  color: 0x6c63ff, size: 0.008, transparent: true, opacity: 0.15,
+  blending: THREE.AdditiveBlending, depthWrite: false
+})));
+
+let tmx = 0, tmy = 0, mx = 0, my = 0;
+document.addEventListener('mousemove', e => {
+  tmx = (e.clientX / innerWidth - 0.5) * 2;
+  tmy = (e.clientY / innerHeight - 0.5) * 2;
+});
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight);
+});
+
+const clock = new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  mx += (tmx - mx) * 0.03;
+  my += (tmy - my) * 0.03;
+
+  sphereMat.uniforms.uTime.value = t;
+  sphereMat.uniforms.uMouse.value.set(mx, my);
+
+  sphere.rotation.y = t * 0.06 + mx * 0.15;
+  sphere.rotation.x = Math.sin(t * 0.08) * 0.1 - my * 0.08;
+  sphere.position.y = Math.sin(t * 0.35) * 0.04;
+
+  // Rotate ring particles
+  const rp = ringGeo.attributes.position.array;
+  for(let i = 0; i < ringCount; i++){
+    const x = rp[i*3], z = rp[i*3+2];
+    const a = Math.atan2(z, x) + ringVel[i] * 0.003;
+    const r = Math.sqrt(x*x + z*z);
+    rp[i*3] = Math.cos(a) * r;
+    rp[i*3+2] = Math.sin(a) * r;
+    rp[i*3+1] += Math.sin(t * 0.5 + i) * 0.0003;
+  }
+  ringGeo.attributes.position.needsUpdate = true;
+  ringParticles.rotation.y = t * 0.01;
+
+  camera.position.x = mx * 0.35;
+  camera.position.y = -my * 0.2;
+  camera.lookAt(0, 0, 0);
+
+  composer.render();
+}
+animate();
+</script>
+</body>
+</html>

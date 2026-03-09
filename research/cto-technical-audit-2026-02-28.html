@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Technical Audit — Feb 28, 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+  
+  :root {
+    --bg: #0f1419;
+    --bg-card: #1a2028;
+    --bg-card-alt: #1e2830;
+    --border: rgba(255,255,255,0.06);
+    --text: rgba(255,255,255,0.88);
+    --text-muted: rgba(255,255,255,0.5);
+    --text-dim: rgba(255,255,255,0.3);
+    --accent: #00a3ff;
+    --accent-glow: rgba(0,163,255,0.15);
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --orange: #fb923c;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+
+  .container { max-width: 960px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+  .header .badge {
+    display: inline-block;
+    background: var(--accent-glow);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(0,163,255,0.2);
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .header .subtitle {
+    color: var(--text-muted);
+    font-size: 16px;
+    font-weight: 400;
+  }
+  .header .date {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-top: 12px;
+  }
+
+  /* Score Hero */
+  .score-hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    padding: 48px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 48px;
+  }
+  .score-circle {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    flex-shrink: 0;
+  }
+  .score-circle svg { transform: rotate(-90deg); }
+  .score-circle .track { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 8; }
+  .score-circle .fill { fill: none; stroke: var(--accent); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 440; stroke-dashoffset: 185; transition: stroke-dashoffset 1s ease; }
+  .score-number {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .score-number .big { font-size: 48px; font-weight: 700; color: var(--accent); }
+  .score-number .label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .score-summary h2 { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+  .score-summary p { color: var(--text-muted); font-size: 14px; line-height: 1.8; max-width: 420px; }
+  .score-summary .highlight { color: var(--green); font-weight: 500; }
+  .score-summary .risk { color: var(--red); font-weight: 500; }
+
+  /* Section */
+  .section { margin-bottom: 48px; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .section h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+
+  /* Score Table */
+  .score-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .score-table th {
+    text-align: left;
+    padding: 12px 16px;
+    color: var(--text-dim);
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+  .score-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .score-table tr:last-child td { border-bottom: none; }
+  .score-table .category { font-weight: 500; }
+  .score-table .weight { color: var(--text-dim); }
+  .score-bar-cell { width: 200px; }
+  .score-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .score-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.8s ease;
+  }
+  .score-bar-fill.high { background: var(--green); }
+  .score-bar-fill.mid { background: var(--yellow); }
+  .score-bar-fill.low { background: var(--orange); }
+  .score-bar-fill.crit { background: var(--red); }
+  .score-val { font-weight: 600; font-size: 13px; min-width: 28px; text-align: right; }
+  .score-table .total-row td { border-top: 2px solid var(--border); font-weight: 600; }
+
+  /* Category Cards */
+  .cat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 16px;
+  }
+  .cat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    cursor: pointer;
+  }
+  .cat-card-header h3 { font-size: 16px; font-weight: 600; }
+  .cat-score-badge {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 8px;
+  }
+  .cat-score-badge.high { background: rgba(52,211,153,0.15); color: var(--green); }
+  .cat-score-badge.mid { background: rgba(251,191,36,0.15); color: var(--yellow); }
+  .cat-score-badge.low { background: rgba(251,146,60,0.15); color: var(--orange); }
+  .cat-score-badge.crit { background: rgba(248,113,113,0.15); color: var(--red); }
+  .cat-body { display: none; }
+  .cat-card.open .cat-body { display: block; }
+  .cat-card.open .cat-chevron { transform: rotate(180deg); }
+  .cat-chevron { transition: transform 0.2s; color: var(--text-dim); }
+  .cat-body p { color: var(--text-muted); font-size: 13px; margin-bottom: 12px; }
+  .cat-body strong { color: var(--text); }
+  .cat-body .label { 
+    font-size: 10px; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    margin-bottom: 6px;
+    margin-top: 16px;
+  }
+  .cat-body .label.good { color: var(--green); }
+  .cat-body .label.weak { color: var(--red); }
+  .cat-body .label.fix { color: var(--accent); }
+
+  /* Roadmap */
+  .roadmap-item {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    align-items: flex-start;
+  }
+  .roadmap-priority {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .roadmap-priority.p0 { background: rgba(248,113,113,0.15); color: var(--red); }
+  .roadmap-priority.p1 { background: rgba(251,191,36,0.15); color: var(--yellow); }
+  .roadmap-priority.p2 { background: rgba(0,163,255,0.15); color: var(--accent); }
+  .roadmap-priority.p3 { background: rgba(255,255,255,0.06); color: var(--text-dim); }
+  .roadmap-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .roadmap-content p { font-size: 13px; color: var(--text-muted); }
+  .roadmap-meta {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .roadmap-meta span { display: flex; align-items: center; gap: 4px; }
+
+  /* Investor Ready */
+  .verdict-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px;
+  }
+  .verdict-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+  .verdict-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 16px; line-height: 1.8; }
+  .verdict-card .callout {
+    background: var(--accent-glow);
+    border: 1px solid rgba(0,163,255,0.2);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.7;
+    margin: 20px 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .verdict-card ul { padding-left: 20px; margin: 12px 0; }
+  .verdict-card li { color: var(--text-muted); font-size: 14px; margin-bottom: 8px; }
+
+  /* Stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+  .stat-card .num { font-size: 28px; font-weight: 700; color: var(--accent); }
+  .stat-card .desc { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .score-hero { flex-direction: column; padding: 32px 24px; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">CTO Technical Audit</div>
+    <h1>Caelith Codebase Assessment</h1>
+    <div class="subtitle">Comprehensive technical review for investor readiness</div>
+    <div class="date">February 28, 2026 · Caelith HQ</div>
+  </div>
+
+  <!-- Score Hero -->
+  <div class="score-hero">
+    <div class="score-circle">
+      <svg viewBox="0 0 160 160">
+        <circle class="track" cx="80" cy="80" r="70"/>
+        <circle class="fill" cx="80" cy="80" r="70"/>
+      </svg>
+      <div class="score-number">
+        <div class="big">58</div>
+        <div class="label">out of 100</div>
+      </div>
+    </div>
+    <div class="score-summary">
+      <h2>Strong Foundation, Gaps in Safety Nets</h2>
+      <p>
+        Remarkably mature for 10 weeks / 1 developer. 
+        <span class="highlight">Biggest strength:</span> security posture and domain depth — 72 API routes encoding real regulatory logic. 
+        <span class="risk">Biggest risk:</span> CI only runs typecheck — 35 test files could be silently broken.
+        <br><br>
+        <strong>Quick win: expanding CI → 68/100 in one afternoon.</strong>
+      </p>
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="num">~80K</div>
+      <div class="desc">Lines of TypeScript</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">412</div>
+      <div class="desc">Source Files</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">72</div>
+      <div class="desc">API Routes</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">73</div>
+      <div class="desc">DB Migrations</div>
+    </div>
+  </div>
+
+  <!-- Detailed Scores -->
+  <div class="section">
+    <div class="section-label">Detailed Scoring</div>
+    <h2>Category Breakdown</h2>
+    <table class="score-table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Weight</th>
+          <th class="score-bar-cell">Score</th>
+          <th>Weighted</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="category">Security Posture</td><td class="weight">15%</td><td class="score-bar-cell"><div class="score-bar-wrap"><div class="score-bar"><div class="score-bar-fill high" style="width:72%"></div></div><span class="score-val">72</span></div></td><td>10.8</td></tr>
+        <tr><td class="category">Data Integrity & Compliance</td><td class="weight">5%</td><td class="score-bar-cell"><div class="score-bar-wrap"><div class="score-bar"><div class="score-bar-fill high" style="width:70%"></div></div><span class="score-val">70</span></div></td><td>3.5</td></tr>
+        <tr><td class="category">Code Quality & Architecture</td><td class="weight">15%</td><td class="score-bar-cell"><div class="score-bar-wrap"><div class="score-bar"><div class="score-bar-fill mid" style="width:68%"></div></div><span class="score-val">68</span></div></td><td>10.2</td></tr>
+        <tr><td class="category">Error Handling & Observability</td><td class="weight">7%</td><td class="score-bar-cell"><div class="score-bar-wrap"><div class="score-bar"><div class="score-bar-fill mid" style="width:65%"></div></div><span class="score-val">65</span></div></td><td>4.55</td></tr>
+        <tr><td class="category">API Design & Documentation</td><td class="weight">10%</td><td class="score-bar-cell"><div class="score-bar-wrap"><div class="score-bar"><div class="score-bar-fill mid" style="width:62%"></div></div><span class="score-val">62</span></div></td><td>6.2</td></tr>
+        <tr><td class="category">Documentation & Onboarding</td><td class="weight">5%</td><td class="score-bar-cell"><div class="score-bar-wrap"><div class="score-bar"><div class="score-bar-fill mid" style="width:60%"></div></div><span class="score-val">60</span></div></td><td>3.0</td></tr>
+        <tr><td class="category">Frontend UX & Accessibility</td><td class="weight">8%</td><td class="score-bar-cell"><div class="score-bar-wrap"><div class="score-bar"><div class="score-bar-fill low" style="width:55%"></div></div><span class="score-val">55</span></div></td><td>4.4</td></tr>
+        <tr><td class="category">Dependency Management</td><td class="weight">5%</td><td class="score-bar-cell"><div class="score-bar-wrap"><div class="score-bar"><div class="score-bar-fill low" style="width:55%"></div></div><span class="score-val">55</span></div></td><td>2.75</td></tr>
+        <tr><td class="category">Performance & Scalability</td><td class="weight">10%</td><td class="score-bar-cell"><div class="score-bar-wrap"><div class="score-bar"><div class="score-bar-fill low" style="width:50%"></div></div><span class="score-val">50</span></div></td><td>5.0</td></tr>
+        <tr><td class="category">Test Coverage</td><td class="weight">10%</td><td class="score-bar-cell"><div class="score-bar-wrap"><div class="score-bar"><div class="score-bar-fill crit" style="width:42%"></div></div><span class="score-val">42</span></div></td><td>4.2</td></tr>
+        <tr><td class="category">CI/CD & DevOps</td><td class="weight">10%</td><td class="score-bar-cell"><div class="score-bar-wrap"><div class="score-bar"><div class="score-bar-fill crit" style="width:30%"></div></div><span class="score-val">30</span></div></td><td>3.0</td></tr>
+        <tr class="total-row"><td class="category">TOTAL</td><td></td><td></td><td><strong style="color:var(--accent);font-size:16px">58 / 100</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Category Deep Dives -->
+  <div class="section">
+    <div class="section-label">Deep Dives</div>
+    <h2>Category Analysis</h2>
+
+    <div class="cat-card">
+      <div class="cat-card-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>🔒 Security Posture</h3>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="cat-score-badge high">72/100</span>
+          <svg class="cat-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="cat-body">
+        <div class="label good">✓ What's Good</div>
+        <p>Genuinely impressive for 10 weeks. Three-tier rate limiting (API 500/15min, auth 50/15min, export 10/min) with DB-backed store. CSRF origin validation against allowlist. httpOnly/secure/SameSite=lax cookies. bcrypt cost factor 12. JWT 32-char minimum. SSRF guard. Input sanitization with prototype pollution defense. Documented security audit with implemented fixes.</p>
+        <div class="label weak">✗ What's Weak</div>
+        <p>CSP requires unsafe-inline + unsafe-eval (Next.js limitation). IP-based rate limiting = corporate NAT false positives. No WAF/bot detection. No request signing for webhooks.</p>
+        <div class="label fix">→ Top Fixes</div>
+        <p>(1) Nonce-based CSP via Next.js middleware. (2) Per-user authenticated rate limiting.</p>
+      </div>
+    </div>
+
+    <div class="cat-card">
+      <div class="cat-card-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>🏗️ Code Quality & Architecture</h3>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="cat-score-badge mid">68/100</span>
+          <svg class="cat-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="cat-body">
+        <div class="label good">✓ What's Good</div>
+        <p>Textbook layered architecture: routes → services → repositories → db. Clean tenant-scoping helpers. Parameterized queries everywhere. 12 repositories, 60+ services. TypeScript throughout.</p>
+        <div class="label weak">✗ What's Weak</div>
+        <p>72 route files for 1 developer = potential feature sprawl. Inline schema creation in server.ts should be migrations. No shared validation library (zod/joi).</p>
+        <div class="label fix">→ Top Fixes</div>
+        <p>(1) Move inline schemas to migrations. (2) Add shared request validation layer (zod).</p>
+      </div>
+    </div>
+
+    <div class="cat-card">
+      <div class="cat-card-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>🗄️ Data Integrity & Compliance</h3>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="cat-score-badge high">70/100</span>
+          <svg class="cat-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="cat-body">
+        <div class="label good">✓ What's Good</div>
+        <p>Multi-tenant RLS prep with UUID-validated SET LOCAL. 73 migrations = disciplined schema evolution. Cryptographic integrity hashing. Evidence bundles. XSD-validated Annex IV. Audit trails. GDPR endpoints.</p>
+        <div class="label weak">✗ What's Weak</div>
+        <p>RLS disabled (NO FORCE) — appropriate for single-tenant but must enable before second customer. No data retention policies. No PII audit beyond pii-stripper.</p>
+        <div class="label fix">→ Top Fixes</div>
+        <p>(1) Document data retention policy. (2) Enable RLS before multi-tenant.</p>
+      </div>
+    </div>
+
+    <div class="cat-card">
+      <div class="cat-card-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>👁️ Error Handling & Observability</h3>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="cat-score-badge mid">65/100</span>
+          <svg class="cat-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="cat-body">
+        <div class="label good">✓ What's Good</div>
+        <p>Structured JSON logger with context (requestId, userId, tenantId, durationMs). Sentry integration. Request ID propagation. PostgreSQL error code mapping. Graceful shutdown handlers. Error count endpoint for monitoring.</p>
+        <div class="label weak">✗ What's Weak</div>
+        <p>No metrics (Prometheus/StatsD). No alerting rules. No distributed tracing. No SLO definitions.</p>
+        <div class="label fix">→ Top Fixes</div>
+        <p>(1) Set up Sentry DSN + alerts for error spikes. (2) Add UptimeRobot free tier.</p>
+      </div>
+    </div>
+
+    <div class="cat-card">
+      <div class="cat-card-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>📡 API Design & Documentation</h3>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="cat-score-badge mid">62/100</span>
+          <svg class="cat-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="cat-body">
+        <div class="label good">✓ What's Good</div>
+        <p>Versioned API (/api/v1/), public + private routers, OpenAPI 3.0 auto-gen, API key system (hashed, scoped, revocable, last-used tracking), X-API-Version header, deep health check.</p>
+        <div class="label weak">✗ What's Weak</div>
+        <p>No rate limit docs for consumers. No API changelog. No SDK/client library. Error format not documented.</p>
+        <div class="label fix">→ Top Fixes</div>
+        <p>(1) Document error response format in OpenAPI spec. (2) Write API quickstart for partners.</p>
+      </div>
+    </div>
+
+    <div class="cat-card">
+      <div class="cat-card-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>🧪 Test Coverage</h3>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="cat-score-badge crit">42/100</span>
+          <svg class="cat-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="cat-body">
+        <div class="label good">✓ What's Good</div>
+        <p>35 test files covering auth, security, multi-tenant, compliance, screening, XSD validation. Coverage config targets 80% with 60% starting point.</p>
+        <div class="label weak">✗ What's Weak</div>
+        <p><strong>CI does not run tests.</strong> Tests could be broken right now. No frontend tests. ~50% route coverage at best. A broken test that nobody runs = no test.</p>
+        <div class="label fix">→ Top Fixes</div>
+        <p>(1) Add npm test to CI — alone moves score +15 points. (2) Set up test DB in CI (PostgreSQL service container).</p>
+      </div>
+    </div>
+
+    <div class="cat-card">
+      <div class="cat-card-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>🚀 CI/CD & DevOps</h3>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="cat-score-badge crit">30/100</span>
+          <svg class="cat-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="cat-body">
+        <div class="label good">✓ What's Good</div>
+        <p>Railway auto-deploy works. Keep-alive pings prevent cold starts. Backup scripts with 7-day rotation. Dependabot configured.</p>
+        <div class="label weak">✗ What's Weak</div>
+        <p><strong>Weakest category.</strong> CI = frontend typecheck only. No backend typecheck, no tests, no lint, no build verification. No staging environment. No rollback procedure. No post-deploy health check.</p>
+        <div class="label fix">→ Top Fixes</div>
+        <p>(1) Expand CI: backend typecheck + npm test + npm build + npm audit. Takes 2-4 hours, adds massive safety. (2) Add post-deploy health check.</p>
+      </div>
+    </div>
+
+    <div class="cat-card">
+      <div class="cat-card-header" onclick="this.parentElement.classList.toggle('open')">
+        <h3>⚡ Performance & Scalability</h3>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="cat-score-badge low">50/100</span>
+          <svg class="cat-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="cat-body">
+        <div class="label good">✓ What's Good</div>
+        <p>Connection pooling (max 20, idle timeout). Next.js standalone output. Request duration tracking. Rate limiting for protection.</p>
+        <div class="label weak">✗ What's Weak</div>
+        <p>No application caching (Redis/in-memory). No response compression. No CDN. No slow query tracking. Sanctions refresh runs in-process. Would struggle at 100+ concurrent users.</p>
+        <div class="label fix">→ Top Fixes</div>
+        <p>(1) Add compression middleware (2 lines). (2) Add Redis when user count justifies it.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Roadmap -->
+  <div class="section">
+    <div class="section-label">Strategic Roadmap</div>
+    <h2>Priority Actions</h2>
+
+    <div class="roadmap-item">
+      <span class="roadmap-priority p0">P0</span>
+      <div class="roadmap-content">
+        <h4>Expand CI Pipeline</h4>
+        <p>Add npm test, backend typecheck, npm build, npm audit --production to GitHub Actions</p>
+        <div class="roadmap-meta">
+          <span>⏱ 2-4 hours</span>
+          <span>📈 +8 points</span>
+          <span>💰 Investor confidence</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <span class="roadmap-priority p0">P0</span>
+      <div class="roadmap-content">
+        <h4>Post-Deploy Health Verification</h4>
+        <p>Curl /api/health/ready after Railway deploys — prevent broken production silently</p>
+        <div class="roadmap-meta">
+          <span>⏱ 1 hour</span>
+          <span>📈 +2 points</span>
+          <span>💰 Reliability</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <span class="roadmap-priority p1">P1</span>
+      <div class="roadmap-content">
+        <h4>Architecture Overview + System Diagram</h4>
+        <p>1-page doc for investor due diligence and future developer onboarding</p>
+        <div class="roadmap-meta">
+          <span>⏱ 2 hours</span>
+          <span>📈 +3 points</span>
+          <span>💰 Due diligence</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <span class="roadmap-priority p1">P1</span>
+      <div class="roadmap-content">
+        <h4>Compression + Response Caching</h4>
+        <p>Add gzip compression middleware and cache headers for static responses</p>
+        <div class="roadmap-meta">
+          <span>⏱ 1 hour</span>
+          <span>📈 +2 points</span>
+          <span>💰 Demo performance</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <span class="roadmap-priority p1">P1</span>
+      <div class="roadmap-content">
+        <h4>Lighthouse CI + Accessibility Fixes</h4>
+        <p>EU Accessibility Act (EAA 2025) compliance — run audit, fix critical issues</p>
+        <div class="roadmap-meta">
+          <span>⏱ 4 hours</span>
+          <span>📈 +3 points</span>
+          <span>💰 Compliance selling point</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <span class="roadmap-priority p2">P2</span>
+      <div class="roadmap-content">
+        <h4>Uptime Monitoring (UptimeRobot)</h4>
+        <p>Free tier, catch outages before customers do</p>
+        <div class="roadmap-meta">
+          <span>⏱ 30 min</span>
+          <span>📈 +2 points</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <span class="roadmap-priority p2">P2</span>
+      <div class="roadmap-content">
+        <h4>Nonce-Based CSP</h4>
+        <p>Eliminate unsafe-inline/unsafe-eval via Next.js middleware</p>
+        <div class="roadmap-meta">
+          <span>⏱ 4-6 hours</span>
+          <span>📈 +2 points</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <span class="roadmap-priority p2">P2</span>
+      <div class="roadmap-content">
+        <h4>Frontend Component Tests</h4>
+        <p>5-10 critical flow tests with React Testing Library</p>
+        <div class="roadmap-meta">
+          <span>⏱ 1-2 days</span>
+          <span>📈 +4 points</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <span class="roadmap-priority p3">P3</span>
+      <div class="roadmap-content">
+        <h4>Shared Validation Layer (Zod)</h4>
+        <p>Reduce per-route boilerplate, enforce input schemas</p>
+        <div class="roadmap-meta">
+          <span>⏱ 2-3 days</span>
+          <span>📈 +3 points</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-item">
+      <span class="roadmap-priority p3">P3</span>
+      <div class="roadmap-content">
+        <h4>API Integration Guide</h4>
+        <p>1-page quickstart for partners and enterprise integrations</p>
+        <div class="roadmap-meta">
+          <span>⏱ 4 hours</span>
+          <span>📈 +2 points</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Verdict -->
+  <div class="section">
+    <div class="section-label">Honest Assessment</div>
+    <h2>Is This Codebase Investor-Ready?</h2>
+
+    <div class="verdict-card">
+      <h3>Not yet — but 4-6 hours of work away from defensible.</h3>
+      
+      <p>The codebase is remarkably strong for a 10-week solo project. The domain depth — 72 API routes covering AIFMD II compliance, XSD-validated Annex IV generation, sanctions screening, investor eligibility, cryptographic audit trails — takes competitors months to replicate. Security posture is better than most Series A startups.</p>
+
+      <p><strong>But a technical investor would flag these in 5 minutes:</strong></p>
+      <ul>
+        <li><strong>"Your CI only runs typecheck. How do you know your 35 test files pass?"</strong> — Easy kill shot. Fix today.</li>
+        <li><strong>"What's your bus factor?"</strong> — One developer, no architecture docs. Needs mitigation.</li>
+        <li><strong>"Show me your test coverage report."</strong> — Can't generate one yet. Wire up vitest coverage in CI.</li>
+      </ul>
+
+      <div class="callout">
+        💡 What Julian should say in VC conversations:<br><br>
+        "We have 80,000 lines of TypeScript with 35 test suites, comprehensive security hardening backed by a documented audit, multi-tenant architecture ready for scale, and domain-specific features that encode 10 weeks of regulatory research. Our CI runs typecheck, tests, and security audits on every push."<br><br>
+        ⚠️ That last sentence needs to be true first.
+      </div>
+
+      <p>The honest truth: this is a <strong>58/100 codebase that can be 68/100 in one afternoon</strong>. The foundation is strong. The gaps are mechanical, not architectural. The code reflects a developer who thinks about security, maintainability, and compliance — exactly the traits that matter for regtech.</p>
+
+      <p style="color:var(--accent);font-weight:500;margin-top:24px">Total achievable improvement with full roadmap: 58 → 89/100</p>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:40px 0;color:var(--text-dim);font-size:12px">
+    Generated by Caelith CTO Audit · February 28, 2026
+  </div>
+
+</div>
+
+<script>
+// Open first card by default
+document.querySelector('.cat-card')?.classList.add('open');
+</script>
+</body>
+</html>

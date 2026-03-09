@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Caelith — Video Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#06080b;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:'Sora',system-ui,sans-serif;gap:18px;padding:20px}
+canvas{width:100%;max-width:1060px;border-radius:14px;box-shadow:0 0 100px rgba(0,0,0,.95)}
+.ctrl{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:1060px}
+.row{display:flex;gap:10px;align-items:center}
+button{background:linear-gradient(135deg,#C5E0EE,#E8A87C);color:#0b0d10;border:none;padding:13px 30px;border-radius:10px;font-size:14px;font-weight:700;font-family:'Sora',system-ui;cursor:pointer;transition:opacity .18s,transform .1s}
+button:hover{opacity:.88;transform:translateY(-1px)}
+button:disabled{opacity:.3;cursor:not-allowed;transform:none}
+button.sec{background:rgba(255,255,255,.07);color:#fff;border:1px solid rgba(255,255,255,.1)}
+#pbar{width:100%;height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
+#pfill{height:100%;width:0%;background:linear-gradient(90deg,#C5E0EE,#E8A87C);border-radius:2px;transition:width .08s linear}
+#status{color:rgba(255,255,255,.35);font-size:12px;font-family:'JetBrains Mono',monospace}
+#dl{display:none;color:#34d399;font-weight:700;text-decoration:none;padding:10px 22px;border:1px solid rgba(52,211,153,.28);border-radius:8px;background:rgba(52,211,153,.06);font-size:13px}
+.hint{color:rgba(255,255,255,.16);font-size:11px;font-family:'JetBrains Mono',monospace;text-align:center;line-height:1.8}
+</style>
+</head>
+<body>
+<canvas id="cv" width="1280" height="720"></canvas>
+<div id="pbar"><div id="pfill"></div></div>
+<div class="ctrl">
+  <div class="row">
+    <button id="btnRec">⏺ Record 60s Video</button>
+    <button class="sec" id="btnReset">↺ Restart Preview</button>
+  </div>
+  <span id="status">Preview — click Record to generate .webm</span>
+  <a id="dl">⬇ Download Video (.webm)</a>
+  <p class="hint">Opens in Chrome/VLC/Firefox · Convert to .mp4 free with VLC (File → Convert/Save)</p>
+</div>
+<script>
+// ═══════════════════════════════════════════════
+//  SETUP
+// ═══════════════════════════════════════════════
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+const W=1280,H=720;
+
+// Grain texture (3 frames, pre-baked)
+const GS=512;
+const grainFrames=Array.from({length:3},()=>{
+  const c=document.createElement('canvas');
+  c.width=GS;c.height=GS;
+  const gc=c.getContext('2d');
+  const d=gc.createImageData(GS,GS);
+  for(let i=0;i<d.data.length;i+=4){
+    const n=Math.random()*55;
+    d.data[i]=n;d.data[i+1]=n;d.data[i+2]=n;d.data[i+3]=22;
+  }
+  gc.putImageData(d,0,0);
+  return c;
+});
+
+// ═══════════════════════════════════════════════
+//  MATH
+// ═══════════════════════════════════════════════
+const clamp=(v,a,b)=>Math.min(Math.max(v,a),b);
+const prg=(t,s,e)=>clamp((t-s)/(e-s),0,1);
+const eO=t=>1-Math.pow(1-t,3);
+const eI=t=>t*t*t;
+const eIO=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+
+// ═══════════════════════════════════════════════
+//  PALETTE
+// ═══════════════════════════════════════════════
+const C={
+  ink:'#0b0d10',warm:'#E8A87C',accent:'#C5E0EE',
+  green:'#34d399',red:'#f87171',
+  dim:'rgba(255,255,255,0.14)',muted:'rgba(255,255,255,0.46)',
+  navy:'#1B3764',skin:'#F4C8A0',hair:'#3D2314',
+};
+
+// ═══════════════════════════════════════════════
+//  STARS
+// ═══════════════════════════════════════════════
+const STARS=Array.from({length:130},(_,i)=>({
+  x:(Math.sin(i*7.39)*.5+.5)*W,
+  y:(Math.sin(i*13.17)*.5+.5)*H,
+  r:Math.sin(i*3.14)*.75+1.1,
+  ph:i*.618,
+}));
+function drawStars(t,a=1){
+  ctx.save();
+  STARS.forEach(s=>{
+    const tw=.25+.75*(.5+.5*Math.sin(t*1.3+s.ph));
+    ctx.globalAlpha=tw*a;
+    ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+  });
+  ctx.globalAlpha=1;ctx.restore();
+}
+
+// ═══════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════
+function rr(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
+function grid(a=.022){
+  ctx.save();ctx.strokeStyle=`rgba(255,255,255,${a})`;ctx.lineWidth=1;
+  for(let x=0;x<=W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<=H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.restore();
+}
+function radBg(x,y,r,col){
+  const g=ctx.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0,col);g.addColorStop(1,'transparent');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+}
+function grain(frame){
+  const pat=ctx.createPattern(grainFrames[frame%3],'repeat');
+  ctx.save();ctx.globalAlpha=.055;ctx.globalCompositeOperation='screen';
+  ctx.fillStyle=pat;ctx.fillRect(0,0,W,H);
+  ctx.restore();
+}
+function txt(str,x,y,font,col,align='left'){
+  ctx.font=font;ctx.fillStyle=col;ctx.textAlign=align;ctx.fillText(str,x,y);
+}
+function fadeText(str,x,y,font,col,a,align='left'){
+  ctx.save();ctx.globalAlpha*=a;txt(str,x,y,font,col,align);ctx.restore();
+}
+function overlay(str,x,y,a){
+  // Big cinematic text overlay
+  ctx.save();ctx.globalAlpha*=a;
+  ctx.fillStyle='rgba(0,0,0,.45)';
+  rr(x-16,y-28,ctx.measureText(str).width+32,38,6);ctx.fill();
+  txt(str,x,y,'700 22px "Sora",system-ui','#fff','left');
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════
+//  SOPHIE — Flat Design Character
+// ═══════════════════════════════════════════════
+function sophie(cx,cy,sc=1,mood='stress'){
+  ctx.save();
+  const s=sc;
+  const skin=C.skin, hair=C.hair, navy=C.navy;
+
+  // Chair back
+  ctx.fillStyle='#1c1e24';
+  rr(cx-40*s,cy+12*s,10*s,60*s,5*s);ctx.fill();
+  rr(cx+30*s,cy+12*s,10*s,60*s,5*s);ctx.fill();
+  rr(cx-40*s,cy+10*s,80*s,14*s,5*s);ctx.fill();
+  ctx.fillStyle='#14161a';
+  rr(cx-42*s,cy+68*s,84*s,16*s,8*s);ctx.fill();
+
+  // Body / blazer
+  ctx.fillStyle=navy;
+  ctx.beginPath();
+  ctx.moveTo(cx-30*s,cy+24*s);ctx.lineTo(cx+30*s,cy+24*s);
+  ctx.lineTo(cx+42*s,cy+90*s);ctx.lineTo(cx-42*s,cy+90*s);ctx.closePath();ctx.fill();
+  // Lapels
+  ctx.fillStyle='#E8EEF5';
+  ctx.beginPath();ctx.moveTo(cx-12*s,cy+24*s);ctx.lineTo(cx,cy+46*s);ctx.lineTo(cx+12*s,cy+24*s);ctx.closePath();ctx.fill();
+  // Collar dot
+  ctx.fillStyle='rgba(197,224,238,.3)';
+  ctx.beginPath();ctx.arc(cx,cy+42*s,4*s,0,Math.PI*2);ctx.fill();
+
+  // Arms
+  ctx.fillStyle=navy;
+  ctx.beginPath();ctx.ellipse(cx-36*s,cy+50*s,10*s,26*s,.28,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(cx+36*s,cy+50*s,10*s,26*s,-.28,0,Math.PI*2);ctx.fill();
+  // Hands
+  ctx.fillStyle=skin;
+  ctx.beginPath();ctx.arc(cx-34*s,cy+74*s,9*s,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+34*s,cy+74*s,9*s,0,Math.PI*2);ctx.fill();
+
+  // Neck
+  ctx.fillStyle=skin;rr(cx-8*s,cy+14*s,16*s,14*s,4*s);ctx.fill();
+
+  // Head
+  ctx.fillStyle=skin;
+  ctx.beginPath();ctx.ellipse(cx,cy,30*s,34*s,0,0,Math.PI*2);ctx.fill();
+
+  // Hair base
+  ctx.fillStyle=hair;
+  ctx.beginPath();ctx.ellipse(cx,cy-16*s,31*s,22*s,0,Math.PI,0);ctx.fill();
+  ctx.beginPath();ctx.ellipse(cx-27*s,cy-2*s,8*s,18*s,.1,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(cx+27*s,cy-2*s,8*s,18*s,-.1,0,Math.PI*2);ctx.fill();
+  // Bun
+  ctx.fillStyle=hair;
+  ctx.beginPath();ctx.arc(cx+16*s,cy-44*s,13*s,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#28160A';
+  ctx.beginPath();ctx.arc(cx+16*s,cy-44*s,5*s,0,Math.PI*2);ctx.fill();
+  // Bun wrap line
+  ctx.strokeStyle='#28160A';ctx.lineWidth=2*s;
+  ctx.beginPath();ctx.arc(cx+16*s,cy-44*s,9*s,-.5,1.2);ctx.stroke();
+
+  // Eyes
+  const EY=cy-2*s;
+  function eye(ex){
+    ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.ellipse(ex,EY,9*s,8*s,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#5A88B0';
+    ctx.beginPath();ctx.arc(ex,EY,5.5*s,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#111';
+    ctx.beginPath();ctx.arc(ex+.5*s,EY,3.2*s,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.85)';
+    ctx.beginPath();ctx.arc(ex-1.5*s,EY-2*s,1.8*s,0,Math.PI*2);ctx.fill();
+  }
+  eye(cx-12*s);eye(cx+12*s);
+
+  // Expression
+  ctx.strokeStyle='#5a3018';ctx.lineWidth=2.5*s;ctx.lineCap='round';
+  if(mood==='stress'){
+    // furrowed brows
+    ctx.strokeStyle=hair;
+    ctx.beginPath();ctx.moveTo(cx-18*s,EY-16*s);ctx.lineTo(cx-6*s,EY-13*s);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+6*s,EY-13*s);ctx.lineTo(cx+18*s,EY-16*s);ctx.stroke();
+    ctx.strokeStyle='#7a4030';ctx.lineWidth=2.2*s;
+    ctx.beginPath();ctx.moveTo(cx-8*s,cy+14*s);ctx.quadraticCurveTo(cx,cy+10*s,cx+8*s,cy+14*s);ctx.stroke();
+    // sweat
+    ctx.fillStyle='rgba(197,224,238,.7)';
+    ctx.beginPath();ctx.ellipse(cx+24*s,EY-8*s,3.5*s,5.5*s,-.3,0,Math.PI*2);ctx.fill();
+  } else if(mood==='resolve'){
+    ctx.strokeStyle=hair;
+    ctx.beginPath();ctx.moveTo(cx-18*s,EY-14*s);ctx.lineTo(cx-5*s,EY-15*s);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+5*s,EY-15*s);ctx.lineTo(cx+18*s,EY-14*s);ctx.stroke();
+    ctx.strokeStyle='#7a4030';ctx.lineWidth=2.2*s;
+    ctx.beginPath();ctx.moveTo(cx-7*s,cy+12*s);ctx.quadraticCurveTo(cx,cy+17*s,cx+7*s,cy+12*s);ctx.stroke();
+  } else if(mood==='sleep'){
+    ctx.strokeStyle=hair;ctx.lineWidth=2.5*s;
+    ctx.beginPath();ctx.moveTo(cx-18*s,EY-14*s);ctx.lineTo(cx-5*s,EY-14*s);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+5*s,EY-14*s);ctx.lineTo(cx+18*s,EY-14*s);ctx.stroke();
+    // Closed eyes (overdraw whites with arcs)
+    ctx.fillStyle=skin;
+    ctx.fillRect(cx-22*s,EY-8*s,44*s,12*s);
+    ctx.strokeStyle=hair;ctx.lineWidth=2.5*s;
+    ctx.beginPath();ctx.arc(cx-12*s,EY,6*s,Math.PI,0);ctx.stroke();
+    ctx.beginPath();ctx.arc(cx+12*s,EY,6*s,Math.PI,0);ctx.stroke();
+    ctx.strokeStyle='#7a4030';ctx.lineWidth=2*s;
+    ctx.beginPath();ctx.moveTo(cx-6*s,cy+12*s);ctx.quadraticCurveTo(cx,cy+18*s,cx+6*s,cy+12*s);ctx.stroke();
+    ctx.fillStyle='rgba(248,113,113,.2)';
+    ctx.beginPath();ctx.ellipse(cx-20*s,cy+8*s,10*s,6*s,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(cx+20*s,cy+8*s,10*s,6*s,0,0,Math.PI*2);ctx.fill();
+  } else if(mood==='happy'){
+    ctx.strokeStyle=hair;ctx.lineWidth=2.5*s;
+    ctx.beginPath();ctx.moveTo(cx-18*s,EY-16*s);ctx.lineTo(cx-5*s,EY-13*s);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+5*s,EY-13*s);ctx.lineTo(cx+18*s,EY-16*s);ctx.stroke();
+    ctx.strokeStyle='#7a4030';ctx.lineWidth=2.5*s;
+    ctx.beginPath();ctx.moveTo(cx-10*s,cy+10*s);ctx.quadraticCurveTo(cx,cy+22*s,cx+10*s,cy+10*s);ctx.stroke();
+    ctx.fillStyle='rgba(248,113,113,.22)';
+    ctx.beginPath();ctx.ellipse(cx-20*s,cy+8*s,10*s,6*s,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(cx+20*s,cy+8*s,10*s,6*s,0,0,Math.PI*2);ctx.fill();
+  }
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════
+//  LAPTOP
+// ═══════════════════════════════════════════════
+function laptop(cx,cy,sc=1,errAmt=0){
+  ctx.save();const s=sc;
+  ctx.fillStyle='#222';rr(cx-200*s,cy+82*s,400*s,26*s,4*s);ctx.fill();
+  ctx.fillStyle='#181818';ctx.fillRect(cx-20*s,cy+80*s,40*s,4*s);
+  ctx.fillStyle='#0e0e0e';ctx.strokeStyle='#333';ctx.lineWidth=2;
+  rr(cx-185*s,cy-128*s,370*s,218*s,8*s);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#161616';rr(cx-175*s,cy-118*s,350*s,20*s,3*s);ctx.fill();
+  [[0,'#ff5f57'],[18,'#febc2e'],[36,'#28c840']].forEach(([dx,c])=>{
+    ctx.fillStyle=c;ctx.beginPath();ctx.arc(cx-162*s+dx*s,cy-108*s,5*s,0,Math.PI*2);ctx.fill();
+  });
+  ctx.fillStyle='rgba(255,255,255,.16)';ctx.font=`${7*s}px "Courier New"`;ctx.textAlign='center';
+  ctx.fillText('Annex_IV_Q1_2026_v14_FINAL_v2.xlsx',cx,cy-106*s);
+  const cols=5,rows=5,cw=58*s,ch=19*s;
+  const gx=cx-cols*cw/2,gy=cy-84*s;
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const x=gx+c*cw,y=gy+r*ch;
+      const isErr=errAmt>.0&&((r===2&&c>1)||(r===4));
+      const isHead=r===0||c===0;
+      ctx.fillStyle=isErr?`rgba(248,113,113,${.26*errAmt})`:isHead?'#2a2a2a':'#161616';
+      ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=.5;
+      ctx.fillRect(x,y,cw-.5,ch-.5);ctx.strokeRect(x,y,cw-.5,ch-.5);
+      ctx.font=`${7*s}px "Courier New"`;ctx.textAlign='center';
+      if(isHead&&r===0){
+        ctx.fillStyle='rgba(255,255,255,.32)';
+        ctx.fillText(['LEI','DOM','TYPE','NAV','OK'][c],x+cw/2,y+ch*.72);
+      } else if(isErr&&errAmt>.4){
+        ctx.fillStyle='#f87171';ctx.fillText('✗',x+cw/2,y+ch*.72);
+      } else if(!isHead&&!isErr&&r>0&&r<3){
+        ctx.fillStyle='rgba(255,255,255,.2)';
+        const d=[['5493…','DE','RE','€48M','✓'],['3858…','LU','PE','€120M','✓']];
+        if(d[r-1]&&d[r-1][c])ctx.fillText(d[r-1][c],x+cw/2,y+ch*.72);
+      }
+    }
+  }
+  if(errAmt>.04){
+    ctx.fillStyle=`rgba(248,113,113,${errAmt*.9})`;
+    rr(cx+76*s,cy-152*s,110*s,24*s,4*s);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font=`bold ${10*s}px system-ui`;ctx.textAlign='center';
+    ctx.fillText(`${Math.floor(47*errAmt)} ERRORS`,cx+131*s,cy-136*s);
+  }
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════
+//  PHONE (close-up Caelith app)
+// ═══════════════════════════════════════════════
+function phoneApp(cx,cy,sc=1,p=0){
+  ctx.save();const s=sc;
+  const pw=160*s,ph=320*s;
+  // Drop shadow
+  ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=40*s;
+  ctx.fillStyle='#0f1117';ctx.strokeStyle='#2a2e38';ctx.lineWidth=2;
+  rr(cx-pw/2,cy-ph/2,pw,ph,28*s);ctx.fill();ctx.stroke();
+  ctx.shadowBlur=0;
+  // Screen bg
+  const sbg=ctx.createLinearGradient(cx,cy-ph/2,cx,cy+ph/2);
+  sbg.addColorStop(0,'#0d1520');sbg.addColorStop(1,'#080d10');
+  ctx.fillStyle=sbg;rr(cx-pw/2+8*s,cy-ph/2+8*s,pw-16*s,ph-16*s,22*s);ctx.fill();
+  // Notch
+  ctx.fillStyle='#1a1e26';rr(cx-20*s,cy-ph/2+14*s,40*s,7*s,4*s);ctx.fill();
+
+  // ── APP HEADER ──
+  const ap=eO(prg(p,0,.2));
+  ctx.globalAlpha=ap;
+  // Caelith logo glow
+  ctx.shadowColor=C.accent;ctx.shadowBlur=18*s*ap;
+  const lg=ctx.createLinearGradient(cx-pw/2+18*s,cy-ph/2+32*s,cx-pw/2+38*s,cy-ph/2+52*s);
+  lg.addColorStop(0,C.accent);lg.addColorStop(1,C.warm);
+  ctx.fillStyle=lg;rr(cx-pw/2+18*s,cy-ph/2+34*s,26*s,26*s,7*s);ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#fff';ctx.font=`bold ${10*s}px system-ui`;ctx.textAlign='left';
+  ctx.fillText('⚡',cx-pw/2+22.5*s,cy-ph/2+50*s);
+  ctx.fillStyle='#fff';ctx.font=`bold ${11*s}px "Sora",system-ui`;
+  ctx.fillText('Caelith',cx-pw/2+50*s,cy-ph/2+45*s);
+  ctx.fillStyle='rgba(255,255,255,.35)';ctx.font=`${7*s}px "Courier New"`;
+  ctx.fillText('Compliance Platform',cx-pw/2+50*s,cy-ph/2+57*s);
+  ctx.globalAlpha=1;
+
+  // ── TOGGLE ROW ──
+  const toggles=[
+    {label:'Investor classification',delay:.2},
+    {label:'Sanctions screening',delay:.4},
+    {label:'BaFin filing agent',delay:.62},
+  ];
+  toggles.forEach((tog,i)=>{
+    const tp=eO(prg(p,tog.delay,tog.delay+.22));
+    const on=p>tog.delay+.18;
+    const ty=cy-ph/2+80*s+i*38*s;
+    ctx.globalAlpha=tp;
+    // Row bg
+    ctx.fillStyle=on?'rgba(52,211,153,.08)':'rgba(255,255,255,.04)';
+    ctx.strokeStyle=on?'rgba(52,211,153,.2)':'rgba(255,255,255,.06)';ctx.lineWidth=1;
+    rr(cx-pw/2+12*s,ty,pw-24*s,30*s,6*s);ctx.fill();ctx.stroke();
+    ctx.fillStyle=on?C.green:'rgba(255,255,255,.5)';
+    ctx.font=`${7.5*s}px system-ui`;ctx.textAlign='left';
+    ctx.fillText(tog.label,cx-pw/2+18*s,ty+19*s);
+    // Toggle pill
+    const tpill=on?C.green:'#333';
+    ctx.fillStyle=tpill;
+    rr(cx+pw/2-46*s,ty+8*s,30*s,14*s,7*s);ctx.fill();
+    ctx.fillStyle='#fff';
+    const kx=on?cx+pw/2-22*s:cx+pw/2-38*s;
+    ctx.beginPath();ctx.arc(kx,ty+15*s,5.5*s,0,Math.PI*2);ctx.fill();
+    // Green tick flash
+    if(on&&tp>.7){
+      ctx.globalAlpha=eO(prg(p,tog.delay+.18,tog.delay+.32))*.6;
+      radBg(cx,ty+15*s,40*s,'rgba(52,211,153,0.12)');
+    }
+    ctx.globalAlpha=1;
+  });
+
+  // ── ACTIVATE BUTTON ──
+  const btnP=eO(prg(p,.7,.88));
+  ctx.globalAlpha=btnP;
+  const pulse=p>.7?.9+.1*Math.sin((p-.7)*18):1;
+  const bg2=ctx.createLinearGradient(cx-pw/2+14*s,0,cx+pw/2-14*s,0);
+  bg2.addColorStop(0,'#34d399');bg2.addColorStop(1,'#20c97a');
+  ctx.shadowColor='rgba(52,211,153,.5)';ctx.shadowBlur=20*s*pulse;
+  ctx.fillStyle=bg2;
+  rr(cx-pw/2+14*s,cy+ph/2-72*s,pw-28*s,32*s,8*s);ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='#0b0d10';ctx.font=`bold ${9*s}px "Sora",system-ui`;ctx.textAlign='center';
+  ctx.fillText('Activate — Run Tonight',cx,cy+ph/2-52*s);
+  ctx.globalAlpha=1;
+
+  // ── TAP RIPPLE ──
+  const rp=prg(p,.9,1);
+  if(rp>0){
+    const rr2=eO(rp)*60*s;
+    const ra=1-rp;
+    ctx.strokeStyle=`rgba(52,211,153,${ra*.7})`;ctx.lineWidth=2.5*s;
+    ctx.beginPath();ctx.arc(cx,cy+ph/2-56*s,rr2,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle=`rgba(52,211,153,${ra*.3})`;ctx.lineWidth=1*s;
+    ctx.beginPath();ctx.arc(cx,cy+ph/2-56*s,rr2*1.6,0,Math.PI*2);ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════
+//  TERMINAL
+// ═══════════════════════════════════════════════
+const LOGS=[
+  {ts:'00:01:03',msg:'Compliance run started — Q1 2026 Annex IV',c:'muted'},
+  {ts:'00:03:41',msg:'247 investor records loaded and classified',c:'muted'},
+  {ts:'00:03:42',msg:'13 legal rules evaluated — all passed ✓',c:'green'},
+  {ts:'01:15:09',msg:'EU + UN sanctions lists refreshed — 6,863 entities',c:'muted'},
+  {ts:'01:15:11',msg:'0 matches found — investor pool clean ✓',c:'green'},
+  {ts:'02:13:58',msg:'Annex IV XML generated — ESMA XSD Rev 6 v1.2',c:'muted'},
+  {ts:'02:13:59',msg:'Schema validation passed — 0 errors ✓',c:'green'},
+  {ts:'02:14:03',msg:'◈ BaFin MVP Portal — agent logging in…',c:'warm'},
+  {ts:'02:14:07',msg:'◈ Uploading Annex IV XML to BaFin portal…',c:'warm'},
+  {ts:'02:14:09',msg:'BaFin confirmed receipt — BaFin-2026-Q1-00847 ✓',c:'green'},
+  {ts:'02:14:09',msg:'Audit trail sealed — SHA-256 hash chain ✓',c:'green'},
+  {ts:'02:14:10',msg:'Push notification sent. Compliance run complete.',c:'muted'},
+];
+function terminal(cx,cy,lineP,sc=1){
+  ctx.save();const s=sc,w=660*s,h=308*s,x=cx-w/2,y=cy-h/2;
+  ctx.fillStyle='rgba(7,9,12,.97)';ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;
+  rr(x,y,w,h,12*s);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#0c0f14';rr(x,y,w,32*s,[12*s,12*s,0,0]);ctx.fill();
+  [[0,'#ff5f57'],[16,'#febc2e'],[32,'#28c840']].forEach(([dx,c])=>{
+    ctx.fillStyle=c;ctx.beginPath();ctx.arc(x+20*s+dx*s,y+16*s,5*s,0,Math.PI*2);ctx.fill();
+  });
+  ctx.fillStyle='rgba(255,255,255,.2)';ctx.font=`${9*s}px "Courier New"`;ctx.textAlign='center';
+  ctx.fillText('caelith-agent · live activity log',cx,y+20*s);
+  const colMap={muted:C.muted,green:C.green,warm:C.warm};
+  const vis=lineP*LOGS.length;
+  LOGS.forEach((line,i)=>{
+    if(i>vis)return;
+    const la=i<vis-1?1:Math.min(1,vis-i);
+    ctx.globalAlpha=la;
+    const ly=y+46*s+i*21*s+15*s;
+    ctx.fillStyle='rgba(255,255,255,.18)';ctx.font=`${8.5*s}px "Courier New"`;ctx.textAlign='left';
+    ctx.fillText(line.ts,x+14*s,ly);
+    ctx.fillStyle=colMap[line.c]||C.muted;
+    ctx.fillText(line.msg,x+82*s,ly);
+  });
+  if(lineP>.94){
+    const ba=.5+.5*Math.sin(Date.now()*.009);
+    ctx.globalAlpha=ba;ctx.fillStyle=C.accent;
+    const lastI=Math.min(LOGS.length-1,Math.floor(vis));
+    const lw=ctx.measureText(LOGS[lastI].msg).width;
+    ctx.fillRect(x+82*s+lw+2,y+46*s+lastI*21*s+4*s,6*s,13*s);
+  }
+  ctx.globalAlpha=1;ctx.restore();
+}
+
+// ═══════════════════════════════════════════════
+//  CHECKMARK + NOTIFICATION
+// ═══════════════════════════════════════════════
+function checkmark(cx,cy,r,p,col=C.green){
+  ctx.save();
+  ctx.strokeStyle=col;ctx.lineWidth=r*.14;ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.shadowColor=col;ctx.shadowBlur=r*.4*p;
+  ctx.beginPath();ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(p*1.6,1));ctx.stroke();
+  if(p>.55){
+    const tp=(p-.55)/.45;
+    ctx.beginPath();ctx.moveTo(cx-r*.42,cy);ctx.lineTo(cx-r*.08,cy+r*.38);
+    if(tp>.5)ctx.lineTo(cx+r*.46,cy-r*.38);ctx.stroke();
+  }
+  ctx.shadowBlur=0;ctx.restore();
+}
+function notif(cx,cy,sc=1){
+  ctx.save();const s=sc,w=275*s,h=88*s,x=cx-w/2,y=cy-h/2;
+  ctx.fillStyle='rgba(52,211,153,.06)';ctx.strokeStyle='rgba(52,211,153,.22)';ctx.lineWidth=1;
+  rr(x,y,w,h,12*s);ctx.fill();ctx.stroke();
+  const g=ctx.createLinearGradient(x+12*s,y+14*s,x+34*s,y+36*s);
+  g.addColorStop(0,C.accent);g.addColorStop(1,C.warm);ctx.fillStyle=g;
+  rr(x+12*s,y+14*s,24*s,24*s,6*s);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font=`bold ${9.5*s}px "Sora",system-ui`;ctx.textAlign='left';
+  ctx.fillText('Caelith',x+42*s,y+25*s);
+  ctx.fillStyle='rgba(255,255,255,.22)';ctx.font=`${8*s}px "Courier New"`;ctx.textAlign='right';
+  ctx.fillText('02:14 AM',x+w-12*s,y+25*s);
+  ctx.fillStyle=C.green;ctx.font=`bold ${9*s}px "Sora",system-ui`;ctx.textAlign='left';
+  ctx.fillText('✓ Annex IV filed to BaFin',x+42*s,y+45*s);
+  ctx.fillStyle=C.muted;ctx.font=`${8*s}px system-ui`;
+  ctx.fillText('Q1 2026 complete. 0 errors. All investors screened.',x+42*s,y+61*s);
+  ctx.fillStyle='rgba(255,255,255,.18)';ctx.font=`${7.5*s}px "Courier New"`;
+  ctx.fillText('ref: BaFin-2026-Q1-00847',x+42*s,y+76*s);
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════
+//  SCENES
+// ═══════════════════════════════════════════════
+
+// 0–4s ── TITLE
+function sTitle(t){
+  const fi=eO(prg(t,0,1.4)),fo=1-eI(prg(t,3.2,4.3));
+  const a=Math.min(fi,fo);if(a<=0)return;
+  ctx.save();ctx.globalAlpha=a;
+  ctx.fillStyle=C.ink;ctx.fillRect(0,0,W,H);
+  radBg(W/2,H*.44,600,'rgba(232,168,124,0.06)');grid();
+  ctx.strokeStyle='rgba(232,168,124,.17)';ctx.lineWidth=1;ctx.fillStyle='rgba(232,168,124,.02)';
+  rr(W/2-138,H/2-200,276,32,16);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(232,168,124,.46)';ctx.font='10.5px "Courier New"';ctx.textAlign='center';
+  ctx.fillText('A CAELITH STORY · APRIL 2026',W/2,H/2-179);
+  ctx.shadowColor='rgba(197,224,238,.12)';ctx.shadowBlur=50;
+  ctx.fillStyle='#fff';ctx.font='800 88px "Sora",system-ui';ctx.textAlign='center';
+  ctx.fillText('The Night Before',W/2,H/2-44);
+  ctx.fillStyle=C.warm;ctx.fillText('the Deadline.',W/2,H/2+62);
+  ctx.shadowBlur=0;
+  ctx.fillStyle='rgba(255,255,255,.22)';ctx.font='300 18px "Sora",system-ui';
+  ctx.fillText('A compliance story — told in 4 scenes',W/2,H/2+118);
+  ctx.restore();
+}
+
+// 3–16s ── SCENE 1: SOPHIE'S NIGHTMARE
+function s1(t){
+  const fi=eO(prg(t,3,5.5)),fo=1-eI(prg(t,14.5,16.2));
+  const a=Math.min(fi,fo);if(a<=0)return;
+  ctx.save();ctx.globalAlpha=a;
+  ctx.fillStyle='#0f0a04';ctx.fillRect(0,0,W,H);
+  radBg(W*.6,H*.5,500,'rgba(232,168,124,0.048)');grid(.018);
+  ctx.fillStyle='rgba(232,168,124,.6)';ctx.font='13px "Courier New"';ctx.textAlign='left';
+  ctx.fillText('📅  April 15, 2026 · 11:47 PM',90,76);
+  // Text
+  const tp=eO(prg(t,3.5,6.5));
+  ctx.globalAlpha=a*tp;
+  ctx.fillStyle='#fff';ctx.font='800 52px "Sora",system-ui';ctx.textAlign='left';
+  ctx.fillText("Sophie hasn't slept.",90,198);
+  ctx.fillText('The deadline is',90,261);
+  ctx.fillStyle=C.warm;ctx.fillText('tomorrow.',90,324);
+  ctx.globalAlpha=a*Math.min(tp,eO(prg(t,5,8)));
+  ctx.fillStyle=C.muted;ctx.font='15px "Sora",system-ui';
+  ctx.fillText('Compliance officer at a Frankfurt KVG.',90,378);
+  ctx.fillText('AIFMD II Annex IV filing. 47 error flags.',90,404);
+  ctx.fillText('BaFin portal closes tomorrow midnight.',90,430);
+  ctx.fillStyle='rgba(255,255,255,.14)';ctx.font='italic 12.5px system-ui';
+  ctx.fillText('This is every compliance officer in Europe right now.',90,466);
+  // Desk + laptop
+  const lp=eO(prg(t,4,7));
+  ctx.globalAlpha=a*lp;
+  ctx.fillStyle='rgba(20,14,6,.9)';rr(682,432,556,148,8);ctx.fill();
+  laptop(965,390,.9,eO(prg(t,6,13)));
+  // Sophie
+  const bob=Math.sin(t*3.8)*.6;
+  ctx.globalAlpha=a*eO(prg(t,4.5,8));
+  sophie(808,402+bob,.72,'stress');
+  // Props
+  ctx.globalAlpha=a*lp;
+  ctx.font='26px serif';ctx.textAlign='center';ctx.fillText('☕',726,474);
+  ctx.save();ctx.translate(752,480);ctx.rotate(-.04);
+  ctx.fillStyle='rgba(255,235,59,.1)';ctx.strokeStyle='rgba(255,235,59,.2)';ctx.lineWidth=1;
+  rr(0,0,95,58,3);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(255,235,59,.55)';ctx.font='8px "Courier New"';ctx.textAlign='left';
+  ctx.fillText('Call consultant!',6,16);ctx.fillText('URGENT!! 💸',6,28);ctx.fillText('€8,500',6,40);
+  ctx.restore();
+  // Speech bubble
+  const sbp=eO(prg(t,8,10.5));
+  ctx.globalAlpha=a*sbp;
+  ctx.fillStyle='rgba(248,113,113,.1)';ctx.strokeStyle='rgba(248,113,113,.24)';ctx.lineWidth=1;
+  rr(1042,170,216,46,8);ctx.fill();ctx.stroke();
+  ctx.fillStyle=C.red;ctx.font='11px system-ui';ctx.textAlign='center';
+  ctx.fillText('😤 "Error in row 847. Again."',1150,199);
+  const ep=eO(prg(t,9,13))*(0.85+.15*Math.sin(t*5));
+  ctx.globalAlpha=a*ep;
+  ctx.fillStyle='rgba(248,113,113,.85)';ctx.font='bold 10px system-ui';
+  ctx.fillText('47 ERRORS REMAINING — deadline in 31 minutes',965,208);
+  ctx.restore();
+}
+
+// 15–30s ── SCENE 2: THE DECISION (detailed)
+function s2(t){
+  const fi=eO(prg(t,15,17.5)),fo=1-eI(prg(t,28.5,30.2));
+  const a=Math.min(fi,fo);if(a<=0)return;
+  ctx.save();ctx.globalAlpha=a;
+
+  // ── Beat 1 (15-17.5s): resolve moment ──
+  const beat1=prg(t,15,17.5);
+  // ── Beat 2 (17-19s): she picks up phone ──
+  const beat2=eO(prg(t,17,19));
+  // ── Beat 3 (18.5–27s): phone close-up ──
+  const beat3=eO(prg(t,18.5,20.5));
+  // ── Beat 4 (26.5–28s): close laptop, lights dim ──
+  const beat4=prg(t,26.5,28.5);
+  // ── Beat 5 (27.5–30s): sleep ──
+  const beat5=eO(prg(t,27.5,30));
+
+  // Background — cool dark green
+  ctx.fillStyle='#060e08';ctx.fillRect(0,0,W,H);
+  // dim room in beat 4
+  if(beat4>0){
+    ctx.fillStyle=`rgba(0,0,0,${beat4*.7})`;ctx.fillRect(0,0,W,H);
+  }
+  grid(.01);
+
+  // Date (fades out during phone close-up)
+  ctx.globalAlpha=a*(1-eO(prg(t,20,22)));
+  ctx.fillStyle='rgba(197,224,238,.5)';ctx.font='13px "Courier New"';ctx.textAlign='right';
+  ctx.fillText('🌙  April 15, 2026 · 11:58 PM',W-90,76);
+
+  // ── Sophie (resolve / picking up phone) ──
+  const sophieA=a*(1-eO(prg(t,19.5,22)));
+  if(sophieA>0){
+    ctx.globalAlpha=sophieA;
+    sophie(340,H/2,'stress'); // was stressed — now 'resolve'
+    // Chair is left, she's sitting up
+    sophie(340,H/2,1,beat2>.3?'resolve':'stress');
+    // She picks up phone — hand motion
+    if(beat2>.2){
+      const handP=eO(prg(t,17.2,18.8));
+      // Phone in hand (small, moving up)
+      ctx.fillStyle='#111';ctx.strokeStyle='#333';ctx.lineWidth=1.5;
+      const hy=H/2+68-handP*90;
+      const hx=340+60;
+      rr(hx-16,hy-35,32,62,8);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#0a120a';rr(hx-12,hy-31,24,54,6);ctx.fill();
+    }
+    // Text overlay: resolve
+    const txP=eO(prg(t,15.5,17.5))*(1-eO(prg(t,19,21)));
+    ctx.globalAlpha=a*txP;
+    ctx.fillStyle='#fff';ctx.font='800 48px "Sora",system-ui';ctx.textAlign='left';
+    ctx.fillText('A moment of',640,230);
+    ctx.fillStyle=C.accent;ctx.fillText('resolve.',640,292);
+    ctx.fillStyle='rgba(255,255,255,.16)';ctx.font='italic 13px system-ui';
+    ctx.fillText('"There has to be a better way."',640,340);
+  }
+  ctx.globalAlpha=a;
+
+  // ── PHONE CLOSE-UP (dominant from 19.5s) ──
+  const phoneShow=eO(prg(t,19.5,22));
+  if(phoneShow>0){
+    ctx.globalAlpha=a*phoneShow;
+    // Dark overlay behind phone for cinematic focus
+    ctx.fillStyle=`rgba(0,0,0,${phoneShow*.55})`;ctx.fillRect(0,0,W,H);
+    // Phone: big, centered
+    const appProgress=eO(prg(t,20,27));
+    phoneApp(W/2,H/2,1.18,appProgress);
+    // Text overlays
+    const ov1=eO(prg(t,20.5,22.5))*(1-eO(prg(t,24.5,25.5)));
+    ctx.globalAlpha=a*phoneShow*ov1;
+    overlay('She activates Caelith.',90,H-130,1);
+    const ov2=eO(prg(t,24,26))*(1-eO(prg(t,26.5,27.5)));
+    ctx.globalAlpha=a*phoneShow*ov2;
+    overlay('The agents take over.',90,H-130,1);
+  }
+  ctx.globalAlpha=a;
+
+  // ── CLOSING LAPTOP (beat4) ──
+  if(beat4>0){
+    ctx.globalAlpha=a*eO(beat4);
+    // Small laptop on a desk bottom-right, screen angle closing
+    const angle=beat4*(Math.PI/2);
+    ctx.save();ctx.translate(1050,580);
+    ctx.fillStyle='#222';rr(-80,0,160,14,3);ctx.fill();
+    ctx.save();ctx.translate(0,-5);ctx.rotate(-angle*.8);
+    ctx.fillStyle='#0e0e0e';ctx.strokeStyle='#333';ctx.lineWidth=1.5;
+    rr(-75,-90,150,90,5);ctx.fill();ctx.stroke();
+    ctx.restore();ctx.restore();
+  }
+
+  // ── SLEEP SCENE (beat5) ──
+  if(beat5>0){
+    // Sophie sleeping in chair
+    ctx.globalAlpha=a*beat5;
+    // Dark background more
+    ctx.fillStyle=`rgba(0,0,0,${beat5*.5})`;ctx.fillRect(0,0,W,H);
+    // Dim desk lamp glow
+    radBg(W/2,H*.4,200,'rgba(197,224,238,0.025)');
+    sophie(W/2,H/2-.05*H,1,'sleep');
+    // Z Z Z floating
+    const zBase=['z','z','z'];
+    zBase.forEach((z,i)=>{
+      const zp=eO(prg(t,27.8+i*.6,30.5));
+      const yo=-(t-27.8-i*.6)*22;
+      const xo=Math.sin((t-27.8)*2+i*1.5)*8;
+      ctx.globalAlpha=a*zp*(1-prg(t,29+i*.4,30.5+i*.2));
+      ctx.fillStyle='rgba(197,224,238,0.7)';
+      ctx.font=`bold ${22-i*5}px "Sora",system-ui`;ctx.textAlign='center';
+      ctx.fillText(z,W/2+50+xo,H/2-80+yo);
+    });
+    ctx.globalAlpha=a*beat5;
+    // Overlay text
+    const txP=eO(prg(t,28,30));
+    ctx.globalAlpha=a*txP;
+    overlay('Goes to sleep.',90,H-130,1);
+  }
+  ctx.restore();
+}
+
+// 29–46s ── SCENE 3: AGENTS WORK ALL NIGHT
+function s3(t){
+  const fi=eO(prg(t,29,31.5)),fo=1-eI(prg(t,44.5,46.2));
+  const a=Math.min(fi,fo);if(a<=0)return;
+  ctx.save();ctx.globalAlpha=a;
+  ctx.fillStyle='#020407';ctx.fillRect(0,0,W,H);
+  radBg(W/2,H*.26,460,'rgba(197,224,238,0.022)');
+  ctx.globalAlpha=a*eO(prg(t,29.5,33));drawStars(t);ctx.globalAlpha=a;
+  // Clock
+  const cb=.35+.65*(.5+.5*Math.sin(t*Math.PI));
+  ctx.shadowColor='rgba(255,255,255,.1)';ctx.shadowBlur=30;
+  ctx.fillStyle='#fff';ctx.font='800 108px "Sora",system-ui';ctx.textAlign='center';
+  ctx.fillText('02',W/2-70,175);
+  ctx.globalAlpha=a*cb;ctx.fillStyle='rgba(255,255,255,.38)';ctx.fillText(':',W/2,175);
+  ctx.globalAlpha=a;ctx.fillStyle='#fff';ctx.fillText('14',W/2+70,175);
+  ctx.shadowBlur=0;
+  ctx.fillStyle='rgba(255,255,255,.16)';ctx.font='10px "Courier New"';
+  ctx.fillText('APRIL 16, 2026 — WHILE SOPHIE SLEEPS',W/2,210);
+  // Terminal
+  ctx.globalAlpha=a*eO(prg(t,30.5,33.5));
+  terminal(W/2,H/2+104,eO(prg(t,31.5,45)),.92);
+  ctx.restore();
+}
+
+// 45–56s ── SCENE 4: THE MORNING
+function s4(t){
+  const fi=eO(prg(t,45,47.5)),fo=1-eI(prg(t,54.5,56.2));
+  const a=Math.min(fi,fo);if(a<=0)return;
+  ctx.save();ctx.globalAlpha=a;
+  ctx.fillStyle='#0f0a00';ctx.fillRect(0,0,W,H);
+  const sg=ctx.createRadialGradient(W/2,-100,0,W/2,-100,780);
+  sg.addColorStop(0,'rgba(255,210,110,.14)');sg.addColorStop(1,'transparent');
+  ctx.fillStyle=sg;ctx.fillRect(0,0,W,H);grid(.014);
+  ctx.fillStyle='rgba(255,200,100,.52)';ctx.font='13px "Courier New"';ctx.textAlign='left';
+  ctx.fillText('☀️  April 16, 2026 · 09:00 AM',90,76);
+  const tp=eO(prg(t,45.5,49));
+  ctx.globalAlpha=a*tp;
+  ctx.fillStyle='#fff';ctx.font='800 52px "Sora",system-ui';ctx.textAlign='left';
+  ctx.fillText('Sophie wakes up.',90,225);
+  ctx.fillText('Everything is',90,288);
+  ctx.fillStyle=C.green;ctx.fillText('already done.',90,351);
+  ctx.globalAlpha=a*Math.min(tp,eO(prg(t,47,51)));
+  ctx.fillStyle=C.muted;ctx.font='15px "Sora",system-ui';
+  ctx.fillText('Filed. Screened. Sealed.',90,405);
+  ctx.fillText('BaFin confirmed receipt at 02:14 AM.',90,431);
+  ctx.fillText("She didn't press a single button.",90,457);
+  ctx.globalAlpha=a*eO(prg(t,49.5,52.5));
+  ctx.fillStyle='rgba(255,255,255,.16)';ctx.font='italic 13px system-ui';
+  ctx.fillText('"She spent 4 minutes on compliance that quarter."',90,498);
+  // Sophie happy
+  const bob=Math.sin(t*2.4)*3;
+  ctx.globalAlpha=a*eO(prg(t,46,50));
+  sophie(265,H/2+78+bob,0.84,'happy');
+  // Phone shell
+  const np=eO(prg(t,46.5,50.5));
+  ctx.globalAlpha=a*np;
+  ctx.fillStyle='#0f1117';ctx.strokeStyle='#2a2e38';ctx.lineWidth=2;
+  ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=30;
+  rr(774,H/2-198,186,376,30);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle='#080c10';rr(782,H/2-190,170,360,24);ctx.fill();
+  const ns=eO(prg(t,47.5,51.5));
+  ctx.globalAlpha=a*ns;
+  notif(867,H/2-58,.84);
+  const ns2=eO(prg(t,50,53));
+  ctx.globalAlpha=a*ns2*.75;
+  ctx.fillStyle='rgba(197,224,238,.05)';ctx.strokeStyle='rgba(197,224,238,.18)';ctx.lineWidth=1;
+  rr(782,H/2+56,170,55,10);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(197,224,238,.6)';ctx.font='bold 8.5px system-ui';ctx.textAlign='center';
+  ctx.fillText('🔗 Audit trail sealed',867,H/2+78);
+  ctx.fillStyle='rgba(255,255,255,.28)';ctx.font='7.5px "Courier New"';
+  ctx.fillText('SHA-256 integrity verified',867,H/2+93);
+  const cp=eO(prg(t,51,54.5));
+  ctx.globalAlpha=a*cp;
+  checkmark(867,H/2+162,60,cp,C.green);
+  ctx.restore();
+}
+
+// 55–60s ── FINALE
+function sFinale(t){
+  const fi=eO(prg(t,55,58));if(fi<=0)return;
+  ctx.save();ctx.globalAlpha=fi;
+  ctx.fillStyle=C.ink;ctx.fillRect(0,0,W,H);
+  radBg(W/2,H/2,560,'rgba(52,211,153,0.044)');grid(.012);
+  const np=eO(prg(t,55.5,58.6));
+  const num=Math.min(4,Math.floor(np*5));
+  const ng=ctx.createLinearGradient(W/2-200,H/2-240,W/2+200,H/2-80);
+  ng.addColorStop(0,C.accent);ng.addColorStop(1,C.warm);
+  ctx.shadowColor='rgba(197,224,238,.14)';ctx.shadowBlur=70;
+  ctx.fillStyle=ng;ctx.font='800 240px "Sora",system-ui';ctx.textAlign='center';
+  ctx.fillText(String(num),W/2,H/2-4);ctx.shadowBlur=0;
+  ctx.fillStyle='rgba(255,255,255,.2)';ctx.font='600 13px "Courier New"';
+  ctx.fillText('MINUTES ON COMPLIANCE — THAT QUARTER',W/2,H/2+52);
+  const tg=eO(prg(t,57.5,59.5));
+  ctx.globalAlpha=fi*tg;
+  ctx.fillStyle='#fff';ctx.font='700 30px "Sora",system-ui';ctx.textAlign='center';
+  ctx.fillText('This is not automation.',W/2,H/2+126);
+  ctx.fillStyle='rgba(255,255,255,.6)';ctx.font='400 20px "Sora",system-ui';
+  ctx.fillText('This is compliance as infrastructure.',W/2,H/2+162);
+  const lg=eO(prg(t,58.8,60.5));
+  ctx.globalAlpha=fi*lg;
+  const logo=ctx.createLinearGradient(W/2-90,0,W/2+90,0);
+  logo.addColorStop(0,C.accent);logo.addColorStop(1,C.warm);
+  ctx.shadowColor='rgba(197,224,238,.22)';ctx.shadowBlur=24;
+  ctx.fillStyle=logo;ctx.font='800 34px "Sora",system-ui';ctx.textAlign='center';
+  ctx.fillText('Caelith',W/2,H/2+228);ctx.shadowBlur=0;
+  ctx.fillStyle='rgba(255,255,255,.2)';ctx.font='11px "Courier New"';
+  ctx.fillText('caelith.tech · EU Fund Compliance · Automated',W/2,H/2+256);
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER LOOP
+// ═══════════════════════════════════════════════
+let gFrame=0;
+function renderFrame(t){
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=C.ink;ctx.fillRect(0,0,W,H);
+  sTitle(t);s1(t);s2(t);s3(t);s4(t);sFinale(t);
+  grain(gFrame++);
+}
+
+// ═══════════════════════════════════════════════
+//  PLAYBACK + RECORD
+// ═══════════════════════════════════════════════
+let raf=null,previewStart=null,recordStart=null;
+let recorder=null,chunks=[];
+
+function previewLoop(ts){
+  if(!previewStart)previewStart=ts;
+  const t=((ts-previewStart)/1000)%63;
+  renderFrame(t<60?t:59.9);
+  document.getElementById('pfill').style.width=`${((t%63)/63)*100}%`;
+  raf=requestAnimationFrame(previewLoop);
+}
+function recordLoop(ts){
+  if(!recordStart)recordStart=ts;
+  const t=(ts-recordStart)/1000;
+  renderFrame(Math.min(t,60));
+  document.getElementById('pfill').style.width=`${Math.min(t/60,1)*100}%`;
+  document.getElementById('status').textContent=`⏺ Recording: ${String(Math.min(Math.floor(t),60)).padStart(2,'0')}s / 60s`;
+  if(t>=61.5){
+    if(recorder&&recorder.state==='recording')recorder.stop();
+  } else {
+    raf=requestAnimationFrame(recordLoop);
+  }
+}
+
+raf=requestAnimationFrame(previewLoop);
+
+document.getElementById('btnRec').addEventListener('click',()=>{
+  cancelAnimationFrame(raf);raf=null;previewStart=null;recordStart=null;chunks=[];
+  const stream=cv.captureStream(30);
+  const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')?'video/webm;codecs=vp9':'video/webm';
+  recorder=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:9_000_000});
+  recorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
+  recorder.onstop=()=>{
+    const blob=new Blob(chunks,{type:'video/webm'});
+    const url=URL.createObjectURL(blob);
+    const dl=document.getElementById('dl');
+    dl.href=url;dl.download='caelith-compliance-story.webm';
+    dl.style.display='inline-block';dl.click();
+    document.getElementById('status').textContent='✓ Done! Converting tip: VLC → File → Convert/Save → MP4';
+    document.getElementById('btnRec').disabled=false;
+    document.getElementById('btnRec').textContent='⏺ Record Again';
+    document.getElementById('btnReset').disabled=false;
+    previewStart=null;raf=requestAnimationFrame(previewLoop);
+  };
+  recorder.start(100);
+  document.getElementById('btnRec').disabled=true;
+  document.getElementById('btnRec').textContent='⏺ Recording…';
+  document.getElementById('btnReset').disabled=true;
+  raf=requestAnimationFrame(recordLoop);
+});
+document.getElementById('btnReset').addEventListener('click',()=>{previewStart=null;});
+</script>
+</body>
+</html>

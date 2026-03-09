@@ -1,0 +1,216 @@
+﻿Build a polished agent demo page for Caelith at `/agent-demo`. This is for a Finch Capital compliance officer demo — it must be genuinely impressive with real live data.
+
+## Page Access
+- Next.js page at `src/frontend/src/app/agent-demo/page.tsx`
+- Requires login — redirect to /login if not authenticated (use existing auth check pattern from other pages)
+- Demo credentials pre-filled on login page as hint: demo@caelith.tech / Demo1234
+
+## Overall Design
+- Dark theme matching Caelith design system: bg #0d1117, accent #c5e0ee, warm #e8a87c, green #22c55e
+- Fonts: Sora (headings), JetBrains Mono (terminal/code output), Inter (body)
+- Two-column layout on desktop, stacked on mobile
+- Header: "Compliance Agents" with "BETA" badge, subtitle "Autonomous agents that execute compliance workflows end-to-end"
+- Each agent is a card with a live terminal-style streaming output area
+
+---
+
+## AGENT 1: Investor Due Diligence Agent (LEFT COLUMN)
+
+### UI
+- Title: "Investor Due Diligence"
+- Subtitle: "Entity resolution → sanctions → LEI hierarchy → risk score"
+- Input: text field labeled "Company name or LEI" (placeholder: "e.g. Deutsche Bank AG or 7LTWFZYICNSX8D621K86")
+- Jurisdiction selector: DE, LU, FR, NL, AT (default DE)
+- "Run Agent →" button (gradient: #c5e0ee → #e8a87c)
+- Terminal output area below (dark bg, green/white monospace text, scrollable, min 300px)
+- After completion: result card with risk badge + "Download Report" button
+
+### Backend: `src/frontend/src/app/api/agent-demo/investor-dd/route.ts`
+Server-Sent Events (SSE) endpoint. On GET with `?query=<input>&jurisdiction=<DE>`:
+
+Stream these steps with realistic delays (use setTimeout/async):
+
+```
+[0ms]    ▶ Starting Investor DD Agent...
+[200ms]  ◉ Resolving entity: "<input>"
+[800ms]  ✓ GLEIF lookup → call real GLEIF API: https://api.gleif.org/api/v1/fuzzycompletions?term=<query>&field=fullLegalName
+         ✓ LEI: <lei> | Legal name: <name> | Jurisdiction: <country>
+         ✓ Registration status: <status> | Last updated: <date>
+[1200ms] ◉ Checking EU sanctions list (6,863 entities)...
+         → call existing sanctions check from src/backend/services/sanctions-service.ts logic
+         ✓ EU consolidated list: NO MATCH (or MATCH FOUND with details)
+[1600ms] ◉ Checking UN consolidated list...
+         ✓ UN list: NO MATCH
+[2000ms] ◉ Checking BIS/OFAC supplementary lists...
+         ✓ No additional matches
+[2400ms] ◉ Fetching LEI corporate hierarchy...
+         → call GLEIF relationships: https://api.gleif.org/api/v1/lei-records/<lei>/ultimate-parent-relationship
+         ✓ Ultimate parent: <parent name> (<parent LEI>) OR ✓ No parent entity (standalone)
+[2800ms] ◉ Assessing jurisdiction risk...
+         ✓ Domicile: <country> | FATF status: Member | AML risk: Low/Medium/High
+[3200ms] ◉ Generating compliance report...
+[3600ms] ✓ COMPLETE — DD report ready (3.4s)
+```
+
+If GLEIF returns no results, show:
+```
+✗ No GLEIF match for "<input>"
+◉ Trying alternative identifiers...
+✗ Entity not found in GLEIF registry
+ℹ Tip: Try using the full legal name or enter a LEI directly
+```
+
+After streaming completes, return a final JSON event `data: {"type":"result","data":{...}}` with:
+- entityName, lei, jurisdiction, sanctionsStatus (CLEAR/FLAGGED), riskScore (0-100), riskLevel (LOW/MEDIUM/HIGH/CRITICAL), parentEntity, registrationStatus
+- Generate a downloadable JSON report
+
+### Result Card (shown after stream completes)
+- Large risk badge: green "CLEAR" or red "FLAGGED" 
+- Fields: LEI, Legal name, Jurisdiction, Sanctions status, Risk score (progress bar), Parent entity
+- "Download JSON Report" button (triggers download of the result data)
+- "Run New Check" button
+
+---
+
+## AGENT 2: BaFin Annex IV Filing Agent (RIGHT COLUMN)
+
+### UI
+- Title: "BaFin Annex IV Filing"
+- Subtitle: "Generate → validate → submit to BaFin MVP Portal"
+- Fund selector dropdown (pre-populated with demo fund data):
+  - "Caelith Demo Immobilien Fonds I (DE-CAE-2024-001)"
+  - "Caelith Demo Equity Fonds II (DE-CAE-2024-002)"
+- Period selector: Q1 2024, Q2 2024, Q3 2024, Q4 2024 (default Q4 2024)
+- "Run Filing Agent →" button (same gradient)
+- Terminal output area (same style)
+- After completion: filing confirmation card
+
+### Backend: `src/frontend/src/app/api/agent-demo/bafin-filing/route.ts`
+SSE endpoint. On GET with `?fund=<id>&period=<Q4-2024>`:
+
+Stream these steps:
+
+```
+[0ms]    ▶ Starting BaFin Annex IV Filing Agent...
+[300ms]  ◉ Loading fund data: "<fund name>"
+         ✓ AUM: €85,000,000 | Fund type: Spezial-AIF | Domicile: DE
+         ✓ AIFM: Caelith Demo KVG GmbH | LEI: 529900TESTLEI000001
+         ✓ Depositary: Deutsche Depositary Bank AG
+[800ms]  ◉ Generating Annex IV XML for <period>...
+         → actually call serializeAnnexIVToXml from packages/open-annex-iv/dist/index.js
+         ✓ XML generated — 87 elements, 4.7KB
+         ✓ Structure: AIFReportingInfo → AIFRecordInfo → AIFCompleteDescription
+[1400ms] ◉ Running XSD validation against AIFMD_DATAIF_V1.2.xsd (Rev 6)...
+         → run actual libxmljs2 validation
+         ✓ Well-formed: YES
+         ✓ Schema valid: YES (0 errors, 0 warnings)
+         ✓ Required elements: ALL PRESENT
+         ✓ Data types: ALL VALID
+[2000ms] ◉ Connecting to BaFin MVP Portal [SIMULATED]...
+         ✓ Portal: https://portal.mvp.bafin.de/
+         ✓ Connection established
+[2400ms] ◉ Authenticating as: Caelith Demo KVG GmbH...
+         ✓ Session established (token expires in 30min)
+[2800ms] ◉ Navigating to AIFMD Reporting section...
+         ✓ Located: Reporting > Annex IV > New Submission
+[3200ms] ◉ Selecting reporting period: <period>...
+         ✓ Period confirmed: <start> – <end>
+         ✓ Reporting obligation: Article 24(2) AIFMD
+[3600ms] ◉ Uploading Annex IV XML (4.7KB)...
+         ██████████████████████ 100%
+         ✓ Upload complete
+[4000ms] ◉ Awaiting portal validation...
+         ✓ Portal schema check: PASSED
+         ✓ Business rules check: PASSED
+         ✓ Duplicate check: NO DUPLICATE
+[4400ms] ✓ FILING CONFIRMED
+         ✓ Reference: BaFin-2024-<Q4>-DE-CAE001-<timestamp>
+         ✓ Submitted: <ISO timestamp>
+         ✓ Total time: 4.4 seconds
+         
+         What would take 2–3 hours manually: done in 4.4s.
+```
+
+After stream: show the actual generated XML in a collapsible <details> block with syntax highlighting (use hljs or just monospace with color classes for XML). Show "Download XML" button.
+
+### Filing Confirmation Card
+- Large green "FILED" badge
+- Fields: Reference number, Period, Fund, Submitted at, File size
+- Collapsible "View Annex IV XML" section showing the actual generated XML
+- "Download XML" and "Start New Filing" buttons
+
+---
+
+## Demo Fund Data
+Hardcode in the backend route (no DB needed for demo):
+
+```typescript
+const DEMO_FUNDS = {
+  'DE-CAE-2024-001': {
+    name: 'Caelith Demo Immobilien Fonds I',
+    aifm: 'Caelith Demo KVG GmbH',
+    lei: '529900TESTLEI000001',
+    type: 'Spezial_AIF',
+    aum: 85000000,
+    nav: 72250000,
+    currency: 'EUR',
+    domicile: 'DE',
+    inception: '2020-06-15',
+    depositary: 'Deutsche Depositary Bank AG',
+    depositary_lei: '529900DEPOEXAMPLE01',
+    assets: [
+      { name: 'Bürogebäude Frankfurt', type: 'real estate', value: 48000000, pct: 66.5 },
+      { name: 'Logistikzentrum Hamburg', type: 'real estate', value: 21500000, pct: 29.8 },
+      { name: 'Cash & Liquidity', type: 'cash', value: 2750000, pct: 3.7 },
+    ],
+  },
+  'DE-CAE-2024-002': {
+    name: 'Caelith Demo Equity Fonds II',
+    aifm: 'Caelith Demo KVG GmbH',
+    lei: '529900TESTLEI000002',
+    type: 'Spezial_AIF',
+    aum: 220000000,
+    nav: 198000000,
+    currency: 'EUR',
+    domicile: 'DE',
+    inception: '2019-03-01',
+    depositary: 'Deutsche Depositary Bank AG',
+    depositary_lei: '529900DEPOEXAMPLE01',
+    assets: [
+      { name: 'Siemens AG', type: 'equity', value: 55000000, pct: 27.8 },
+      { name: 'SAP SE', type: 'equity', value: 48000000, pct: 24.2 },
+      { name: 'Deutsche Telekom AG', type: 'equity', value: 42000000, pct: 21.2 },
+      { name: 'Allianz SE', type: 'equity', value: 35000000, pct: 17.7 },
+      { name: 'Cash Reserve', type: 'cash', value: 18000000, pct: 9.1 },
+    ],
+  },
+};
+```
+
+---
+
+## Sanctions Check Integration
+For the investor DD agent, call the existing backend sanctions API at `http://localhost:3001/api/public/sanctions/check` with POST body `{"name": "<query>"}`. If that fails (CORS etc), make the sanctions call server-side in the Next.js API route directly by importing/calling the sanctions logic.
+
+Actually, since this is a Next.js API route (server-side), directly import and call the sanctions service:
+- Check `src/backend/services/sanctions-service.ts` for the check function
+- If it needs DB, call the public API endpoint instead and handle errors gracefully
+
+---
+
+## Important Technical Notes
+- Use SSE (Server-Sent Events): `Content-Type: text/event-stream`, each event: `data: <json>\n\n`
+- Stream from Next.js API route using `ReadableStream` and `TransformStream`
+- Frontend: use `EventSource` or `fetch` with streaming to consume SSE
+- The GLEIF API is public, no auth needed
+- Use `packages/open-annex-iv/dist/index.js` for XML generation (it's compiled)
+- libxmljs2 is in packages/open-annex-iv/node_modules — import from there for validation
+- Write all files with LF line endings (not CRLF) to avoid Railway build failures
+
+## After Building
+1. Run `npm run build` in src/frontend to check for TypeScript errors
+2. Fix any type errors
+3. Commit with message: "feat: agent demo page — investor DD + BaFin filing agents"
+4. Push to main
+
+When completely finished, run: openclaw system event --text "Agent demo build complete — /agent-demo ready for testing. Check #dev for details." --mode now

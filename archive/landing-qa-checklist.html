@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith Landing Page — QA Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1f1f;--bg2:#2D3333;--accent:#8EC5E0;--warm:#E8A87C;--pass:#22c55e;--fail:#ef4444;--text:#f0f0f0;--text2:rgba(255,255,255,0.7);--text3:rgba(255,255,255,0.45);--border:rgba(255,255,255,0.08);--glass:rgba(255,255,255,0.03);--radius:14px;--grad:linear-gradient(135deg,#8EC5E0,#E8A87C)}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;padding:40px clamp(20px,5vw,80px)}
+h1,h2,h3{font-family:'Sora',sans-serif;letter-spacing:-0.03em}
+.container{max-width:1000px;margin:0 auto}
+
+/* Header */
+.header{text-align:center;margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+.header h1{font-size:clamp(28px,4vw,40px);font-weight:800;margin-bottom:8px}
+.header h1 span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header p{color:var(--text3);font-size:14px;margin-bottom:24px}
+
+/* Score bar */
+.score-bar{display:flex;align-items:center;justify-content:center;gap:32px;padding:20px 32px;background:var(--glass);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;flex-wrap:wrap}
+.score-item{text-align:center}
+.score-num{font-family:'Sora';font-weight:800;font-size:36px;line-height:1}
+.score-num.green{color:var(--pass)}.score-num.red{color:var(--fail)}.score-num.gray{color:var(--text3)}
+.score-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.progress-track{width:100%;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--grad);border-radius:3px;transition:width .5s ease;width:0%}
+
+/* Controls */
+.controls{display:flex;gap:12px;justify-content:center;margin-bottom:32px;flex-wrap:wrap}
+.controls button{font-family:'Sora';font-weight:600;font-size:12px;padding:8px 20px;border-radius:999px;border:1px solid var(--border);background:var(--glass);color:var(--text2);cursor:pointer;transition:all .2s}
+.controls button:hover{border-color:var(--accent);color:#fff}
+.controls button.active{background:rgba(142,197,224,0.15);border-color:var(--accent);color:#fff}
+
+/* Category */
+.category{margin-bottom:24px;background:var(--glass);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .3s}
+.category.all-pass{border-color:rgba(34,197,94,0.2)}
+.category.has-fail{border-color:rgba(239,68,68,0.2)}
+.cat-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;cursor:pointer;transition:background .2s;gap:12px}
+.cat-header:hover{background:rgba(255,255,255,0.02)}
+.cat-left{display:flex;align-items:center;gap:12px}
+.cat-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);min-width:24px}
+.cat-title{font-family:'Sora';font-weight:700;font-size:15px}
+.cat-badge{font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:999px;letter-spacing:0.5px}
+.cat-badge.pending{background:rgba(255,255,255,0.06);color:var(--text3)}
+.cat-badge.pass{background:rgba(34,197,94,0.15);color:var(--pass)}
+.cat-badge.partial{background:rgba(232,168,124,0.15);color:var(--warm)}
+.cat-badge.fail{background:rgba(239,68,68,0.15);color:var(--fail)}
+.cat-toggle{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text3);transition:transform .3s;flex-shrink:0}
+.category.open .cat-toggle{transform:rotate(45deg);color:var(--accent)}
+.cat-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.category.open .cat-body{max-height:2000px}
+
+/* Check items */
+.check-item{display:flex;align-items:flex-start;gap:12px;padding:12px 24px;border-top:1px solid rgba(255,255,255,0.04);transition:background .15s}
+.check-item:hover{background:rgba(255,255,255,0.015)}
+.check-box{width:20px;height:20px;border-radius:6px;border:2px solid rgba(255,255,255,0.15);cursor:pointer;flex-shrink:0;margin-top:1px;transition:all .2s;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent}
+.check-box:hover{border-color:var(--accent)}
+.check-box.pass{background:rgba(34,197,94,0.2);border-color:var(--pass);color:var(--pass)}
+.check-box.fail{background:rgba(239,68,68,0.2);border-color:var(--fail);color:var(--fail)}
+.check-content{flex:1;min-width:0}
+.check-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px}
+.check-title strong{color:#fff}
+.check-desc{font-size:12px;color:var(--text3);line-height:1.6}
+.check-desc code{font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px;color:var(--warm)}
+
+/* Fingerprint section */
+.fingerprint{margin-top:48px;padding:32px;background:var(--glass);border:1px solid var(--border);border-radius:var(--radius)}
+.fingerprint h2{font-size:20px;font-weight:700;margin-bottom:8px}
+.fingerprint h2 span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.fingerprint>p{color:var(--text3);font-size:13px;margin-bottom:24px;line-height:1.6}
+.fp-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fp-card{padding:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:10px}
+.fp-card h4{font-family:'Sora';font-size:12px;font-weight:600;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px}
+.fp-card ul{list-style:none}
+.fp-card li{font-size:13px;color:var(--text2);padding:4px 0;padding-left:16px;position:relative;line-height:1.5}
+.fp-card li::before{content:'→';position:absolute;left:0;color:var(--text3);font-size:11px}
+.fp-card li code{font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px;color:var(--warm)}
+
+/* Timestamp */
+.timestamp{text-align:center;margin-top:32px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3)}
+
+@media(max-width:768px){
+  .score-bar{flex-direction:column;gap:16px}
+  .fp-grid{grid-template-columns:1fr}
+  .cat-header{padding:14px 16px}
+  .check-item{padding:10px 16px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <h1>Landing Page <span>QA Checklist</span></h1>
+  <p>67 checks across 14 categories — test both EN and DE on every deploy</p>
+  <div class="score-bar">
+    <div class="score-item"><div class="score-num green" id="passCount">0</div><div class="score-label">Passed</div></div>
+    <div class="score-item"><div class="score-num red" id="failCount">0</div><div class="score-label">Failed</div></div>
+    <div class="score-item"><div class="score-num gray" id="pendingCount">67</div><div class="score-label">Remaining</div></div>
+    <div class="score-item" style="min-width:200px"><div class="score-label" style="margin-bottom:6px;margin-top:0">COMPLETION</div><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div></div>
+  </div>
+</div>
+
+<div class="controls">
+  <button onclick="expandAll()" id="btnExpand">Expand All</button>
+  <button onclick="collapseAll()">Collapse All</button>
+  <button onclick="filterShow('all')" class="active" data-filter="all">All</button>
+  <button onclick="filterShow('pending')" data-filter="pending">Pending</button>
+  <button onclick="filterShow('fail')" data-filter="fail">Failed</button>
+  <button onclick="resetAll()">↺ Reset</button>
+  <button onclick="exportResults()">⤓ Export</button>
+</div>
+
+<div id="categories"></div>
+
+<!-- FINGERPRINT: What to look for to confirm latest fixes -->
+<div class="fingerprint">
+  <h2>🔍 Visual <span>Fingerprint</span></h2>
+  <p>Quick checks to confirm you're seeing the latest v2 preview — not a stale version. If any of these are wrong, hard-refresh (<code>Ctrl+Shift+R</code>).</p>
+  <div class="fp-grid">
+    <div class="fp-card">
+      <h4>Must be present (new)</h4>
+      <ul>
+        <li>Section labels say <code>Capabilities</code>, <code>The Platform</code> etc. — <strong>no double checkmarks</strong> (✓✓)</li>
+        <li>Readiness banner inside Features section with live countdown: <code>X days until enforcement →</code></li>
+        <li>Feature cards have <strong>gradient top accent bar</strong> on hover</li>
+        <li>Dashboard mockup has subtle <strong>pulsing glow animation</strong></li>
+        <li>Terminal has faint green <strong>scanline overlay</strong></li>
+        <li>Pricing is on <strong>light background</strong> (not dark)</li>
+        <li>Professional tier has <strong>gradient border</strong> (not just box-shadow)</li>
+        <li>Each pricing tier has <strong>two buttons</strong>: "Get started" + "Book a demo"</li>
+        <li>Trust section label says <code>Standards & Recognition</code> (not "Trusted By")</li>
+        <li><strong>5 trust pills</strong> (including 🇪🇺 EU-Hosted Infrastructure)</li>
+        <li>CTA section has email fallback line below buttons</li>
+        <li><strong>7 FAQ items</strong> (includes EMT/EET/EPT + AIFMD II date)</li>
+        <li>FAQ left border highlights on hover/active</li>
+        <li>Cookie consent bar on first visit</li>
+        <li>Footer has LinkedIn + GitHub <strong>SVG icon buttons</strong></li>
+        <li>Nav order: Features → Platform → <strong>API</strong> → Pricing → FAQ</li>
+      </ul>
+    </div>
+    <div class="fp-card">
+      <h4>Must NOT be present (old/broken)</h4>
+      <ul>
+        <li>❌ Double checkmarks (✓ ✓) on section labels</li>
+        <li>❌ Readiness as its own full-width section</li>
+        <li>❌ "Process" section (4-step numbered flow)</li>
+        <li>❌ Pricing on dark background</li>
+        <li>❌ "Trusted By" label (implies customer logos we don't have)</li>
+        <li>❌ Only 4 trust pills</li>
+        <li>❌ Only 5 FAQ items</li>
+        <li>❌ Nav order with API after Pricing</li>
+        <li>❌ Separate Open Source section</li>
+        <li>❌ Separate Copilot section (merged into Platform)</li>
+        <li>❌ 14 sections (should be 9)</li>
+        <li>❌ Pricing cards without "Book a demo" secondary CTA</li>
+        <li>❌ No cookie consent bar</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="timestamp" id="timestamp"></div>
+
+</div>
+
+<script>
+var DATA = [
+  {title:"Navigation",checks:[
+    {t:"Logo",d:"Clicking 'Caelith' scrolls to top or reloads page"},
+    {t:"Nav links",d:"Features, Platform, API, Pricing, FAQ all smooth-scroll to correct section"},
+    {t:"Navbar morph",d:"Scrolling past ~80px: nav shrinks into floating pill with frosted glass + 24px border-radius"},
+    {t:"Try Demo button",d:"Navigates to <code>/demo-dashboard</code>"}
+  ]},
+  {title:"Hero",checks:[
+    {t:"Heading renders",d:"EN: 'Fund compliance, automated.' / DE: 'Fonds-Compliance, automatisiert.'"},
+    {t:"Gradient text",d:"'automated.' shows accent→warm gradient, not solid color"},
+    {t:"Terminal typing",d:"Lines appear sequentially (~800ms delays), loops every ~12s"},
+    {t:"Terminal content",d:"Shows <code>caelith evaluate</code>, checkmarks, <code>caelith export</code>, 'All checks passed'"},
+    {t:"Green pulse dot",d:"Next to 'AIFMD II COMPLIANCE PLATFORM', animates opacity"},
+    {t:"CTA buttons",d:"'Try the Live Demo' (gradient) + 'View API Docs' (outline) both link correctly"},
+    {t:"Scroll hint",d:"'Scroll' text + chevron at bottom, bounce animation"}
+  ]},
+  {title:"Features (Light)",checks:[
+    {t:"Readiness banner",d:"Live countdown (<code>X days until enforcement →</code>), 'Take the Readiness Check' → <code>/readiness-check</code>"},
+    {t:"6 feature cards",d:"Rules Engine, Audit Trail, Annex IV, Sanctions, LEI, EMT/EET/EPT"},
+    {t:"Card numbering",d:"01 through 06 in gradient text"},
+    {t:"Card hover",d:"translateY(-6px) lift + top gradient accent bar + icon scales up"},
+    {t:"Detail footers",d:"Each card has monospace detail (e.g. '13 rules · 6 frameworks · real-time')"}
+  ]},
+  {title:"Platform (Dark)",checks:[
+    {t:"Dashboard mockup",d:"Topbar tabs, 3 stat boxes (4 funds, 127 investors, 13/13 rules), compliance rows"},
+    {t:"Dashboard glow",d:"Subtle pulsing box-shadow animation on the mockup container"},
+    {t:"FAIL row visible",d:"'INV-4892 — ELTIF 2.0 Suitability' shows red ✗ FAIL"},
+    {t:"Explore Demo button",d:"At bottom of dashboard mock → <code>/demo-dashboard</code>"},
+    {t:"Copilot chat",d:"4 messages (2 user blue, 2 bot gray) + typing indicator dots"},
+    {t:"Try Copilot button",d:"Below chat window → <code>/api/copilot-demo</code>"}
+  ]},
+  {title:"Comparison (Light)",checks:[
+    {t:"Heading",d:"'€180K manual. Or €11,880 automated.' — numbers in gradient"},
+    {t:"Table rows",d:"6 rows: Time to audit, Error rate, Frameworks, Evidence, Templates, Annual cost"},
+    {t:"Caelith column",d:"Green-tinted background, all values present"}
+  ]},
+  {title:"API + Open Source (Dark)",checks:[
+    {t:"Feature list",d:"5 items with ✓ marks (versioned routes, API key, Swagger, Annex IV, npm)"},
+    {t:"Code block",d:"curl example with syntax highlighting — blue keywords, orange strings, gray comments"},
+    {t:"Code block header",d:"Shows 'api-example.sh' + 'bash' on right"},
+    {t:"npm inline",d:"<code>npm i open-annex-iv</code> in styled box + 'Apache 2.0' label"},
+    {t:"CTA buttons",d:"'View API Docs' → caelith.tech/api/docs, 'GitHub' → github.com/julianlaycock"}
+  ]},
+  {title:"Pricing (Light)",checks:[
+    {t:"3 tiers",d:"Essentials €990, Professional €1,990, Enterprise From €3,500"},
+    {t:"Featured card",d:"Professional: gradient border (not just shadow) + elevated + 'MOST POPULAR'"},
+    {t:"Feature lists",d:"Essentials 5, Professional 7, Enterprise 5 items"},
+    {t:"Primary CTAs",d:"Essentials/Enterprise = outline, Professional = gradient fill"},
+    {t:"Secondary CTAs",d:"'Book a demo' ghost button per tier → Calendly link"},
+    {t:"Hover lift",d:"Cards translateY on hover"}
+  ]},
+  {title:"Trust + Resources (Dark)",checks:[
+    {t:"5 trust pills",d:"ESMA XSD, Campus Founders Batch 4, Open Source Core, 🇩🇪 Berlin, 🇪🇺 EU-Hosted"},
+    {t:"Section label",d:"'Standards & Recognition' (NOT 'Trusted By')"},
+    {t:"Resource cards",d:"2 cards: Annex IV XML guide + EU Sanctions guide"},
+    {t:"Card hover",d:"Lift + border color change to accent"}
+  ]},
+  {title:"CTA + FAQ (Dark)",checks:[
+    {t:"Countdown pill",d:"Large number + 'days until / AIFMD II enforcement' (warm orange)"},
+    {t:"Countdown live",d:"Number = actual days until April 16 2026"},
+    {t:"CTA buttons",d:"'Try the Live Demo' + 'API Documentation'"},
+    {t:"Email fallback",d:"'Or email julian.laycock@caelith.tech' below CTAs"},
+    {t:"7 FAQ items",d:"Frameworks, try without signup, API, EMT/EET/EPT, audit trail, AIFMD II date, data security"},
+    {t:"FAQ toggle",d:"Click expands/collapses, only one open at a time"},
+    {t:"FAQ accessibility",d:"Keyboard Enter/Space toggles, aria-expanded updates, left border highlights"}
+  ]},
+  {title:"Footer",checks:[
+    {t:"5 columns",d:"Brand + tagline, Product, Resources, Legal, Connect"},
+    {t:"Social icons",d:"LinkedIn + GitHub SVGs with hover highlight"},
+    {t:"Footer links",d:"All hrefs correct (API Docs, Blog, GitHub, npm, Privacy, Terms, Imprint, LinkedIn, Email)"},
+    {t:"Bottom bar",d:"'Made in Berlin 🇩🇪' left, '© 2026 Caelith' right"}
+  ]},
+  {title:"Global Interactions",checks:[
+    {t:"Scroll progress bar",d:"Gradient bar at top, grows left→right with scroll"},
+    {t:"Reveal animations",d:"Elements fade-in + translateY as they enter viewport"},
+    {t:"Staggered delays",d:"Cards animate in with ~120ms stagger between siblings"},
+    {t:"Button glow follow",d:"Radial gradient follows mouse position on hover"},
+    {t:"Arrow animation",d:"→ shifts right 4px on button hover"},
+    {t:"Cookie consent",d:"Bar appears on first visit, dismiss stores in localStorage"}
+  ]},
+  {title:"Responsive",checks:[
+    {t:"≤768px nav",d:"Hamburger icon replaces nav links, single-column grids"},
+    {t:"≤480px stacking",d:"Footer single column, hero meta stacks, trust pills stack vertically"},
+    {t:"Hero height",d:"100dvh on mobile (no address bar gap)"},
+    {t:"Scroll hint hidden",d:"Not visible on mobile (display:none below 768px)"}
+  ]},
+  {title:"EN/DE Parity",checks:[
+    {t:"Section headings",d:"All DE headings present and structurally match EN"},
+    {t:"CTA text",d:"All buttons translated (e.g. 'Live-Demo testen', 'API-Dokumentation')"},
+    {t:"FAQ content",d:"All 7 questions translated to German"}
+  ]},
+  {title:"Performance",checks:[
+    {t:"Page load",d:"< 300ms (no external JS, only Google Fonts)"},
+    {t:"No layout shift",d:"No CLS on load (fonts preconnected, no lazy images above fold)"},
+    {t:"Doc size",d:"< 60KB single HTML file"}
+  ]}
+];
+
+// State: 0=pending, 1=pass, 2=fail
+var state = JSON.parse(localStorage.getItem('caelith_qa_state')||'null') || {};
+var total = 0;
+DATA.forEach(function(c){total+=c.checks.length});
+
+function key(ci,ji){return ci+'_'+ji}
+
+function render(){
+  var html='';
+  DATA.forEach(function(cat,ci){
+    var passes=0,fails=0;
+    cat.checks.forEach(function(_,ji){var s=state[key(ci,ji)]||0;if(s===1)passes++;if(s===2)fails++});
+    var status=passes===cat.checks.length?'all-pass':fails>0?'has-fail':'';
+    var badgeClass=passes===cat.checks.length?'pass':fails>0?'fail':passes>0?'partial':'pending';
+    var badgeText=passes===cat.checks.length?'ALL PASS':fails>0?passes+'/'+cat.checks.length+' ('+fails+' fail)':passes>0?passes+'/'+cat.checks.length:cat.checks.length+' checks';
+    html+='<div class="category '+status+'" data-cat="'+ci+'">';
+    html+='<div class="cat-header" onclick="toggleCat('+ci+')"><div class="cat-left"><span class="cat-num">'+(ci+1<10?'0':'')+(ci+1)+'</span><span class="cat-title">'+cat.title+'</span></div><span class="cat-badge '+badgeClass+'">'+badgeText+'</span><span class="cat-toggle">+</span></div>';
+    html+='<div class="cat-body">';
+    cat.checks.forEach(function(ch,ji){
+      var s=state[key(ci,ji)]||0;
+      var boxClass=s===1?'pass':s===2?'fail':'';
+      var boxChar=s===1?'✓':s===2?'✗':'';
+      html+='<div class="check-item" data-state="'+s+'"><div class="check-box '+boxClass+'" onclick="cycle('+ci+','+ji+')">'+boxChar+'</div><div class="check-content"><div class="check-title"><strong>'+ch.t+'</strong></div><div class="check-desc">'+ch.d+'</div></div></div>';
+    });
+    html+='</div></div>';
+  });
+  document.getElementById('categories').innerHTML=html;
+  updateScore();
+}
+
+function cycle(ci,ji){
+  var k=key(ci,ji);
+  var s=state[k]||0;
+  state[k]=(s+1)%3;
+  save();render();
+}
+
+function toggleCat(ci){
+  var el=document.querySelector('[data-cat="'+ci+'"]');
+  el.classList.toggle('open');
+}
+
+function expandAll(){document.querySelectorAll('.category').forEach(function(c){c.classList.add('open')})}
+function collapseAll(){document.querySelectorAll('.category').forEach(function(c){c.classList.remove('open')})}
+
+function filterShow(mode){
+  document.querySelectorAll('[data-filter]').forEach(function(b){b.classList.toggle('active',b.dataset.filter===mode)});
+  document.querySelectorAll('.check-item').forEach(function(el){
+    if(mode==='all'){el.style.display=''}
+    else if(mode==='pending'){el.style.display=el.dataset.state==='0'?'':'none'}
+    else if(mode==='fail'){el.style.display=el.dataset.state==='2'?'':'none'}
+  });
+}
+
+function resetAll(){if(confirm('Reset all checks to pending?')){state={};save();render()}}
+
+function updateScore(){
+  var p=0,f=0;
+  for(var k in state){if(state[k]===1)p++;if(state[k]===2)f++}
+  var rem=total-p-f;
+  document.getElementById('passCount').textContent=p;
+  document.getElementById('failCount').textContent=f;
+  document.getElementById('pendingCount').textContent=rem;
+  document.getElementById('progressFill').style.width=((p/total)*100)+'%';
+}
+
+function save(){localStorage.setItem('caelith_qa_state',JSON.stringify(state))}
+
+function exportResults(){
+  var lines=['Caelith Landing QA — '+new Date().toISOString().slice(0,16),''];
+  var p=0,f=0;
+  DATA.forEach(function(cat,ci){
+    lines.push('## '+cat.title);
+    cat.checks.forEach(function(ch,ji){
+      var s=state[key(ci,ji)]||0;
+      var mark=s===1?'✅':s===2?'❌':'⬜';
+      if(s===1)p++;if(s===2)f++;
+      lines.push(mark+' '+ch.t);
+    });
+    lines.push('');
+  });
+  lines.unshift('','Score: '+p+'/'+(p+f+total-p-f)+' passed, '+f+' failed','');
+  var blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='caelith-qa-'+new Date().toISOString().slice(0,10)+'.txt';a.click();
+}
+
+document.getElementById('timestamp').textContent='Checklist generated: '+new Date().toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short'});
+render();
+</script>
+</body>
+</html>

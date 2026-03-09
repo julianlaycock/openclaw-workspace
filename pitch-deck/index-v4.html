@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, initial-scale=1">
+<title>Caelith — Autonomous Compliance Agents for EU Fund Managers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark: #2D3333;
+  --accent: #C5E0EE;
+  --warm: #E8A87C;
+  --light: #F8F9FA;
+  --dark-secondary: #3A4242;
+  --dark-tertiary: #4A5555;
+  --text-muted: #8A9A9A;
+  --text-light-muted: #6B7280;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: 'Instrument Sans', sans-serif;
+  background: var(--dark);
+}
+
+.deck { width: 100%; height: 100%; position: relative; }
+
+.slide {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  padding: 80px 120px;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+.slide.active { display: flex; }
+
+/* Dark slide base */
+.slide-dark {
+  background: var(--dark);
+  color: #fff;
+}
+.slide-dark::before {
+  content: '';
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+.slide-dark > * { position: relative; z-index: 1; }
+
+/* Light slide base */
+.slide-light {
+  background: var(--light);
+  color: var(--dark);
+}
+
+/* Watermark */
+.watermark {
+  position: absolute; top: 36px; right: 48px;
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 14px; letter-spacing: 3px; text-transform: uppercase;
+  opacity: 0.15; z-index: 2; pointer-events: none;
+}
+.slide-dark .watermark { color: #fff; }
+.slide-light .watermark { color: var(--dark); }
+
+/* Section labels */
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 3px;
+  margin-bottom: 24px; opacity: 0.6;
+}
+.section-label::before { content: '— '; }
+
+/* Headings */
+h1 { font-family: 'Sora', sans-serif; font-weight: 800; }
+h2 { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 42px; line-height: 1.15; }
+h3 { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 28px; line-height: 1.3; }
+
+.accent { color: var(--accent); }
+.warm { color: var(--warm); }
+.mono { font-family: 'JetBrains Mono', monospace; }
+.muted { opacity: 0.5; }
+.text-muted { color: var(--text-muted); }
+
+/* Cards */
+.card-row { display: flex; gap: 24px; }
+.card {
+  flex: 1; padding: 32px; border-radius: 12px;
+}
+.card-dark {
+  background: var(--dark-secondary);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.card-light {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+/* Navigation */
+.nav-dots {
+  position: fixed; bottom: 32px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 8px; z-index: 100;
+}
+.nav-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  cursor: pointer; border: none; padding: 0;
+  transition: background 0.2s, transform 0.2s;
+}
+.nav-dot.active {
+  background: var(--accent);
+  transform: scale(1.3);
+}
+.slide-counter {
+  position: fixed; bottom: 36px; right: 48px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; color: rgba(255,255,255,0.3);
+  z-index: 100;
+}
+
+/* Print */
+@media print {
+  html, body { overflow: visible; height: auto; }
+  .slide {
+    position: relative !important;
+    display: flex !important;
+    page-break-after: always;
+    break-after: page;
+    width: 100vw; height: 100vh;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .nav-dots, .slide-counter { display: none !important; }
+}
+
+/* =========== SLIDE-SPECIFIC =========== */
+
+/* Slide 1: Cover */
+.cover-title {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 96px; color: #fff; line-height: 1;
+  margin-bottom: 16px; letter-spacing: -2px;
+}
+.cover-subtitle {
+  font-size: 24px; color: var(--accent);
+  font-weight: 500; margin-bottom: 48px;
+}
+.cover-hook {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px; color: var(--warm);
+  margin-bottom: 48px; line-height: 1.6;
+}
+.cover-meta {
+  font-size: 14px; color: var(--text-muted);
+  line-height: 1.8;
+}
+.cover-contact {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* Slide 2: Deadline */
+.deadline-number {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 200px; color: var(--warm);
+  line-height: 1; margin-bottom: 0;
+}
+.deadline-label {
+  font-size: 28px; color: var(--accent);
+  font-weight: 600; margin-bottom: 32px;
+}
+.deadline-body {
+  font-size: 18px; line-height: 1.7;
+  max-width: 800px; color: rgba(255,255,255,0.7);
+  margin-bottom: 48px;
+}
+.timeline {
+  display: flex; align-items: center; gap: 0;
+  margin-top: 16px;
+}
+.timeline-item {
+  text-align: center; position: relative; flex: 1;
+}
+.timeline-item .year {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 700;
+  margin-bottom: 8px;
+}
+.timeline-item .desc {
+  font-size: 12px; color: var(--text-muted);
+  max-width: 140px; margin: 0 auto;
+}
+.timeline-item .dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--dark-tertiary);
+  border: 2px solid var(--text-muted);
+  margin: 0 auto 8px;
+}
+.timeline-item.highlight .dot {
+  background: var(--warm);
+  border-color: var(--warm);
+}
+.timeline-item.active-dot .dot {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.timeline-line {
+  position: absolute; top: 5px; left: 50%; right: -50%;
+  height: 2px; background: rgba(255,255,255,0.1);
+  z-index: -1;
+}
+.source-note {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text-muted);
+  margin-top: auto; opacity: 0.5;
+}
+
+/* Slide 3: Problem — Pain Point Cards */
+.problem-headline {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 38px; line-height: 1.3;
+  max-width: 700px; margin-bottom: 0;
+  color: var(--dark);
+}
+.problem-layout {
+  display: none;
+}
+.problem-cards {
+  display: flex; gap: 32px; flex: 1;
+  align-items: center; justify-content: center;
+}
+.problem-card {
+  flex: 1; background: #fff; border-radius: 24px;
+  padding: 48px; text-align: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.03);
+}
+.problem-card-metric {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 42px; color: var(--dark); line-height: 1.1;
+  margin-bottom: 8px;
+}
+.problem-card-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--text-light-muted);
+  margin-bottom: 16px; font-weight: 500;
+}
+.problem-card-desc {
+  font-size: 13px; color: var(--text-light-muted);
+  line-height: 1.6;
+}
+.problem-bottom {
+  margin-top: 32px;
+  font-size: 18px; font-weight: 800;
+  color: var(--dark);
+  font-family: 'Sora', sans-serif;
+}
+.pain-card {
+  text-align: center; padding: 40px 32px;
+}
+.pain-icon {
+  margin-bottom: 16px; display: flex; justify-content: center; align-items: center;
+}
+.pain-value {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 28px; color: var(--dark);
+  margin-bottom: 8px;
+}
+.pain-label {
+  font-size: 14px; color: var(--text-light-muted);
+  line-height: 1.5;
+}
+
+/* Slide 4: Agent Solution — "The Intelligence Layer" */
+.before-after-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 32px; margin: 8px 0 32px; padding: 24px 0;
+}
+.ba-block {
+  text-align: center;
+}
+.ba-numbers {
+  font-family: 'JetBrains Mono', monospace; font-weight: 700;
+  font-size: 36px; line-height: 1.2;
+}
+.ba-label {
+  font-size: 12px; margin-top: 4px;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.ba-arrow {
+  flex-shrink: 0;
+}
+.agent-system {
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+}
+.agent-cards { display: flex; gap: 20px; width: 100%; }
+.agent-card {
+  flex: 1; padding: 24px; border-radius: 10px;
+  background: var(--dark-secondary);
+  position: relative; overflow: hidden;
+}
+.agent-card-stripe {
+  position: absolute; top: 0; left: 0; bottom: 0;
+  width: 6px;
+}
+.agent-card-filing .agent-card-stripe { background: var(--accent); }
+.agent-card-screening .agent-card-stripe { background: var(--warm); }
+.agent-card-research .agent-card-stripe { background: #A8D8B9; }
+.agent-card-icon {
+  margin-bottom: 12px;
+}
+.agent-card-title {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 15px; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.agent-card-filing .agent-card-title { color: var(--accent); }
+.agent-card-screening .agent-card-title { color: var(--warm); }
+.agent-card-research .agent-card-title { color: #A8D8B9; }
+.agent-card-body {
+  font-size: 12.5px; line-height: 1.6;
+  color: rgba(255,255,255,0.6);
+  padding-left: 14px;
+}
+.agent-card-stats {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px; font-weight: 700;
+  margin-top: 12px; padding-left: 14px;
+}
+.agent-card-filing .agent-card-stats { color: var(--accent); }
+.agent-card-screening .agent-card-stats { color: var(--warm); }
+.agent-card-research .agent-card-stats { color: #A8D8B9; }
+.agent-card-stats-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: rgba(255,255,255,0.35);
+  margin-top: 2px; padding-left: 14px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.approval-gate {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; width: 100%; margin: 20px 0 12px;
+}
+.approval-gate-line {
+  flex: 1; height: 1px;
+  border-top: 2px dashed rgba(255,255,255,0.12);
+}
+.approval-gate-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; text-transform: uppercase;
+  letter-spacing: 2px; color: rgba(255,255,255,0.35);
+  display: flex; align-items: center; gap: 6px;
+  white-space: nowrap;
+}
+.output-icon {
+  display: flex; justify-content: center; margin: 12px 0;
+}
+.hitl-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 18px; border-radius: 20px;
+  background: rgba(74,222,128,0.08);
+  border: 1px solid rgba(74,222,128,0.2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: #4ADE80;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  margin-top: 8px;
+}
+/* Convergence lines from cards to output */
+.convergence-lines {
+  width: 100%; height: 32px; position: relative;
+}
+
+/* Legacy compat */
+.flow-diagram { margin: 20px 0 12px; }
+.flow-row {
+  display: flex; align-items: center; justify-content: center; gap: 0;
+}
+.flow-box {
+  padding: 18px 28px; border-radius: 10px;
+  text-align: center; font-size: 13px; font-weight: 600;
+  white-space: nowrap;
+}
+.flow-box-outline {
+  border: 2px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+}
+.flow-box-accent {
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  background: rgba(197,224,238,0.06);
+}
+.flow-box-warm {
+  border: 2px solid var(--warm);
+  color: var(--warm);
+  background: rgba(232,168,124,0.06);
+  position: relative;
+}
+.flow-arrow-svg {
+  flex-shrink: 0; padding: 0 12px;
+}
+.hitl-note {
+  text-align: center; font-size: 13px;
+  color: rgba(255,255,255,0.4); margin-top: 20px;
+  font-style: italic;
+}
+
+/* Slide 5: Terminal Demo */
+.terminal-window {
+  background: #0d1117;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 16px 64px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.terminal-chrome {
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.terminal-dots {
+  display: flex;
+  gap: 6px;
+}
+.terminal-dots span {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.terminal-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+}
+.terminal-body {
+  padding: 20px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.7);
+  flex: 1;
+  overflow: hidden;
+  white-space: pre;
+}
+.terminal-body .t-time { color: rgba(255,255,255,0.2); }
+.terminal-body .t-pass { color: #4ADE80; }
+.terminal-body .t-warn { color: #E8A87C; }
+.terminal-body .t-accent { color: #C5E0EE; }
+.terminal-body .t-dim { color: rgba(255,255,255,0.35); }
+.terminal-body .t-bright { color: rgba(255,255,255,0.95); font-weight: 700; }
+.terminal-body .t-sep { color: rgba(255,255,255,0.1); }
+.terminal-status {
+  display: flex;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+}
+.terminal-status-cell {
+  flex: 1;
+  padding: 10px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.04);
+}
+.terminal-status-cell:last-child { border-right: none; }
+
+/* Slide 6: Market Validation */
+.validation-title {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 38px; color: #fff; margin-bottom: 8px;
+}
+.validation-subtitle {
+  font-size: 18px; color: var(--text-muted); margin-bottom: 48px;
+}
+.val-card {
+  padding: 32px; text-align: center;
+}
+.val-amount {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 32px; margin-bottom: 8px;
+}
+.val-card:nth-child(1) .val-amount { color: var(--accent); }
+.val-card:nth-child(2) .val-amount { color: var(--warm); }
+.val-card:nth-child(3) .val-amount { color: #A8D8B9; }
+.val-name {
+  font-size: 16px; font-weight: 700; margin-bottom: 6px;
+  color: rgba(255,255,255,0.9);
+}
+.val-desc {
+  font-size: 13px; color: var(--text-muted); line-height: 1.5;
+}
+.val-bottom {
+  margin-top: 40px; font-size: 16px;
+  line-height: 1.7; color: rgba(255,255,255,0.6);
+  max-width: 900px;
+}
+
+/* Slide 7: Market Size — Bar Chart */
+.market-bar-row { margin-bottom: 32px; }
+.market-bar-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.market-bar-track {
+  height: 44px; border-radius: 8px;
+  position: relative; display: flex; align-items: center;
+}
+.market-bar-value {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 20px; color: #fff;
+  padding: 0 16px;
+  position: relative; z-index: 1;
+}
+.market-bar-desc {
+  font-size: 13px; margin-top: 6px;
+}
+.som-glow {
+  box-shadow: 0 0 12px rgba(197,224,238,0.3), 0 0 24px rgba(197,224,238,0.15);
+  animation: somPulse 2s ease-in-out infinite;
+}
+@keyframes somPulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(197,224,238,0.3), 0 0 24px rgba(197,224,238,0.15); }
+  50% { box-shadow: 0 0 18px rgba(197,224,238,0.45), 0 0 36px rgba(197,224,238,0.2); }
+}
+.market-stat-block {
+  padding: 14px 0 14px 16px;
+}
+.market-stat-value {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 32px; line-height: 1;
+  margin-bottom: 4px;
+}
+.market-stat-label {
+  font-size: 13px; color: var(--text-light-muted); margin-top: 2px;
+}
+.market-sources {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text-light-muted);
+  margin-top: 8px; opacity: 0.5;
+}
+
+/* Slide 8: Platform + GTM */
+.gtm-layout { display: flex; gap: 80px; flex: 1; align-items: center; }
+.gtm-left, .gtm-right { flex: 1; }
+.gtm-left {
+  border-right: 1px solid rgba(255,255,255,0.06);
+  padding-right: 40px;
+}
+.gtm-timeline-item {
+  display: flex; gap: 20px; margin-bottom: 24px;
+  align-items: flex-start; position: relative;
+  padding-left: 36px;
+}
+.gtm-timeline-item::before {
+  content: '';
+  position: absolute; left: 6px; top: 7px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--warm); opacity: 0.5;
+}
+.gtm-timeline-item.gtm-timeline-live::before {
+  background: var(--accent); opacity: 1;
+}
+.gtm-timeline-item:not(:last-of-type)::after {
+  content: '';
+  position: absolute; left: 12px; top: 24px;
+  width: 2px; bottom: -12px;
+  background: rgba(255,255,255,0.1);
+}
+.gtm-year {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 20px; color: var(--warm);
+  min-width: 80px;
+}
+.gtm-year-live { color: var(--accent); }
+.gtm-content {}
+.gtm-reg-name {
+  font-weight: 700; font-size: 16px; margin-bottom: 2px;
+}
+.gtm-reg-desc {
+  font-size: 13px; color: var(--text-muted);
+}
+.gtm-switching {
+  margin-top: 16px; margin-left: 36px; padding: 16px 20px;
+  background: rgba(197,224,238,0.06);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 8px 8px 0; font-size: 13px;
+  color: var(--accent);
+}
+.phase-item {
+  margin-bottom: 28px; display: flex; gap: 16px; align-items: flex-start;
+}
+.phase-number {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(197,224,238,0.12); border: 1px solid rgba(197,224,238,0.25);
+  color: var(--accent);
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
+}
+.phase-content { flex: 1; }
+.phase-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--accent); margin-bottom: 6px;
+}
+.phase-title {
+  font-weight: 700; font-size: 16px; margin-bottom: 2px;
+}
+.phase-desc {
+  font-size: 13px; color: var(--text-muted);
+}
+.channels-note {
+  margin-top: 20px; font-size: 12px;
+  color: var(--text-muted); line-height: 1.6;
+  padding: 14px 18px; border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Slide 9: Business Model */
+.pricing-row { display: flex; gap: 24px; margin-bottom: 0; max-width: 1000px; margin-left: auto; margin-right: auto; }
+.pricing-card { flex: 1; padding: 36px; border-radius: 12px; position: relative; }
+.pricing-featured {
+  border: 2px solid var(--warm) !important;
+  transform: scale(1.03);
+  padding-top: 44px; padding-bottom: 44px;
+  box-shadow: 0 8px 32px rgba(232,168,124,0.15);
+}
+.pricing-badge {
+  position: absolute; top: -12px; right: 24px;
+  background: var(--warm); color: var(--dark);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 4px 12px; border-radius: 4px;
+}
+.pricing-name {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 20px; margin-bottom: 8px;
+}
+.pricing-price {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 36px; color: var(--dark); line-height: 1;
+}
+.pricing-price span {
+  font-size: 16px; font-weight: 400; color: var(--text-light-muted);
+}
+.pricing-details {
+  font-size: 13px; color: var(--text-light-muted);
+  margin-top: 12px; line-height: 1.6;
+}
+.pricing-acv {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; margin-top: 12px;
+  padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.06);
+}
+.biz-bottom-row {
+  display: flex; gap: 48px;
+}
+.biz-bottom-item {
+  display: flex; align-items: baseline; gap: 8px;
+}
+.biz-bottom-value {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 24px; color: var(--dark);
+}
+.biz-bottom-label {
+  font-size: 14px; color: var(--text-light-muted);
+}
+
+/* Slide 10: Traction — "The Dashboard" */
+.traction-dashboard { margin-bottom: 36px; }
+.traction-cards { display: flex; gap: 20px; }
+.traction-card {
+  flex: 1; padding: 28px 24px; border-radius: 12px;
+  background: var(--dark-secondary);
+  border: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+}
+.traction-card-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 14px;
+}
+.traction-card-icon {
+  margin-bottom: 12px;
+}
+.traction-value {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 40px; line-height: 1;
+  margin-bottom: 6px;
+}
+.traction-label {
+  font-size: 13px; color: var(--text-muted); line-height: 1.4;
+}
+.traction-card-pipeline { border-top: 3px solid var(--accent); }
+.traction-card-pipeline .traction-value { color: var(--accent); }
+.traction-card-quality { border-top: 3px solid #4ADE80; }
+.traction-card-quality .traction-value { color: #4ADE80; }
+.traction-card-platform { border-top: 3px solid var(--accent); }
+.traction-card-platform .traction-value { color: var(--accent); }
+.traction-card-funding { border-top: 3px solid var(--warm); }
+.traction-card-funding .traction-value { color: var(--warm); }
+
+/* Signal Board */
+.signal-board {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+.signal-card {
+  padding: 20px 24px; border-radius: 10px;
+  background: var(--dark-secondary);
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.signal-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #4ADE80;
+  flex-shrink: 0; margin-top: 4px;
+  box-shadow: 0 0 6px rgba(74,222,128,0.3);
+}
+.signal-title {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 14px; color: rgba(255,255,255,0.9);
+  margin-bottom: 3px;
+}
+.signal-desc {
+  font-size: 12.5px; color: var(--text-muted); line-height: 1.4;
+}
+
+/* Legacy traction bullets kept */
+.traction-bullets {
+  display: flex; gap: 40px; flex-wrap: wrap;
+}
+.traction-bullet {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 15px; color: rgba(255,255,255,0.6);
+}
+.traction-check {
+  color: #C5E0EE;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Slide 11: Team */
+.team-layout { display: flex; gap: 64px; flex: 1; align-items: center; }
+.team-left { flex: 0.6; }
+.team-right { flex: 1; }
+.team-name {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 36px; margin-bottom: 4px;
+}
+.team-role {
+  font-size: 18px; color: var(--accent); margin-bottom: 24px;
+}
+.team-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.team-card {
+  padding: 24px; border-radius: 10px;
+  background: var(--dark-secondary);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.team-card-icon {
+  margin-bottom: 10px; display: flex; align-items: center;
+}
+.team-card-title {
+  font-weight: 700; font-size: 14px;
+  margin-bottom: 4px; color: rgba(255,255,255,0.9);
+}
+.team-card-desc {
+  font-size: 12px; color: var(--text-muted); line-height: 1.5;
+}
+.team-hire {
+  margin-top: 32px; padding: 20px 24px;
+  background: rgba(232,168,124,0.08);
+  border: 1px solid rgba(232,168,124,0.15);
+  border-radius: 10px;
+}
+.team-hire-title {
+  font-weight: 700; font-size: 14px;
+  color: var(--warm); margin-bottom: 4px;
+}
+.team-hire-desc {
+  font-size: 13px; color: rgba(255,255,255,0.5);
+}
+
+/* Slide 12: The Ask */
+.ask-amount {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 96px; color: var(--accent);
+  line-height: 1; margin-bottom: 8px;
+}
+.ask-type {
+  font-size: 20px; color: var(--text-muted);
+  margin-bottom: 48px;
+}
+.ask-alloc { display: flex; gap: 20px; margin-bottom: 48px; }
+.alloc-item { flex: 1; }
+.alloc-label {
+  font-size: 12px; color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.alloc-bar {
+  height: 8px; border-radius: 4px;
+  background: var(--dark-secondary);
+  margin-bottom: 6px; overflow: hidden;
+}
+.alloc-fill {
+  height: 100%; border-radius: 4px;
+}
+.alloc-pct {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: 18px; color: rgba(255,255,255,0.8);
+}
+.milestones { display: flex; gap: 20px; margin-bottom: 48px; }
+.milestone {
+  flex: 1; padding: 20px; border-radius: 10px;
+  background: var(--dark-secondary);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.milestone-quarter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.milestone-text {
+  font-size: 13px; line-height: 1.5;
+  color: rgba(255,255,255,0.7);
+}
+.ask-contact {
+  display: flex; gap: 32px; align-items: center;
+}
+.ask-contact-item {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; color: var(--text-muted);
+}
+.ask-sources {
+  margin-top: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text-muted); opacity: 0.4;
+}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- ==================== SLIDE 1: COVER ==================== -->
+<div class="slide slide-dark active" data-slide="0">
+  <!-- Decorative gradient orbs -->
+  <div style="position:absolute;top:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(197,224,238,0.08) 0%,transparent 60%);pointer-events:none;z-index:0;"></div>
+  <div style="position:absolute;bottom:-80px;left:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(232,168,124,0.05) 0%,transparent 60%);pointer-events:none;z-index:0;"></div>
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:center; position:relative; z-index:1;">
+    <div style="width:80px;height:4px;background:var(--accent);margin-bottom:24px;border-radius:2px;"></div>
+    <div class="cover-title">Caelith</div>
+    <div class="cover-subtitle">Autonomous compliance agents for EU fund managers</div>
+    <div class="cover-hook">AIFMD II enforcement in 41 days · Live product · First autonomous regulatory filing in Europe</div>
+    <div class="cover-meta">
+      Pre-Seed · March 2026 · Julian Laycock, Founder &amp; CEO
+    </div>
+    <div class="cover-contact">
+      www.caelith.tech · julian.laycock@caelith.tech
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 2: THE DEADLINE ==================== -->
+<div class="slide slide-dark" data-slide="1">
+  <div class="watermark">Caelith</div>
+  <!-- Accent rings behind the number -->
+  <div style="position:absolute;width:300px;height:300px;border-radius:50%;border:2px solid rgba(232,168,124,0.1);top:50%;left:120px;transform:translateY(-50%);pointer-events:none;z-index:0;"></div>
+  <div style="position:absolute;width:380px;height:380px;border-radius:50%;border:1px solid rgba(232,168,124,0.05);top:50%;left:80px;transform:translateY(-50%);pointer-events:none;z-index:0;"></div>
+  <div class="section-label">The Deadline</div>
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+    <div class="deadline-number">41</div>
+    <div class="deadline-label">days until AIFMD II enforcement</div>
+    <div class="deadline-body">
+      April 16, 2026. The compliance deadline that will reshape European fund management.<br>
+      3,500+ fund managers. €6T in assets under management. Fines up to <span class="warm">€5M or 10% of annual turnover</span>.
+    </div>
+    <div class="timeline" style="margin-top:16px; padding: 20px 40px 0; border-top: 2px solid rgba(255,255,255,0.08);">
+      <div class="timeline-item">
+        <div class="dot" style="margin-top:-26px;"></div>
+        <div class="year">2024</div>
+        <div class="desc">Directive published</div>
+      </div>
+      <div class="timeline-item">
+        <div class="dot" style="margin-top:-26px;"></div>
+        <div class="year">2025</div>
+        <div class="desc">Member state transposition</div>
+      </div>
+      <div class="timeline-item active-dot">
+        <div class="dot" style="margin-top:-26px;"></div>
+        <div class="year" style="color:var(--accent);">Q1 2026</div>
+        <div class="desc" style="color:var(--accent);">Caelith launches</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="dot" style="margin-top:-26px;"></div>
+        <div class="year" style="color:var(--warm);">Apr 16</div>
+        <div class="desc" style="color:var(--warm);">Enforcement begins</div>
+      </div>
+      <div class="timeline-item">
+        <div class="dot" style="margin-top:-26px;"></div>
+        <div class="year">2027+</div>
+        <div class="desc">Laggards face penalties</div>
+      </div>
+    </div>
+  </div>
+  <div class="source-note">Source: Directive (EU) 2024/927</div>
+</div>
+
+<!-- ==================== SLIDE 3: THE PROBLEM ==================== -->
+<div class="slide slide-light" data-slide="2">
+  <div class="watermark">Caelith</div>
+  <div class="section-label" style="color:var(--dark);">The Problem</div>
+  <div class="problem-headline">
+    There is no self-service SaaS<br>for AIF compliance.
+  </div>
+  <div class="problem-cards">
+    <div class="problem-card" style="border-top: 6px solid var(--warm);">
+      <div class="problem-card-metric" style="color:var(--warm);">&#8364;150-200K/yr</div>
+      <div class="problem-card-label">Wasted on consultants</div>
+      <div class="problem-card-desc">Spent on manual compliance — consultants, auditors, and XML assembly for every filing cycle.</div>
+    </div>
+    <div class="problem-card" style="border-top: 6px solid var(--accent);">
+      <div class="problem-card-metric" style="color:var(--dark);">2-4 weeks</div>
+      <div class="problem-card-label">Per filing cycle</div>
+      <div class="problem-card-desc">Data gathering, validation, resubmission loops. Every cycle is a manual slog through spreadsheets.</div>
+    </div>
+    <div class="problem-card" style="border-top: 6px solid #f87171;">
+      <div class="problem-card-metric" style="color:#f87171;">No audit trail</div>
+      <div class="problem-card-label">No digital proof</div>
+      <div class="problem-card-desc">Every decision trapped in emails and PDFs. No structured evidence for regulators.</div>
+    </div>
+  </div>
+  <div class="problem-bottom">
+    The mid-market — 600+ small KVGs — has nothing.
+  </div>
+</div>
+
+<!-- ==================== SLIDE 4: THE AGENT SOLUTION ==================== -->
+<div class="slide slide-dark" data-slide="3">
+  <div class="watermark">Caelith</div>
+  <div style="position:absolute;top:0;left:0;width:100%;height:200px;background:linear-gradient(180deg,rgba(197,224,238,0.04) 0%,transparent 100%);pointer-events:none;z-index:0;"></div>
+  <div class="section-label">The Solution</div>
+  <h2 style="margin-bottom:8px;">Autonomous Compliance Agents</h2>
+
+  <!-- Before / After comparison -->
+  <div class="before-after-row">
+    <div style="padding:18px 36px;border-radius:12px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);text-align:center;">
+      <div style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:42px;color:#f87171;line-height:1.2;">6-8 weeks</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:18px;color:#f87171;margin-top:4px;">&#8364;15K + 23 errors</div>
+      <div class="ba-label" style="color:rgba(248,113,113,0.5);margin-top:8px;">Manual process</div>
+    </div>
+    <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:36px;color:rgba(255,255,255,0.25);flex-shrink:0;padding:0 16px;">&#8594;</div>
+    <div style="padding:18px 36px;border-radius:12px;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);text-align:center;">
+      <div style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:42px;color:#4ADE80;line-height:1.2;">6.1 seconds</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:18px;color:#4ADE80;margin-top:4px;">&#8364;0 + 0 errors</div>
+      <div class="ba-label" style="color:rgba(74,222,128,0.5);margin-top:8px;">Caelith agents</div>
+    </div>
+  </div>
+
+  <!-- Agent cards -->
+  <div class="agent-system">
+    <div class="agent-cards">
+      <div class="agent-card agent-card-filing" style="padding:32px 28px;">
+        <div class="agent-card-stripe"></div>
+        <div class="agent-card-icon" style="padding-left:14px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" stroke="#C5E0EE" stroke-width="2" fill="none" stroke-linejoin="round"/>
+            <polyline points="14,2 14,8 20,8" stroke="#C5E0EE" stroke-width="2" fill="none" stroke-linejoin="round"/>
+            <line x1="12" y1="18" x2="12" y2="12" stroke="#C5E0EE" stroke-width="2" stroke-linecap="round"/>
+            <polyline points="9,14 12,11 15,14" stroke="#C5E0EE" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="agent-card-title" style="padding-left:14px;">Filing Agent</div>
+        <div class="agent-card-body">
+          Generates ESMA Annex IV XML, validates against XSD schema, submits to BaFin portal autonomously.
+        </div>
+        <div style="margin-top:auto;padding-top:20px;padding-left:14px;border-top:1px solid rgba(255,255,255,0.06);margin-top:20px;">
+          <div class="agent-card-stats" style="padding-left:0;font-size:24px;">847 fields / 6.1s</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Zero errors</div>
+        </div>
+      </div>
+      <div class="agent-card agent-card-screening" style="padding:32px 28px;">
+        <div class="agent-card-stripe"></div>
+        <div class="agent-card-icon" style="padding-left:14px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="10" r="7" stroke="#E8A87C" stroke-width="2" fill="none"/>
+            <line x1="15.5" y1="15.5" x2="21" y2="21" stroke="#E8A87C" stroke-width="2" stroke-linecap="round"/>
+            <path d="M10 6 L13 8 L13 11 C13 13 10 14.5 10 14.5 C10 14.5 7 13 7 11 L7 8 Z" stroke="#E8A87C" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="agent-card-title" style="padding-left:14px;">Screening Agent</div>
+        <div class="agent-card-body">
+          EU/UN sanctions screening with fuzzy matching. LEI validation via GLEIF. Continuous monitoring.
+        </div>
+        <div style="margin-top:auto;padding-top:20px;padding-left:14px;border-top:1px solid rgba(255,255,255,0.06);margin-top:20px;">
+          <div class="agent-card-stats" style="padding-left:0;font-size:24px;">6,863+ entities</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Real-time alerts</div>
+        </div>
+      </div>
+      <div class="agent-card agent-card-research" style="padding:32px 28px;">
+        <div class="agent-card-stripe"></div>
+        <div class="agent-card-icon" style="padding-left:14px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="12" cy="6" rx="8" ry="3" stroke="#A8D8B9" stroke-width="2" fill="none"/>
+            <path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6" stroke="#A8D8B9" stroke-width="2" fill="none"/>
+            <path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" stroke="#A8D8B9" stroke-width="2" fill="none"/>
+          </svg>
+        </div>
+        <div class="agent-card-title" style="padding-left:14px;">Research Agent</div>
+        <div class="agent-card-body">
+          Investor due diligence across Transparenzregister, GLEIF, sanctions lists, adverse media. Automated KYC/AML.
+        </div>
+        <div style="margin-top:auto;padding-top:20px;padding-left:14px;border-top:1px solid rgba(255,255,255,0.06);margin-top:20px;">
+          <div class="agent-card-stats" style="padding-left:0;font-size:24px;">Multi-source</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;margin-top:2px;">Audit-ready reports</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HITL pill directly under agent cards -->
+    <div style="text-align:center;margin-top:24px;">
+      <div class="hitl-pill">Human-in-the-loop at every step</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 5: AGENT IN ACTION ==================== -->
+<div class="slide slide-dark" data-slide="4">
+  <div class="watermark">Caelith</div>
+  <div class="section-label">Product Demo</div>
+
+  <div style="font-family:'Sora',sans-serif; font-weight:800; font-size:18px; color:var(--accent); margin-bottom:20px; letter-spacing:0.5px;">
+    Caelith files to BaFin while you sleep.
+  </div>
+
+  <div class="terminal-window" style="flex:1; max-height:calc(100% - 100px);">
+    <div class="terminal-chrome">
+      <div class="terminal-dots">
+        <span style="background:#ff5f57;"></span>
+        <span style="background:#febc2e;"></span>
+        <span style="background:#28c840;"></span>
+      </div>
+      <div class="terminal-title">caelith-agent — bafin-filing — DE000A3H2XK2</div>
+    </div>
+    <div class="terminal-body">
+<span class="t-time">[14:32:01]</span> <span class="t-bright">CAELITH AGENT v2.1</span> <span class="t-dim">—</span> <span class="t-accent">BaFin Annex IV Filing Service</span>
+<span class="t-time">[14:32:01]</span> Fund: Süddeutscher Immobilien-Spezialfonds I
+<span class="t-time">[14:32:01]</span> Manager: ExampleKVG GmbH · LEI: <span class="t-dim">529900KMFO1234GH56</span>
+<span class="t-time">[14:32:01]</span> <span class="t-sep">─────────────────────────────────────────────────</span>
+<span class="t-time">[14:32:02]</span> <span class="t-bright">PRE-FLIGHT CHECKS</span>
+<span class="t-time">[14:32:02]</span>   <span class="t-pass">✓</span> Fund structure valid          <span class="t-pass">[PASS]</span>
+<span class="t-time">[14:32:02]</span>   <span class="t-pass">✓</span> Investor register current     <span class="t-pass">[PASS]</span>
+<span class="t-time">[14:32:02]</span>   <span class="t-pass">✓</span> Depositary documented         <span class="t-pass">[PASS]</span>
+<span class="t-time">[14:32:03]</span>   <span class="t-pass">✓</span> Sanctions screen clear        <span class="t-pass">[PASS]</span> <span class="t-dim">6,863 entities checked</span>
+<span class="t-time">[14:32:03]</span>   <span class="t-pass">✓</span> LEI validated via GLEIF       <span class="t-pass">[PASS]</span>
+<span class="t-time">[14:32:03]</span> All pre-flight checks passed. <span class="t-pass">5/5</span>
+<span class="t-time">[14:32:03]</span> <span class="t-sep">─────────────────────────────────────────────────</span>
+<span class="t-time">[14:32:03]</span> <span class="t-bright">GENERATING ESMA AIFMD_DATAIF_V1.2.xsd</span>
+<span class="t-time">[14:32:04]</span>   Populating <span class="t-accent">847</span> data elements...
+<span class="t-time">[14:32:05]</span>   XSD validation: <span class="t-pass">0 errors, 0 warnings</span>
+<span class="t-time">[14:32:05]</span>   XML hash: <span class="t-dim">SHA-256 e3b0c44298fc1c149a...</span>
+<span class="t-time">[14:32:06]</span> <span class="t-sep">─────────────────────────────────────────────────</span>
+<span class="t-time">[14:32:06]</span> <span class="t-bright">SUBMITTING TO BAFIN MVP PORTAL</span>
+<span class="t-time">[14:32:07]</span>   <span class="t-pass">✓</span> Authenticated with BaFin API
+<span class="t-time">[14:32:07]</span>   <span class="t-pass">✓</span> Filing uploaded successfully
+<span class="t-time">[14:32:07]</span>   Reference: <span class="t-accent">BaFin-AIF-2026-SUE-00192</span>
+<span class="t-time">[14:32:07]</span>   Status: <span class="t-pass">ACCEPTED</span>
+<span class="t-time">[14:32:07]</span> <span class="t-sep">─────────────────────────────────────────────────</span>
+<span class="t-time">[14:32:07]</span> <span class="t-pass">✓ FILING COMPLETE</span> <span class="t-bright">— 6.1 seconds</span>
+<span class="t-time">[14:32:07]</span>   <span class="t-dim">Audit trail archived · Evidence bundle sealed</span>
+    </div>
+    <div class="terminal-status">
+      <div class="terminal-status-cell" style="color:#4ADE80;">ELAPSED: 6.1s</div>
+      <div class="terminal-status-cell" style="color:#4ADE80;">ERRORS: 0</div>
+      <div class="terminal-status-cell" style="color:#E8A87C;">COST: €0</div>
+      <div class="terminal-status-cell" style="color:#C5E0EE;">AUDIT: SHA-256</div>
+    </div>
+  </div>
+
+  <div style="font-size:12px; color:rgba(255,255,255,0.3); margin-top:12px; text-align:center;">
+    Actual agent execution log. Live at <span style="color:rgba(255,255,255,0.45);">www.caelith.tech</span>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 6: MARKET VALIDATION ==================== -->
+<div class="slide slide-dark" data-slide="5">
+  <div class="watermark">Caelith</div>
+  <div style="position:absolute;top:0;right:0;width:400px;height:400px;background:radial-gradient(circle,rgba(232,168,124,0.04) 0%,transparent 70%);pointer-events:none;z-index:0;"></div>
+  <div class="section-label">Market Validation</div>
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+    <div style="margin-bottom:8px;">
+      <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:56px;color:var(--warm);line-height:1;">$24.8M</span>
+      <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:32px;color:#fff;margin-left:12px;">raised for compliance agents</span>
+    </div>
+    <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:32px;color:#fff;margin-bottom:4px;">in 4 weeks.</div>
+    <div class="validation-subtitle" style="margin-bottom:40px;">Same thesis. EU fund managers. Zero overlap.</div>
+
+    <div class="card-row">
+      <div class="card card-dark val-card">
+        <div class="val-amount">$7.1M</div>
+        <div class="val-name">Sphinx</div>
+        <div class="val-desc"><strong style="color:rgba(255,255,255,0.8);">Cherry Ventures + Y Combinator</strong><br>Seed · Feb 2026 · US fintech AML agents</div>
+      </div>
+      <div class="card card-dark val-card">
+        <div class="val-amount">$12.7M</div>
+        <div class="val-name">Kobalt Labs</div>
+        <div class="val-desc"><strong style="color:rgba(255,255,255,0.8);">Forbes-featured raise</strong><br>Feb 2026 · US bank compliance automation</div>
+      </div>
+      <div class="card card-dark val-card">
+        <div class="val-amount">$5M</div>
+        <div class="val-name">Pluvo</div>
+        <div class="val-desc"><strong style="color:rgba(255,255,255,0.8);">Third signal in 4 weeks</strong><br>Mar 2026 · US compliance automation</div>
+      </div>
+    </div>
+
+    <div class="val-bottom">
+      All three target US banks and fintechs. <span class="accent">None serve EU fund managers.</span><br>
+      Caelith is the European thesis — purpose-built for AIFMD, KAGB, and the 3,500 AIFMs that have no software today.
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 7: MARKET SIZE ==================== -->
+<div class="slide slide-light" data-slide="6">
+  <div class="watermark">Caelith</div>
+  <div class="section-label" style="color:var(--dark);">Market Size</div>
+  <div class="market-layout" style="display:flex; gap:64px; flex:1; align-items:center;">
+    <!-- LEFT: Market bars -->
+    <div style="flex:0.55;">
+      <!-- TAM -->
+      <div class="market-bar-row">
+        <div class="market-bar-label" style="color:var(--dark-tertiary);">TAM</div>
+        <div class="market-bar-track" style="background:#2D3333; width:100%;">
+          <div class="market-bar-value">€2.3B</div>
+        </div>
+        <div class="market-bar-desc" style="color:var(--text-light-muted);">EU RegTech for asset management <span style="opacity:0.5;">(100%)</span></div>
+      </div>
+      <!-- SAM -->
+      <div class="market-bar-row">
+        <div class="market-bar-label" style="color:var(--warm);">SAM</div>
+        <div class="market-bar-track" style="background:#E8A87C; width:30%;">
+          <div class="market-bar-value">€680M</div>
+        </div>
+        <div class="market-bar-desc" style="color:var(--text-light-muted);">3,500 EU AIFMs × €194K compliance spend <span style="opacity:0.5;">(30%)</span></div>
+      </div>
+      <!-- SOM -->
+      <div class="market-bar-row">
+        <div class="market-bar-label" style="color:var(--dark);">SOM</div>
+        <div class="market-bar-track som-glow" style="background:#C5E0EE; width:8%;">
+          <div class="market-bar-value" style="font-size:15px; white-space:nowrap;">€16.8M</div>
+        </div>
+        <div class="market-bar-desc" style="color:var(--text-light-muted);">704 German KVGs × €23.9K ACV <span style="opacity:0.5;">(0.7%)</span></div>
+      </div>
+    </div>
+    <!-- RIGHT: Stat blocks -->
+    <div style="flex:0.45; display:flex; flex-direction:column; gap:24px;">
+      <div class="market-stat-block" style="border-left:3px solid var(--accent);">
+        <div class="market-stat-value" style="color:var(--dark);">3,500+</div>
+        <div class="market-stat-label">EU AIFMs registered with ESMA</div>
+      </div>
+      <div class="market-stat-block" style="border-left:3px solid var(--warm);">
+        <div class="market-stat-value" style="color:var(--dark);">704</div>
+        <div class="market-stat-label">German KVGs (initial target)</div>
+      </div>
+      <div class="market-stat-block" style="border-left:3px solid #2D3333;">
+        <div class="market-stat-value" style="color:var(--dark);">~€6T</div>
+        <div class="market-stat-label">Assets under management</div>
+      </div>
+      <div class="market-stat-block" style="border-left:3px solid #4ADE80;">
+        <div class="market-stat-value" style="color:var(--warm);">~€836K</div>
+        <div class="market-stat-label">Year 1 ARR target</div>
+      </div>
+    </div>
+  </div>
+  <!-- Bottom: Germany first callout + sources -->
+  <div style="margin-top:auto; display:flex; align-items:center; gap:12px;">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+      <path d="M10 2C6.5 2 4 6 4 10c0 4 6 8 6 8s6-4 6-8c0-4-2.5-8-6-8z" stroke="#2D3333" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+      <circle cx="10" cy="10" r="2.5" stroke="#2D3333" stroke-width="1.5" fill="none"/>
+    </svg>
+    <div style="font-size:14px; color:var(--dark); line-height:1.5;">
+      <strong>Germany first.</strong> 704 KVGs. Largest single AIFM market in the EU. Where we start.
+    </div>
+  </div>
+  <div class="market-sources">Sources: ESMA AIFMD Database · BaFin KVG Register · Deloitte Investment Management Outlook 2025 · Grand View Research RegTech Report</div>
+</div>
+
+<!-- ==================== SLIDE 8: PLATFORM + GTM ==================== -->
+<div class="slide slide-dark" data-slide="7">
+  <div class="watermark">Caelith</div>
+  <div class="section-label">Platform &amp; Go-to-Market</div>
+  <div class="gtm-layout">
+    <div class="gtm-left">
+      <h3 style="margin-bottom:28px;">Regulatory Expansion</h3>
+      <div class="gtm-timeline-item gtm-timeline-live">
+        <div class="gtm-year gtm-year-live">2026</div>
+        <div class="gtm-content">
+          <div class="gtm-reg-name" style="color:var(--accent);">AIFMD II -- Live today</div>
+          <div class="gtm-reg-desc">Annex IV filings, investor screening, fund reporting</div>
+        </div>
+      </div>
+      <div class="gtm-timeline-item">
+        <div class="gtm-year">2027</div>
+        <div class="gtm-content">
+          <div class="gtm-reg-name">AMLR -- 8.1B AML market</div>
+          <div class="gtm-reg-desc">Anti-money laundering regulation, mandatory for all AIFMs</div>
+        </div>
+      </div>
+      <div class="gtm-timeline-item">
+        <div class="gtm-year">2027</div>
+        <div class="gtm-content">
+          <div class="gtm-reg-name">DORA -- ICT Resilience</div>
+          <div class="gtm-reg-desc">Digital operational resilience for financial entities</div>
+        </div>
+      </div>
+      <div class="gtm-timeline-item">
+        <div class="gtm-year">2028-29</div>
+        <div class="gtm-content">
+          <div class="gtm-reg-name">SFDR Overhaul</div>
+          <div class="gtm-reg-desc">Sustainability finance disclosure requirements</div>
+        </div>
+      </div>
+      <div class="gtm-switching">
+        4 regulatory waves. Same customers. Compounding switching costs.
+      </div>
+    </div>
+    <div class="gtm-right">
+      <h3 style="margin-bottom:28px;">GTM Strategy</h3>
+      <div class="phase-item">
+        <div class="phase-number">1</div>
+        <div class="phase-content">
+          <div class="phase-label">Phase 1 -- M1-6</div>
+          <div class="phase-title">Germany -- 704 KVGs</div>
+          <div class="phase-desc">18 in active pipeline. Direct outbound + BaFin event presence.</div>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-number">2</div>
+        <div class="phase-content">
+          <div class="phase-label">Phase 2 -- M6-12</div>
+          <div class="phase-title">DACH + Luxembourg -- 550+ AIFMs</div>
+          <div class="phase-desc">Cross-border expansion via fund admin partnerships.</div>
+        </div>
+      </div>
+      <div class="phase-item">
+        <div class="phase-number">3</div>
+        <div class="phase-content">
+          <div class="phase-label">Phase 3 -- M12-18</div>
+          <div class="phase-title">EU-wide</div>
+          <div class="phase-desc">Multi-NCA support. Big 4 referral channel. AIFM association partnerships.</div>
+        </div>
+      </div>
+      <div class="channels-note">
+        <strong>Channels:</strong> BaFin events. AIFM associations. Big 4 referrals. Direct outbound.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 9: BUSINESS MODEL ==================== -->
+<div class="slide slide-light" data-slide="8">
+  <div class="watermark">Caelith</div>
+  <div class="section-label" style="color:var(--dark);">Business Model</div>
+  <h2 style="margin-bottom:36px;">Simple SaaS Pricing</h2>
+
+  <div class="pricing-row">
+    <div class="card card-light pricing-card">
+      <div class="pricing-name">Essentials</div>
+      <div class="pricing-price">€990<span>/mo</span></div>
+      <div class="pricing-details">
+        Up to 3 funds<br>
+        200 investors<br>
+        AIFMD filing + screening
+      </div>
+      <div class="pricing-acv" style="color:var(--text-light-muted);">ACV €11,880</div>
+    </div>
+    <div class="card card-light pricing-card pricing-featured">
+      <div class="pricing-badge">Most Popular</div>
+      <div class="pricing-name">Professional</div>
+      <div class="pricing-price">€1,990<span>/mo</span></div>
+      <div class="pricing-details">
+        Up to 15 funds<br>
+        Unlimited investors<br>
+        Full agent suite + API access
+      </div>
+      <div class="pricing-acv" style="color:var(--warm);">ACV €23,880</div>
+    </div>
+    <div class="card card-light pricing-card">
+      <div class="pricing-name">Enterprise</div>
+      <div class="pricing-price" style="font-size:28px;">From €3,500<span>/mo</span></div>
+      <div class="pricing-details">
+        Unlimited funds<br>
+        On-prem deployment option<br>
+        Dedicated support + SLA
+      </div>
+      <div class="pricing-acv" style="color:var(--text-light-muted);">ACV €42,000+</div>
+    </div>
+  </div>
+
+  <!-- Stickiness / Why customers stay -->
+  <div style="display:flex;gap:24px;margin-top:40px;max-width:1000px;margin-left:auto;margin-right:auto;">
+    <div style="flex:1;padding:28px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:#fff;border-top:4px solid var(--warm);text-align:center;">
+      <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:#E8A87C;margin-bottom:8px;">93% cheaper</div>
+      <div style="font-size:13px;color:#6B7280;line-height:1.5;">11,880/yr vs 150K+ manual. ROI in month one.</div>
+    </div>
+    <div style="flex:1;padding:28px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:#fff;border-top:4px solid var(--accent);text-align:center;">
+      <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:#2D3333;margin-bottom:8px;">Regulatory lock-in</div>
+      <div style="font-size:13px;color:#6B7280;line-height:1.5;">Every filing builds an immutable audit history. Switching means losing years of compliance proof.</div>
+    </div>
+    <div style="flex:1;padding:28px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:#fff;border-top:4px solid var(--dark);text-align:center;">
+      <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:#2D3333;margin-bottom:8px;">Expanding scope</div>
+      <div style="font-size:13px;color:#6B7280;line-height:1.5;">AIFMD II, AMLR, DORA, SFDR. Each wave adds modules to the same platform. Customers grow, never leave.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 10: TRACTION ==================== -->
+<div class="slide slide-dark" data-slide="9">
+  <div class="watermark">Caelith</div>
+  <div class="section-label">Traction</div>
+  <h2 style="margin-bottom:32px;">Live Product. Real Pipeline.</h2>
+
+  <div class="traction-dashboard">
+    <div class="traction-cards">
+      <!-- Pipeline -->
+      <div class="traction-card traction-card-pipeline">
+        <div class="traction-card-header">Pipeline</div>
+        <div class="traction-card-icon">
+          <svg width="32" height="24" viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="14" width="7" height="10" rx="1" fill="rgba(197,224,238,0.2)" stroke="#C5E0EE" stroke-width="1.5"/>
+            <rect x="12" y="8" width="7" height="16" rx="1" fill="rgba(197,224,238,0.3)" stroke="#C5E0EE" stroke-width="1.5"/>
+            <rect x="22" y="2" width="7" height="22" rx="1" fill="rgba(197,224,238,0.4)" stroke="#C5E0EE" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="traction-value">18</div>
+        <div class="traction-label">Qualified prospects<br>in active pipeline</div>
+      </div>
+      <!-- Quality -->
+      <div class="traction-card traction-card-quality">
+        <div class="traction-card-header">Quality</div>
+        <div class="traction-card-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="14" cy="14" r="11" stroke="#4ADE80" stroke-width="2" fill="rgba(74,222,128,0.06)"/>
+            <polyline points="9,14 13,18 19,10" stroke="#4ADE80" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="traction-value">231</div>
+        <div class="traction-label">Tests passing<br>across agent suite</div>
+      </div>
+      <!-- Platform -->
+      <div class="traction-card traction-card-platform">
+        <div class="traction-card-header">Platform</div>
+        <div class="traction-card-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="7" cy="14" r="3" stroke="#C5E0EE" stroke-width="1.5" fill="rgba(197,224,238,0.1)"/>
+            <circle cx="21" cy="7" r="3" stroke="#C5E0EE" stroke-width="1.5" fill="rgba(197,224,238,0.1)"/>
+            <circle cx="21" cy="21" r="3" stroke="#C5E0EE" stroke-width="1.5" fill="rgba(197,224,238,0.1)"/>
+            <line x1="10" y1="13" x2="18" y2="8" stroke="#C5E0EE" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <line x1="10" y1="15" x2="18" y2="20" stroke="#C5E0EE" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <line x1="21" y1="10" x2="21" y2="18" stroke="#C5E0EE" stroke-width="1.5" stroke-dasharray="3,2"/>
+          </svg>
+        </div>
+        <div class="traction-value">72+</div>
+        <div class="traction-label">API endpoints<br>production-ready</div>
+      </div>
+      <!-- Funding -->
+      <div class="traction-card traction-card-funding">
+        <div class="traction-card-header">Funding</div>
+        <div class="traction-card-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="16" width="16" height="4" rx="1" stroke="#E8A87C" stroke-width="1.5" fill="rgba(232,168,124,0.08)"/>
+            <rect x="8" y="11" width="12" height="4" rx="1" stroke="#E8A87C" stroke-width="1.5" fill="rgba(232,168,124,0.12)"/>
+            <rect x="10" y="6" width="8" height="4" rx="1" stroke="#E8A87C" stroke-width="1.5" fill="rgba(232,168,124,0.18)"/>
+          </svg>
+        </div>
+        <div class="traction-value">&#8364;110K+</div>
+        <div class="traction-label">Grant pipeline<br>NGI Zero / Campus Founders / EXIST</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signal Board -->
+  <div class="signal-board">
+    <div class="signal-card">
+      <div class="signal-dot"></div>
+      <div>
+        <div class="signal-title">Product Live</div>
+        <div class="signal-desc">Filing agent operational at www.caelith.tech</div>
+      </div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-dot"></div>
+      <div>
+        <div class="signal-title">Market Validated</div>
+        <div class="signal-desc">$24.8M in compliance agent funding (Feb-Mar 2026)</div>
+      </div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-dot"></div>
+      <div>
+        <div class="signal-title">Open Source Traction</div>
+        <div class="signal-desc">open-annex-iv published on npm (Apache 2.0)</div>
+      </div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-dot"></div>
+      <div>
+        <div class="signal-title">Academic Partnership</div>
+        <div class="signal-desc">HWR Berlin -- Research collaboration</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 11: TEAM ==================== -->
+<div class="slide slide-dark" data-slide="10">
+  <div class="watermark">Caelith</div>
+  <div class="section-label">Team</div>
+  <div class="team-layout">
+    <div class="team-left">
+      <div class="team-name">Julian Laycock</div>
+      <div class="team-role">Founder &amp; CEO</div>
+      <p style="font-size:15px; color:rgba(255,255,255,0.5); line-height:1.7; margin-bottom:24px;">
+        5 years at Capgemini &amp; init AG. Worked directly on <span style="color:var(--accent);">BaFin's MVP Portal</span> — the regulator's own data platform. 2 years Research Associate at HWR Berlin. Built open-annex-iv (ESMA Annex IV library, Apache 2.0, npm).
+      </p>
+      <div class="team-hire">
+        <div class="team-hire-title">First Hire: CTO</div>
+        <div class="team-hire-desc">
+          Senior engineer to scale the agent architecture. Month 1-3 post-funding.
+        </div>
+      </div>
+    </div>
+    <div class="team-right">
+      <div class="team-cards">
+        <div class="team-card">
+          <div class="team-card-icon">
+            <!-- Building icon (enterprise) -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="6" width="12" height="18" rx="1" stroke="#C5E0EE" stroke-width="2" fill="none"/>
+              <rect x="16" y="12" width="8" height="12" rx="1" stroke="#C5E0EE" stroke-width="2" fill="none"/>
+              <rect x="8" y="10" width="3" height="3" rx="0.5" fill="#C5E0EE" opacity="0.5"/>
+              <rect x="8" y="16" width="3" height="3" rx="0.5" fill="#C5E0EE" opacity="0.5"/>
+              <rect x="19" y="16" width="3" height="3" rx="0.5" fill="#C5E0EE" opacity="0.5"/>
+              <line x1="10" y1="24" x2="10" y2="21" stroke="#C5E0EE" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="team-card-title">Enterprise Compliance</div>
+          <div class="team-card-desc">5 years at Capgemini &amp; init AG (Berlin). Worked directly on BaFin's MVP Portal — the regulator's own data platform.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-card-icon">
+            <!-- Microscope/flask icon (research) -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M11 4h6" stroke="#C5E0EE" stroke-width="2" stroke-linecap="round"/>
+              <path d="M12 4v8l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V4" stroke="#C5E0EE" stroke-width="2" fill="none" stroke-linejoin="round"/>
+              <path d="M8.5 19h11" stroke="#C5E0EE" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+            </svg>
+          </div>
+          <div class="team-card-title">Regulatory Research</div>
+          <div class="team-card-desc">2 years Research Associate at HWR Berlin. Built open-annex-iv — ESMA Annex IV library on npm (Apache 2.0).</div>
+        </div>
+        <div class="team-card">
+          <div class="team-card-icon">
+            <!-- Graduation cap icon (education) -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14 6 L3 12 L14 18 L25 12 Z" stroke="#C5E0EE" stroke-width="2" fill="none" stroke-linejoin="round"/>
+              <path d="M7 14v6c0 2 3.5 4 7 4s7-2 7-4v-6" stroke="#C5E0EE" stroke-width="2" fill="none" stroke-linejoin="round"/>
+              <line x1="25" y1="12" x2="25" y2="20" stroke="#C5E0EE" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="team-card-title">Education</div>
+          <div class="team-card-desc">B. of Laws · B.Sc. Economics · MBA. The rare cross-section of legal, financial, and business expertise.</div>
+        </div>
+        <div class="team-card">
+          <div class="team-card-icon">
+            <!-- Code brackets icon (builder) -->
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polyline points="9,8 4,14 9,20" stroke="#C5E0EE" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="19,8 24,14 19,20" stroke="#C5E0EE" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="16" y1="6" x2="12" y2="22" stroke="#C5E0EE" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+            </svg>
+          </div>
+          <div class="team-card-title">Full-Stack Builder</div>
+          <div class="team-card-desc">Built Caelith end-to-end: architecture, rules engine, 72+ API endpoints, 231 tests — solo. Next.js, Node.js, PostgreSQL.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:auto; padding:20px 24px; border-left:3px solid var(--warm); font-size:15px; color:rgba(255,255,255,0.6); font-style:italic; line-height:1.6;">
+    Most compliance tools are built by engineers who learn regulation. Caelith was built by a compliance expert who codes. In regulated markets, that's the moat.
+  </div>
+</div>
+
+<!-- ==================== SLIDE 12: THE ASK ==================== -->
+<div class="slide slide-dark" data-slide="11">
+  <div class="watermark">Caelith</div>
+  <!-- Gradient glow behind the ask amount -->
+  <div style="position:absolute;top:20%;left:40px;width:500px;height:300px;background:radial-gradient(circle,rgba(197,224,238,0.06) 0%,transparent 60%);pointer-events:none;z-index:0;"></div>
+  <div class="section-label">The Ask</div>
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+    <div class="ask-amount">€400K</div>
+    <div class="ask-type">Pre-seed to pilot, validate, and reach first revenue.</div>
+
+    <div class="ask-alloc">
+      <div class="alloc-item">
+        <div class="alloc-label">CTO / Technical Co-founder</div>
+        <div class="alloc-bar"><div class="alloc-fill" style="width:35%; background:var(--accent);"></div></div>
+        <div class="alloc-pct">€140K · 35%</div>
+      </div>
+      <div class="alloc-item">
+        <div class="alloc-label">Founder Salary (18 months)</div>
+        <div class="alloc-bar"><div class="alloc-fill" style="width:25%; background:var(--warm);"></div></div>
+        <div class="alloc-pct">€100K · 25%</div>
+      </div>
+      <div class="alloc-item">
+        <div class="alloc-label">Pilot Program (3-5 AIFMs)</div>
+        <div class="alloc-bar"><div class="alloc-fill" style="width:15%; background:#A8D8B9;"></div></div>
+        <div class="alloc-pct">€60K · 15%</div>
+      </div>
+      <div class="alloc-item">
+        <div class="alloc-label">SOC 2 + ISO 27001</div>
+        <div class="alloc-bar"><div class="alloc-fill" style="width:12.5%; background:rgba(255,255,255,0.3);"></div></div>
+        <div class="alloc-pct">€50K · 12.5%</div>
+      </div>
+      <div class="alloc-item">
+        <div class="alloc-label">Infrastructure &amp; Buffer</div>
+        <div class="alloc-bar"><div class="alloc-fill" style="width:12.5%; background:rgba(255,255,255,0.2);"></div></div>
+        <div class="alloc-pct">€50K · 12.5%</div>
+      </div>
+    </div>
+
+    <div class="milestones">
+      <div class="milestone">
+        <div class="milestone-quarter">Month 3</div>
+        <div class="milestone-text">3 pilots live<br>CTO hired</div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-quarter">Month 6</div>
+        <div class="milestone-text">First paying customers<br>~€60K ARR</div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-quarter">Month 12</div>
+        <div class="milestone-text">15+ customers<br>€200K+ ARR · SOC 2</div>
+      </div>
+      <div class="milestone">
+        <div class="milestone-quarter">Month 18</div>
+        <div class="milestone-text">30+ customers<br>€600K+ ARR · Series A pipeline</div>
+      </div>
+    </div>
+
+    <div class="ask-contact">
+      <div class="ask-contact-item">julian.laycock@caelith.tech</div>
+      <div class="ask-contact-item">www.caelith.tech</div>
+      <div class="ask-contact-item">LinkedIn: Julian Laycock</div>
+    </div>
+
+    <div class="ask-sources">Sources appendix available on request.</div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- Navigation -->
+<div class="nav-dots" id="navDots"></div>
+<div class="slide-counter" id="slideCounter"></div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  // Build dots
+  const dotsContainer = document.getElementById('navDots');
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', function() { goTo(i); });
+    dotsContainer.appendChild(dot);
+  }
+
+  function goTo(index) {
+    if (index < 0 || index >= total) return;
+    slides[current].classList.remove('active');
+    dotsContainer.children[current].classList.remove('active');
+    current = index;
+    slides[current].classList.add('active');
+    dotsContainer.children[current].classList.add('active');
+    updateCounter();
+  }
+
+  function updateCounter() {
+    document.getElementById('slideCounter').textContent = (current + 1) + ' / ' + total;
+  }
+
+  // Keyboard nav
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      goTo(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      goTo(current - 1);
+    } else if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  });
+
+  // Expose goTo globally for PDF generator
+  window.goTo = goTo;
+
+  updateCounter();
+})();
+</script>
+</body>
+</html>

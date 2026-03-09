@@ -1,0 +1,812 @@
+import { writeFileSync } from 'fs';
+
+const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Sphinx Analysis & Agent Architecture</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root {
+    --bg:#0d1117; --card:#161b22; --card2:#1c2128;
+    --border:rgba(197,224,238,0.1); --border2:rgba(197,224,238,0.06);
+    --accent:#C5E0EE; --warm:#E8A87C;
+    --text:#F8F9FA; --t2:rgba(248,249,250,0.65); --t3:rgba(248,249,250,0.35);
+    --green:#3fb950; --red:#f85149; --yellow:#d29922; --blue:#58a6ff; --purple:#bc8cff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+
+  /* NAV */
+  .nav{position:sticky;top:0;z-index:100;background:rgba(13,17,23,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 48px}
+  .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:0;height:48px}
+  .nav-logo{font-family:'Sora',sans-serif;font-weight:800;font-size:14px;color:var(--accent);margin-right:32px}
+  .nav a{font-size:12px;color:var(--t3);padding:0 14px;height:100%;display:flex;align-items:center;border-bottom:2px solid transparent;transition:all .2s}
+  .nav a:hover,.nav a.active{color:var(--text);border-bottom-color:var(--accent)}
+
+  /* HERO */
+  .hero{padding:72px 48px 56px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;top:-200px;left:-200px;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(197,224,238,0.04) 0%,transparent 70%)}
+  .hero::after{content:'';position:absolute;bottom:-150px;right:0;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(232,168,124,0.04) 0%,transparent 70%)}
+  .hero-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1}
+  .tag{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:24px}
+  .tag.orange{background:rgba(232,168,124,0.1);border:1px solid rgba(232,168,124,0.25);color:var(--warm)}
+  .tag.blue{background:rgba(88,166,255,0.1);border:1px solid rgba(88,166,255,0.25);color:var(--blue)}
+  .tag.green{background:rgba(63,185,80,0.1);border:1px solid rgba(63,185,80,0.25);color:var(--green)}
+  .tag.purple{background:rgba(188,140,255,0.1);border:1px solid rgba(188,140,255,0.25);color:var(--purple)}
+  .hero h1{font-family:'Sora',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:800;line-height:1.18;margin-bottom:16px}
+  .hero h1 em{color:var(--accent);font-style:normal}
+  .hero-sub{font-size:16px;color:var(--t2);max-width:700px;line-height:1.75;margin-bottom:40px}
+  .hero-stats{display:flex;gap:48px;flex-wrap:wrap}
+  .stat .val{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:var(--accent)}
+  .stat .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-top:2px}
+
+  /* LAYOUT */
+  .wrap{max-width:1100px;margin:0 auto;padding:0 48px}
+  section{padding:64px 0;border-bottom:1px solid var(--border)}
+  .sec-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
+  .sec-title{font-family:'Sora',sans-serif;font-size:28px;font-weight:700;margin-bottom:10px}
+  .sec-sub{color:var(--t2);font-size:14px;max-width:640px;margin-bottom:40px;line-height:1.75}
+
+  /* SPHINX ANATOMY */
+  .sphinx-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:32px}
+  .sphinx-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px}
+  .sphinx-card.full{grid-column:1/-1}
+  .sphinx-card h3{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;margin-bottom:10px}
+  .sphinx-card p{font-size:13px;color:var(--t2);line-height:1.7}
+  .sphinx-card ul{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:7px}
+  .sphinx-card li{font-size:13px;color:var(--t2);display:flex;gap:8px;align-items:flex-start}
+  .sphinx-card li::before{content:'→';color:var(--accent);font-size:12px;flex-shrink:0;margin-top:2px}
+  .sphinx-insight{background:rgba(197,224,238,0.04);border:1px solid rgba(197,224,238,0.15);border-left:3px solid var(--accent);border-radius:8px;padding:16px 20px;margin-top:20px;font-size:13px;color:var(--t2);line-height:1.7}
+  .sphinx-insight strong{color:var(--accent)}
+
+  /* PERSONAS */
+  .persona-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:32px}
+  @media(max-width:1000px){.persona-grid{grid-template-columns:repeat(2,1fr)}}
+  .persona{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px}
+  .persona-header{display:flex;align-items:center;gap:10px}
+  .persona-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:rgba(197,224,238,0.08);border:1px solid rgba(197,224,238,0.12)}
+  .persona h4{font-family:'Sora',sans-serif;font-size:13px;font-weight:700;line-height:1.3}
+  .persona .role{font-size:11px;color:var(--t3);margin-top:2px}
+  .persona-context{font-size:12px;color:var(--t2);line-height:1.65}
+  .persona-pain{background:rgba(248,81,73,0.06);border:1px solid rgba(248,81,73,0.15);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--t2);line-height:1.6}
+  .persona-pain strong{color:var(--red);font-size:11px;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
+  .persona-sphinx{background:rgba(88,166,255,0.06);border:1px solid rgba(88,166,255,0.15);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--t2);line-height:1.6}
+  .persona-sphinx strong{color:var(--blue);font-size:11px;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
+  .persona-caelith{background:rgba(197,224,238,0.05);border:1px solid rgba(197,224,238,0.2);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--t2);line-height:1.6}
+  .persona-caelith strong{color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
+  .persona-story{font-size:12px;color:var(--t3);font-style:italic;line-height:1.6;padding-top:8px;border-top:1px solid var(--border2)}
+
+  /* TWO COLS */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .col-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px}
+  .col-card.sphinx{border-color:rgba(88,166,255,0.2)}
+  .col-card.caelith{border-color:rgba(197,224,238,0.25);background:rgba(197,224,238,0.03)}
+  .col-card h3{font-family:'Sora',sans-serif;font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .col-card .list{display:flex;flex-direction:column;gap:10px}
+  .list-item{display:flex;gap:12px;align-items:flex-start}
+  .list-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+  .list-item .main{font-size:13px;font-weight:600;color:var(--text);display:block}
+  .list-item .sub{font-size:12px;color:var(--t2);line-height:1.6}
+
+  /* AGENT ARCHITECTURE */
+  .arch-layers{display:flex;flex-direction:column;gap:0}
+  .arch-layer{border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px}
+  .arch-layer-header{padding:16px 24px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border2);cursor:default}
+  .arch-layer-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;flex-shrink:0}
+  .l1 .arch-layer-num{background:rgba(248,81,73,0.1);color:var(--red);border:1px solid rgba(248,81,73,0.25)}
+  .l2 .arch-layer-num{background:rgba(210,153,34,0.1);color:var(--yellow);border:1px solid rgba(210,153,34,0.25)}
+  .l3 .arch-layer-num{background:rgba(88,166,255,0.1);color:var(--blue);border:1px solid rgba(88,166,255,0.25)}
+  .l4 .arch-layer-num{background:rgba(63,185,80,0.1);color:var(--green);border:1px solid rgba(63,185,80,0.25)}
+  .l5 .arch-layer-num{background:rgba(188,140,255,0.1);color:var(--purple);border:1px solid rgba(188,140,255,0.25)}
+  .arch-layer-title{font-family:'Sora',sans-serif;font-size:15px;font-weight:700}
+  .arch-layer-desc{font-size:13px;color:var(--t2);margin-left:auto;text-align:right;max-width:360px}
+  .arch-layer-body{padding:20px 24px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .arch-item{background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px}
+  .arch-item h5{font-size:12px;font-weight:700;margin-bottom:6px;color:var(--text)}
+  .arch-item p{font-size:11.5px;color:var(--t2);line-height:1.6}
+
+  /* AGENTS TABLE */
+  .agents-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:900px){.agents-grid{grid-template-columns:1fr}}
+  .agent-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+  .agent-card-header{padding:20px 22px 16px;border-bottom:1px solid var(--border2)}
+  .agent-card-icon{font-size:28px;margin-bottom:10px}
+  .agent-card h3{font-family:'Sora',sans-serif;font-size:15px;font-weight:700;margin-bottom:6px}
+  .agent-card .agent-phase{display:flex;gap:6px;flex-wrap:wrap}
+  .phase-pill{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:4px}
+  .phase-pill.live{background:rgba(63,185,80,0.1);color:var(--green);border:1px solid rgba(63,185,80,0.2)}
+  .phase-pill.q3{background:rgba(232,168,124,0.1);color:var(--warm);border:1px solid rgba(232,168,124,0.2)}
+  .phase-pill.q4{background:rgba(88,166,255,0.1);color:var(--blue);border:1px solid rgba(88,166,255,0.2)}
+  .agent-card-body{padding:20px 22px;flex:1}
+  .agent-card p{font-size:13px;color:var(--t2);margin-bottom:14px;line-height:1.65}
+  .agent-steps{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .agent-steps li{font-size:12px;color:var(--t2);display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:var(--card2);border-radius:8px;border:1px solid var(--border2)}
+  .agent-steps li .step-icon{font-size:13px;flex-shrink:0}
+  .agent-steps li .step-text{}
+  .agent-steps li .step-text strong{font-size:11px;color:var(--text);display:block;margin-bottom:2px}
+  .agent-steps li .step-text span{font-size:11px;color:var(--t3)}
+
+  /* CONVERSATION */
+  .convo{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;max-width:680px}
+  .convo-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:rgba(197,224,238,0.02)}
+  .convo-icon{width:32px;height:32px;border-radius:9px;background:rgba(197,224,238,0.1);display:flex;align-items:center;justify-content:center;font-size:15px}
+  .convo-header h4{font-family:'Sora',sans-serif;font-size:13px;font-weight:700}
+  .convo-header p{font-size:11px;color:var(--t3)}
+  .dot-live{width:7px;height:7px;border-radius:50%;background:var(--green);margin-left:auto;flex-shrink:0}
+  .convo-body{padding:18px;display:flex;flex-direction:column;gap:12px}
+  .m{display:flex;gap:9px}
+  .m.co{flex-direction:row-reverse}
+  .m-av{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(197,224,238,0.08);border:1px solid rgba(197,224,238,0.12)}
+  .m.co .m-av{background:rgba(232,168,124,0.1);border-color:rgba(232,168,124,0.2)}
+  .m-bub{max-width:85%;font-size:12.5px;line-height:1.65;padding:10px 14px;border-radius:12px;border:1px solid rgba(197,224,238,0.08);background:rgba(197,224,238,0.04);color:var(--t2)}
+  .m.co .m-bub{background:rgba(232,168,124,0.08);border-color:rgba(232,168,124,0.15);color:var(--text)}
+  .m-bub strong{color:var(--text)}
+  .ok-btn{display:block;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--green);background:rgba(63,185,80,0.1);border:1px solid rgba(63,185,80,0.25);padding:6px 14px;border-radius:7px;text-align:center}
+  .m-check{color:var(--green)} .m-warn{color:var(--yellow)} .m-dim{color:var(--t3);font-family:'JetBrains Mono',monospace;font-size:11px}
+  .s-card{background:rgba(0,0,0,0.35);border:1px solid rgba(197,224,238,0.08);border-radius:9px;padding:10px 13px;margin-top:9px}
+  .s-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(197,224,238,0.05);font-size:11.5px}
+  .s-row:last-child{border-bottom:none}
+  .s-row .sl{color:var(--t3)} .s-row .sv{font-family:'JetBrains Mono',monospace;font-size:11px}
+  .sv.ok{color:var(--green)} .sv.warn{color:var(--yellow)}
+  .div-line{text-align:center;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);padding:2px 0;position:relative}
+  .div-line::before,.div-line::after{content:'';position:absolute;top:50%;height:1px;background:var(--border);width:35%}
+  .div-line::before{left:0} .div-line::after{right:0}
+
+  /* COMPARISON TABLE */
+  .comp-table{width:100%;border-collapse:collapse;font-size:13px}
+  .comp-table th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);border-bottom:1px solid var(--border)}
+  .comp-table th.sphinx-col{color:var(--blue)}
+  .comp-table th.caelith-col{color:var(--accent)}
+  .comp-table td{padding:12px 14px;border-bottom:1px solid var(--border2);color:var(--t2);vertical-align:top;line-height:1.6}
+  .comp-table tr:last-child td{border-bottom:none}
+  .comp-table td:first-child{color:var(--text);font-weight:600}
+  .comp-table .same{color:var(--t3);font-style:italic}
+  .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+  .badge.live{background:rgba(63,185,80,0.12);color:var(--green)}
+  .badge.soon{background:rgba(232,168,124,0.12);color:var(--warm)}
+  .badge.adv{background:rgba(197,224,238,0.12);color:var(--accent)}
+
+  /* CRITICAL DIFF */
+  .crit-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .crit-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px}
+  .crit-card.key{border-color:rgba(197,224,238,0.25);background:rgba(197,224,238,0.04)}
+  .crit-card h4{font-family:'Sora',sans-serif;font-size:14px;font-weight:700;margin:12px 0 8px}
+  .crit-card p{font-size:13px;color:var(--t2);line-height:1.65}
+
+  /* FOOTER */
+  .footer{border-top:1px solid var(--border);padding:40px 48px;max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--t3)}
+
+  hr.div{border:none;border-top:1px solid var(--border)}
+  @media(max-width:800px){
+    .hero{padding:48px 24px 40px}.wrap{padding:0 24px}
+    .sphinx-grid,.two-col,.arch-layer-body,.agents-grid,.crit-grid{grid-template-columns:1fr}
+    .arch-layer-desc{display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">Caelith</div>
+    <a href="#sphinx" class="active">Sphinx Analysis</a>
+    <a href="#personas">5 Personas</a>
+    <a href="#extrapolation">Extrapolation</a>
+    <a href="#architecture">Agent Architecture</a>
+    <a href="#agents">The 5 Agents</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="tag orange">Strategic Research — March 2026</div>
+    <h1>Sphinx understood the problem.<br><em>Caelith owns the solution.</em></h1>
+    <p class="hero-sub">Deep analysis of Sphinx's product model — how it works, who uses it, why it raised $7.1M — then a precise extrapolation into EU fund compliance. Not imitation: structural translation of the same thesis into a market with higher barriers, clearer regulation, and a more defensible moat.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="val">$7.1M</div><div class="lbl">Sphinx seed (Feb 2026)</div></div>
+      <div class="stat"><div class="val">$200B</div><div class="lbl">Annual compliance labor (global)</div></div>
+      <div class="stat"><div class="val">8</div><div class="lbl">Countries Sphinx operates in</div></div>
+      <div class="stat"><div class="val">0%</div><div class="lbl">Overlap with Caelith</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PART I — SPHINX ANATOMY -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="wrap">
+<section id="sphinx">
+  <div class="sec-label">Part I</div>
+  <div class="sec-title">How Sphinx actually works</div>
+  <p class="sec-sub">Not what they say on the website — what the product actually does, why it works, and what makes it fundable. Based on their fundraise announcement, product pages, and customer case studies.</p>
+
+  <div class="sphinx-grid">
+    <div class="sphinx-card">
+      <h3>🧠 The Core Insight</h3>
+      <p>Sphinx's founding thesis — stated explicitly by CEO Alex Berkovic: <strong>"Compliance is an execution problem, not a software problem."</strong></p>
+      <p style="margin-top:10px">Traditional RegTech added dashboards and reporting. It gave compliance teams better visibility into the work they were already doing manually. Sphinx removes the manual work entirely.</p>
+      <p style="margin-top:10px">Analysts at banks and fintechs spend 70-80% of their time as <em>human glue</em> — toggling between case tools, sanctions databases, corporate registries, internal dashboards, PDFs, and emails. None of those systems talk to each other. The analyst is the integration layer.</p>
+      <p style="margin-top:10px">Sphinx replaces the analyst as integration layer, not the systems.</p>
+    </div>
+
+    <div class="sphinx-card">
+      <h3>⚙️ How It Works — The Browser-Native Model</h3>
+      <p>The key technical differentiator: Sphinx agents are <strong>browser-native</strong>. They log into existing tools like a human analyst would — no API, no integration, no rip-and-replace.</p>
+      <ul>
+        <li>Agent opens Verafin / Actimize / internal case tool in a browser session</li>
+        <li>Reads the alert queue — same way an analyst would look at their screen</li>
+        <li>Navigates to the relevant entity — searches, clicks, extracts context</li>
+        <li>Runs AML/KYC checks — hits external databases (Refinitiv, LexisNexis, GLEIF)</li>
+        <li>Gathers supporting documentation — PDFs, web searches, registry lookups</li>
+        <li>Drafts the case narrative and RFI — writes it in the existing case tool</li>
+        <li>Produces a regulator-ready audit trail — every step logged, reproducible</li>
+      </ul>
+      <div class="sphinx-insight">This is why they can deploy in <strong>days not months</strong>: no integrations required. The agent works in the tool that already exists. Zero engineering lift for the customer.</div>
+    </div>
+
+    <div class="sphinx-card">
+      <h3>📦 Product Modules</h3>
+      <ul>
+        <li><strong>KYC Agent</strong> — ID document verification, address confirmation, RFIs, screening alerts. One agent handles the full onboarding chain end-to-end. "Clean, instant KYC."</li>
+        <li><strong>KYB Agent</strong> — Web presence research, UBO mapping, onboarding logic for complex corporate structures (shell companies, holding chains)</li>
+        <li><strong>AML Alert Disposition</strong> — Reviews transaction monitoring alerts, gathers context, recommends SAR or clear, writes case narrative</li>
+        <li><strong>Knowledge Graph</strong> — Real-time entity relationship mapping — people, companies, counterparties, shell structures</li>
+        <li><strong>Deep Research</strong> — Scours media, watchlists, court records, regulatory filings, open web. Reduces false positives by 94%.</li>
+        <li><strong>Interpretable Agentic Framework</strong> — Proprietary: every decision is logged, reproducible, tied to a defensible decision trail. Designed for model risk governance.</li>
+      </ul>
+    </div>
+
+    <div class="sphinx-card">
+      <h3>📊 Claimed Results</h3>
+      <ul>
+        <li>Millions of alerts processed in production</li>
+        <li>Hundreds of thousands of cases resolved</li>
+        <li>Months-long backlogs cleared in days</li>
+        <li>Onboarding cycle time: days → minutes</li>
+        <li>94% reduction in false positives</li>
+        <li>4× reduction in compliance operating costs</li>
+        <li>International expansion without headcount increases</li>
+        <li>Live in 8 countries, banks + fintechs + crypto + public companies (OCC, FDIC, Federal Reserve regulated)</li>
+      </ul>
+    </div>
+
+    <div class="sphinx-card full">
+      <h3>🎯 Why It's Fundable — The Structural Argument</h3>
+      <p>Filip Dames (Cherry Ventures, lead investor): <em>"Sphinx isn't just software, it's critical operational infrastructure that meets teams where they are: in their systems, procedures, and day-to-day reality. Very few products can function inside that level of complexity."</em></p>
+      <p style="margin-top:12px">Three things make this investable:</p>
+      <ul style="margin-top:8px">
+        <li><strong>TAM is enormous and growing</strong> — $200B/year compliance labor globally, alert volumes rising, multi-jurisdiction expansion accelerating. The problem gets worse every year.</li>
+        <li><strong>Zero-integration moat</strong> — Browser-native means Sphinx works everywhere, immediately. The competitor has to build integrations. Sphinx doesn't. First-mover at the workflow layer.</li>
+        <li><strong>Defensible audit trail = trust flywheel</strong> — Every decision logged → regulators accept it → more institutions adopt → more decision data → better agents → regulators more comfortable. Network effect at the compliance layer.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PART II — 5 SPHINX PERSONAS -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="personas">
+  <div class="sec-label">Part II</div>
+  <div class="sec-title">5 Sphinx user personas — and their exact equivalents in Caelith's world</div>
+  <p class="sec-sub">For each Sphinx persona: who they are, their daily pain, what Sphinx does for them, and the structurally equivalent Caelith persona. This is how we translate their thesis into our market.</p>
+
+  <div class="persona-grid">
+
+    <!-- PERSONA 1 -->
+    <div class="persona">
+      <div class="persona-header">
+        <div class="persona-avatar">🏦</div>
+        <div>
+          <h4>BSA/AML Analyst</h4>
+          <div class="role">Mid-size US Bank · Transaction Monitoring</div>
+        </div>
+      </div>
+      <div class="persona-context">Handles 50-200 transaction monitoring alerts per day. Uses Verafin or Actimize. 80% of alerts are false positives — but she can't know that without checking each one manually. Her job is to click through queues and write case notes all day.</div>
+      <div class="persona-pain"><strong>Core Pain</strong>Work is 90% mechanical: open alert → check sanctions → check adverse media → write "no match found" → close. Judgment required for maybe 10% of cases.</div>
+      <div class="persona-sphinx"><strong>Sphinx Does</strong>Agent auto-disposes 85% of alerts. Surfaces the 15% that genuinely need human judgment, pre-loaded with context, research, and a draft case narrative.</div>
+      <div class="persona-story">"I used to spend my day opening and closing the same type of alert 200 times. Now I spend it on the 8 cases that actually matter."</div>
+      <div class="persona-caelith"><strong>Caelith Equivalent</strong>Compliance officer at a German Spezial-AIF KVG. Runs quarterly sanctions rescreening on 20-50 investors manually. The Caelith Monitoring Agent rescreens automatically on every sanctions list update and only surfaces genuine matches.</div>
+    </div>
+
+    <!-- PERSONA 2 -->
+    <div class="persona">
+      <div class="persona-avatar" style="font-size:18px">💳</div>
+      <div class="persona-header">
+        <div class="persona-avatar">💳</div>
+        <div>
+          <h4>Fintech Head of Compliance</h4>
+          <div class="role">Series B Neobank · KYC Scale</div>
+        </div>
+      </div>
+      <div class="persona-context">5-person team managing KYC/AML for 300K+ users. Business is growing 30%/month. Every user needs identity verification, adverse media check, and ongoing monitoring. Compliance team is already maxed out.</div>
+      <div class="persona-pain"><strong>Core Pain</strong>Can't hire fast enough. Offshore compliance teams introduce quality variance. Every compliance hire is 3 months and €80K. Need to scale without linear headcount growth.</div>
+      <div class="persona-sphinx"><strong>Sphinx Does</strong>KYC agent handles ID verification + RFI drafts + screening at scale. Team reviews exceptions. Growth decoupled from headcount.</div>
+      <div class="persona-story">"We tripled user volume in 6 months. Compliance team stayed the same size."</div>
+      <div class="persona-caelith"><strong>Caelith Equivalent</strong>Fund administrator managing compliance for 15-20 funds. Same Annex IV process repeated 15+ times per year for different funds, different NCAs. The Caelith Filing Agent batches all filings — one agent handles all funds in parallel.</div>
+    </div>
+
+    <!-- PERSONA 3 -->
+    <div class="persona">
+      <div class="persona-header">
+        <div class="persona-avatar">🏢</div>
+        <div>
+          <h4>Bank MLRO</h4>
+          <div class="role">Public Company · SAR Filing & Audit</div>
+        </div>
+      </div>
+      <div class="persona-context">Responsible for the bank's entire AML/CTF program. Reports to the board. Owns regulatory exam preparation — which means compiling evidence, writing justifications, and demonstrating that every decision had a defensible rationale.</div>
+      <div class="persona-pain"><strong>Core Pain</strong>Regulatory exams take 3-6 weeks of prep. Have to manually retrieve old case notes, reconstruct decision logic, prove each alert was handled correctly. Audit evidence is scattered across 6 systems.</div>
+      <div class="persona-sphinx"><strong>Sphinx Does</strong>Every agent action produces an audit trail by default. Exam prep goes from weeks to hours — regulator can access a complete, timestamped, reproducible record of every decision ever made.</div>
+      <div class="persona-story">"Our last OCC exam took 2 days of prep instead of 3 weeks. Everything was already documented."</div>
+      <div class="persona-caelith"><strong>Caelith Equivalent</strong>AIFMD II compliance officer preparing for BaFin audit. Needs to prove every investor classification was correct, every sanctions check was run, every filing was timely. Caelith's SHA-256 decision chain IS the audit package — generated automatically.</div>
+    </div>
+
+    <!-- PERSONA 4 -->
+    <div class="persona">
+      <div class="persona-header">
+        <div class="persona-avatar">🌐</div>
+        <div>
+          <h4>Crypto Platform Compliance Manager</h4>
+          <div class="role">Global Exchange · Multi-Jurisdiction</div>
+        </div>
+      </div>
+      <div class="persona-context">Managing compliance across 15 jurisdictions. Each has different KYC requirements, sanctions lists, and reporting obligations. Small team, huge geographic scope. Can't have a compliance expert in every country.</div>
+      <div class="persona-pain"><strong>Core Pain</strong>Jurisdiction-specific rules encoded in spreadsheets. Analyst in London doesn't know Singapore's MAS requirements. Cross-border UBO mapping is nightmarishly complex.</div>
+      <div class="persona-sphinx"><strong>Sphinx Does</strong>Agent knows each jurisdiction's requirements. UBO mapping agent traces corporate structures across multiple countries and registries automatically.</div>
+      <div class="persona-story">"We expanded to 3 new markets without hiring anyone. The agent already knew the local rules."</div>
+      <div class="persona-caelith"><strong>Caelith Equivalent</strong>Pan-European fund manager with funds in DE + LU + FR + IE. Each NCA has different reporting frequency, portal, and deadline. Caelith's NCA Comparison layer knows every regulator's requirements — one agent, all jurisdictions.</div>
+    </div>
+
+    <!-- PERSONA 5 -->
+    <div class="persona">
+      <div class="persona-header">
+        <div class="persona-avatar">📋</div>
+        <div>
+          <h4>Compliance Ops Lead</h4>
+          <div class="role">Embedded Finance Platform · KYB at Scale</div>
+        </div>
+      </div>
+      <div class="persona-context">Onboarding business customers for a BaaS platform — each client needs KYB: UBO verification, web presence research, PEP screening, source of funds. Corporate structures are messy: holding companies, trust structures, multiple jurisdictions.</div>
+      <div class="persona-pain"><strong>Core Pain</strong>Each KYB case takes 2-4 hours of a senior analyst's time. UBO mapping requires navigating 5+ different national registries manually. Corporate structures are often deliberately opaque.</div>
+      <div class="persona-sphinx"><strong>Sphinx Does</strong>KYB agent automatically maps the full ownership structure, pulls filings from every relevant registry, identifies the UBOs, and produces a complete due diligence report in minutes.</div>
+      <div class="persona-story">"A case that used to take a senior analyst half a day now takes the agent 8 minutes."</div>
+      <div class="persona-caelith"><strong>Caelith Equivalent</strong>Investor onboarding manager at a KVG. Each new investor needs: LEI verification (GLEIF), KYC document review, sanctions screening, investor classification (KAGB/AIFMD II), eligibility decision with audit trail. Caelith's Onboarding Agent handles the full chain in minutes.</div>
+    </div>
+
+  </div><!-- /persona-grid -->
+
+  <div class="sphinx-insight">
+    <strong>The pattern:</strong> In every Sphinx persona, the analyst is doing mechanical execution work that requires judgment at the final step only. The compliance check itself is deterministic — it follows a policy. The agent follows the policy at scale. The human reviews the exceptions. <strong>This exact pattern maps to every Caelith persona.</strong> The regulation is the policy. The agent follows it. The compliance officer reviews what falls outside it.
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PART III — EXTRAPOLATION -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="extrapolation">
+  <div class="sec-label">Part III</div>
+  <div class="sec-title">Sphinx → Caelith: structural translation</div>
+  <p class="sec-sub">Not surface-level copying — deep structural mapping. For every design decision Sphinx made for US bank AML, here is the equivalent decision for EU fund compliance.</p>
+
+  <div class="two-col" style="margin-bottom:32px">
+    <div class="col-card sphinx">
+      <h3><span style="color:var(--blue)">◈</span> Sphinx's model</h3>
+      <div class="list">
+        <div class="list-item"><div class="list-icon">🌐</div><div><span class="main">Browser-native agents</span><span class="sub">Operates inside existing tools (Verafin, Actimize, Salesforce) without API integration. Zero engineering lift.</span></div></div>
+        <div class="list-item"><div class="list-icon">📬</div><div><span class="main">Alert queue as entry point</span><span class="sub">Agent picks up alerts as they arrive in the transaction monitoring system. Reactive + continuous.</span></div></div>
+        <div class="list-item"><div class="list-icon">🔍</div><div><span class="main">Multi-source data enrichment</span><span class="sub">Hits Refinitiv, LexisNexis, GLEIF, national registries, open web simultaneously for each case.</span></div></div>
+        <div class="list-item"><div class="list-icon">📝</div><div><span class="main">Case narrative generation</span><span class="sub">Writes the analyst's case note automatically. Defensible, regulator-ready prose.</span></div></div>
+        <div class="list-item"><div class="list-icon">👤</div><div><span class="main">Human review for edge cases</span><span class="sub">High-risk or ambiguous cases escalated to analyst. Agent provides context and recommendation.</span></div></div>
+        <div class="list-item"><div class="list-icon">🔗</div><div><span class="main">Interpretable audit trail</span><span class="sub">Every agent action logged. Reproducible. Defensible in regulatory exams.</span></div></div>
+      </div>
+    </div>
+
+    <div class="col-card caelith">
+      <h3><span style="color:var(--accent)">◈</span> Caelith's equivalent</h3>
+      <div class="list">
+        <div class="list-item"><div class="list-icon">🏗️</div><div><span class="main">System-native agents (stronger position)</span><span class="sub">We ARE the system. No integration needed because Caelith is the compliance OS. Agents have full data ownership — not just browser access.</span></div></div>
+        <div class="list-item"><div class="list-icon">📅</div><div><span class="main">Regulatory calendar as entry point</span><span class="sub">Deadlines are the alerts. 42 days until BaFin filing → agent surfaces this in chat, just like a TM alert surfaces in Verafin. Proactive, not reactive.</span></div></div>
+        <div class="list-item"><div class="list-icon">🔍</div><div><span class="main">Regulatory data enrichment</span><span class="sub">GLEIF for LEI validation, EU/UN sanctions databases, ESMA publications, NCA portals, BaFin registries. Richer and more domain-specific than Sphinx.</span></div></div>
+        <div class="list-item"><div class="list-icon">📄</div><div><span class="main">Filing document generation</span><span class="sub">Generates XSD-validated Annex IV XML, investor classification memos, evidence bundles. Not just prose — machine-readable, regulator-submittable.</span></div></div>
+        <div class="list-item"><div class="list-icon">✅</div><div><span class="main">Two explicit approval gates</span><span class="sub">CO approves XML generation, then approves submission. Not just review of edge cases — explicit sign-off at two decision points. Higher trust model.</span></div></div>
+        <div class="list-item"><div class="list-icon">🔗</div><div><span class="main">SHA-256 chained decision trail</span><span class="sub">Tamper-evident, not just logged. Every decision cryptographically linked to the previous one. BaFin auditor can verify chain integrity independently.</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-title" style="font-size:20px;margin-bottom:16px">Where Caelith is structurally stronger than Sphinx</div>
+
+  <div class="crit-grid">
+    <div class="crit-card key">
+      <div class="tag accent" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);background:rgba(197,224,238,0.08);border:1px solid rgba(197,224,238,0.15);border-radius:4px;padding:3px 9px;display:inline-block;margin-bottom:10px">Structural Advantage</div>
+      <h4>We own the system, not just the workflow</h4>
+      <p>Sphinx has to work around existing tools — browser-native is both a strength (no integration) and a limitation (no data ownership). Caelith IS the system. We store the fund data, the investor records, the decision history, the filing outputs. Our agents have the full data model, not a browser view of fragmented systems.</p>
+    </div>
+    <div class="crit-card key">
+      <div class="tag accent" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);background:rgba(197,224,238,0.08);border:1px solid rgba(197,224,238,0.15);border-radius:4px;padding:3px 9px;display:inline-block;margin-bottom:10px">Structural Advantage</div>
+      <h4>We submit directly, not just recommend</h4>
+      <p>Sphinx agents draft case narratives and write to case management systems. The human analyst still submits the SAR. Caelith's BaFin Filing Agent submits directly to the regulator's portal. The output is not a recommendation — it's a completed regulatory filing. This is a fundamentally higher autonomy level.</p>
+    </div>
+    <div class="crit-card key">
+      <div class="tag accent" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);background:rgba(197,224,238,0.08);border:1px solid rgba(197,224,238,0.15);border-radius:4px;padding:3px 9px;display:inline-block;margin-bottom:10px">Structural Advantage</div>
+      <h4>Open-core flywheel Sphinx doesn't have</h4>
+      <p>open-annex-iv on npm is a developer community asset. Engineers building fund management tools will use it, reference Caelith, and create an inbound pipeline that Sphinx doesn't have. The open-source schema library makes Caelith the standard, not just a vendor.</p>
+    </div>
+    <div class="crit-card">
+      <h4>Different risk profile — episodic vs. continuous</h4>
+      <p>Sphinx handles continuous alert streams (thousands/day). Caelith handles episodic filings (2-4 per fund per year). This means Caelith's agents must be more thorough per case — which plays to our strength: deep XSD validation, full pre-flight checks, comprehensive data gathering per filing cycle.</p>
+    </div>
+    <div class="crit-card">
+      <h4>Regulatory fragmentation is our moat</h4>
+      <p>EU fund compliance has 27 NCAs, each with slightly different portals, deadlines, and schema requirements. Sphinx's US model is more uniform (OCC, FDIC, Federal Reserve). Our knowledge of cross-NCA differences (BaFin MVP Portal vs. CSSF eDesk vs. AMF GECO) is hard to replicate and directly valuable to any pan-European AIFM.</p>
+    </div>
+    <div class="crit-card">
+      <h4>Where Sphinx beats us (for now)</h4>
+      <p>Production scale: millions of alerts processed. We're pre-revenue. Browser-native deployment: they go live in days with no engineering lift because there's nothing to integrate. We require onboarding fund data. Their feedback loop from real production data makes their agents smarter faster. We need customers to close this gap urgently.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PART IV — AGENT ARCHITECTURE -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="architecture">
+  <div class="sec-label">Part IV</div>
+  <div class="sec-title">The definitive Caelith agent architecture</div>
+  <p class="sec-sub">Five layers. Always-on monitoring at the bottom. CO-facing conversation at the top. Every layer feeds the next. The CO only ever sees layer 5 — the rest is invisible execution.</p>
+
+  <div class="arch-layers">
+
+    <div class="arch-layer l1">
+      <div class="arch-layer-header">
+        <div class="arch-layer-num">1</div>
+        <div>
+          <div class="arch-layer-title" style="color:var(--red)">Intelligence Layer — Always On, Always Watching</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:3px">Invisible to the user. Runs continuously. Feeds layer 2.</div>
+        </div>
+        <div class="arch-layer-desc">The agent's peripheral vision. Monitors everything that could require a compliance action — regulatory changes, fund events, investor events, calendar deadlines.</div>
+      </div>
+      <div class="arch-layer-body">
+        <div class="arch-item">
+          <h5>📅 Regulatory Calendar Monitor</h5>
+          <p>Tracks Annex IV, Annex V, AIFMD II readiness deadlines per fund per NCA. Knows the exact filing date for every fund in the tenant. Fires at 42d, 14d, 7d, 3d, 1d before deadline.</p>
+        </div>
+        <div class="arch-item">
+          <h5>🛡️ Sanctions List Watcher</h5>
+          <p>Monitors EU Consolidated List and UN Security Council list for updates. On any update, rescreens all investors in the background. Only surfaces matches — clear results are silent.</p>
+        </div>
+        <div class="arch-item">
+          <h5>📰 Regulatory Intelligence Feed</h5>
+          <p>Reads BaFin, ESMA, CSSF, AMF circulars and publications. When a circular affects AIFMD II filing requirements, the agent summarises the impact on your specific funds and surfaces it in chat.</p>
+        </div>
+        <div class="arch-item">
+          <h5>👤 Investor Event Monitor</h5>
+          <p>Watches for KYC expiry dates, corporate structure changes (LEI status updates via GLEIF), investor classification triggers (AUM changes, professional status renewals).</p>
+        </div>
+        <div class="arch-item">
+          <h5>📊 Portfolio Threshold Monitor</h5>
+          <p>Detects when a fund crosses an AUM, leverage, or investor-count threshold that changes its reporting obligation (Art. 24(1) vs. 24(2)) or triggers an additional filing requirement.</p>
+        </div>
+        <div class="arch-item">
+          <h5>🔍 Data Quality Monitor</h5>
+          <p>Continuously checks Annex IV field readiness: are all mandatory fields populated? Are any LEIs expired? Any missing investor domicile data? Builds a pre-flight score visible on the dashboard.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="arch-layer l2">
+      <div class="arch-layer-header">
+        <div class="arch-layer-num">2</div>
+        <div>
+          <div class="arch-layer-title" style="color:var(--yellow)">Surfacing Layer — Context-Aware Alerting</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:3px">When layer 1 detects an event, layer 2 decides how and when to tell the CO — and with how much context.</div>
+        </div>
+        <div class="arch-layer-desc">Not a notification. A message in the persistent chat thread, structured as an actionable briefing with everything needed to decide — not just a ping.</div>
+      </div>
+      <div class="arch-layer-body">
+        <div class="arch-item">
+          <h5>🎯 Priority Classification</h5>
+          <p>Events ranked: Critical (deadline &lt;7d, sanctions match, audit request) → High (deadline 7-30d, KYC expiry) → Informational (regulatory update, data quality warning). Only Critical/High surface proactively.</p>
+        </div>
+        <div class="arch-item">
+          <h5>💬 Context Pre-loading</h5>
+          <p>Before the agent surfaces an event, it pre-loads all relevant context: fund data, last filing status, investor list health, pre-flight score. The CO's first message has everything they need to decide immediately.</p>
+        </div>
+        <div class="arch-item">
+          <h5>🧠 Memory-Aware Messaging</h5>
+          <p>Agent remembers previous filings: "Last time we filed this fund, you had to manually provide the NAV figure — do you have the Q4 2025 NAV?" Reduces the number of back-and-forths per filing cycle.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="arch-layer l3">
+      <div class="arch-layer-header">
+        <div class="arch-layer-num">3</div>
+        <div>
+          <div class="arch-layer-title" style="color:var(--blue)">Conversation Layer — The CO's Interface</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:3px">The only layer the CO directly interacts with. Natural language in, structured actions out.</div>
+        </div>
+        <div class="arch-layer-desc">Replaces every form, every navigation flow, every menu. The CO types naturally. The agent parses intent, routes to execution, and asks only for what it can't find itself.</div>
+      </div>
+      <div class="arch-layer-body">
+        <div class="arch-item">
+          <h5>🗣️ Intent Classification</h5>
+          <p>Parses CO input into typed intents: file_annex_iv, screen_investor, check_deadline, generate_evidence_bundle, classify_investor, question (regulatory). Routes to the right agent automatically.</p>
+        </div>
+        <div class="arch-item">
+          <h5>❓ Targeted Gap-Filling</h5>
+          <p>When data is missing, agent asks exactly one question at a time — the most critical missing piece. Never presents a form. "What is the confirmed NAV as of 31.12.2025?" Not "please fill in fields 1-47."</p>
+        </div>
+        <div class="arch-item">
+          <h5>✅ Gate Management</h5>
+          <p>Enforces the two approval gates as conversation checkpoints. Won't proceed to XML generation without explicit "ok". Won't submit without explicit "ok to submit". Unambiguous, logged, auditable.</p>
+        </div>
+        <div class="arch-item">
+          <h5>📋 Status Cards</h5>
+          <p>Pre-flight results, filing summaries, submission confirmations presented as structured inline cards — not walls of text. Every card is designed to be reviewed in 10 seconds.</p>
+        </div>
+        <div class="arch-item">
+          <h5>💡 Regulatory Q&A</h5>
+          <p>CO can ask anything: "Does this fund need to file under Art. 24(1) or 24(2)?" Agent answers based on actual fund data, not generic LLM knowledge. Answers are fund-specific.</p>
+        </div>
+        <div class="arch-item">
+          <h5>🔄 Session Memory</h5>
+          <p>Conversation persists. If CO starts a filing, gets interrupted, comes back tomorrow — agent remembers where they were. No re-explaining context. No lost work.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="arch-layer l4">
+      <div class="arch-layer-header">
+        <div class="arch-layer-num">4</div>
+        <div>
+          <div class="arch-layer-title" style="color:var(--green)">Execution Layer — Deterministic, Not Probabilistic</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:3px">When the CO approves, the agent executes. No hallucination risk — every action is a typed API call against a known schema.</div>
+        </div>
+        <div class="arch-layer-desc">This is the key distinction from general-purpose LLM assistants: execution is deterministic. GLEIF returns a fact. XSD validation returns pass/fail. BaFin portal returns a reference number.</div>
+      </div>
+      <div class="arch-layer-body">
+        <div class="arch-item">
+          <h5>🔍 Real-Time Data Verification</h5>
+          <p>GLEIF LEI lookups, EU/UN sanctions screening, ESMA XSD validation — all real APIs returning verified facts. Not LLM-generated plausible-sounding answers. Every verification has a timestamp and a source URL.</p>
+        </div>
+        <div class="arch-item">
+          <h5>📄 Document Generation</h5>
+          <p>serializeAnnexIVToXml() maps internal data model to ESMA schema. Deterministic: same input always produces same output. 200+ fields. XSD-validated before leaving the system.</p>
+        </div>
+        <div class="arch-item">
+          <h5>🌐 Portal Filing Agent</h5>
+          <p>Browser agent (Playwright-based) navigates BaFin MVP Portal, CSSF eDesk, AMF GECO. Authenticates, uploads XML, captures confirmation reference. Returns the reference number to the conversation thread.</p>
+        </div>
+        <div class="arch-item">
+          <h5>📊 Compliance Rule Engine</h5>
+          <p>13 rules across 6 frameworks run as typed checks, not LLM reasoning. KAGB §1(19): "commitment ≥ €200K?" — yes/no. No ambiguity. Every result is verifiable, not interpretable.</p>
+        </div>
+        <div class="arch-item">
+          <h5>📋 Evidence Bundle Compilation</h5>
+          <p>Assembles the complete compliance package: LEI verification receipts, sanctions screening results, classification decisions, filing confirmation. Structured as a regulator-ready PDF bundle automatically.</p>
+        </div>
+        <div class="arch-item">
+          <h5>🔗 Audit Chain Writing</h5>
+          <p>Every execution step writes a decision record. SHA-256 hash chained to previous. Immutable sequence: pre-flight → LEI check → sanctions → generation → validation → submission. Full provenance for any auditor.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="arch-layer l5">
+      <div class="arch-layer-header">
+        <div class="arch-layer-num">5</div>
+        <div>
+          <div class="arch-layer-title" style="color:var(--purple)">Dashboard Layer — Overview, Not Controls</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:3px">The dashboard exists. But it's a status display, not where work happens. Work happens in the conversation thread.</div>
+        </div>
+        <div class="arch-layer-desc">The dashboard answers "what's the state of everything?" The chat answers "what should I do and can you do it for me?" These are different jobs. Never conflate them.</div>
+      </div>
+      <div class="arch-layer-body">
+        <div class="arch-item">
+          <h5>📊 Portfolio Health At a Glance</h5>
+          <p>Compliance score per fund, upcoming deadlines, action queue count, data quality score. Designed to answer "is everything ok?" in 3 seconds. Not a work surface.</p>
+        </div>
+        <div class="arch-item">
+          <h5>📅 Filing Calendar</h5>
+          <p>Visual timeline of all upcoming filing obligations across all funds, all NCAs. Click on any item → agent opens a conversation thread for that filing. Dashboard to agent in one click.</p>
+        </div>
+        <div class="arch-item">
+          <h5>🔗 Audit Trail Browser</h5>
+          <p>Searchable, filterable decision history. Verify chain integrity on demand. Export evidence bundle for any time period. Read-only — work happens in chat, not here.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- PART V — THE 5 AGENTS -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="agents">
+  <div class="sec-label">Part V</div>
+  <div class="sec-title">The 5 Caelith agents — and exactly what each one does</div>
+  <p class="sec-sub">Each agent has a clear job. No overlap. Agents 1-3 are live today (partially). Agents 4-5 are Q3-Q4 2026. Together they cover the entire EU fund compliance lifecycle.</p>
+
+  <div class="agents-grid">
+
+    <div class="agent-card">
+      <div class="agent-card-header">
+        <div class="agent-card-icon">📋</div>
+        <h3>Filing Agent</h3>
+        <div class="agent-phase"><span class="phase-pill live">Partial — Live</span><span class="phase-pill q3">Full — Q3 2026</span></div>
+      </div>
+      <div class="agent-card-body">
+        <p>Owns the entire Annex IV lifecycle from deadline detection to NCA portal submission. The primary agent. Everything else supports this one.</p>
+        <ul class="agent-steps">
+          <li><div class="step-icon">📅</div><div class="step-text"><strong>Deadline detection</strong><span>Monitors regulatory calendar. Fires at 42d, 14d, 7d before BaFin/CSSF/AMF deadlines.</span></div></li>
+          <li><div class="step-icon">🔎</div><div class="step-text"><strong>Pre-flight check</strong><span>Auto-runs: LEI validation (GLEIF), sanctions screening, field completeness check, reporting obligation assessment (Art. 24(1) vs 24(2)).</span></div></li>
+          <li><div class="step-icon">💬</div><div class="step-text"><strong>Gap-filling conversation</strong><span>Asks only for what's missing. One question at a time. Verifies answers live (LEI via GLEIF, NAV cross-check against fund records).</span></div></li>
+          <li><div class="step-icon">🔑</div><div class="step-text"><strong>Gate 1 — CO approves generation</strong><span>CO reviews pre-flight summary. Types "ok". Agent proceeds.</span></div></li>
+          <li><div class="step-icon">📄</div><div class="step-text"><strong>XML generation + XSD validation</strong><span>serializeAnnexIVToXml() → libxmljs2 → ESMA AIFMD_DATAIF_V1.2.xsd. Must pass with 0 errors before gate 2 is offered.</span></div></li>
+          <li><div class="step-icon">🔑</div><div class="step-text"><strong>Gate 2 — CO approves submission</strong><span>CO reviews filing summary card (fund, period, AUM, investors, leverage). Types "ok to submit".</span></div></li>
+          <li><div class="step-icon">🌐</div><div class="step-text"><strong>BaFin portal submission</strong><span>Browser agent: portal.bafin.de → authenticate → upload XML → capture reference number → return to chat. [Q3 2026]</span></div></li>
+          <li><div class="step-icon">🔗</div><div class="step-text"><strong>Audit trail sealed</strong><span>Submission reference + SHA-256 hash written to decision chain. Filing is done.</span></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-card-header">
+        <div class="agent-card-icon">👤</div>
+        <h3>Onboarding Agent</h3>
+        <div class="agent-phase"><span class="phase-pill live">Partial — Live</span><span class="phase-pill q3">Full — Q3 2026</span></div>
+      </div>
+      <div class="agent-card-body">
+        <p>Handles the full investor onboarding chain. Equivalent to Sphinx's KYC + KYB agents combined, but EU fund-specific — knows KAGB classifications, AIFMD II investor categories, ELTIF 2.0 rules.</p>
+        <ul class="agent-steps">
+          <li><div class="step-icon">📥</div><div class="step-text"><strong>Investor intake</strong><span>New investor appears in onboarding queue (CRM, email, or direct upload). Agent picks up immediately.</span></div></li>
+          <li><div class="step-icon">🔍</div><div class="step-text"><strong>LEI lookup + verification</strong><span>Searches GLEIF by legal name. Validates LEI status (ISSUED/LAPSED). Flags discrepancies between provided name and GLEIF record.</span></div></li>
+          <li><div class="step-icon">🛡️</div><div class="step-text"><strong>Sanctions + PEP screening</strong><span>Screens name against EU Consolidated List + UN Security Council list. Fuzzy match at 0.3 threshold. PEP check against political exposure databases.</span></div></li>
+          <li><div class="step-icon">📊</div><div class="step-text"><strong>Investor classification</strong><span>Applies KAGB §1(19), AIFMD II Art. 4, ELTIF 2.0 rules. Determines: professional / semi-professional / retail. Documents the reasoning.</span></div></li>
+          <li><div class="step-icon">📋</div><div class="step-text"><strong>Eligibility decision</strong><span>Can this investor participate in this specific fund? Runs all applicable rules. Generates a classification memo.</span></div></li>
+          <li><div class="step-icon">📝</div><div class="step-text"><strong>Documentation generation</strong><span>Generates investor classification certificate, suitability assessment (if ELTIF retail), and the relevant subscription document checklist.</span></div></li>
+          <li><div class="step-icon">🔗</div><div class="step-text"><strong>Decision chain entry</strong><span>Every step hashed and chained. The onboarding record IS the KYC/AML audit trail.</span></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-card-header">
+        <div class="agent-card-icon">📡</div>
+        <h3>Monitoring Agent</h3>
+        <div class="agent-phase"><span class="phase-pill live">Partial — Live</span></div>
+      </div>
+      <div class="agent-card-body">
+        <p>The always-on watchdog. Runs in the background continuously. Never asks anything — only speaks when it finds something that matters. Equivalent to Sphinx's continuous AML alert monitoring, but for the post-onboarding investor lifecycle.</p>
+        <ul class="agent-steps">
+          <li><div class="step-icon">🔄</div><div class="step-text"><strong>Continuous sanctions rescreening</strong><span>On every EU/UN list update, rescreens all active investors. Typical list updates: 2-5× per week. Rescreening takes seconds per investor.</span></div></li>
+          <li><div class="step-icon">📋</div><div class="step-text"><strong>KYC renewal tracking</strong><span>Monitors KYC document expiry dates. Alerts CO at 90d and 30d before expiry. Drafts the renewal request RFI automatically.</span></div></li>
+          <li><div class="step-icon">📰</div><div class="step-text"><strong>Regulatory change monitoring</strong><span>Watches BaFin, ESMA, CSSF RSS feeds. When a circular is published that affects AIFMD II requirements, agent reads it, assesses impact on your specific funds, and surfaces a brief in chat.</span></div></li>
+          <li><div class="step-icon">📊</div><div class="step-text"><strong>Portfolio threshold monitoring</strong><span>Detects when fund AUM/leverage/investor count crosses a threshold that changes reporting obligation. Alerts CO immediately with the regulatory implication.</span></div></li>
+          <li><div class="step-icon">🔍</div><div class="step-text"><strong>LEI status monitoring</strong><span>Checks for GLEIF status changes on investor LEIs monthly. A LAPSED LEI triggers immediate alert — this will fail the next Annex IV pre-flight.</span></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-card-header">
+        <div class="agent-card-icon">🔎</div>
+        <h3>Due Diligence Agent</h3>
+        <div class="agent-phase"><span class="phase-pill q3">Q3 2026</span></div>
+      </div>
+      <div class="agent-card-body">
+        <p>Equivalent to Sphinx's KYB + Deep Research + Knowledge Graph agents. For institutional investor DD — the kind that takes a senior analyst 4 hours to do manually. Produces a complete investor due diligence report in minutes.</p>
+        <ul class="agent-steps">
+          <li><div class="step-icon">🌐</div><div class="step-text"><strong>Entity research</strong><span>Searches company name across EU registries (Bundesanzeiger, Registre de Commerce, Companies House), adverse media, court records, regulatory filings.</span></div></li>
+          <li><div class="step-icon">🏗️</div><div class="step-text"><strong>Ownership structure mapping</strong><span>Traces UBO chain via GLEIF hierarchy data and national registries. Visualises the ownership graph. Flags shell company patterns.</span></div></li>
+          <li><div class="step-icon">🔍</div><div class="step-text"><strong>PEP & adverse media scan</strong><span>Screens all UBOs and directors against PEP databases and adverse media (news archives, court records). Surfaces relevant findings with source links.</span></div></li>
+          <li><div class="step-icon">📊</div><div class="step-text"><strong>Source of funds assessment</strong><span>Cross-references stated AUM against public filings. Flags material discrepancies for human review.</span></div></li>
+          <li><div class="step-icon">📄</div><div class="step-text"><strong>DD report generation</strong><span>Produces a structured investor due diligence report: entity summary, ownership chart, PEP/sanctions findings, risk rating, recommendation. Regulator-ready.</span></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="agent-card">
+      <div class="agent-card-header">
+        <div class="agent-card-icon">⚖️</div>
+        <h3>Audit Preparation Agent</h3>
+        <div class="agent-phase"><span class="phase-pill q4">Q4 2026</span></div>
+      </div>
+      <div class="agent-card-body">
+        <p>The Sphinx MLRO persona's equivalent. When BaFin requests documentation for an audit or examination — or the fund's external auditors arrive — this agent compiles everything. Turns weeks of prep into hours.</p>
+        <ul class="agent-steps">
+          <li><div class="step-icon">📥</div><div class="step-text"><strong>Audit request intake</strong><span>CO describes the audit scope: "BaFin is asking for proof of AIFMD Art. 24 compliance for Süddeutscher Immobilien-Spezialfonds I, 2024-2025."</span></div></li>
+          <li><div class="step-icon">🔍</div><div class="step-text"><strong>Evidence retrieval</strong><span>Agent queries the full decision chain for the relevant fund and time period. Retrieves every filing, every screening result, every classification decision.</span></div></li>
+          <li><div class="step-icon">✅</div><div class="step-text"><strong>Chain integrity verification</strong><span>Verifies every SHA-256 hash in the chain. Confirms no decision has been modified. Produces a chain integrity certificate.</span></div></li>
+          <li><div class="step-icon">📄</div><div class="step-text"><strong>Evidence bundle compilation</strong><span>Assembles: filing confirmations (with BaFin reference numbers), screening reports, classification memos, LEI verification records. Formatted as a structured PDF bundle.</span></div></li>
+          <li><div class="step-icon">💬</div><div class="step-text"><strong>Regulator Q&A mode</strong><span>CO can ask "what would I say to BaFin if they ask about investor #7's classification?" Agent drafts the defensible answer based on the actual decision record.</span></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- BONUS: The Conversation -->
+    <div class="agent-card" style="border-color:rgba(197,224,238,0.2);background:rgba(197,224,238,0.02)">
+      <div class="agent-card-header" style="border-bottom-color:rgba(197,224,238,0.08)">
+        <div class="agent-card-icon">✨</div>
+        <h3>The Persistent Chat — The Agent's Face</h3>
+        <div class="agent-phase"><span class="phase-pill live">Live Now</span></div>
+      </div>
+      <div class="agent-card-body">
+        <p>One persistent conversation thread per tenant. Always open. Every agent surfaces its work here. The CO never navigates — they just talk. This IS the product interface. The dashboard is secondary.</p>
+        <div class="convo">
+          <div class="convo-header">
+            <div class="convo-icon">✨</div>
+            <div><h4>Caelith Agent</h4><p>BaFin · CSSF · AMF · AIFMD II</p></div>
+            <div class="dot-live"></div>
+          </div>
+          <div class="convo-body">
+            <div class="m">
+              <div class="m-av">✨</div>
+              <div class="m-bub"><strong>🔔 3 things need your attention today:</strong><br><br>1. Annex IV for Süddeutscher Imm. I — <span class="m-warn">42 days</span><br>2. KYC renewal due — <span class="m-warn">Klaus Müller FO (30 days)</span><br>3. New BaFin circular — <span class="m-check">impact assessed (low)</span><br><br>Want to start with the Annex IV filing?</div>
+            </div>
+            <div class="m co">
+              <div class="m-av">👩‍💼</div>
+              <div class="m-bub">Yes. What's the status?</div>
+            </div>
+            <div class="m">
+              <div class="m-av">✨</div>
+              <div class="m-bub"><span class="m-dim">Running pre-flight...</span><br><span class="m-check">✓</span> 8/9 LEIs valid <span class="m-warn">⚠ 1 missing</span><br><span class="m-check">✓</span> Sanctions: all clear<br><span class="m-warn">⚠</span> NAV Q4 2025 not confirmed<br><br>Two things needed. LEI for Klaus Müller FO?</div>
+            </div>
+            <div class="m co">
+              <div class="m-av">👩‍💼</div>
+              <div class="m-bub">529900KMFO1234GH56. NAV is €164.2M.</div>
+            </div>
+            <div class="m">
+              <div class="m-av">✨</div>
+              <div class="m-bub"><span class="m-check">✓</span> LEI confirmed (GLEIF — ISSUED)<br><span class="m-check">✓</span> All 200+ fields complete<br><br>Ready to generate. Say <strong>ok</strong>.<span class="ok-btn">✅  ok</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- FINAL: THE PITCH -->
+<!-- ══════════════════════════════════════════════ -->
+<section>
+  <div class="sec-label">The One-Paragraph Pitch</div>
+  <div class="sec-title" style="max-width:800px">"Sphinx built the execution layer for US bank compliance. We're building it for EU fund regulation — same thesis, higher barrier, more defensible moat."</div>
+
+  <div class="sphinx-grid" style="margin-top:32px">
+    <div class="sphinx-card full" style="background:rgba(197,224,238,0.04);border-color:rgba(197,224,238,0.2)">
+      <h3 style="font-size:17px;margin-bottom:14px">Why Caelith wins the EU fund market — in 4 sentences</h3>
+      <p style="font-size:14px;line-height:1.8">
+        EU fund managers face 27 NCAs, a mandatory AIFMD II filing deadline (April 16, 2026), and a compliance workflow that currently requires 2-4 weeks of manual work per filing cycle — Excel, Word, and a browser tab on BaFin's portal. 
+        <strong style="color:var(--accent)">Caelith is the first EU compliance OS built agent-first: one persistent chat, five autonomous agents, two approval gates, and direct NCA portal submission.</strong> 
+        The moat is the schema: our open-source Annex IV library (open-annex-iv, validated against ESMA AIFMD_DATAIF_V1.2.xsd) is already on npm and becoming the standard, and the cross-NCA filing knowledge (BaFin MVP Portal, CSSF eDesk, AMF GECO) takes months to build and requires deep regulatory expertise to maintain. 
+        We're not a dashboard that adds visibility — we're the agent that does the work.
+      </p>
+    </div>
+  </div>
+</section>
+</div><!-- /wrap -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div><strong style="color:var(--t2)">Caelith</strong> — Compliance OS for European Fund Managers · <a href="https://www.caelith.tech">caelith.tech</a></div>
+  <div style="text-align:right">Internal strategic research — March 4, 2026</div>
+</div>
+
+</body>
+</html>`;
+
+writeFileSync('C:/Users/julia/openclaw-workspace/research/sphinx-vs-caelith.html', html, 'utf8');
+console.log('Written: research/sphinx-vs-caelith.html');
+console.log('Size:', Math.round(html.length / 1024), 'KB');

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Agent Conversation Video</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0d10;color:#F8F9FA;font-family:'Inter',sans-serif;display:flex;flex-direction:column;align-items:center;padding:32px;min-height:100vh}
+h1{font-family:'Sora',sans-serif;font-size:20px;margin-bottom:8px;color:#C5E0EE}
+.sub{font-size:13px;color:rgba(248,249,250,0.4);margin-bottom:24px}
+canvas{border-radius:12px;border:1px solid rgba(197,224,238,0.1);display:block;box-shadow:0 0 60px rgba(197,224,238,0.03)}
+.controls{display:flex;gap:12px;margin-top:20px;align-items:center}
+button{font-family:'Sora',sans-serif;font-size:13px;font-weight:600;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;transition:all .2s}
+#playBtn{background:rgba(197,224,238,0.1);color:#C5E0EE;border:1px solid rgba(197,224,238,0.2)}
+#playBtn:hover{background:rgba(197,224,238,0.2)}
+#recBtn{background:rgba(248,100,100,0.1);color:#f85149;border:1px solid rgba(248,100,100,0.2)}
+#recBtn:hover{background:rgba(248,100,100,0.2)}
+#recBtn.recording{background:#f85149;color:#fff;animation:pulse-rec 1s infinite}
+@keyframes pulse-rec{0%,100%{opacity:1}50%{opacity:0.7}}
+.status{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(248,249,250,0.3)}
+</style>
+</head>
+<body>
+<h1>Caelith Agent — LinkedIn Video Generator</h1>
+<p class="sub">1080×1080 · ~48s · Hook → Conversation → Results Breakdown → Logo · Canvas capture to WebM</p>
+<canvas id="c" width="1080" height="1080" style="width:540px;height:540px"></canvas>
+<div class="controls">
+  <button id="playBtn" onclick="startPlay()">▶ Play Preview</button>
+  <button id="recBtn" onclick="startRecord()">⏺ Record Video</button>
+  <span class="status" id="statusText">Ready</span>
+</div>
+
+<script>
+const C=document.getElementById('c'),ctx=C.getContext('2d');
+const W=1080,H=1080;
+
+// Brand colors
+const BG='#0d1117',SURFACE='#161b22',
+      ACCENT='#C5E0EE',WARM='#E8A87C',GREEN='#3fb950',
+      YELLOW='#d29922',RED='#f85149',
+      TEXT='#F8F9FA',TEXT2='rgba(248,249,250,0.75)',
+      MUTED='rgba(248,249,250,0.5)',DIM='rgba(248,249,250,0.25)',
+      AGENT_BG='rgba(197,224,238,0.06)',AGENT_BD='rgba(197,224,238,0.12)',
+      CO_BG='rgba(232,168,124,0.07)',CO_BD='rgba(232,168,124,0.15)';
+
+const BUBBLE_W=660,PAD=24,LINE_H=34,AVATAR_R=22,AVATAR_GAP=14;
+const MSG_LEFT=32,MSG_RIGHT=W-32;
+const BUBBLE_LEFT=MSG_LEFT+AVATAR_R*2+AVATAR_GAP;
+const BUBBLE_RIGHT_EDGE=MSG_RIGHT-AVATAR_R*2-AVATAR_GAP;
+
+// ═══ TIMING ═══
+const HOOK_DUR=4200;       // 4.2s hook (two phases)
+const HOOK_FADE=1400;      // 1.4s cross-fade hook→chat (smooth)
+const CTA_FADE=1400;       // 1.4s cross-fade chat→results (smooth)
+const RESULTS_DUR=5000;    // 5s results breakdown
+const LOGO_DUR=3000;       // 3s logo hold
+const TOTAL_DUR=48000;     // total video length
+
+// Easing: cubic ease-in-out
+function ease(t){return t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+
+// ── Drawing helpers ──
+function roundRect(x,y,w,h,r,fill,stroke,lw){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill()}
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw||1;ctx.stroke()}
+}
+
+function drawAvatar(x,y,emoji,bg,bd){
+  ctx.fillStyle=bg;ctx.strokeStyle=bd;ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(x,y,AVATAR_R,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.font='22px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle=TEXT;ctx.fillText(emoji,x,y+1);
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+}
+
+function wrapText(text,maxW,font){
+  ctx.font=font;const lines=[];
+  for(const para of text.split('\n')){
+    if(!para){lines.push('');continue}
+    const words=para.split(' ');let line='';
+    for(const w of words){
+      const test=line?line+' '+w:w;
+      if(ctx.measureText(test).width>maxW&&line){lines.push(line);line=w}
+      else line=test;
+    }
+    if(line)lines.push(line);
+  }
+  return lines;
+}
+
+function drawTypingDots(x,y,t){
+  for(let i=0;i<3;i++){
+    const bounce=Math.sin((t/250)+i*1.3)*5;
+    const alpha=0.35+0.25*Math.sin((t/250)+i*1.3);
+    ctx.fillStyle=`rgba(197,224,238,${alpha})`;
+    ctx.beginPath();ctx.arc(x+i*18,y+bounce,6,0,Math.PI*2);ctx.fill();
+  }
+}
+
+function drawGrid(){
+  ctx.strokeStyle='rgba(197,224,238,0.015)';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=48){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+  for(let y=0;y<H;y+=48){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+}
+
+// ── Messages (delays are relative to AFTER hook) ──
+const msgs=[
+  {type:'agent',delay:0,typing:1500,text:'🔔 BaFin filing due in 42 days\n\nSüddeutscher Immobilien-Spezialfonds I has an Annex IV obligation under AIFMD Art. 24.\n\nDeadline: April 16, 2026\nPeriod: 01/01/2025 – 31/12/2025',ts:'14:31'},
+  {type:'co',delay:4000,text:'Yes, start the pre-flight check.',ts:'14:31'},
+  {type:'agent',delay:5500,typing:1800,text:'Running pre-flight checks...',ts:'14:32',
+   statusCard:[
+     {icon:'✓',label:'Sanctions (9 investors)',val:'All clear',color:GREEN},
+     {icon:'⚠',label:'LEI validation (GLEIF)',val:'8/9 valid',color:YELLOW},
+     {icon:'⚠',label:'AUM (Q4 2025)',val:'Not confirmed',color:YELLOW},
+     {icon:'✓',label:'Depositary',val:'Documented',color:GREEN},
+     {icon:'✓',label:'Leverage ratios',val:'Present',color:GREEN},
+     {icon:'✓',label:'Investor domicile',val:'Complete',color:GREEN},
+   ],
+   after:'Two items needed:\n⚠ Missing LEI: Klaus Müller Family Office\n⚠ Final NAV as of 31.12.2025?'},
+  {type:'co',delay:14500,text:'LEI is 529900KMFO1234GH56.\nNAV is €164.2M.',ts:'14:36'},
+  {type:'agent',delay:16500,typing:1200,text:'✓ LEI verified via GLEIF — ISSUED, DE\n✓ NAV updated: €164,200,000\n\nAll checks pass. Ready to generate XML.',ts:'14:38'},
+  {type:'co',delay:21000,text:'✅ Generate',ts:'14:39',isButton:true},
+  {type:'gate',delay:21800,text:'GATE 1 · Generation Approved'},
+  {type:'agent',delay:23000,typing:1000,text:'Generating ESMA AIFMD_DATAIF_V1.2.xsd...\n✓ 847 elements · 8 sections\n✓ XSD validation: 0 errors',ts:'14:41',mono:true,
+   filingCard:[
+     {l:'Fund',v:'Süddeutscher Immob. I'},{l:'Period',v:'2025 Annual'},
+     {l:'Regulator',v:'BaFin (DE)'},{l:'AUM',v:'€164,200,000'},
+     {l:'Investors',v:'9 (7 prof · 2 semi-prof)'},{l:'Schema',v:'ESMA Rev 6 · 0 errors ✓'},
+   ]},
+  {type:'co',delay:30000,text:'✅ Submit to BaFin',ts:'14:43',isButton:true},
+  {type:'gate',delay:30800,text:'GATE 2 · Submission Approved'},
+  {type:'agent',delay:32000,typing:1000,text:'Opening BaFin MVP Portal...\n✓ Authenticated\n✓ XML uploaded (48.2 KB)\n✓ Server-side validation passed\n✓ Submission confirmed',ts:'14:45',mono:true,
+   confirmCard:[
+     {l:'Reference',v:'BaFin-AIF-2026-SUE-00192',c:GREEN},
+     {l:'Submitted',v:'2026-03-04 14:32 CET',c:TEXT},
+     {l:'Audit',v:'SHA-256 sealed',c:ACCENT},
+     {l:'Status',v:'✓ CONFIRMED',c:GREEN},
+   ]},
+  {type:'agent',delay:38500,typing:600,text:'Done. Filing complete.\nNext: CSSF in 67 days.',ts:'14:47'},
+];
+
+// ── State ──
+let startTime=0,playing=false,recording=false,recorder=null,chunks=[];
+let scrollY=0,targetScrollY=0;
+
+function getVisibleMsgs(chatT){
+  const visible=[];
+  for(const m of msgs){
+    if(chatT<m.delay)break;
+    const age=chatT-m.delay;
+    const typeDur=m.typing||0;
+    if(age<typeDur)visible.push({...m,state:'typing',age});
+    else visible.push({...m,state:'show',age:age-typeDur});
+  }
+  return visible;
+}
+
+function measureMsg(m){
+  const font=m.mono?'24px JetBrains Mono':'26px Inter';
+  let h=0;
+  if(m.type==='gate')return 70;
+  if(m.state==='typing')return 72;
+  h+=30; // name
+  const lines=wrapText(m.text,BUBBLE_W-PAD*2,font);
+  h+=lines.length*LINE_H+PAD*2+24; // +24 for timestamp INSIDE bubble
+  if(m.statusCard)h+=m.statusCard.length*40+24;
+  if(m.after){const al=wrapText(m.after,BUBBLE_W-PAD*2,'26px Inter');h+=al.length*LINE_H+16;}
+  if(m.filingCard)h+=m.filingCard.length*38+32;
+  if(m.confirmCard)h+=m.confirmCard.length*38+32;
+  return h+16;
+}
+
+// ═══ HOOK SCENE (two-phase scroll-stopper) ═══
+function renderHook(t,exitProgress){
+  const ep=exitProgress||0;
+  // Use a softer ease for the exit — starts very slow, accelerates at end
+  const exitEase=ep*ep; // quadratic ease-in (gentle start)
+  const alpha=1-ease(ep); // overall opacity uses cubic
+  const drift=-80*exitEase; // longer float distance
+  const scale=1+0.04*exitEase; // slight zoom IN (not shrink) as it fades — more cinematic
+
+  ctx.fillStyle=BG;ctx.fillRect(0,0,W,H);
+  drawGrid();
+
+  // Radial glow
+  const grd=ctx.createRadialGradient(W/2,H/2-20+drift,0,W/2,H/2-20+drift,400);
+  grd.addColorStop(0,`rgba(197,224,238,${0.05*alpha})`);grd.addColorStop(1,'transparent');
+  ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
+
+  ctx.save();
+  ctx.translate(W/2,H/2+drift);
+  ctx.scale(scale,scale);
+  ctx.translate(-W/2,-H/2);
+  ctx.textAlign='center';
+
+  // ── PHASE 1 (0–2.2s): Pain point ──
+  const p1In=Math.min(1,t/500);
+  const p1Alpha=p1In*alpha;
+
+  // Line 1: "Your compliance team spends"
+  ctx.globalAlpha=p1Alpha;
+  ctx.font='400 38px Inter';ctx.fillStyle=MUTED;
+  ctx.fillText('Your compliance team spends',W/2,H/2-100);
+
+  // Line 2: "6 weeks" (big, warm accent — the pain)
+  const weeksFade=Math.min(1,Math.max(0,(t-300)/400));
+  ctx.globalAlpha=weeksFade*p1Alpha;
+  ctx.font='800 72px Sora';ctx.fillStyle=WARM;
+  ctx.fillText('6 weeks',W/2,H/2-20);
+
+  // Line 3: "on a single regulatory filing."
+  const filFade=Math.min(1,Math.max(0,(t-600)/400));
+  ctx.globalAlpha=filFade*p1Alpha;
+  ctx.font='400 38px Inter';ctx.fillStyle=MUTED;
+  ctx.fillText('on a single regulatory filing.',W/2,H/2+40);
+
+  // ── Thin accent line separator ──
+  const lineFade=Math.min(1,Math.max(0,(t-1000)/300));
+  ctx.globalAlpha=lineFade*alpha*0.3;
+  const lineGrd=ctx.createLinearGradient(W/2-120,0,W/2+120,0);
+  lineGrd.addColorStop(0,'transparent');lineGrd.addColorStop(0.5,ACCENT);lineGrd.addColorStop(1,'transparent');
+  ctx.strokeStyle=lineGrd;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(W/2-120,H/2+70);ctx.lineTo(W/2+120,H/2+70);ctx.stroke();
+
+  // ── PHASE 2 (2.2s–4.2s): The reveal ──
+  const p2Start=2200;
+  const p2In=Math.min(1,Math.max(0,(t-p2Start)/500));
+  const p2Alpha=p2In*alpha;
+
+  // "Now watch Caelith do it in"
+  ctx.globalAlpha=p2Alpha;
+  ctx.font='500 34px Inter';ctx.fillStyle=TEXT2;
+  ctx.fillText('Now watch Caelith do it in',W/2,H/2+120);
+
+  // "6 seconds." (gradient, large — the payoff)
+  const secFade=Math.min(1,Math.max(0,(t-p2Start-250)/400));
+  ctx.globalAlpha=secFade*p2Alpha;
+  const secGrad=ctx.createLinearGradient(W/2-120,0,W/2+120,0);
+  secGrad.addColorStop(0,ACCENT);secGrad.addColorStop(1,WARM);
+  ctx.font='800 68px Sora';ctx.fillStyle=secGrad;
+  ctx.fillText('6 seconds.',W/2,H/2+195);
+
+  // When phase 2 is visible, fade OUT phase 1 text
+  if(t>p2Start){
+    const p1Out=Math.min(0.6,Math.max(0,(t-p2Start)/800));
+    // Phase 1 text already drawn above — the exitProgress handles the global fade
+  }
+
+  // Caelith wordmark bottom (white, subtle)
+  ctx.globalAlpha=alpha*0.3;
+  ctx.font='800 18px Sora';ctx.fillStyle=TEXT;
+  ctx.fillText('Caelith',W/2,H-50);
+
+  ctx.restore();
+  ctx.textAlign='left';ctx.globalAlpha=1;
+}
+
+// ═══ CHAT SCENE ═══
+function renderChat(chatT,globalT,enterProgress){
+  // enterProgress: 0=just entering, 1=fully in
+  const ep=enterProgress!==undefined?enterProgress:1;
+  // Softer entrance — quadratic ease for gentler start
+  const enterEase=ease(Math.min(1,ep));
+  const chatAlpha=enterEase;
+  const slideDown=60*(1-enterEase); // header slides down from further above (smoother arc)
+
+  ctx.fillStyle=BG;ctx.fillRect(0,0,W,H);
+  drawGrid();
+
+  ctx.globalAlpha=chatAlpha;
+
+  // Header glow
+  const hGrd=ctx.createRadialGradient(W/2,-20+slideDown,10,W/2,-20+slideDown,280);
+  hGrd.addColorStop(0,'rgba(197,224,238,0.05)');hGrd.addColorStop(1,'transparent');
+  ctx.fillStyle=hGrd;ctx.fillRect(0,0,W,100);
+
+  // Header bar
+  ctx.save();ctx.translate(0,-slideDown);
+  ctx.fillStyle=SURFACE;ctx.fillRect(0,0,W,72);
+  ctx.strokeStyle='rgba(197,224,238,0.06)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,72);ctx.lineTo(W,72);ctx.stroke();
+  ctx.restore();
+
+  // Wordmark (slides down with header) — pure white
+  ctx.save();ctx.translate(0,-slideDown);
+  ctx.font='800 28px Sora';ctx.fillStyle=TEXT;ctx.fillText('Caelith',28,46);
+  ctx.font='500 20px Inter';ctx.fillStyle=TEXT2;ctx.fillText('Compliance Agent',170,46);
+
+  // Online dot
+  const pulse=0.5+0.5*Math.sin(globalT/300);
+  ctx.fillStyle=`rgba(63,185,80,${0.4+pulse*0.6})`;
+  ctx.beginPath();ctx.arc(W-130,36,6,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle=`rgba(63,185,80,${0.12+pulse*0.12})`;ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(W-130,36,11,0,Math.PI*2);ctx.stroke();
+  ctx.font='500 16px JetBrains Mono';ctx.fillStyle=MUTED;ctx.fillText('Online',W-112,41);
+  ctx.restore();
+
+  // ── Progress bar ──
+  const chatDur=TOTAL_DUR-HOOK_DUR-RESULTS_DUR-LOGO_DUR;
+  const progress=Math.min(1,chatT/chatDur);
+  ctx.fillStyle='rgba(255,255,255,0.03)';ctx.fillRect(0,72,W,3);
+  const pGrad=ctx.createLinearGradient(0,0,W*progress,0);
+  pGrad.addColorStop(0,ACCENT);pGrad.addColorStop(1,WARM);
+  ctx.fillStyle=pGrad;ctx.fillRect(0,72,W*progress,3);
+
+  // ── Chat area ──
+  const chatTop=82,chatBot=H-52;
+  ctx.save();
+  ctx.beginPath();ctx.rect(0,chatTop,W,chatBot-chatTop);ctx.clip();
+
+  const visible=getVisibleMsgs(chatT);
+  let totalH=20;
+  for(const m of visible)totalH+=measureMsg(m);
+  const viewH=chatBot-chatTop;
+  targetScrollY=Math.max(0,totalH-viewH+60);
+  scrollY+=(targetScrollY-scrollY)*0.12;
+
+  let curY=chatTop+20-scrollY;
+
+  for(const m of visible){
+    const fadeIn=Math.min(1,m.age/300);
+    const slideUp=8*(1-fadeIn);
+    ctx.globalAlpha=fadeIn;
+
+    // Gate divider
+    if(m.type==='gate'){
+      const gp=Math.min(1,m.age/600);
+      const lineW=380*gp;
+      const cy=curY+35+slideUp;
+      ctx.shadowColor=WARM;ctx.shadowBlur=gp*14;
+      ctx.strokeStyle=WARM;ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(W/2-lineW,cy);ctx.lineTo(W/2+lineW,cy);ctx.stroke();
+      ctx.shadowBlur=0;
+      if(gp>0.5){
+        ctx.fillStyle=WARM;
+        ctx.beginPath();ctx.moveTo(W/2-lineW-6,cy);ctx.lineTo(W/2-lineW,cy-4);ctx.lineTo(W/2-lineW+6,cy);ctx.lineTo(W/2-lineW,cy+4);ctx.fill();
+        ctx.beginPath();ctx.moveTo(W/2+lineW-6,cy);ctx.lineTo(W/2+lineW,cy-4);ctx.lineTo(W/2+lineW+6,cy);ctx.lineTo(W/2+lineW,cy+4);ctx.fill();
+      }
+      if(gp>0.3){
+        ctx.globalAlpha=fadeIn*((gp-0.3)/0.7);
+        ctx.font='700 15px JetBrains Mono';ctx.fillStyle=WARM;
+        ctx.textAlign='center';ctx.fillText(m.text,W/2,cy-14);ctx.textAlign='left';
+      }
+      ctx.globalAlpha=1;curY+=70;continue;
+    }
+
+    // Typing indicator
+    if(m.state==='typing'){
+      const isAgent=m.type==='agent';
+      const avX=isAgent?MSG_LEFT+AVATAR_R:MSG_RIGHT-AVATAR_R;
+      drawAvatar(avX,curY+26+slideUp,'✨','rgba(197,224,238,0.08)','rgba(197,224,238,0.15)');
+      const bx=isAgent?BUBBLE_LEFT:BUBBLE_RIGHT_EDGE-120;
+      roundRect(bx,curY+6+slideUp,120,48,14,AGENT_BG,AGENT_BD);
+      drawTypingDots(bx+30,curY+30+slideUp,globalT);
+      ctx.globalAlpha=1;curY+=72;continue;
+    }
+
+    const isAgent=m.type==='agent';
+    const font=m.mono?'24px JetBrains Mono':'26px Inter';
+    const bubbleW=BUBBLE_W;
+
+    // Avatar
+    const avX=isAgent?MSG_LEFT+AVATAR_R:MSG_RIGHT-AVATAR_R;
+    if(isAgent)drawAvatar(avX,curY+26+slideUp,'✨','rgba(197,224,238,0.08)','rgba(197,224,238,0.15)');
+    else drawAvatar(avX,curY+26+slideUp,'👩‍💼','rgba(232,168,124,0.08)','rgba(232,168,124,0.15)');
+
+    // Name
+    ctx.font='600 18px Sora';ctx.fillStyle=isAgent?ACCENT:WARM;
+    if(isAgent)ctx.fillText('Caelith Agent',BUBBLE_LEFT,curY+20+slideUp);
+    else{ctx.textAlign='right';ctx.fillText('Maria Schmidt, CO',BUBBLE_RIGHT_EDGE,curY+20+slideUp);ctx.textAlign='left';}
+    curY+=30;
+
+    // Bubble dimensions
+    const lines=wrapText(m.text,bubbleW-PAD*2,font);
+    let bubbleH=lines.length*LINE_H+PAD*2+24; // +24 for timestamp inside
+    if(m.statusCard)bubbleH+=m.statusCard.length*40+24;
+    if(m.after){const al=wrapText(m.after,bubbleW-PAD*2,'26px Inter');bubbleH+=al.length*LINE_H+16;}
+    if(m.filingCard)bubbleH+=m.filingCard.length*38+32;
+    if(m.confirmCard)bubbleH+=m.confirmCard.length*38+32;
+
+    const bx=isAgent?BUBBLE_LEFT:BUBBLE_RIGHT_EDGE-bubbleW;
+    const by=curY+slideUp;
+
+    if(m.isButton){
+      ctx.font='700 28px Sora';
+      const btnW=ctx.measureText(m.text).width+60;
+      const btnX=BUBBLE_RIGHT_EDGE-btnW;
+      roundRect(btnX,by,btnW,56,12,'rgba(63,185,80,0.12)','rgba(63,185,80,0.25)',1.5);
+      ctx.fillStyle=GREEN;ctx.textAlign='center';
+      ctx.fillText(m.text,btnX+btnW/2,by+38);
+      // Timestamp inside button area
+      if(m.ts){
+        ctx.font='13px JetBrains Mono';ctx.fillStyle=DIM;
+        ctx.fillText(m.ts,btnX+btnW/2,by+56+16);
+      }
+      ctx.textAlign='left';
+      curY+=56+24;
+    } else {
+      roundRect(bx,by,bubbleW,bubbleH,16,isAgent?AGENT_BG:CO_BG,isAgent?AGENT_BD:CO_BD);
+
+      let ty=by+PAD+24;
+      ctx.font=font;ctx.fillStyle=isAgent?TEXT2:TEXT;
+      for(const l of lines){ctx.fillText(l,bx+PAD,ty);ty+=LINE_H;}
+
+      // Status card
+      if(m.statusCard){
+        ty+=10;
+        m.statusCard.forEach((row,i)=>{
+          const rowDelay=i*350;
+          const rowAlpha=Math.min(1,Math.max(0,(m.age-rowDelay)/300));
+          ctx.globalAlpha=fadeIn*rowAlpha;
+          const rx=bx+PAD,rw=bubbleW-PAD*2;
+          roundRect(rx,ty-18,rw,36,6,'rgba(255,255,255,0.025)','rgba(255,255,255,0.04)');
+          ctx.font='600 22px Inter';ctx.fillStyle=row.color;ctx.fillText(row.icon,rx+10,ty+6);
+          ctx.font='20px Inter';ctx.fillStyle=TEXT2;ctx.fillText(row.label,rx+38,ty+6);
+          ctx.font='600 18px JetBrains Mono';ctx.fillStyle=row.color;
+          ctx.textAlign='right';ctx.fillText(row.val,bx+bubbleW-PAD-8,ty+6);ctx.textAlign='left';
+          ty+=40;
+        });
+        ctx.globalAlpha=fadeIn;ty+=6;
+      }
+
+      // After text
+      if(m.after){
+        ty+=8;ctx.font='26px Inter';ctx.fillStyle=TEXT2;
+        const al=wrapText(m.after,bubbleW-PAD*2,'26px Inter');
+        for(const l of al){ctx.fillText(l,bx+PAD,ty);ty+=LINE_H;}
+      }
+
+      // Filing card
+      if(m.filingCard){
+        ty+=14;const cw=bubbleW-PAD*2;
+        roundRect(bx+PAD,ty-14,cw,m.filingCard.length*38+24,8,'rgba(0,0,0,0.25)','rgba(197,224,238,0.08)');
+        ty+=10;
+        for(const row of m.filingCard){
+          ctx.font='600 14px JetBrains Mono';ctx.fillStyle=DIM;ctx.fillText(row.l.toUpperCase(),bx+PAD+14,ty);
+          ctx.font='500 18px JetBrains Mono';ctx.fillStyle=TEXT;
+          ctx.textAlign='right';ctx.fillText(row.v,bx+bubbleW-PAD-14,ty);ctx.textAlign='left';
+          ty+=38;
+        }
+        ty+=6;
+      }
+
+      // Confirm card
+      if(m.confirmCard){
+        ty+=14;const cw=bubbleW-PAD*2;
+        roundRect(bx+PAD,ty-14,cw,m.confirmCard.length*38+24,8,'rgba(63,185,80,0.04)','rgba(63,185,80,0.12)');
+        ty+=10;
+        for(const row of m.confirmCard){
+          ctx.font='600 14px JetBrains Mono';ctx.fillStyle=DIM;ctx.fillText(row.l.toUpperCase(),bx+PAD+14,ty);
+          ctx.font='500 18px JetBrains Mono';ctx.fillStyle=row.c||TEXT;
+          ctx.textAlign='right';ctx.fillText(row.v,bx+bubbleW-PAD-14,ty);ctx.textAlign='left';
+          ty+=38;
+        }
+        ty+=6;
+      }
+
+      // ── TIMESTAMP INSIDE BUBBLE (bottom-right) ──
+      if(m.ts){
+        ctx.font='13px JetBrains Mono';ctx.fillStyle=DIM;
+        ctx.textAlign='right';
+        ctx.fillText(m.ts,bx+bubbleW-PAD,by+bubbleH-10);
+        ctx.textAlign='left';
+      }
+
+      curY+=bubbleH+6;
+    }
+
+    ctx.globalAlpha=1;
+  }
+
+  ctx.restore();
+
+  ctx.globalAlpha=chatAlpha;
+  // Footer
+  ctx.fillStyle=BG;ctx.fillRect(0,H-52,W,52);
+  ctx.strokeStyle='rgba(197,224,238,0.04)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,H-52);ctx.lineTo(W,H-52);ctx.stroke();
+  ctx.font='700 16px Sora';ctx.fillStyle=TEXT;ctx.textAlign='center';
+  ctx.fillText('Caelith',W/2,H-30);
+  ctx.font='13px JetBrains Mono';ctx.fillStyle=DIM;
+  ctx.fillText('caelith.tech · Simulation',W/2,H-12);
+  ctx.textAlign='left';ctx.globalAlpha=1;
+}
+
+// ═══ RESULTS BREAKDOWN SCENE ═══
+function renderResults(t,skipClear){
+  if(!skipClear){ctx.fillStyle=BG;ctx.fillRect(0,0,W,H);drawGrid();}
+
+  ctx.textAlign='center';
+
+  // Title
+  const tFade=Math.min(1,t/500);
+  ctx.globalAlpha=tFade;
+  ctx.font='700 18px JetBrains Mono';ctx.fillStyle=DIM;
+  ctx.fillText('WHAT THE AGENT JUST DID',W/2,80);
+
+  // ── BEFORE column (left, red-tinted) ──
+  const bFade=Math.min(1,Math.max(0,(t-300)/500));
+  ctx.globalAlpha=bFade;
+
+  const colL=80,colR=W/2+40,colW=W/2-120;
+
+  // Before header
+  ctx.font='700 28px Sora';ctx.fillStyle=RED;
+  ctx.textAlign='left';ctx.fillText('Before',colL,150);
+  // Red accent line
+  ctx.strokeStyle='rgba(248,81,73,0.3)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(colL,162);ctx.lineTo(colL+colW,162);ctx.stroke();
+
+  // Before items (staggered)
+  const beforeItems=[
+    {val:'6–8 weeks',label:'manual preparation'},
+    {val:'€15,000',label:'consultant cost per cycle'},
+    {val:'200+ fields',label:'filled by hand'},
+    {val:'Human error',label:'no deterministic validation'},
+  ];
+  beforeItems.forEach((item,i)=>{
+    const iFade=Math.min(1,Math.max(0,(t-600-i*400)/400));
+    ctx.globalAlpha=bFade*iFade;
+    const iy=210+i*100;
+
+    // Strikethrough line (animated)
+    const strikeProg=Math.min(1,Math.max(0,(t-900-i*400)/300));
+
+    ctx.font='800 36px Sora';ctx.fillStyle='rgba(248,81,73,0.7)';
+    ctx.textAlign='left';ctx.fillText(item.val,colL,iy);
+    ctx.font='400 20px Inter';ctx.fillStyle='rgba(248,249,250,0.35)';
+    ctx.fillText(item.label,colL,iy+28);
+
+    // Red strikethrough
+    if(strikeProg>0){
+      const valW=ctx.measureText(item.val).width;
+      ctx.save();ctx.font='800 36px Sora';
+      const actualW=ctx.measureText(item.val).width;
+      ctx.strokeStyle='rgba(248,81,73,0.6)';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(colL,iy-10);ctx.lineTo(colL+actualW*strikeProg,iy-10);ctx.stroke();
+      ctx.restore();
+    }
+  });
+
+  // ── AFTER column (right, green-tinted) ──
+  const aFade=Math.min(1,Math.max(0,(t-800)/500));
+  ctx.globalAlpha=aFade;
+
+  // After header
+  ctx.font='700 28px Sora';ctx.fillStyle=GREEN;
+  ctx.textAlign='left';ctx.fillText('After · Caelith Agent',colR,150);
+  ctx.strokeStyle='rgba(63,185,80,0.3)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(colR,162);ctx.lineTo(colR+colW,162);ctx.stroke();
+
+  // After items (staggered, slightly delayed vs before)
+  const afterItems=[
+    {val:'6.1 seconds',label:'fully autonomous filing'},
+    {val:'€0',label:'marginal cost per filing'},
+    {val:'0',label:'human interventions needed'},
+    {val:'SHA-256',label:'sealed audit trail · DORA-ready'},
+  ];
+  afterItems.forEach((item,i)=>{
+    const iFade=Math.min(1,Math.max(0,(t-1000-i*400)/400));
+    ctx.globalAlpha=aFade*iFade;
+    const iy=210+i*100;
+
+    ctx.font='800 36px Sora';ctx.fillStyle=GREEN;
+    ctx.textAlign='left';ctx.fillText(item.val,colR,iy);
+    ctx.font='400 20px Inter';ctx.fillStyle='rgba(248,249,250,0.5)';
+    ctx.fillText(item.label,colR,iy+28);
+  });
+
+  // ── Divider line between columns ──
+  const divFade=Math.min(1,Math.max(0,(t-400)/500));
+  ctx.globalAlpha=divFade*0.15;
+  ctx.strokeStyle=ACCENT;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(W/2,130);ctx.lineTo(W/2,600);ctx.stroke();
+
+  // ── Bottom summary line ──
+  const sumFade=Math.min(1,Math.max(0,(t-3000)/600));
+  ctx.globalAlpha=sumFade;
+  ctx.textAlign='center';
+  ctx.font='500 22px Inter';ctx.fillStyle=TEXT2;
+  ctx.fillText('Compliance becomes invisible. Fund managers focus on investing.',W/2,660);
+
+  // ── Thin accent separator ──
+  ctx.globalAlpha=sumFade*0.2;
+  const sepGrd=ctx.createLinearGradient(W/2-200,0,W/2+200,0);
+  sepGrd.addColorStop(0,'transparent');sepGrd.addColorStop(0.5,ACCENT);sepGrd.addColorStop(1,'transparent');
+  ctx.strokeStyle=sepGrd;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(W/2-200,700);ctx.lineTo(W/2+200,700);ctx.stroke();
+
+  ctx.textAlign='left';ctx.globalAlpha=1;
+}
+
+// ═══ LOGO SCENE ═══
+function renderLogo(t,skipClear){
+  if(!skipClear){ctx.fillStyle=BG;ctx.fillRect(0,0,W,H);drawGrid();}
+
+  const fadeIn=skipClear?1:Math.min(1,t/600);
+  ctx.globalAlpha=fadeIn;
+
+  // Subtle radial glow
+  const glow=ctx.createRadialGradient(W/2,H/2-20,0,W/2,H/2-20,200);
+  glow.addColorStop(0,'rgba(197,224,238,0.04)');glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+
+  ctx.textAlign='center';
+
+  // Caelith wordmark — PURE WHITE (matching website)
+  ctx.font='800 60px Sora';ctx.fillStyle=TEXT;
+  ctx.fillText('Caelith',W/2,H/2-10);
+
+  // Tagline
+  ctx.font='400 20px Inter';ctx.fillStyle=MUTED;
+  ctx.fillText('Autonomous compliance for EU fund managers',W/2,H/2+30);
+
+  // URL in accent
+  const urlFade=Math.min(1,Math.max(0,(t-400)/400));
+  ctx.globalAlpha=fadeIn*urlFade;
+  ctx.font='500 18px JetBrains Mono';ctx.fillStyle=ACCENT;
+  ctx.fillText('caelith.tech',W/2,H/2+66);
+
+  ctx.textAlign='left';ctx.globalAlpha=1;
+}
+
+// ═══ MAIN RENDER ═══
+function render(t){
+  // Scene boundaries
+  const hookEnd=HOOK_DUR;                           // 4200
+  const hookFadeEnd=hookEnd+HOOK_FADE;              // 5100
+  const chatStart=hookEnd;
+  const resultsStart=TOTAL_DUR-RESULTS_DUR-LOGO_DUR; // start of results breakdown
+  const logoStart=TOTAL_DUR-LOGO_DUR;               // start of logo
+  const chatEnd=resultsStart;                        // chat ends when results start
+
+  if(t<hookEnd){
+    // ── Pure hook ──
+    renderHook(t,0);
+  } else if(t<hookFadeEnd){
+    // ── Hook→Chat cross-fade ──
+    const p=(t-hookEnd)/HOOK_FADE;
+    renderHook(hookEnd,p);
+    const chatT=t-chatStart;
+    renderChat(chatT,t,p);
+  } else if(t<chatEnd){
+    // ── Pure chat ──
+    const chatT=t-chatStart;
+    renderChat(chatT,t,1);
+  } else if(t<chatEnd+CTA_FADE){
+    // ── Chat→Results cross-fade ──
+    const p=(t-chatEnd)/CTA_FADE;
+    const pe=ease(Math.min(1,p));
+    // Freeze last chat frame
+    const chatT=chatEnd-chatStart;
+    renderChat(chatT,t,1);
+    // Darken
+    ctx.fillStyle=`rgba(13,17,23,${pe})`;ctx.fillRect(0,0,W,H);
+    // Results fade in
+    if(p>0.15){
+      const rAlpha=ease((p-0.15)/0.85);
+      ctx.globalAlpha=rAlpha;
+      renderResults(t-chatEnd,true);
+      ctx.globalAlpha=1;
+    }
+  } else if(t<logoStart){
+    // ── Pure results breakdown ──
+    renderResults(t-chatEnd,false);
+  } else if(t<logoStart+1200){
+    // ── Results→Logo cross-fade ──
+    const p=(t-logoStart)/1200;
+    const pe=ease(Math.min(1,p));
+    renderResults(t-chatEnd,false);
+    ctx.fillStyle=`rgba(13,17,23,${pe})`;ctx.fillRect(0,0,W,H);
+    if(p>0.2){
+      ctx.globalAlpha=ease((p-0.2)/0.8);
+      renderLogo(t-logoStart,true);
+      ctx.globalAlpha=1;
+    }
+  } else {
+    // ── Pure logo ──
+    renderLogo(t-logoStart,false);
+  }
+}
+
+// ── Animation loop ──
+let animId=null;
+function animate(){
+  const t=Date.now()-startTime;
+  render(t);
+  if(t<TOTAL_DUR+800)animId=requestAnimationFrame(animate);
+  else{playing=false;document.getElementById('statusText').textContent='Done — click Play to replay';
+    if(recording)stopRecord();}
+}
+
+function startPlay(){
+  if(playing)return;
+  playing=true;scrollY=0;targetScrollY=0;
+  startTime=Date.now();
+  document.getElementById('statusText').textContent='Playing...';
+  if(animId)cancelAnimationFrame(animId);
+  animate();
+}
+
+function startRecord(){
+  if(recording)return;
+  chunks=[];
+  const stream=C.captureStream(30);
+  recorder=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9',videoBitsPerSecond:8000000});
+  recorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data)};
+  recorder.onstop=()=>{
+    const blob=new Blob(chunks,{type:'video/webm'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='caelith-agent-conversation.webm';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    recording=false;document.getElementById('recBtn').classList.remove('recording');
+    document.getElementById('statusText').textContent='Saved! ✓';
+  };
+  recorder.start();recording=true;
+  document.getElementById('recBtn').classList.add('recording');
+  document.getElementById('statusText').textContent='⏺ Recording...';
+  scrollY=0;targetScrollY=0;startTime=Date.now();playing=true;
+  if(animId)cancelAnimationFrame(animId);
+  animate();
+}
+
+function stopRecord(){if(recorder&&recorder.state==='recording')recorder.stop()}
+
+// Font loading
+document.fonts.ready.then(()=>{
+  document.getElementById('statusText').textContent='Fonts loaded · Ready';
+  render(0);
+});
+</script>
+</body>
+</html>

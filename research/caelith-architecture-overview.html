@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caelith — Architecture Overview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f1419;color:#c5cdd9;font-family:'Inter',sans-serif;line-height:1.7;padding:2rem}
+.container{max-width:1100px;margin:0 auto}
+h1{font-size:2.2rem;color:#e2e8f0;margin-bottom:.5rem;font-weight:700}
+h2{font-size:1.5rem;color:#7dd3fc;margin:2.5rem 0 1rem;border-bottom:1px solid #1e293b;padding-bottom:.5rem}
+h3{font-size:1.15rem;color:#a5f3fc;margin:1.5rem 0 .75rem}
+.subtitle{color:#64748b;font-size:1rem;margin-bottom:2rem}
+.card{background:#1a2028;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;border:1px solid #1e293b}
+.diagram{background:#0d1117;border-radius:10px;padding:1.5rem;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.6;color:#7dd3fc;overflow-x:auto;white-space:pre;margin:1rem 0}
+.tag{display:inline-block;padding:2px 10px;border-radius:6px;font-size:.78rem;font-weight:500;margin:2px 4px 2px 0}
+.tag-blue{background:#1e3a5f;color:#7dd3fc}
+.tag-green{background:#14532d;color:#4ade80}
+.tag-purple{background:#3b0764;color:#c084fc}
+.tag-orange{background:#431407;color:#fb923c}
+.tag-red{background:#450a0a;color:#f87171}
+table{width:100%;border-collapse:collapse;margin:1rem 0}
+th{text-align:left;color:#7dd3fc;border-bottom:2px solid #1e293b;padding:8px 12px;font-weight:600;font-size:.85rem}
+td{padding:8px 12px;border-bottom:1px solid #1e293b;font-size:.88rem}
+.flow{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:.75rem 0}
+.flow-step{background:#1e293b;padding:6px 14px;border-radius:8px;font-size:.82rem;color:#e2e8f0}
+.flow-arrow{color:#475569;font-weight:bold}
+ul{padding-left:1.5rem}
+li{margin-bottom:.4rem;font-size:.92rem}
+.stat{display:inline-block;background:#1e293b;padding:4px 12px;border-radius:6px;margin:3px;font-size:.85rem;color:#e2e8f0}
+.section-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
+details{margin:.5rem 0}
+details summary{cursor:pointer;color:#7dd3fc;font-weight:500}
+details summary:hover{color:#a5f3fc}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>🏛️ Caelith Architecture Overview</h1>
+<p class="subtitle">Private Asset Registry & AIFMD Compliance Platform — System Architecture Documentation</p>
+
+<h2>1. System Diagram</h2>
+<div class="card">
+<div class="diagram">
+┌─────────────────┐     HTTPS      ┌──────────────────────┐     REST API     ┌──────────────────────┐
+│  Client Browser │ ──────────────▶│  Next.js 15 Frontend │ ──────────────▶ │  Express API Server  │
+│  (React 19 SPA) │◀────────────── │  Railway (Static)    │◀────────────── │  Railway (Node 20)   │
+└─────────────────┘                └──────────────────────┘                └──────────┬───────────┘
+                                                                                      │
+                                           ┌──────────────────────────────────────────┘
+                                           │
+                                           ▼
+                                   ┌──────────────────┐
+                                   │  PostgreSQL 15   │
+                                   │  Railway (RLS)   │
+                                   └──────────────────┘
+
+External Integrations:
+  ┌───────────┐  ┌─────────────────┐  ┌───────────┐  ┌───────────────┐  ┌─────────┐
+  │ GLEIF API │  │ EU Sanctions DB │  │ ESMA XSD  │  │   Plausible   │  │ Sentry  │
+  │ (LEI)     │  │ (XML Feed)      │  │ (Annex IV)│  │  (Analytics)  │  │ (Errors)│
+  └───────────┘  └─────────────────┘  └───────────┘  └───────────────┘  └─────────┘
+</div>
+</div>
+
+<h2>2. Tech Stack</h2>
+<div class="card">
+<div>
+<span class="tag tag-blue">Next.js 15</span>
+<span class="tag tag-blue">React 19</span>
+<span class="tag tag-green">Express.js</span>
+<span class="tag tag-green">Node.js 20</span>
+<span class="tag tag-purple">PostgreSQL 15</span>
+<span class="tag tag-orange">TypeScript 5</span>
+<span class="tag tag-blue">Tailwind CSS</span>
+<span class="tag tag-red">Sentry</span>
+<span class="tag tag-green">Plausible</span>
+<span class="tag tag-purple">bcrypt + JWT</span>
+</div>
+</div>
+
+<h2>3. Architecture Layers</h2>
+<div class="section-grid">
+<div class="card">
+<h3>🖥️ Frontend</h3>
+<ul>
+<li>Next.js App Router architecture</li>
+<li>37+ React components</li>
+<li>Tailwind CSS with dark/light themes</li>
+<li>Client-side form validation</li>
+<li>Responsive dashboard UI</li>
+</ul>
+</div>
+<div class="card">
+<h3>⚡ API Layer</h3>
+<ul>
+<li>Express with versioned routes (<code>/api/v1/</code>)</li>
+<li>OpenAPI/Swagger documentation</li>
+<li>API key authentication for external access</li>
+<li>Public API endpoints for integrations</li>
+</ul>
+</div>
+<div class="card">
+<h3>🔧 Services</h3>
+<ul>
+<li>60+ service modules</li>
+<li>Compliance engine, sanctions screening</li>
+<li>LEI lookup via GLEIF API</li>
+<li>Annex IV XML generation & XSD validation</li>
+<li>Audit trail & integrity chain</li>
+</ul>
+</div>
+<div class="card">
+<h3>💾 Data Layer</h3>
+<ul>
+<li>12 repository modules</li>
+<li>73 database migrations</li>
+<li>Row-Level Security (RLS) for multi-tenancy</li>
+<li>100+ indexes for query optimization</li>
+<li>Soft deletes on key entities</li>
+</ul>
+</div>
+<div class="card">
+<h3>🔒 Security</h3>
+<ul>
+<li>3-tier rate limiting (auth, API, export)</li>
+<li>CSP headers, CSRF protection</li>
+<li>Input sanitization middleware</li>
+<li>bcrypt password hashing</li>
+<li>JWT + httpOnly cookies</li>
+<li>Login attempt tracking & lockout</li>
+</ul>
+</div>
+<div class="card">
+<h3>📊 Monitoring</h3>
+<ul>
+<li>Sentry error tracking</li>
+<li>Plausible analytics (privacy-first)</li>
+<li>Health check endpoints (<code>/api/health/ready</code>)</li>
+<li>Audit trail with integrity chain</li>
+</ul>
+</div>
+</div>
+
+<h2>4. Key Data Flows</h2>
+
+<div class="card">
+<h3>📄 Annex IV XML Generation</h3>
+<div class="flow">
+<span class="flow-step">Fund Data</span><span class="flow-arrow">→</span>
+<span class="flow-step">Validation</span><span class="flow-arrow">→</span>
+<span class="flow-step">XML Serialization</span><span class="flow-arrow">→</span>
+<span class="flow-step">XSD Schema Check</span><span class="flow-arrow">→</span>
+<span class="flow-step">Download</span>
+</div>
+</div>
+
+<div class="card">
+<h3>🛡️ Sanctions Screening</h3>
+<div class="flow">
+<span class="flow-step">Investor Name</span><span class="flow-arrow">→</span>
+<span class="flow-step">Fuzzy Match (trigram)</span><span class="flow-arrow">→</span>
+<span class="flow-step">EU/UN Sanctions Lists</span><span class="flow-arrow">→</span>
+<span class="flow-step">Risk Score</span><span class="flow-arrow">→</span>
+<span class="flow-step">Audit Trail</span>
+</div>
+</div>
+
+<div class="card">
+<h3>🔑 Authentication</h3>
+<div class="flow">
+<span class="flow-step">Login Request</span><span class="flow-arrow">→</span>
+<span class="flow-step">bcrypt Verify</span><span class="flow-arrow">→</span>
+<span class="flow-step">JWT Issue</span><span class="flow-arrow">→</span>
+<span class="flow-step">httpOnly Cookie</span><span class="flow-arrow">→</span>
+<span class="flow-step">Auth Middleware</span>
+</div>
+</div>
+
+<h2>5. Deployment Architecture</h2>
+<div class="card">
+<div class="flow">
+<span class="flow-step">Git Push</span><span class="flow-arrow">→</span>
+<span class="flow-step">GitHub Actions CI</span><span class="flow-arrow">→</span>
+<span class="flow-step">Typecheck + Tests + Audit</span><span class="flow-arrow">→</span>
+<span class="flow-step">Railway Auto-Deploy</span><span class="flow-arrow">→</span>
+<span class="flow-step">Health Check</span>
+</div>
+<table>
+<tr><th>Component</th><th>Platform</th><th>Domain</th></tr>
+<tr><td>Frontend</td><td>Railway</td><td>www.caelith.tech</td></tr>
+<tr><td>API Server</td><td>Railway</td><td>www.caelith.tech/api</td></tr>
+<tr><td>PostgreSQL</td><td>Railway</td><td>Internal</td></tr>
+<tr><td>DNS/SSL</td><td>Cloudflare (recommended)</td><td>caelith.tech</td></tr>
+</table>
+</div>
+
+<h2>6. Database Index Audit Summary</h2>
+<div class="card">
+<p>Full audit script: <code>scripts/index-audit.sql</code></p>
+<h3>Coverage</h3>
+<ul>
+<li><strong>100+ indexes</strong> across all tables</li>
+<li>All foreign keys are indexed</li>
+<li>Tenant isolation indexes on every tenant-scoped table</li>
+<li>Composite indexes for common query patterns</li>
+<li>Trigram GIN index for fuzzy sanctions name matching</li>
+<li>Partial indexes for filtered queries (e.g., pending transfers)</li>
+</ul>
+<h3>Recommended Additions</h3>
+<ul>
+<li><code>idx_ob_investor_asset</code> — composite on onboarding_records(investor_id, asset_id)</li>
+<li><code>idx_fund_structures_name_lower</code> — for case-insensitive name lookups</li>
+<li><code>idx_events_entity_timestamp</code> — covering index for entity event queries</li>
+</ul>
+<p style="color:#4ade80;margin-top:.5rem">✅ Overall: Excellent index coverage. Only minor gaps identified.</p>
+</div>
+
+<footer style="text-align:center;color:#475569;margin-top:3rem;padding:1rem;border-top:1px solid #1e293b;font-size:.8rem">
+Caelith Architecture Overview — Generated 2026-02-28 — Confidential
+</footer>
+
+</div>
+</body>
+</html>

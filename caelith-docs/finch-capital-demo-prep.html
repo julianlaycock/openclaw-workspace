@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finch Capital Demo Prep — Monday March 2, 10:30 CET</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1f1f;--card:#2D3333;--card-hover:#343b3b;--accent:#8EC5E0;--warm:#E8A87C;--text:#F8F9FA;--muted:#9CA3AF;--border:#3d4545;--green:#6BCB77;--red:#FF6B6B;--code-bg:#232929}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;padding:1rem;max-width:900px;margin:0 auto}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;font-weight:700}
+h1{font-size:1.8rem;color:var(--accent);margin-bottom:.25rem;line-height:1.3}
+.subtitle{color:var(--warm);font-size:1rem;margin-bottom:2rem;font-weight:500}
+h2{font-size:1.3rem;color:var(--warm);margin:2.5rem 0 1rem;padding-bottom:.5rem;border-bottom:2px solid var(--border)}
+h3{font-size:1.1rem;color:var(--accent);margin:1.5rem 0 .75rem}
+p{margin-bottom:1rem;color:var(--text)}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent;transition:border-color .2s}
+a:hover{border-bottom-color:var(--accent)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1rem;border:1px solid var(--border)}
+.card:hover{background:var(--card-hover)}
+.flow-step{display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.25rem}
+.flow-num{background:var(--accent);color:var(--bg);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:700;flex-shrink:0;font-size:.9rem}
+.flow-body h4{margin-bottom:.25rem;color:var(--text);font-size:1rem}
+.flow-body .time{color:var(--muted);font-size:.85rem;margin-bottom:.4rem}
+.flow-body p,.flow-body li{color:var(--muted);font-size:.95rem}
+.flow-body ul{list-style:none;padding:0}
+.flow-body li::before{content:'→ ';color:var(--accent)}
+.talk{background:var(--accent);color:var(--bg);padding:.5rem .75rem;border-radius:8px;font-size:.9rem;line-height:1.5;margin:.75rem 0;font-style:italic;font-weight:500}
+.warn{background:rgba(255,107,107,.12);border:1px solid var(--red);border-radius:8px;padding:.75rem 1rem;margin:.75rem 0;font-size:.9rem;color:var(--red)}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+th{text-align:left;padding:.6rem .75rem;background:var(--card);color:var(--accent);font-family:'Sora',sans-serif;font-weight:600;border-bottom:2px solid var(--accent)}
+td{padding:.6rem .75rem;border-bottom:1px solid var(--border);color:var(--muted);vertical-align:top}
+tr:hover td{background:var(--card)}
+code{font-family:'JetBrains Mono',monospace;background:var(--code-bg);padding:.15rem .4rem;border-radius:4px;font-size:.85rem;color:var(--accent)}
+pre{background:var(--code-bg);border-radius:8px;padding:1rem;overflow-x:auto;margin:1rem 0;border:1px solid var(--border)}
+pre code{background:none;padding:0;font-size:.85rem;color:var(--text)}
+.checklist{list-style:none;padding:0}
+.checklist li{padding:.4rem 0;color:var(--muted);font-size:.95rem}
+.checklist li::before{content:'☐ ';color:var(--accent);font-weight:700}
+.qa{margin-bottom:1.25rem}
+.qa .q{color:var(--warm);font-weight:600;margin-bottom:.25rem;font-size:.95rem}
+.qa .a{color:var(--muted);font-size:.95rem;padding-left:1rem;border-left:3px solid var(--border)}
+.badge{display:inline-block;padding:.2rem .6rem;border-radius:20px;font-size:.75rem;font-weight:600;margin-right:.5rem}
+.badge-live{background:rgba(107,203,119,.15);color:var(--green);border:1px solid var(--green)}
+.badge-key{background:rgba(142,197,224,.15);color:var(--accent);border:1px solid var(--accent)}
+.toc{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem}
+.toc a{background:var(--card);padding:.4rem .8rem;border-radius:8px;font-size:.8rem;color:var(--accent);border:1px solid var(--border);transition:all .2s}
+.toc a:hover{background:var(--accent);color:var(--bg);border-bottom:none}
+@media(max-width:600px){body{padding:.75rem}h1{font-size:1.4rem}h2{font-size:1.15rem}.flow-step{flex-direction:column;gap:.5rem}table{font-size:.8rem}th,td{padding:.4rem .5rem}}
+</style>
+</head>
+<body>
+
+<h1>🎯 Finch Capital Demo Prep</h1>
+<p class="subtitle">Monday March 2, 10:30 CET — Eugenie Colonna-Distria</p>
+
+<p style="color:var(--muted);font-size:.9rem;margin-bottom:1.5rem"><strong style="color:var(--warm)">Context:</strong> They said "too early but wants to learn about the product." This is a discovery call, not a pitch. Goal: make them believers in the problem and our approach so they stay warm for a future round.</p>
+
+<ul class="toc">
+<li><a href="#flow">Demo Flow</a></li>
+<li><a href="#talking">Talking Points</a></li>
+<li><a href="#qa">Q&A Prep</a></li>
+<li><a href="#ask-them">Ask Them</a></li>
+<li><a href="#followup">Follow-Up</a></li>
+<li><a href="#checklist">Pre-Call Checklist</a></li>
+</ul>
+
+<h2 id="flow">1. 15-Minute Demo Flow</h2>
+
+<div class="flow-step">
+<div class="flow-num">1</div>
+<div class="flow-body">
+<h4>Frame the Problem</h4>
+<div class="time">2 min — Don't pitch Caelith yet</div>
+<ul>
+<li>"April 16, 2026 — 44 days. Every KVG in Germany needs to comply. Most are still figuring out what changed."</li>
+<li>Market: ~400 KVGs + fund admins. Compliance today = consultants + Excel + manual XML filing.</li>
+<li>No API infrastructure exists for mid-market.</li>
+</ul>
+</div>
+</div>
+
+<div class="flow-step">
+<div class="flow-num">2</div>
+<div class="flow-body">
+<h4>Readiness Check — The Hook</h4>
+<div class="time">3 min — <span class="badge badge-live">LIVE</span> <a href="https://www.caelith.tech/readiness-check">www.caelith.tech/readiness-check</a></div>
+<ul>
+<li>Walk through it as if you're a KVG compliance officer. 24 questions, 8 categories, instant gap analysis.</li>
+<li>"This is free. It's our top-of-funnel — shows fund managers what they're missing, then offers to fix it."</li>
+<li>New: demo welcome banner guides users through 3 key actions on first visit — reduces friction, increases engagement.</li>
+</ul>
+</div>
+</div>
+
+<div class="flow-step">
+<div class="flow-num">3</div>
+<div class="flow-body">
+<h4>API Demo — The Product</h4>
+<div class="time">5 min — Show 3–4 endpoints from the 32 live</div>
+<ul>
+<li><strong>Sanctions screening</strong> — "One API call. Name in, PEP/sanctions match out. Fuzzy matching against 6,863 EU+UN entities. No spreadsheet."</li>
+<li><strong>Annex IV XML generation</strong> — "The reporting format regulators require. XSD-validated XML from structured data."</li>
+<li><strong>LEI validation</strong> — "Checks LEIs against GLEIF in real-time."</li>
+<li><strong>NCA profiles + regulatory calendar</strong> — "27 NCA profiles, 14 quirks, filing deadlines with AIFMD Art. 24 frequency calculation — structured and queryable. Updated in DB without deploy."</li>
+</ul>
+<p>Keep it fast. Show curl/response or the copilot demo UI, not slides.</p>
+</div>
+</div>
+
+<div class="flow-step">
+<div class="flow-num">4</div>
+<div class="flow-body">
+<h4>Compliance Copilot — The Vision</h4>
+<div class="time">3 min — <span class="badge badge-live">LIVE</span> <a href="https://www.caelith.tech/api/copilot-demo">www.caelith.tech/api/copilot-demo</a></div>
+<ul>
+<li>Keyword-based intent detection. 11 intents. Bilingual EN/DE. 131 tests passing (88 copilot + 43 integration). <strong>Zero LLM cost.</strong></li>
+<li>Show: "Check if this entity is sanctioned." → "Generate my Annex IV report."</li>
+<li>This is the "wow" moment. Save it for after the API demo so they understand what's underneath.</li>
+</ul>
+</div>
+</div>
+
+<div class="flow-step">
+<div class="flow-num">5</div>
+<div class="flow-body">
+<h4>Close — Where We Are</h4>
+<div class="time">2 min — Honest about stage</div>
+<ul>
+<li><strong>32 public API endpoints across 10 resource groups.</strong> Dashboard in beta. Two incubators (HWR Berlin Startup Incubator, Lanzadera).</li>
+<li>131 tests passing (88 copilot + 43 integration). 6 cron monitoring jobs running.</li>
+<li>Python + TypeScript SDKs published. <code>open-annex-iv</code> on npm (Apache 2.0). Webhooks with HMAC-SHA256 signing.</li>
+<li>Pre-revenue, building pipeline. Learning from market feedback.</li>
+<li>"We're not raising today. We wanted to show you the product since you asked."</li>
+</ul>
+</div>
+</div>
+
+<h2 id="talking">2. Key Talking Points</h2>
+
+<div class="card">
+<table>
+<tr><th>Point</th><th>Why It Matters</th></tr>
+<tr><td><strong>AIFMD II is a hard deadline</strong></td><td>Creates urgency — not a nice-to-have market</td></tr>
+<tr><td><strong>Mid-market is underserved</strong></td><td>Enterprise has anevis. Nobody serves €100M–2B AUM with self-service tools</td></tr>
+<tr><td><strong>API-first = platform play</strong></td><td>Infrastructure that fund admins and fintechs build on, not a consultancy</td></tr>
+<tr><td><strong>32 public API endpoints across 10 resource groups</strong></td><td>We ship. Working product, not a deck</td></tr>
+<tr><td><strong>Regulatory data = moat</strong></td><td>27 NCA profiles, 14 quirks, filing calendars, regulatory intelligence feed (ESMA, BaFin) — doesn't exist elsewhere</td></tr>
+<tr><td><strong>Free tier → paid conversion</strong></td><td>Readiness check is free. Dashboard €990–3,500/mo. API scales to enterprise</td></tr>
+<tr><td><strong>Open-core pivot</strong></td><td>APIs for fund admins, not just dashboard SaaS. One integration serves all their KVG clients</td></tr>
+</table>
+</div>
+
+<div class="warn">
+<strong>⚠️ What NOT to say:</strong><br>
+→ Don't oversell traction. Pre-revenue is honest. Own it.<br>
+→ Don't position this as a raise. They said "too early." Respect that framing.<br>
+→ Don't trash anevis. Position them as validation ("enterprise is solved, mid-market isn't").
+</div>
+
+<h2 id="qa">3. Anticipated Questions + Answers</h2>
+
+<div class="qa">
+<div class="q">Q: Why haven't you closed any customers yet?</div>
+<div class="a">We've pivoted outreach — stopped info@ emails, now targeting compliance officers directly via LinkedIn. 10 connections sent today. Henrik's response validates the thesis: KVGs outsource to expensive consultants — that's our market. We also see fund administrators as a channel — they serve multiple KVGs and need scalable tooling.</div>
+</div>
+
+<div class="qa">
+<div class="q">Q: What's your competitive landscape?</div>
+<div class="a">anevis solutions is the incumbent — enterprise, managed service, 6-figure contracts. They validate the market. We're self-service, API-first, targeting the mid-market that can't afford anevis and currently uses consultants + Excel. Think Stripe vs. enterprise payment processors.</div>
+</div>
+
+<div class="qa">
+<div class="q">Q: How do you know KVGs will buy software vs. keep using consultants?</div>
+<div class="a">Two forces: (1) AIFMD II significantly expands reporting requirements — consultants don't scale when you need ongoing compliance, not annual audits. (2) Regulators are moving toward machine-readable reporting (Annex IV XML). You can't submit XML by hiring a lawyer. The shift to digital reporting makes software inevitable.</div>
+</div>
+
+<div class="qa">
+<div class="q">Q: What's your GTM?</div>
+<div class="a">Three channels: (1) Free readiness check as inbound funnel, (2) Direct outreach to KVG compliance officers via LinkedIn, (3) Fund administrators as a distribution channel — one admin serves 10–50 funds. We're in HWR Berlin's Startup Incubator and Lanzadera (European expansion). LinkedIn company page live.</div>
+</div>
+
+<div class="qa">
+<div class="q">Q: Why are you the team to build this?</div>
+<div class="a"><em>(Julian — prep your personal answer. Emphasize: domain learning speed, technical execution, shipping 32 public API endpoints as a solo founder, incubator backing from HWR Berlin + Lanzadera.)</em></div>
+</div>
+
+<div class="qa">
+<div class="q">Q: What would you raise and when?</div>
+<div class="a">We're focused on getting to first paying customers before raising. When we do, it'll be a pre-seed/seed to scale GTM in DACH. Happy to keep you updated as we hit milestones.</div>
+</div>
+
+<div class="qa">
+<div class="q">Q: How defensible is this?</div>
+<div class="a">Three layers: (1) Structured regulatory dataset (27 NCA profiles, 14 quirks, calendars, rule mappings, regulatory intelligence feed from ESMA/BaFin) — no one else has this in API form. (2) Network effects from fund admin channel — more funds = better data. (3) Switching costs once embedded in compliance workflows. Plus Python + TypeScript SDKs, webhooks with HMAC signing.</div>
+</div>
+
+<h2 id="ask-them">4. What to Ask THEM</h2>
+
+<div class="card">
+<h3>About the Market</h3>
+<ul class="checklist">
+<li>"What's your thesis on regtech in Europe? Are you seeing more deal flow here?"</li>
+<li>"Have you looked at other compliance infrastructure plays? What excited or didn't excite you?"</li>
+<li>"Do you see AIFMD II as a catalyst or is the regulatory compliance market too niche for VC returns?"</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>About Go-to-Market</h3>
+<ul class="checklist">
+<li>"We're debating whether to go direct to KVGs or through fund administrators. Do you have a view on which scales better?"</li>
+<li>"Any portfolio companies selling to German financial institutions? What GTM worked for them?"</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>About Timing / Fundraising</h3>
+<ul class="checklist">
+<li>"What would you need to see from us to get excited about a future round?"</li>
+<li>"Is there a stage or milestone where this fits your fund's sweet spot?"</li>
+<li>"Are there other investors you think we should talk to at this stage?"</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>About Product</h3>
+<ul class="checklist">
+<li>"From what you've seen — does the API-first approach resonate, or do you think this market wants managed services?"</li>
+</ul>
+</div>
+
+<h2 id="followup">5. Follow-Up Actions</h2>
+
+<div class="card">
+<h3>Within 24 hours</h3>
+<ul class="checklist">
+<li>Send thank-you email with: link to readiness check, link to copilot demo, 1-pager if they ask</li>
+<li>Book next touchpoint: <a href="https://calendly.com/julian-laycock-caelith/30min">calendly.com/julian-laycock-caelith/30min</a></li>
+<li>Log all feedback/questions in memory</li>
+<li>Update tracker with Finch Capital status</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>Within 1 week</h3>
+<ul class="checklist">
+<li>Act on any GTM feedback they gave</li>
+<li>Connect with any investors they recommended</li>
+<li>If they suggested specific milestones, add to roadmap</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>Ongoing</h3>
+<ul class="checklist">
+<li>Monthly or milestone-based update email (keep them warm)</li>
+<li>Add to investor update list</li>
+</ul>
+</div>
+
+<h2 id="analytics">6. Analytics Dashboard (NEW — Show This)</h2>
+
+<div class="card">
+<h3>🎯 Why Show Analytics to Finch Capital</h3>
+<p>Demonstrates you track product engagement like a real SaaS company. Shows data-driven decision-making.</p>
+</div>
+
+<div class="card">
+<h3>Where to Find It</h3>
+<ul>
+<li>Login → Sidebar → <strong>Analytics</strong> (in Monitor section)</li>
+<li>URL: <a href="https://www.caelith.tech/analytics">www.caelith.tech/analytics</a> (requires login)</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>What It Shows</h3>
+<ul>
+<li><strong>Copilot Demo tab:</strong> Pageviews, unique visitors, questions asked, top 10 questions, avg questions/session, 30-day trend chart</li>
+<li><strong>Readiness Check tab:</strong> Visitors, completions, completion rate, lead captures (email conversions), score distribution, 30-day trend</li>
+<li><strong>Referrer breakdown:</strong> Where traffic comes from (LinkedIn, direct, etc.)</li>
+<li><strong>Keep-alive pings:</strong> Prevent cold starts — demo will load fast during the call</li>
+</ul>
+</div>
+
+<div class="card">
+<h3>Talking Points</h3>
+<div class="talk">"We track every interaction with our public tools — copilot demo and readiness check. I can see which compliance questions come up most often, which tells me exactly what to build next. The readiness check also captures leads — compliance officers who want to stay updated."</div>
+<div class="talk">"The data shows us what resonates. If 60% of copilot questions are about Annex IV deadlines, that tells me deadline anxiety is real and our calendar product is the right bet."</div>
+</div>
+
+<h2 id="checklist">7. Pre-Call Checklist (Sunday Night / Monday March 2 Morning)</h2>
+
+<div class="card">
+<ul class="checklist">
+<li>Test analytics page — <a href="https://www.caelith.tech/analytics">www.caelith.tech/analytics</a> — data populating</li>
+<li>Test readiness check live — <a href="https://www.caelith.tech/readiness-check">www.caelith.tech/readiness-check</a> — loads fast, no errors</li>
+<li>Test copilot demo — <a href="https://www.caelith.tech/api/copilot-demo">www.caelith.tech/api/copilot-demo</a> — run through exact queries</li>
+<li>Test 3–4 API endpoints — have curl commands ready as backup</li>
+<li>Verify <a href="https://www.caelith.tech/impressum">/impressum</a> is live</li>
+<li>Good internet, camera on, quiet room</li>
+<li>Pitch deck open but don't screen-share unless asked</li>
+<li>Water, notepad for their questions</li>
+</ul>
+</div>
+
+<div style="text-align:center;color:var(--muted);font-size:.8rem;margin-top:3rem;padding:1rem;border-top:1px solid var(--border)">
+Last updated: Feb 27, 2026 · Caelith Demo Prep
+</div>
+
+</body>
+</html>

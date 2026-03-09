@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIFMD II: The Complete Guide (2026) — Requirements, Changes, Deadline | Caelith</title>
+  <meta name="description" content="The most comprehensive guide to AIFMD II (Directive 2024/927/EU). Key changes, April 2026 deadline, Annex IV reporting, compliance checklist, and jurisdiction-by-jurisdiction analysis.">
+  <meta name="keywords" content="AIFMD II, AIFMD II changes, AIFMD II deadline, AIFMD II requirements, Directive 2024/927, Annex IV reporting, AIFMD 2026, alternative investment fund managers directive">
+  <meta name="author" content="Caelith">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://www.caelith.tech/aifmd-ii">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="AIFMD II: The Complete Guide (2026) — Requirements, Changes, Deadline">
+  <meta property="og:description" content="Everything fund managers need to know about AIFMD II. Key changes, compliance deadline April 16 2026, Annex IV reporting overhaul, and practical checklist.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.caelith.tech/aifmd-ii">
+  <meta property="og:site_name" content="Caelith">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AIFMD II: The Complete Guide (2026)">
+  <meta name="twitter:description" content="Everything fund managers need to know about AIFMD II before April 16, 2026.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- JSON-LD: Article -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "AIFMD II: The Complete Guide to the New Alternative Investment Fund Managers Directive",
+    "description": "Comprehensive guide to Directive (EU) 2024/927 — key changes, April 2026 deadline, Annex IV reporting overhaul, compliance checklist, and jurisdiction analysis.",
+    "author": {
+      "@type": "Organization",
+      "name": "Caelith",
+      "url": "https://www.caelith.tech"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Caelith",
+      "url": "https://www.caelith.tech"
+    },
+    "datePublished": "2026-02-01",
+    "dateModified": "2026-02-27",
+    "mainEntityOfPage": "https://www.caelith.tech/aifmd-ii",
+    "articleSection": "Regulatory Compliance",
+    "keywords": ["AIFMD II", "AIFMD II changes", "AIFMD II deadline", "AIFMD II requirements", "Annex IV reporting", "Directive 2024/927"]
+  }
+  </script>
+
+  <!-- JSON-LD: FAQPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "When is the AIFMD II deadline?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The AIFMD II transposition and compliance deadline is April 16, 2026. By this date, all EU Member States must have transposed Directive (EU) 2024/927 into national law, and all authorized AIFMs must comply with the new requirements."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What are the main changes in AIFMD II?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The seven most significant changes are: (1) mandatory liquidity management tools for open-ended AIFs, (2) a new loan origination framework, (3) substantially expanded Annex IV regulatory reporting, (4) enhanced delegation and substance requirements, (5) improved investor disclosure on fees and costs, (6) refined leverage reporting, and (7) updated third-country AIFM marketing requirements."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does AIFMD II apply to UCITS?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, partially. Directive (EU) 2024/927 simultaneously amends both the AIFMD and the UCITS Directive (2009/65/EC). Key UCITS changes include mandatory liquidity management tools, enhanced delegation requirements, and improved investor disclosure. The loan origination rules and Annex IV reporting are AIFMD-specific."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is Annex IV reporting?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Annex IV is the periodic regulatory report that AIFMs must file with their national competent authority under the AIFMD. It contains detailed information about each managed AIF including investment strategy, instruments, risk profile, leverage, liquidity, and counterparty exposure. Under AIFMD II, it expands to cover loan origination, LMT usage, and ESG metrics."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I generate Annex IV XML?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Annex IV XML files must conform to ESMA's XSD schema (Rev 6 v1.2 for AIFMD II). Options include using a dedicated platform like Caelith for automated XML generation and validation, building in-house using ESMA's published XSD, or engaging a third-party service."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which NCAs have transposed AIFMD II?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "As of February 2026, Luxembourg has fully transposed AIFMD II (November 2025). Germany, France, Ireland, Italy, and the Netherlands have draft legislation in progress. Spain is expected to miss the April 2026 deadline. The UK is not subject to AIFMD II post-Brexit."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What happens if I don't comply by April 16?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Non-compliance exposes AIFMs to supervisory enforcement including administrative fines, public censure, suspension of authorization, restrictions on marketing, and potentially withdrawal of authorization. NCAs are likely to focus initial enforcement on Annex IV reporting, LMT implementation, and delegation substance."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is there a free AIFMD II compliance tool?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Caelith offers a free readiness assessment that evaluates your AIFMD II compliance posture and identifies gaps. The Compliance Copilot provides AI-powered guidance on requirements. Full Annex IV reporting generation requires a subscription."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do sub-threshold AIFMs need to comply with AIFMD II?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sub-threshold AIFMs benefit from the lighter registration regime under Article 3. AIFMD II maintains this but introduces enhanced registration requirements including annual Annex IV reporting at reduced scope. Full LMT, delegation, and loan origination requirements do not apply to registered (non-authorized) AIFMs."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does AIFMD II affect private equity fund managers?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "PE managers are less affected by LMT requirements (targeting open-ended funds) but must comply with enhanced Annex IV reporting, delegation requirements, improved investor disclosure (especially fee transparency), and the loan origination framework if applicable."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg: #1a1f1f;
+      --bg-card: #2D3333;
+      --bg-card-hover: #353d3d;
+      --accent: #8EC5E0;
+      --accent-dim: rgba(142, 197, 224, 0.15);
+      --warm: #E8A87C;
+      --warm-dim: rgba(232, 168, 124, 0.15);
+      --text: #F8F9FA;
+      --text-muted: #a0a8a8;
+      --text-dim: #6b7575;
+      --border: #3a4444;
+      --green: #6bcb77;
+      --yellow: #f0c674;
+      --red: #e06c75;
+      --blue-status: #61afef;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 17px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top bar */
+    .top-bar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .top-bar-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .top-bar .logo {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .top-bar .updated {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Container */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 80px 0 48px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero .label {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--warm);
+      background: var(--warm-dim);
+      padding: 4px 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+    }
+    .hero h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero .subtitle {
+      font-size: 19px;
+      color: var(--text-muted);
+      max-width: 680px;
+      line-height: 1.6;
+    }
+
+    /* Deadline banner */
+    .deadline-banner {
+      background: linear-gradient(135deg, rgba(232, 168, 124, 0.12), rgba(142, 197, 224, 0.08));
+      border: 1px solid var(--warm);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin: 32px 0;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .deadline-banner .icon { font-size: 28px; }
+    .deadline-banner .content strong {
+      color: var(--warm);
+      font-family: 'Sora', sans-serif;
+    }
+    .deadline-banner .content { font-size: 15px; }
+
+    /* TOC */
+    .toc {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 28px 32px;
+      margin: 40px 0;
+    }
+    .toc h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+    .toc ol {
+      list-style: none;
+      counter-reset: toc;
+    }
+    .toc ol li {
+      counter-increment: toc;
+      margin-bottom: 8px;
+    }
+    .toc ol li::before {
+      content: counter(toc) ".";
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      margin-right: 10px;
+    }
+    .toc a {
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .toc a:hover { color: var(--accent); }
+
+    /* Sections */
+    .section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+
+    h2.section-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+    h2.section-title .num {
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 22px;
+      margin-right: 8px;
+    }
+
+    h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      margin-top: 36px;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+
+    h4 {
+      font-family: 'Sora', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 10px;
+      color: var(--warm);
+    }
+
+    p { margin-bottom: 16px; }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { font-weight: 600; }
+
+    /* Lists */
+    ul, ol { margin: 12px 0 20px 20px; }
+    li { margin-bottom: 8px; }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      margin: 20px 0;
+    }
+    .card:hover { border-color: var(--accent); }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 20px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+    thead th {
+      font-family: 'Sora', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+    }
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    tr:last-child td { border-bottom: none; }
+
+    /* Code */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      background: var(--bg-card);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent);
+    }
+
+    /* CTA */
+    .cta-box {
+      background: linear-gradient(135deg, var(--accent-dim), rgba(142, 197, 224, 0.05));
+      border: 1px solid rgba(142, 197, 224, 0.3);
+      border-radius: 8px;
+      padding: 24px;
+      margin: 32px 0;
+      text-align: center;
+    }
+    .cta-box a.cta-btn {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--bg);
+      font-family: 'Sora', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 12px 28px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .cta-box a.cta-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(142, 197, 224, 0.3);
+      text-decoration: none;
+    }
+    .cta-box p { margin-bottom: 16px; color: var(--text-muted); font-size: 15px; }
+
+    /* Status indicators */
+    .status { font-size: 14px; }
+    .status-green { color: var(--green); }
+    .status-yellow { color: var(--yellow); }
+    .status-red { color: var(--red); }
+    .status-blue { color: var(--blue-status); }
+
+    /* Key articles tag */
+    .articles-ref {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-top: 8px;
+    }
+
+    /* FAQ */
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 24px 0;
+    }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-question {
+      font-family: 'Sora', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .faq-answer { color: var(--text-muted); }
+
+    /* Checklist */
+    .checklist { list-style: none; margin-left: 0; counter-reset: check; }
+    .checklist li {
+      counter-increment: check;
+      padding: 12px 0 12px 48px;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+    .checklist li::before {
+      content: counter(check);
+      position: absolute;
+      left: 0;
+      top: 12px;
+      width: 32px;
+      height: 32px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+    .footer a { color: var(--text-muted); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      body { font-size: 16px; }
+      .hero { padding: 48px 0 32px; }
+      .section { padding: 40px 0; }
+      .deadline-banner { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <nav class="top-bar">
+    <div class="top-bar-inner">
+      <a href="https://www.caelith.tech" class="logo">Caelith</a>
+      <span class="updated">Last updated: February 2026</span>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- Hero -->
+    <header class="hero">
+      <span class="label">Directive (EU) 2024/927</span>
+      <h1>AIFMD II: The Complete Guide to the <span>New Alternative Investment Fund Managers Directive</span></h1>
+      <p class="subtitle">Everything fund managers need to know about AIFMD II — key changes, compliance requirements, Annex IV reporting overhaul, and what to do before the April 16, 2026 deadline.</p>
+    </header>
+
+    <!-- Deadline Banner -->
+    <div class="deadline-banner">
+      <span class="icon">⏰</span>
+      <div class="content">
+        <strong>Compliance deadline: April 16, 2026.</strong> All EU Member States must have transposed AIFMD II into national law. AIFMs and UCITS management companies must comply with all new requirements by this date.
+      </div>
+    </div>
+
+    <!-- TOC -->
+    <nav class="toc">
+      <h2>Table of Contents</h2>
+      <ol>
+        <li><a href="#what-is-aifmd-ii">What is AIFMD II?</a></li>
+        <li><a href="#key-changes">Key Changes from AIFMD I</a></li>
+        <li><a href="#timeline">Timeline &amp; Deadlines</a></li>
+        <li><a href="#annex-iv-reporting">Annex IV Reporting Under AIFMD II</a></li>
+        <li><a href="#jurisdictions">Impact by Jurisdiction</a></li>
+        <li><a href="#compliance-checklist">Compliance Checklist</a></li>
+        <li><a href="#how-caelith-helps">How Caelith Helps</a></li>
+        <li><a href="#faq">Frequently Asked Questions</a></li>
+      </ol>
+    </nav>
+
+    <!-- Section 1: What is AIFMD II? -->
+    <section class="section" id="what-is-aifmd-ii">
+      <h2 class="section-title"><span class="num">01</span> What is AIFMD II?</h2>
+
+      <p>AIFMD II — formally <strong>Directive (EU) 2024/927</strong> — is the comprehensive revision of the original Alternative Investment Fund Managers Directive (AIFMD, Directive 2011/61/EU). Published in the Official Journal of the European Union on March 26, 2024, it represents the most significant overhaul of EU alternative investment fund regulation in over a decade.</p>
+
+      <p>The original AIFMD, enacted in 2011 and transposed by 2013, established the first pan-European framework for regulating managers of alternative investment funds (AIFs) — including hedge funds, private equity funds, real estate funds, and other non-UCITS vehicles. While AIFMD I created a functioning passport system and harmonized core rules around authorization, depositary requirements, and transparency, a decade of practical experience exposed gaps.</p>
+
+      <p>AIFMD II addresses those gaps head-on. It simultaneously amends both the AIFMD and the <strong>UCITS Directive (2009/65/EC)</strong>, bringing unified rules across the managed fund spectrum. The directive was adopted by the European Parliament on February 7, 2024, and by the Council on March 26, 2024.</p>
+
+      <p><strong>The enforcement deadline is April 16, 2026.</strong> By that date, all EU Member States must transpose the directive into national law, and fund managers must comply with the new requirements.</p>
+
+      <p>AIFMD II is not a revolution — it's an evolution. The core architecture of AIFMD I remains intact: the authorization regime, the passport, the depositary framework. What changes is the depth and specificity of requirements in areas where regulators identified weaknesses, particularly around <strong>delegation</strong>, <strong>liquidity management</strong>, <strong>loan origination</strong>, and <strong>regulatory reporting</strong>.</p>
+
+      <p>For alternative investment fund managers (AIFMs), the practical impact ranges from significant operational changes (new liquidity management tools, overhauled <a href="/glossary/annex-iv">Annex IV reporting</a>) to more nuanced adjustments (enhanced disclosure requirements, refined delegation rules). For UCITS management companies, certain AIFMD II provisions now apply for the first time, creating new obligations that didn't previously exist.</p>
+
+      <div class="cta-box">
+        <p>Not sure if you're ready for April 16?</p>
+        <a href="/readiness-check" class="cta-btn">Check your readiness in 3 minutes →</a>
+      </div>
+    </section>
+
+    <!-- Section 2: Key Changes -->
+    <section class="section" id="key-changes">
+      <h2 class="section-title"><span class="num">02</span> Key Changes from AIFMD I</h2>
+      <p>AIFMD II introduces changes across seven major areas. Here's what each means in practice.</p>
+
+      <!-- 2.1 Delegation -->
+      <h3>1. Enhanced Delegation &amp; Substance Requirements</h3>
+      <p>The delegation regime was one of the most politically contentious aspects of AIFMD II's development. Post-Brexit concerns about "letterbox entities" — AIFMs authorized in the EU that delegate virtually all portfolio management to third-country firms — drove significant pressure for reform.</p>
+
+      <h4>What's new:</h4>
+      <ul>
+        <li><strong>Substance requirements formalized under Article 20:</strong> AIFMs must employ at least two senior managers who are EU residents and who are engaged full-time, or employ a sufficient number of persons with the necessary knowledge and expertise to effectively oversee delegated functions.</li>
+        <li><strong>Enhanced notification to NCAs:</strong> AIFMs must notify their home NCA before establishing or materially amending any delegation arrangement, including details on the delegate, scope, and supervisory arrangements.</li>
+        <li><strong>Annual reporting on delegation:</strong> AIFMs must report annually on the substance and nature of delegation arrangements, including human and technical resources retained.</li>
+        <li><strong>ESMA peer reviews:</strong> ESMA will conduct periodic peer reviews of NCA supervisory practices on delegation, with public findings.</li>
+      </ul>
+      <p>The directive stops short of imposing quantitative caps on delegation, but the enhanced transparency and reporting requirements effectively force AIFMs to demonstrate genuine substance.</p>
+      <p class="articles-ref">Key articles: Article 20 (Delegation), Article 24 (Reporting obligations)</p>
+
+      <!-- 2.2 LMTs -->
+      <h3>2. Liquidity Management Tools — Now Mandatory</h3>
+      <p>Perhaps the single most impactful operational change. Under AIFMD I, liquidity management tools (LMTs) were available but not required. AIFMD II makes them mandatory.</p>
+
+      <h4>What's new:</h4>
+      <ul>
+        <li><strong>Mandatory selection under Article 16(2b):</strong> Every open-ended AIF must select at least two liquidity management tools from a harmonized EU-wide list, one of which must be either the suspension of redemptions or redemption gates.</li>
+        <li><strong>The harmonized toolkit</strong> includes: suspension of redemptions, redemption gates, extension of notice periods, redemption fees, swing pricing, anti-dilution levies, redemptions in kind, and side pockets.</li>
+        <li><strong>Activation conditions:</strong> AIFMs must define in advance the circumstances under which each tool will be activated and document these in the fund's constitutional documents.</li>
+        <li><strong>NCA notification:</strong> AIFMs must notify their NCA when activating suspension of redemptions or gates for cross-border marketed funds.</li>
+        <li><strong>Extends to UCITS:</strong> Equivalent LMT requirements now apply to UCITS management companies under parallel amendments to Directive 2009/65/EC.</li>
+      </ul>
+      <p>This is a genuine operational lift. Fund managers need to review every open-ended AIF's documentation, select appropriate tools, define activation procedures, and update offering documents — all before April 16, 2026.</p>
+      <p class="articles-ref">Key articles: Article 16(2a)-(2d) AIFMD, Article 18a UCITS Directive</p>
+
+      <!-- 2.3 Loan Origination -->
+      <h3>3. Loan Origination Rules — An Entirely New Chapter</h3>
+      <p>AIFMD II introduces the first EU-wide framework for loan-originating AIFs. Previously, loan origination by funds was regulated inconsistently (or not at all) across Member States.</p>
+
+      <h4>What's new:</h4>
+      <ul>
+        <li><strong>New Articles 15a-15e:</strong> A dedicated regulatory framework for AIFs that originate loans as part of their investment strategy.</li>
+        <li><strong>Retention requirements:</strong> Loan-originating AIFs must retain at least 5% of the notional value of loans they originate and subsequently sell or securitize — for the life of the loan.</li>
+        <li><strong>Concentration limits:</strong> No single borrower may account for more than 20% of a loan-originating AIF's capital (with limited exceptions).</li>
+        <li><strong>Leverage cap:</strong> Closed-ended loan-originating AIFs: 300% limit. Open-ended: 175% limit.</li>
+        <li><strong>Prohibition on lending to related parties:</strong> AIFs cannot originate loans to their AIFM, staff, depositary, or delegates.</li>
+        <li><strong>Effective credit risk policies:</strong> Documented credit risk assessment policies and procedures required.</li>
+      </ul>
+      <p><strong>Transitional provision:</strong> Existing loan-originating AIFs established before April 16, 2026 benefit from a transitional period for existing loans, though new originations must comply immediately.</p>
+      <p class="articles-ref">Key articles: Articles 15a-15e</p>
+
+      <!-- 2.4 Annex IV -->
+      <h3>4. Annex IV Reporting — Expanded and Overhauled</h3>
+      <p><a href="/glossary/annex-iv">Annex IV reporting</a> — the periodic regulatory return that AIFMs file with their NCA — undergoes its most significant revision since AIFMD I's inception. This is covered in detail in the <a href="#annex-iv-reporting">dedicated section below</a>.</p>
+
+      <div class="card">
+        <h4>Headlines:</h4>
+        <ul>
+          <li>Substantially expanded data fields (from ~300 to over 500 reportable items)</li>
+          <li>New reporting on LMTs, loan origination, and ESG/sustainability metrics</li>
+          <li>Revised filing frequencies for smaller managers</li>
+          <li>Adoption of the new ESMA XML schema (<code>XSD Rev 6 v1.2</code>)</li>
+          <li>Enhanced leverage reporting with granular breakdowns</li>
+          <li>New fields for delegation arrangements</li>
+        </ul>
+      </div>
+      <p class="articles-ref">Key articles: Article 24 AIFMD, Annex IV (as amended), ESMA RTS on reporting</p>
+
+      <!-- 2.5 Leverage -->
+      <h3>5. Leverage Reporting Enhancements</h3>
+      <p>AIFMD II significantly refines the leverage reporting framework, addressing criticisms that the original commitment and gross methods were too blunt to capture systemic risk effectively.</p>
+
+      <h4>What's new:</h4>
+      <ul>
+        <li><strong>Revised calculation methodologies:</strong> ESMA RTS refining both gross and commitment methods with clearer netting and hedging rules.</li>
+        <li><strong>Additional leverage metrics:</strong> AIFMs employing substantial leverage must report sensitivity-based measures for certain asset classes.</li>
+        <li><strong>NCA leverage limits:</strong> Article 25 amended to give NCAs a harmonized framework for imposing limits where financial stability risks are identified.</li>
+        <li><strong>Reverse stress testing:</strong> AIFMs of leveraged AIFs must conduct regular reverse stress tests and report results upon request.</li>
+      </ul>
+      <p class="articles-ref">Key articles: Article 25 (Leverage limits), Article 24(4) (Leverage reporting)</p>
+
+      <!-- 2.6 Disclosure -->
+      <h3>6. Investor Disclosure Improvements</h3>
+      <p>AIFMD II enhances pre-contractual and ongoing disclosure requirements under Article 23, with a focus on fee transparency and alignment of interest.</p>
+      <h4>What's new:</h4>
+      <ul>
+        <li><strong>Fee and cost disclosure:</strong> All fees, charges, and expenses borne by the AIF — with detailed breakdown and historical data.</li>
+        <li><strong>Portfolio composition:</strong> More granular disclosure including illiquid asset percentages.</li>
+        <li><strong>Delegation disclosure:</strong> Identity of delegate, jurisdiction, and scope must be disclosed to investors.</li>
+        <li><strong>Open-ended fund disclosures:</strong> Enhanced disclosure of LMTs available and activation conditions.</li>
+      </ul>
+      <p class="articles-ref">Key articles: Article 23 (Disclosure to investors)</p>
+
+      <!-- 2.7 Third-country -->
+      <h3>7. Third-Country AIFM Rules</h3>
+      <p>AIFMD II refines the framework for third-country (non-EU) AIFMs accessing EU markets, though the full third-country passport remains deferred.</p>
+      <h4>What's new:</h4>
+      <ul>
+        <li><strong>Enhanced NPPR requirements:</strong> More extensive information to NCAs, including on delegation and substance.</li>
+        <li><strong>ESMA coordination:</strong> NCAs must report annually on third-country AIFM marketing activity.</li>
+        <li><strong>Updated cooperation agreements:</strong> Expanded requirements between NCAs and third-country supervisors.</li>
+        <li><strong>No third-country passport activation:</strong> Articles 35-37 remain inactive. Third-country managers continue to rely on NPPRs.</li>
+      </ul>
+      <p class="articles-ref">Key articles: Articles 35-37 (Third-country provisions), Article 42 (NPPR)</p>
+
+      <div class="cta-box">
+        <p>Have a specific question about AIFMD II requirements?</p>
+        <a href="/copilot" class="cta-btn">Try the Compliance Copilot →</a>
+      </div>
+    </section>
+
+    <!-- Section 3: Timeline -->
+    <section class="section" id="timeline">
+      <h2 class="section-title"><span class="num">03</span> Timeline &amp; Deadlines</h2>
+
+      <h3>Critical Dates</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Event</th></tr></thead>
+          <tbody>
+            <tr><td><strong>March 26, 2024</strong></td><td>Directive (EU) 2024/927 published in Official Journal</td></tr>
+            <tr><td><strong>April 15, 2024</strong></td><td>Entry into force (20 days after publication)</td></tr>
+            <tr><td style="color: var(--warm);"><strong>April 16, 2026</strong></td><td><strong>Transposition &amp; compliance deadline</strong> — national implementing measures in force, AIFMs must comply</td></tr>
+            <tr><td><strong>Q2 2026</strong></td><td>ESMA expected to finalize all Level 2 measures (RTS/ITS)</td></tr>
+            <tr><td><strong>2027</strong></td><td>ESMA first peer review on delegation supervision</td></tr>
+            <tr><td><strong>2029</strong></td><td>European Commission review of AIFMD II effectiveness</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Transposition Status by Country <span style="font-size: 14px; color: var(--text-muted);">(as of February 2026)</span></h3>
+
+      <div class="card">
+        <p><span class="status status-green">🟢</span> <strong>Luxembourg</strong> — First mover. Transposed via the Law of November 21, 2025. <a href="/nca/cssf">CSSF</a> published implementing circular December 2025 covering LMTs, loan origination, and Annex IV.</p>
+      </div>
+      <div class="card">
+        <p><span class="status status-yellow">🟡</span> <strong>Germany</strong> — Draft legislation via the <strong>Fondsmarktstärkungsgesetz</strong> (Fund Market Strengthening Act), amending the KAGB. Expected enactment Q1 2026. <a href="/nca/bafin">BaFin</a> issued preliminary guidance.</p>
+      </div>
+      <div class="card">
+        <p><span class="status status-yellow">🟡</span> <strong>France</strong> — Draft ordonnance circulated late 2025. AMF expected to publish updated General Regulations Q1 2026. On track for deadline.</p>
+      </div>
+      <div class="card">
+        <p><span class="status status-yellow">🟡</span> <strong>Ireland</strong> — CBI published consultation paper mid-2025. Final rules expected Q1 2026. Critical given Dublin's role as a major AIF domicile.</p>
+      </div>
+      <div class="card">
+        <p><span class="status status-red">🔴</span> <strong>Spain</strong> — Delayed. CNMV has not published draft implementing legislation. Expected to miss the April 16, 2026 deadline.</p>
+      </div>
+      <div class="card">
+        <p><span class="status status-blue">🔵</span> <strong>United Kingdom</strong> — Not applicable. Post-Brexit, the UK operates under its domestic AIFMD regime. UK managers marketing into the EU must comply with enhanced NPPR requirements. FCA may undertake a separate review.</p>
+      </div>
+
+      <h3>Transitional Provisions</h3>
+      <ul>
+        <li><strong>Existing loan-originating AIFs:</strong> Concentration limits and leverage caps don't apply to loans originated before April 16, 2026. New originations must comply immediately.</li>
+        <li><strong>Annex IV reporting:</strong> First filings under the new schema expected for reporting periods beginning on or after April 16, 2026.</li>
+        <li><strong>Liquidity management tools:</strong> Selection, documentation, and fund document updates must be completed by April 16, 2026.</li>
+      </ul>
+
+      <div class="cta-box">
+        <p>Are you ready for April 16?</p>
+        <a href="/readiness-check" class="cta-btn">Check your readiness in 3 minutes →</a>
+      </div>
+    </section>
+
+    <!-- Section 4: Annex IV -->
+    <section class="section" id="annex-iv-reporting">
+      <h2 class="section-title"><span class="num">04</span> Annex IV Reporting Under AIFMD II</h2>
+
+      <p>For most AIFMs, the changes to <a href="/glossary/annex-iv">Annex IV reporting</a> represent the single largest operational burden. The reporting framework has been fundamentally expanded.</p>
+
+      <h3>What's Changing in the Schema</h3>
+      <p>ESMA has developed a revised XML reporting schema — <strong><code>XSD Revision 6, Version 1.2</code></strong> — reflecting the expanded data requirements.</p>
+
+      <h4>New data categories:</h4>
+      <ul>
+        <li><strong>Liquidity management tools:</strong> Which LMTs are available, whether activated during the period, and circumstances of activation.</li>
+        <li><strong>Loan origination data:</strong> Entirely new section covering portfolio composition, borrower concentration, retention compliance, and credit risk metrics.</li>
+        <li><strong>ESG and sustainability fields:</strong> SFDR classification (Article 8 or 9), principal adverse impact indicators, taxonomy alignment percentages.</li>
+        <li><strong>Delegation reporting:</strong> Identity and jurisdiction of delegates, functions delegated, resource allocation.</li>
+      </ul>
+
+      <h4>Expanded existing categories:</h4>
+      <ul>
+        <li><strong>Leverage reporting:</strong> Revised methodology fields, additional gross/commitment breakdowns, sensitivity-based metrics.</li>
+        <li><strong>Liquidity profile:</strong> Separate investor-side (redemption terms) and portfolio-side (time to liquidation) reporting.</li>
+        <li><strong>Counterparty exposure:</strong> LEI requirements, central clearing vs. bilateral OTC breakdowns, margin/collateral details.</li>
+        <li><strong>Investment strategy detail:</strong> Finer granularity on sub-strategies, especially credit and real estate.</li>
+      </ul>
+
+      <h3><code>XSD Rev 6 v1.2</code> — Technical Details</h3>
+      <div class="card">
+        <ul>
+          <li>Approximately <strong>200+ new XML elements</strong> vs. current schema (XSD Rev 5)</li>
+          <li>New complex types: <code>LoanOriginationDataType</code>, <code>LMTActivationType</code>, <code>SustainabilityMetricsType</code></li>
+          <li>Revised enumeration lists for strategies, instruments, and counterparty classifications</li>
+          <li><strong>LEI validation:</strong> Mandatory for counterparties, delegates, and service providers — XSD-level format validation</li>
+          <li>UTF-8 encoding requirement (unchanged)</li>
+          <li>Maximum file size increased to <strong>50MB</strong> (from 20MB)</li>
+        </ul>
+      </div>
+
+      <h3>Filing Frequencies by AUM Threshold</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>AIFM Category</th><th>AIF Category</th><th>Frequency</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>AIFM &gt; €5bn AUM</td><td>All managed AIFs</td><td><strong>Quarterly</strong></td></tr>
+            <tr><td>AIFM &gt; €1.5bn AUM</td><td>AIFs &gt; €500m</td><td><strong>Quarterly</strong></td></tr>
+            <tr><td>AIFM &gt; €1.5bn AUM</td><td>AIFs ≤ €500m</td><td><strong>Semi-annually</strong></td></tr>
+            <tr><td>AIFM ≤ €1.5bn AUM</td><td>All managed AIFs</td><td><strong>Semi-annually</strong></td></tr>
+            <tr><td>AIFM &lt; €500m (registered)</td><td>All managed AIFs</td><td><strong>Annually</strong></td></tr>
+            <tr><td style="color: var(--warm);">Any AIFM</td><td style="color: var(--warm);">Loan-originating AIFs (any size)</td><td style="color: var(--warm);"><strong>Quarterly</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><em>Note: The quarterly filing requirement for all loan-originating AIFs regardless of AUM is new under AIFMD II.</em></p>
+
+      <h3>NCA-Specific Requirements</h3>
+      <ul>
+        <li><strong><a href="/nca/bafin">BaFin</a> (Germany):</strong> Additional national data fields. MVP Portal being updated for the new schema.</li>
+        <li><strong><a href="/nca/cssf">CSSF</a> (Luxembourg):</strong> Detailed filing instructions published. RAIF-specific fields. Filing via eDesk.</li>
+        <li><strong>AMF (France):</strong> French-language descriptions expected for certain narrative fields. Filing via GECO.</li>
+        <li><strong>CBI (Ireland):</strong> ONR system being updated. Expected to align closely with ESMA minimums.</li>
+        <li><strong>FCA (UK):</strong> Continues pre-AIFMD II schema domestically. UK AIFMs marketing into the EU must file under the new schema with the relevant EU NCA.</li>
+      </ul>
+
+      <h3>Common Pitfalls in Annex IV Filing</h3>
+      <ol>
+        <li><strong>Incorrect AUM calculation methodology</strong> — Using NAV rather than the Article 2 AUM definition (which includes leverage)</li>
+        <li><strong>Missing LEIs</strong> — The new schema requires LEIs for counterparties; many managers track by name only</li>
+        <li><strong>Liquidity bucketing mismatches</strong> — Investor-side and portfolio-side using inconsistent time horizons</li>
+        <li><strong>FX exposure double-counting</strong> — Reporting hedged and unhedged positions incorrectly in leverage calculations</li>
+        <li><strong>Stale data</strong> — Filing based on month-end data when reporting date falls mid-quarter</li>
+      </ol>
+
+      <div class="cta-box">
+        <p>Paste your XML and get instant validation</p>
+        <a href="/copilot" class="cta-btn">Try the Compliance Copilot →</a>
+      </div>
+    </section>
+
+    <!-- Section 5: Jurisdictions -->
+    <section class="section" id="jurisdictions">
+      <h2 class="section-title"><span class="num">05</span> Impact by Jurisdiction</h2>
+
+      <h3>🇩🇪 Germany</h3>
+      <p>Germany's transposition proceeds via the <strong>Fondsmarktstärkungsgesetz</strong> (Fund Market Strengthening Act), amending the KAGB extensively.</p>
+      <ul>
+        <li><strong>KAGB amendments:</strong> Changes affect Sections 26 (liquidity management), 29 (delegation), 285-292 (open-ended fund rules), and numerous other provisions.</li>
+        <li><strong>BaFin supervisory approach:</strong> Proportionate enforcement in year one, but full compliance expected from Day 1 on core requirements.</li>
+        <li><strong>Loan origination:</strong> Previously permissive rules now replaced by a structured AIFMD II framework.</li>
+        <li><strong>Semi-professional investors:</strong> Germany's unique category (min €200k commitment) is preserved with proportionate disclosure.</li>
+      </ul>
+      <p><a href="/nca/bafin">Detailed BaFin compliance guide →</a></p>
+
+      <h3>🇱🇺 Luxembourg</h3>
+      <p>Luxembourg was the <strong>first EU Member State to transpose AIFMD II</strong>, enacted November 21, 2025.</p>
+      <ul>
+        <li><strong>CSSF Circular:</strong> Detailed implementing guidance published December 2025 covering LMTs, loan origination, and Annex IV.</li>
+        <li><strong>RAIF impact:</strong> Indirectly affected through AIFM-level requirements.</li>
+        <li><strong>Cross-border certainty:</strong> Early transposition benefits Luxembourg-domiciled AIFs marketed across Europe.</li>
+        <li><strong>SIF and SICAR amendments:</strong> Aligned with AIFMD II requirements.</li>
+      </ul>
+      <p><a href="/nca/cssf">Detailed CSSF compliance guide →</a></p>
+
+      <h3>🇫🇷 France</h3>
+      <p>Transposing via <strong>ordonnance</strong> with AMF publishing detailed implementing rules.</p>
+      <ul>
+        <li>Draft ordonnance circulated late 2025, broadly faithful to directive text.</li>
+        <li>AMF focus on delegation requirements and loan origination.</li>
+        <li>Impact on FPS and FPCI fund structures.</li>
+      </ul>
+
+      <h3>🇮🇪 Ireland</h3>
+      <p>Significant given Dublin's role as a leading AIF service center.</p>
+      <ul>
+        <li>CBI consultation paper published mid-2025 on LMTs and reporting.</li>
+        <li>Section 110 qualifying investor AIFs affected through AIFM-level requirements.</li>
+        <li>Irish Funds industry body active in preparing members.</li>
+      </ul>
+
+      <h3>🇬🇧 United Kingdom</h3>
+      <p>The UK is <strong>not subject to AIFMD II</strong>. Post-Brexit, the UK's domestic AIFM regime remains in force.</p>
+      <ul>
+        <li><strong>UK managers marketing into the EU:</strong> Must comply with enhanced NPPR requirements.</li>
+        <li><strong>Divergence risk:</strong> Dual compliance obligations for UK managers with EU distribution.</li>
+        <li><strong>Annex IV:</strong> Must file under new AIFMD II schema with EU NCAs, plus old schema with FCA.</li>
+        <li><strong>FCA review:</strong> Signaled but no formal proposals published.</li>
+      </ul>
+    </section>
+
+    <!-- Section 6: Checklist -->
+    <section class="section" id="compliance-checklist">
+      <h2 class="section-title"><span class="num">06</span> Compliance Checklist</h2>
+      <p>A practical, step-by-step roadmap for AIFMs preparing for April 16, 2026.</p>
+
+      <h3>Phase 1: Assessment (Now)</h3>
+      <ol class="checklist">
+        <li><strong>Conduct a gap analysis</strong> — Map current policies, procedures, and documentation against AIFMD II requirements.</li>
+        <li><strong>Assess delegation arrangements</strong> — Review all agreements. Can you evidence senior management time allocation and oversight?</li>
+        <li><strong>Inventory your AIFs</strong> — Classify each fund: open-ended vs. closed-ended, loan-originating vs. non, leveraged vs. unleveraged.</li>
+        <li><strong>Check your NCA's transposition status</strong> — Identify applicable national law and NCA-specific requirements.</li>
+        <li><strong>Identify Annex IV reporting gaps</strong> — Do you have LEIs for counterparties? ESG classifications? Loan origination metrics?</li>
+      </ol>
+
+      <h3>Phase 2: Implementation (Q1 2026)</h3>
+      <ol class="checklist" style="counter-reset: check 5;">
+        <li><strong>Select liquidity management tools</strong> — For each open-ended AIF, select at least two LMTs. Document activation criteria.</li>
+        <li><strong>Update fund documentation</strong> — Prospectuses, offering memoranda, and partnership agreements must reflect new requirements.</li>
+        <li><strong>Implement loan origination compliance</strong> — Retention tracking, concentration monitoring, leverage cap calculations.</li>
+        <li><strong>Upgrade reporting infrastructure</strong> — Ensure your system can generate Annex IV filings compliant with <code>XSD Rev 6 v1.2</code>.</li>
+        <li><strong>Train your team</strong> — Compliance officers, risk managers, and portfolio managers all need to understand the changes.</li>
+      </ol>
+
+      <h3>Phase 3: Validation (March–April 2026)</h3>
+      <ol class="checklist" style="counter-reset: check 10;">
+        <li><strong>Run a test Annex IV filing</strong> — Generate a complete filing under the new schema and validate against the XSD.</li>
+        <li><strong>Review all investor disclosures</strong> — Ensure Article 23 requirements are met. Check fee disclosure completeness.</li>
+        <li><strong>Document your LMT procedures</strong> — Activation playbook with escalation procedures and NCA reporting workflows.</li>
+        <li><strong>Brief your board</strong> — Governing bodies must understand LMT activation authority and delegation oversight.</li>
+        <li><strong>Engage with your NCA</strong> — File required notifications (delegation, LMT selections) ahead of the deadline.</li>
+      </ol>
+
+      <div class="cta-box">
+        <p>See where you stand on this checklist — automated</p>
+        <a href="/readiness-check" class="cta-btn">Check your readiness in 3 minutes →</a>
+      </div>
+    </section>
+
+    <!-- Section 7: How Caelith Helps -->
+    <section class="section" id="how-caelith-helps">
+      <h2 class="section-title"><span class="num">07</span> How Caelith Helps</h2>
+
+      <p>Caelith is purpose-built for AIFMD II compliance. We don't sell consulting hours or generic GRC platforms — we build the specific tools that fund managers need to meet regulatory reporting obligations accurately and efficiently.</p>
+
+      <div class="card">
+        <h4>Annex IV Reporting Engine</h4>
+        <p>Generate schema-compliant XML files (<code>XSD Rev 6 v1.2</code>) directly from your fund data. Our engine validates against ESMA's technical standards and NCA-specific requirements for <a href="/nca/bafin">BaFin</a>, <a href="/nca/cssf">CSSF</a>, AMF, CBI, and other authorities. Upload a spreadsheet or connect via API — we handle the XML generation, validation, and error resolution.</p>
+      </div>
+
+      <div class="card">
+        <h4>Compliance Copilot</h4>
+        <p>Ask plain-language questions about AIFMD II requirements and get answers grounded in the actual directive text, ESMA guidance, and NCA-specific rules. <em>"Do I need to file quarterly for this fund?"</em> <em>"What LMTs are available for my RAIF?"</em> The Copilot knows the regulation so your team doesn't have to memorize 200 pages of directive text.</p>
+      </div>
+
+      <div class="card">
+        <h4>Readiness Assessment</h4>
+        <p>Not sure where you stand? Our <a href="/readiness-check">3-minute readiness check</a> walks you through the key AIFMD II requirements and identifies your compliance gaps — with specific, actionable next steps.</p>
+      </div>
+
+      <div class="cta-box">
+        <p>See Caelith in action</p>
+        <a href="https://calendly.com/julian-laycock-caelith/30min" class="cta-btn">Book a demo →</a>
+      </div>
+    </section>
+
+    <!-- Section 8: FAQ -->
+    <section class="section" id="faq">
+      <h2 class="section-title"><span class="num">08</span> Frequently Asked Questions</h2>
+
+      <div class="faq-item">
+        <div class="faq-question">When is the AIFMD II deadline?</div>
+        <div class="faq-answer">The AIFMD II transposition and compliance deadline is <strong>April 16, 2026</strong>. By this date, all EU Member States must have transposed Directive (EU) 2024/927 into national law, and all authorized AIFMs (and UCITS management companies, where applicable) must comply with the new requirements. There is no general grace period, although specific transitional provisions apply to existing loan-originating AIFs.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">What are the main changes in AIFMD II?</div>
+        <div class="faq-answer">The seven most significant changes are: (1) mandatory liquidity management tools for open-ended AIFs, (2) a new loan origination framework with retention, concentration, and leverage rules, (3) substantially expanded Annex IV regulatory reporting, (4) enhanced delegation and substance requirements, (5) improved investor disclosure on fees and costs, (6) refined leverage reporting and NCA leverage limit powers, and (7) updated third-country AIFM marketing requirements.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Does AIFMD II apply to UCITS?</div>
+        <div class="faq-answer">Yes, partially. Directive (EU) 2024/927 simultaneously amends both the AIFMD and the UCITS Directive (2009/65/EC). Key UCITS changes include mandatory liquidity management tools, enhanced delegation requirements, and improved investor disclosure. The loan origination rules and Annex IV reporting changes are AIFMD-specific and do not apply to UCITS.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">What is Annex IV reporting?</div>
+        <div class="faq-answer"><a href="/glossary/annex-iv">Annex IV</a> is the periodic regulatory report that AIFMs file with their national competent authority under the AIFMD. It contains detailed information about each managed AIF, including investment strategy, instruments traded, risk profile, leverage, liquidity, counterparty exposure, and (under AIFMD II) loan origination activity, LMT usage, and ESG metrics. The report is filed in XML format according to ESMA's technical schema.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">How do I generate Annex IV XML?</div>
+        <div class="faq-answer">Annex IV XML files must conform to ESMA's XSD schema (currently <code>Rev 6 v1.2</code> for AIFMD II). You can generate compliant XML by: (1) using a dedicated reporting platform like <a href="/readiness-check">Caelith</a> that automates generation and validation, (2) building in-house using ESMA's published XSD, or (3) engaging a third-party service. Given the complexity (500+ data fields, strict validation), most managers opt for automation.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Which NCAs have transposed AIFMD II?</div>
+        <div class="faq-answer">As of February 2026, <strong>Luxembourg</strong> has fully transposed AIFMD II (Law of November 21, 2025). <strong>Germany</strong>, <strong>France</strong>, <strong>Ireland</strong>, <strong>Italy</strong>, and the <strong>Netherlands</strong> have draft legislation in progress. <strong>Spain</strong> is expected to miss the deadline. The <strong>UK</strong> is not subject to AIFMD II (post-Brexit), though UK managers marketing into the EU must comply with enhanced NPPR requirements.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">What happens if I don't comply by April 16?</div>
+        <div class="faq-answer">Non-compliance exposes AIFMs to supervisory enforcement by their NCA. Consequences may include administrative fines, public censure, suspension of authorization, restrictions on marketing, and in severe cases, withdrawal of authorization. NCAs may also impose additional reporting or on-site inspections. In practice, initial enforcement will likely focus on Annex IV reporting compliance, LMT implementation, and delegation substance.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Is there a free AIFMD II compliance tool?</div>
+        <div class="faq-answer">Caelith offers a <a href="/readiness-check">free readiness assessment</a> that evaluates your AIFMD II compliance posture and identifies gaps. The <a href="/copilot">Compliance Copilot</a> provides AI-powered guidance on requirements. Full Annex IV reporting generation requires a Caelith subscription. <a href="https://calendly.com/julian-laycock-caelith/30min">Book a demo</a> to see the platform.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Do sub-threshold AIFMs need to comply with AIFMD II?</div>
+        <div class="faq-answer">Sub-threshold AIFMs (below €100m with leverage or €500m without) benefit from the lighter registration regime under Article 3. AIFMD II maintains this but introduces enhanced registration requirements, including annual Annex IV reporting at reduced scope. Full LMT, delegation, and loan origination requirements do not apply to registered (non-authorized) AIFMs.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">How does AIFMD II affect private equity fund managers?</div>
+        <div class="faq-answer">PE managers (closed-ended AIFs) are less affected by LMT requirements but must comply with: enhanced Annex IV reporting, delegation and substance requirements, improved investor disclosure (particularly fee transparency — Article 23 requires granular cost breakdowns), and the loan origination framework if applicable.</div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>This guide is maintained by <a href="https://www.caelith.tech">Caelith</a> and updated as new regulatory guidance is published.<br>It does not constitute legal advice. For specific compliance questions, consult your legal counsel or <a href="/copilot">use the Compliance Copilot</a>.</p>
+      <p style="margin-top: 12px;">© 2026 Caelith. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auftragsverarbeitungsvertrag (AVV) — Caelith</title>
+  <style>
+    :root {
+      --text: #1a1a1a;
+      --muted: #555;
+      --border: #d0d0d0;
+      --bg: #fff;
+      --accent: #2c5282;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    @page { margin: 2.5cm 2cm; }
+    body {
+      font-family: "Times New Roman", Georgia, serif;
+      font-size: 11pt;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 2.5cm 2cm;
+    }
+    h1 {
+      font-size: 16pt;
+      text-align: center;
+      margin-bottom: 0.3cm;
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 0.3cm;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 10pt;
+      color: var(--muted);
+      margin-bottom: 1.5cm;
+    }
+    h2 {
+      font-size: 12pt;
+      margin-top: 1.2cm;
+      margin-bottom: 0.4cm;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.15cm;
+    }
+    h3 {
+      font-size: 11pt;
+      margin-top: 0.6cm;
+      margin-bottom: 0.2cm;
+    }
+    p, li { margin-bottom: 0.3cm; }
+    ol, ul { padding-left: 1.2cm; }
+    ol > li { margin-bottom: 0.4cm; }
+    ul > li { margin-bottom: 0.2cm; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.5cm 0;
+      font-size: 10pt;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.25cm 0.4cm;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f5f7fa; font-weight: bold; width: 35%; }
+    .parties {
+      display: flex;
+      gap: 1.5cm;
+      margin: 0.8cm 0 1cm;
+    }
+    .party {
+      flex: 1;
+      border: 1px solid var(--border);
+      padding: 0.5cm;
+      border-radius: 3px;
+    }
+    .party strong { display: block; margin-bottom: 0.2cm; color: var(--accent); }
+    .placeholder { color: #c00; font-weight: bold; }
+    .signature-block {
+      display: flex;
+      gap: 2cm;
+      margin-top: 2cm;
+      page-break-inside: avoid;
+    }
+    .signature {
+      flex: 1;
+      border-top: 1px solid var(--text);
+      padding-top: 0.3cm;
+      text-align: center;
+      font-size: 10pt;
+      color: var(--muted);
+    }
+    .annex { page-break-before: always; }
+    @media print {
+      body { padding: 0; }
+      h2 { break-after: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Auftragsverarbeitungsvertrag (AVV)</h1>
+<p class="subtitle">gemäß Art.&nbsp;28 Datenschutz-Grundverordnung (DSGVO)</p>
+
+<!-- ───── Vertragsparteien ───── -->
+<div class="parties">
+  <div class="party">
+    <strong>Auftraggeber (Verantwortlicher)</strong>
+    <span class="placeholder">[AUFTRAGGEBER]</span><br>
+    <span class="placeholder">[Anschrift]</span><br>
+    <span class="placeholder">[E-Mail]</span><br>
+    — nachfolgend „<strong>Auftraggeber</strong>" —
+  </div>
+  <div class="party">
+    <strong>Auftragnehmer (Auftragsverarbeiter)</strong>
+    Julian Laycock<br>
+    Einzelunternehmen „Caelith"<br>
+    Mariendorfer Damm 1, 12099 Berlin<br>
+    E-Mail: julian@caelith.tech<br>
+    — nachfolgend „<strong>Auftragnehmer</strong>" —
+  </div>
+</div>
+
+<p>Die Vertragsparteien schließen nachfolgenden Auftragsverarbeitungsvertrag, der Bestandteil des zwischen den Parteien bestehenden Hauptvertrags über die Nutzung der Caelith-Plattform (nachfolgend „<strong>Hauptvertrag</strong>") ist.</p>
+
+<!-- ───── § 1 ───── -->
+<h2>§ 1 — Gegenstand und Dauer der Verarbeitung</h2>
+<ol>
+  <li>Der Auftragnehmer verarbeitet personenbezogene Daten im Auftrag des Auftraggebers im Rahmen der Bereitstellung der Caelith-Plattform für regulatorische Compliance und Fondsüberwachung.</li>
+  <li>Die Dauer der Verarbeitung entspricht der Laufzeit des Hauptvertrags. Sie beginnt mit dem Zeitpunkt der erstmaligen Datenübermittlung und endet mit der vollständigen Löschung aller personenbezogenen Daten nach Beendigung des Hauptvertrags.</li>
+</ol>
+
+<!-- ───── § 2 ───── -->
+<h2>§ 2 — Art und Zweck der Verarbeitung</h2>
+<ol>
+  <li>Die Verarbeitung umfasst folgende Tätigkeiten:
+    <ul>
+      <li>Speicherung und Verwaltung von Investorendaten und Fondsinformationen</li>
+      <li>Durchführung automatisierter Compliance-Prüfungen (KYC/AML, AIFMD, SFDR, KAGB)</li>
+      <li>Erstellung von Compliance-Berichten und Dashboards</li>
+      <li>Bereitstellung eines KI-gestützten Compliance-Copiloten zur Datenanalyse</li>
+      <li>Technische Speicherung, Hosting und Backup der Daten</li>
+    </ul>
+  </li>
+  <li>Die Verarbeitung erfolgt ausschließlich zur Erfüllung des Hauptvertrags. Eine Verarbeitung zu eigenen Zwecken des Auftragnehmers findet nicht statt.</li>
+</ol>
+
+<!-- ───── § 3 ───── -->
+<h2>§ 3 — Art der personenbezogenen Daten</h2>
+<p>Gegenstand der Verarbeitung sind folgende Datenkategorien:</p>
+<ul>
+  <li>Namen und Kontaktdaten von Investoren und deren Vertretern</li>
+  <li>Legal Entity Identifiers (LEI) und Unternehmensregisternummern</li>
+  <li>Fondsdaten (Fondsname, ISIN, Klassifizierung, Anlagebeträge)</li>
+  <li>Compliance-Prüfergebnisse und regulatorische Statusdaten</li>
+  <li>Nutzungsdaten der Plattform (Login-Zeitpunkte, IP-Adressen in gehashter Form)</li>
+</ul>
+<p>Besondere Kategorien personenbezogener Daten (Art.&nbsp;9 DSGVO) werden nicht verarbeitet.</p>
+
+<!-- ───── § 4 ───── -->
+<h2>§ 4 — Kategorien betroffener Personen</h2>
+<ul>
+  <li>Investoren (natürliche Personen) und deren gesetzliche Vertreter</li>
+  <li>Mitarbeiter und Bevollmächtigte des Auftraggebers</li>
+  <li>Ansprechpartner bei Fondsgesellschaften und Verwahrstellen</li>
+</ul>
+
+<!-- ───── § 5 ───── -->
+<h2>§ 5 — Pflichten des Auftragnehmers</h2>
+<ol>
+  <li>Der Auftragnehmer verarbeitet personenbezogene Daten ausschließlich auf dokumentierte Weisung des Auftraggebers (Art.&nbsp;28 Abs.&nbsp;3 lit.&nbsp;a DSGVO), es sei denn, er ist nach Unionsrecht oder dem Recht eines Mitgliedstaats zur Verarbeitung verpflichtet.</li>
+  <li>Der Auftragnehmer gewährleistet, dass sich die zur Verarbeitung befugten Personen zur Vertraulichkeit verpflichtet haben oder einer angemessenen gesetzlichen Verschwiegenheitspflicht unterliegen (Art.&nbsp;28 Abs.&nbsp;3 lit.&nbsp;b DSGVO).</li>
+  <li>Der Auftragnehmer ergreift alle gemäß Art.&nbsp;32 DSGVO erforderlichen technischen und organisatorischen Maßnahmen (siehe §&nbsp;7).</li>
+  <li>Der Auftragnehmer unterstützt den Auftraggeber bei der Erfüllung seiner Pflichten bezüglich:
+    <ul>
+      <li>Betroffenenrechte (Art.&nbsp;15–22 DSGVO)</li>
+      <li>Meldung von Verletzungen des Schutzes personenbezogener Daten (Art.&nbsp;33, 34 DSGVO)</li>
+      <li>Datenschutz-Folgenabschätzungen (Art.&nbsp;35, 36 DSGVO)</li>
+    </ul>
+  </li>
+  <li>Der Auftragnehmer informiert den Auftraggeber unverzüglich, wenn er der Auffassung ist, dass eine Weisung gegen die DSGVO oder andere Datenschutzvorschriften verstößt.</li>
+  <li>Der Auftragnehmer teilt dem Auftraggeber Verletzungen des Schutzes personenbezogener Daten unverzüglich, spätestens innerhalb von <strong>24 Stunden</strong> nach Kenntniserlangung mit.</li>
+</ol>
+
+<!-- ───── § 6 ───── -->
+<h2>§ 6 — Unterauftragsverarbeiter</h2>
+<ol>
+  <li>Der Auftraggeber erteilt dem Auftragnehmer eine allgemeine schriftliche Genehmigung zur Beauftragung von Unterauftragsverarbeitern. Der Auftragnehmer informiert den Auftraggeber über jede beabsichtigte Änderung in Bezug auf die Hinzuziehung oder Ersetzung von Unterauftragsverarbeitern und gibt dem Auftraggeber die Möglichkeit, gegen derartige Änderungen Einspruch zu erheben (Art.&nbsp;28 Abs.&nbsp;2 DSGVO).</li>
+  <li>Zum Zeitpunkt des Vertragsschlusses setzt der Auftragnehmer folgende Unterauftragsverarbeiter ein:</li>
+</ol>
+
+<table>
+  <tr>
+    <th>Unterauftragsverarbeiter</th>
+    <th>Zweck</th>
+    <th>Standort</th>
+  </tr>
+  <tr>
+    <td>Railway Corp.</td>
+    <td>Application Hosting, Datenbank-Hosting (PostgreSQL)</td>
+    <td>EU — Amsterdam, Niederlande</td>
+  </tr>
+  <tr>
+    <td>IONOS SE</td>
+    <td>Domain-Hosting, DNS, SSL-Zertifikate</td>
+    <td>Deutschland</td>
+  </tr>
+</table>
+
+<ol start="3">
+  <li>Eine Datenübermittlung in Drittstaaten außerhalb des EWR findet nicht statt. Sämtliche Datenverarbeitung erfolgt ausschließlich innerhalb der Europäischen Union.</li>
+  <li>Der Auftragnehmer stellt vertraglich sicher, dass die Unterauftragsverarbeiter dieselben Datenschutzpflichten einhalten wie in diesem Vertrag festgelegt.</li>
+</ol>
+
+<!-- ───── § 7 ───── -->
+<h2>§ 7 — Technische und organisatorische Maßnahmen (TOMs)</h2>
+<p>Der Auftragnehmer hat folgende Maßnahmen gemäß Art.&nbsp;32 DSGVO implementiert:</p>
+
+<h3>7.1 Vertraulichkeit</h3>
+<ul>
+  <li>Verschlüsselung aller Daten bei Übertragung (TLS 1.2+) und im Ruhezustand (AES-256)</li>
+  <li>Rollenbasierte Zugriffskontrolle (RBAC) mit Prinzip der geringsten Privilegien</li>
+  <li>Multi-Faktor-Authentifizierung für administrative Zugänge</li>
+  <li>IP-Adressen werden ausschließlich in gehashter Form gespeichert</li>
+</ul>
+
+<h3>7.2 Integrität</h3>
+<ul>
+  <li>Automatisierte Eingabevalidierung und Parameterisierung aller Datenbankabfragen</li>
+  <li>Versionierte Datenbankmigrationen mit Rollback-Fähigkeit</li>
+  <li>Rate-Limiting auf allen öffentlichen und authentifizierten Endpunkten</li>
+</ul>
+
+<h3>7.3 Verfügbarkeit und Belastbarkeit</h3>
+<ul>
+  <li>Automatisierte Datenbank-Backups (täglich, verschlüsselt, 30 Tage Aufbewahrung)</li>
+  <li>Hosting auf hochverfügbarer EU-Infrastruktur (Railway, Amsterdam)</li>
+  <li>Health-Check-Monitoring mit automatischem Neustart bei Ausfällen</li>
+</ul>
+
+<h3>7.4 Verfahren zur regelmäßigen Überprüfung</h3>
+<ul>
+  <li>Regelmäßige Überprüfung und Aktualisierung der Sicherheitsmaßnahmen</li>
+  <li>Abhängigkeitsüberwachung und zeitnahe Sicherheitsupdates</li>
+  <li>Protokollierung von Zugriffen und sicherheitsrelevanten Ereignissen</li>
+</ul>
+
+<!-- ───── § 8 ───── -->
+<h2>§ 8 — Löschung und Rückgabe personenbezogener Daten</h2>
+<ol>
+  <li>Nach Beendigung des Hauptvertrags löscht der Auftragnehmer sämtliche im Auftrag verarbeiteten personenbezogenen Daten, sofern nicht eine gesetzliche Aufbewahrungspflicht besteht.</li>
+  <li>Auf Verlangen des Auftraggebers werden die Daten vor der Löschung in einem gängigen, maschinenlesbaren Format (CSV oder JSON) herausgegeben.</li>
+  <li>Die Löschung erfolgt innerhalb von <strong>30 Tagen</strong> nach Vertragsende und wird dem Auftraggeber schriftlich bestätigt.</li>
+  <li>Daten in Backups werden spätestens nach Ablauf der Backup-Rotation (30 Tage) gelöscht.</li>
+</ol>
+
+<!-- ───── § 9 ───── -->
+<h2>§ 9 — Kontrollrechte des Auftraggebers</h2>
+<ol>
+  <li>Der Auftraggeber hat das Recht, Überprüfungen — einschließlich Inspektionen — durchzuführen oder durch einen beauftragten Prüfer durchführen zu lassen (Art.&nbsp;28 Abs.&nbsp;3 lit.&nbsp;h DSGVO).</li>
+  <li>Der Auftragnehmer stellt dem Auftraggeber alle erforderlichen Informationen zum Nachweis der Einhaltung der in Art.&nbsp;28 DSGVO niedergelegten Pflichten zur Verfügung.</li>
+  <li>Inspektionen vor Ort sind mit einer Vorlaufzeit von mindestens <strong>14 Werktagen</strong> anzukündigen und während der üblichen Geschäftszeiten durchzuführen.</li>
+  <li>Der Auftragnehmer kann den Nachweis der Einhaltung auch durch Vorlage aktueller Zertifizierungen, Audit-Berichte oder gleichwertiger Nachweise erbringen.</li>
+</ol>
+
+<!-- ───── § 10 ───── -->
+<h2>§ 10 — Schlussbestimmungen</h2>
+<ol>
+  <li>Änderungen und Ergänzungen dieses Vertrags bedürfen der Schriftform.</li>
+  <li>Sollten einzelne Bestimmungen dieses Vertrags unwirksam sein oder werden, bleibt die Wirksamkeit des Vertrags im Übrigen unberührt.</li>
+  <li>Es gilt das Recht der Bundesrepublik Deutschland. Gerichtsstand ist Berlin.</li>
+  <li>Dieser Vertrag tritt mit Unterzeichnung durch beide Parteien in Kraft.</li>
+</ol>
+
+<!-- ───── Unterschriften ───── -->
+<div class="signature-block">
+  <div class="signature">
+    Ort, Datum<br><br><br><br>
+    ___________________________<br>
+    <span class="placeholder">[AUFTRAGGEBER]</span><br>
+    Auftraggeber
+  </div>
+  <div class="signature">
+    Berlin, den ___________<br><br><br><br>
+    ___________________________<br>
+    Julian Laycock — Caelith<br>
+    Auftragnehmer
+  </div>
+</div>
+
+<!-- ───── Anlage: TOMs ───── -->
+<div class="annex">
+  <h2>Anlage 1 — Aktuelle Liste der Unterauftragsverarbeiter</h2>
+  <p><em>Stand: Februar 2026</em></p>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Anschrift</th>
+      <th>Leistung</th>
+      <th>Standort der Verarbeitung</th>
+    </tr>
+    <tr>
+      <td>Railway Corp.</td>
+      <td>548 Market St, San Francisco, CA 94104, USA<br><em>(Datenverarbeitung ausschl. in EU)</em></td>
+      <td>Application Hosting, PostgreSQL-Datenbank</td>
+      <td>Amsterdam, NL (EU)</td>
+    </tr>
+    <tr>
+      <td>IONOS SE</td>
+      <td>Elgendorfer Str. 57, 56410 Montabaur, Deutschland</td>
+      <td>Domain, DNS, SSL</td>
+      <td>Deutschland (EU)</td>
+    </tr>
+  </table>
+</div>
+
+</body>
+</html>

@@ -35,6 +35,21 @@ Things like:
 
 Skills are shared. Your setup is yours. Keeping them apart means you can update skills without losing your notes, and share skills without leaking your infrastructure.
 
+### Discord Channels (Caelith HQ)
+
+- #general → 1477200936379093015 (server ID)
+- #outreach → 1477205778527027311
+- #dev → 1477205829366186024
+- #research → 1477205876052987934
+- #design → 1477212396689821879
+
+### Routing
+
+- LinkedIn daily outreach cron → #outreach
+- Deploy alerts / heartbeat alerts → #dev
+- Research sub-agent outputs → #research
+- General chat → #general
+
 ---
 
 Add whatever helps you do your job. This is your cheat sheet.

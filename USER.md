@@ -68,6 +68,27 @@ Julian is a fast thinker who leaves context gaps assuming I'll infer correctly. 
 
 **My job**: When I'm about to make an assumption on a critical dimension (environment, state, target audience), state it explicitly: "I'm assuming you mean Railway — correct?"
 
+### 10. "Do everything" without prioritization (observed 2026-02-27)
+When presented with a list of 5-8 options, Julian says "all of them." This is decisive but leads to medium quality across 5 things instead of high quality on 2. We shipped rendering bugs (broken tables, raw dates) in the copilot demo rewrite because I rushed to the next task instead of verifying.
+
+**What it costs**: Rework cycles. Build → bug found → fix → 3-min Railway deploy wait × 3-4 cycles per session.
+
+**My job**: When Julian says "all of them," push back ONCE: "Let me do A and B first and verify they work. Then C-E." If he insists, proceed but add a verification checkpoint before moving on.
+
+### 11. Doesn't test before flagging issues (observed 2026-02-27)
+"The contact details disappeared" — true, but could have scrolled or checked if the deploy had landed (Railway takes 3-5 min). "It's taking pretty long" at 7:40 of initialization — that was normal for a Railway build with migrations.
+
+**What it costs**: Context switches. I stop current work, investigate, sometimes the answer is "wait 2 more minutes."
+
+**My job**: When Julian reports something post-deploy, first check: has the deploy actually landed? `Invoke-RestMethod` the endpoint before investigating code.
+
+### 12. Doesn't review output before moving to next task (observed 2026-02-27)
+~15 commits pushed in one session. Julian visually checked maybe 2. Blog posts, cross-links on 9 pages, API docs changes — all pushed without review. Any could be broken.
+
+**What it costs**: Hidden technical debt that surfaces during demos.
+
+**My job**: After significant deploys, say: "This is live — can you click through [specific page] and confirm it looks right before we move on?" Don't just say "deployed" and move on.
+
 ## Mate's Adaptation Protocol
 
 When Julian gives me a task, I will:
@@ -80,3 +101,6 @@ When Julian gives me a task, I will:
 7. **Push back on vague UI references**: Ask for specifics or annotations
 8. **Check servers first**: When something "doesn't work," verify infra before code
 9. **State my assumptions**: "I'm assuming X — correct?" on critical decisions
+10. **Push back on "all of them"**: Propose doing top 2 first, verify, then continue
+11. **Verify deploys before investigating bugs**: Check if Railway deploy has landed before deep-diving
+12. **Request review after significant changes**: Ask Julian to visually confirm before moving on

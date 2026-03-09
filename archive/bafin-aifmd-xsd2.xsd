@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema version="1.0" elementFormDefault="qualified" targetNamespace="http://www.bafin.de/mvp/aifmd/" xmlns:axsd1="http://www.bafin.de/mvp/aifmd/" xmlns:axsd="http://www.bafin.de/mvp/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.bafin.de/mvp/aifmd/">
+	
+<!-- ************************************************************ -->
+	
+<!-- ****************   Include des allgemeinen Schemas   ******* -->
+	
+<!-- ************************************************************ -->
+    
+	
+<xsd:include schemaLocation="aifmd.xsd3.xsd"/>
+
+	
+<!-- AIFMD Meldung: AIF -->
+	
+<xsd:complexType name="aifmdAifInType">
+		
+<xsd:sequence>
+			
+<xsd:element name="dateiname" type="dateinameAifType" maxOccurs="1" minOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	
+<!-- AIFMD Meldung: AIFM -->
+	
+<xsd:complexType name="aifmdAifmInType">
+		
+<xsd:sequence>
+			
+<xsd:element name="dateiname" type="dateinameAifmType" maxOccurs="1" minOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+<!-- AIFMD Response -->
+	
+<xsd:complexType name="aifmdOutType">
+		
+<xsd:sequence>
+			
+<!-- hier ist die MeldungId zu finden -->
+			
+<xsd:element name="meldungsId" type="xsd:int" maxOccurs="1" minOccurs="1"/>
+			
+<!-- Meldezeitpunkt der Meldung -->
+			
+<xsd:element name="meldezeitpunkt" type="xsd:dateTime" maxOccurs="1" minOccurs="1"/>
+			
+<!-- Kundenreferenz aus dem Request -->
+			
+<xsd:element name="kundenreferenz" type="kundenreferenzType" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+<xsd:simpleType name="dateinameAifType">
+		
+<xsd:restriction base="xsd:string">
+			
+<xsd:pattern value="AIF_[a-zA-Z0-9_\.\-]{1,93}\.gz"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	
+<xsd:simpleType name="dateinameAifmType">
+		
+<xsd:restriction base="xsd:string">
+			
+<xsd:pattern value="AIFM_[a-zA-Z0-9_\.\-]{1,92}\.gz"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+
+	
+<xsd:element name="inAif" type="aifmdAifInType"/>
+	
+<xsd:element name="inAifm" type="aifmdAifmInType"/>
+</xsd:schema>

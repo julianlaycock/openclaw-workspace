@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Readiness Check — Final Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#1a1f1f;--bg2:#2D3333;--accent:#8EC5E0;--warm:#E8A87C;--grad:linear-gradient(135deg,#8EC5E0,#E8A87C);--text:#f0f0f0;--text2:rgba(255,255,255,0.7);--text3:rgba(255,255,255,0.45);--border:rgba(255,255,255,0.08);--radius:14px}
+body{font-family:'Inter',sans-serif;background:#111;color:#f0f0f0;-webkit-font-smoothing:antialiased;padding:48px 32px;display:flex;flex-direction:column;align-items:center}
+.page-title{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px;align-self:flex-start}
+.page-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:48px;align-self:flex-start;max-width:560px;line-height:1.7}
+
+/* Card */
+.card{background:#2D3333;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:40px;width:100%;max-width:540px}
+
+/* Score ring */
+.score-ring{width:110px;height:110px;margin:0 auto 16px;position:relative;display:flex;align-items:center;justify-content:center}
+.score-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.track{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:7}
+.fill-warn{fill:none;stroke:#E8A87C;stroke-width:7;stroke-linecap:round;stroke-dasharray:299;stroke-dashoffset:111}
+.score-num{font-family:'Sora',sans-serif;font-weight:800;font-size:32px;color:#fff;line-height:1;position:relative;z-index:1}
+.score-meta{text-align:center;margin-bottom:28px}
+.score-meta h2{font-family:'Sora',sans-serif;font-weight:700;font-size:20px;color:#fff;margin-bottom:6px}
+.score-meta p{font-size:14px;color:rgba(255,255,255,0.55);line-height:1.6}
+.score-meta p strong{color:#E8A87C}
+
+/* Result rows */
+.results{margin-bottom:24px}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.result-row:last-child{border:none}
+.result-row .name{font-size:13px;color:rgba(255,255,255,0.7);font-family:'Inter',sans-serif}
+.tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.5px;padding:4px 10px;border-radius:6px;font-weight:500}
+.tag.pass{background:rgba(110,231,183,0.12);color:#6ee7b7;border:1px solid rgba(110,231,183,0.2)}
+.tag.fail{background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.2)}
+.tag.warn{background:rgba(232,168,124,0.12);color:#E8A87C;border:1px solid rgba(232,168,124,0.2)}
+
+/* CTA box */
+.cta-box{background:linear-gradient(135deg,rgba(142,197,224,0.07),rgba(232,168,124,0.05));border:1px solid rgba(142,197,224,0.18);border-radius:14px;padding:24px;margin-top:8px}
+.cta-box .steps-badge{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#8EC5E0;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.cta-box .steps-badge::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#8EC5E0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.cta-box h4{font-family:'Sora',sans-serif;font-weight:700;font-size:17px;color:#fff;margin-bottom:8px;line-height:1.3}
+.cta-box p{font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:20px;line-height:1.7}
+.cta-box p strong{color:rgba(255,255,255,0.85)}
+.cta-btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn-primary{font-family:'Sora',sans-serif;font-weight:700;font-size:13px;padding:12px 24px;border-radius:10px;background:var(--grad);color:#fff;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .25s}
+.btn-primary:hover{box-shadow:0 0 24px rgba(142,197,224,0.3);transform:translateY(-1px)}
+.btn-secondary{font-family:'Sora',sans-serif;font-weight:600;font-size:13px;padding:12px 20px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.65);cursor:pointer;transition:all .25s}
+.btn-secondary:hover{border-color:rgba(255,255,255,0.35);color:#fff}
+
+/* Deadline chip */
+.deadline{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#E8A87C;background:rgba(232,168,124,0.1);border:1px solid rgba(232,168,124,0.2);padding:6px 14px;border-radius:999px;margin-bottom:24px}
+.deadline .dot{width:6px;height:6px;border-radius:50%;background:#E8A87C;animation:pulse 2s infinite}
+</style>
+</head>
+<body>
+
+<div class="page-title">Readiness Check — Results (Final Design)</div>
+<p class="page-sub">Option C layout, Option B font/styling, with recommended next steps messaging. This is what users see after completing 24 questions.</p>
+
+<div class="card">
+
+  <div class="deadline"><span class="dot"></span> 46 days until AIFMD II enforcement</div>
+
+  <div class="score-ring">
+    <svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="47.5"/><circle class="fill-warn" cx="50" cy="50" r="47.5"/></svg>
+    <div class="score-num">63</div>
+  </div>
+
+  <div class="score-meta">
+    <h2>Partially Ready</h2>
+    <p>You have <strong>5 compliance gaps</strong> to close before April 16. The highest-risk items are Annex IV XML reporting and AIFMD II Art. 23 disclosures.</p>
+  </div>
+
+  <div class="results">
+    <div class="result-row"><span class="name">AIFMD II Art. 23 disclosures</span><span class="tag fail">Gap</span></div>
+    <div class="result-row"><span class="name">Annex IV XML reporting</span><span class="tag fail">Gap</span></div>
+    <div class="result-row"><span class="name">KAGB §1(19) investor classification</span><span class="tag pass">Done</span></div>
+    <div class="result-row"><span class="name">Sanctions screening (AMLR-ready)</span><span class="tag fail">Gap</span></div>
+    <div class="result-row"><span class="name">Depositary agreement updated</span><span class="tag pass">Done</span></div>
+    <div class="result-row"><span class="name">LMT tool implementation</span><span class="tag warn">Partial</span></div>
+  </div>
+
+  <div class="cta-box">
+    <div class="steps-badge">Recommended next steps ready</div>
+    <h4>See how to close your 5 gaps before April 16</h4>
+    <p>Get a <strong>step-by-step remediation plan</strong> for each gap — with BaFin requirements, exact deadlines, and how Caelith automates each one in under 2 weeks.</p>
+    <div class="cta-btns">
+      <button class="btn-primary">Book a 15-Min Demo →</button>
+      <button class="btn-secondary">Try It Now</button>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
